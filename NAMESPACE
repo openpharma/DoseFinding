@@ -1,0 +1,52 @@
+import(mvtnorm, lattice)
+
+export(fitMod, defBnds, bFitMod, MCTtest, MCPMod,
+       betaMod, quadratic, emax, exponential,linear, linlog, logistic, sigEmax, linInt,
+       betaModGrad, quadraticGrad, emaxGrad, exponentialGrad,
+       linearGrad, linlogGrad, logisticGrad, sigEmaxGrad, linIntGrad,
+       Mods, getResp, TD, ED,
+       guesst, MCTtest, gAIC,
+       mvtnorm.control, 
+       optContr,
+       powMCT, sampSize, sampSizeMCT, targN, powN, planMod,
+       optDesign, calcCrit, rndDesign)
+
+S3method(predict, MCPMod)
+S3method(print, MCPMod)
+S3method(print, sampSize)
+S3method(plot, MCPMod)
+S3method(summary, MCPMod)
+S3method(print, summary.MCPMod)
+S3method(summary, DRMod)
+S3method(print, summary.DRMod)
+S3method(print, DRMod)
+S3method(plot, DRMod)
+S3method(vcov, DRMod)
+S3method(coef, DRMod)
+S3method(predict, DRMod)
+S3method(print, MCTtest)
+S3method(print, DRdesign)
+S3method(plot, DRdesign)
+S3method(print, optContr)
+S3method(summary, optContr)
+S3method(print, summary.optContr)
+S3method(plot, optContr)
+S3method(plot, Mods)
+S3method(AIC, DRMod)
+S3method(gAIC, DRMod)
+S3method(logLik, DRMod)
+S3method(gAIC, DRMod)
+
+S3method(predict, bFitMod)
+S3method(plot, bFitMod)
+S3method(print, bFitMod)
+
+S3method(plot, targN)
+
+S3method(plot, planMod)
+S3method(print, planMod)
+S3method(summary, planMod)
+S3method(print, summary.planMod)
+
+useDynLib(DoseFinding)
+

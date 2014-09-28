@@ -1,0 +1,194 @@
+\name{planMod}
+\alias{planMod}
+\alias{plot.planMod}
+\alias{summary.planMod}
+\title{
+  Evaluate performance metrics for fitting dose-response models
+}
+\description{
+  This function evaluates, the performance metrics for fitting
+  dose-response models (using asymptotic approximations or
+  simulations). Metrics are
+  \itemize{
+    \item Root of the mean-squared error to estimate the placebo-adjusted
+    dose-response averaged over the used dose-levels
+    (\code{dRMSE}). 
+    \item Root of the mean-squared error to estimate the
+    placebo-adjusted dose-response (\code{cRMSE})
+    averaged over fine (almost continuous) grid at 101 equally spaced
+    values between placebo and the maximum dose. Available via the
+    summary method.
+    \item Ratio of the placebo-adjusted mean-squared error (at the
+    observed doses) of model-based vs ANOVA approach (\code{Eff-vs-ANOVA}). This
+    can be interpreted on the sample size scale and is available via the
+    summary method.
+    \item Power that the (unadjusted) one-sided \samp{1-alpha} confidence interval
+    comparing the dose with maximum effect vs placebo is
+    larger than \samp{tau}. By default \samp{alpha = 0.025} and
+    \samp{tau = 0} (\code{Pow(maxDose)}). 
+    \item Probability that the EDp estimate is within the true [EDpLB,
+    EDpUB] (by default \samp{p=0.5}, \samp{pLB=0.25} and
+    \samp{pUB=0.75}). This metric gives an idea on the ability to
+    characterize the increasing part of the dose-response curve
+    (\code{P(EDp)}). 
+    \item Length of the confidence interval for a target dose (TD or
+    EDp). This is calculated by taking the difference of the dUB and dLB
+    quantile of the empirical distribution of the target dose estimates.
+    (\code{lengthTDCI} and \code{lengthEDpCI}). Available via the summary method.
+  }
+    
+  A plot method exists to summarize dose-response and dose estimations
+  graphically.
+}
+\usage{
+planMod(model, altModels, n, sigma, S, doses, asyApprox = TRUE,
+        simulation = FALSE, alpha = 0.025, tau = 0, p = 0.5,
+        pLB = 0.25, pUB = 0.75, nSim = 100, cores = 1,
+        showSimProgress = TRUE, bnds, addArgs = NULL)
+
+\method{plot}{planMod}(x, type = c("dose-response", "ED", "TD"),
+     p, Delta, direction, placAdj = FALSE,
+     xlab, ylab, ...)
+
+\method{summary}{planMod}(object, digits = 3, len = 101,
+        Delta, direction = c("increasing", "decreasing"),
+        p, dLB = 0.05, dUB = 0.95, ...)
+
+}
+\arguments{
+  \item{model}{
+    Character vector determining the dose-response model(s) to be used
+    for fitting the data.  When more than one dose-response model is
+    provided the best fitting model is chosen using the AIC. Built-in
+    models are "linlog", "linear", "quadratic", "emax", "exponential",
+    "sigEmax", "betaMod" and "logistic" (see \link{drmodels}).
+}
+  \item{altModels}{
+    An object of class \samp{Mods}, defining the true mean vectors under which
+    operating characteristics should be calculated.
+  }
+\item{n, sigma, S}{
+    Either a vector \samp{n} and \samp{sigma} or \samp{S} need to be
+    specified.  When \samp{n} and \samp{sigma} are specified it is
+    assumed computations are made for a normal homoscedastic ANOVA model
+    with group sample sizes given by \samp{n} and residual standard
+    deviation \samp{sigma}, i.e. the covariance matrix used for the
+    estimates is thus \code{sigma^2*diag(1/n)} and the degrees of
+    freedom are calculated as \code{sum(n)-nrow(contMat)}. When a single
+    number is specified for \samp{n} it is assumed this is the sample
+    size per group and balanced allocations are used.\cr
+
+    When \samp{S} is specified this will be used as covariance matrix
+    for the estimates.
+  }
+  \item{doses}{
+    Doses to use
+}
+  \item{asyApprox, simulation}{
+    Logicals determining, whether asymptotic approximations or
+    simulations should be calculated. If multiple models are specified
+    in \samp{model} asymptotic approximations are not available.
+}
+\item{alpha, tau}{
+  Significance level for the one-sided confidence interval for
+  model-based contrast of best dose vs placebo. Tau is the threshold to
+  compare the confidence interval limit to. CI(MaxDCont) gives the
+  percentage that the bound of the confidence interval was larger than
+  tau.
+}
+\item{p, pLB, pUB}{
+  p determines the type of EDp to estimate. pLB and pUB define the
+  bounds for the EDp estimate. The performance metric Pr(Id-ED) gives
+  the percentage that the estimated EDp was within the true EDpLB and
+  EDpUB.
+}
+\item{nSim}{
+  Number of simulations
+}
+\item{cores}{
+  Number of cores to use for simulations. By default 1 cores is used,
+  note that cores > 1 will have no effect Windows, as the mclapply
+  function is used internally.
+}
+\item{showSimProgress}{
+  In case of simulations show the progress using a progress-bar.
+}
+\item{bnds}{
+  Bounds for non-linear parameters. This needs to be a list with list
+  entries corresponding to the selected bounds. The names of the list
+  entries need to correspond to the model names. The
+  \code{\link{defBnds}} function provides the default selection.
+}
+\item{addArgs}{
+  See the corresponding argument in function
+  \code{\link{fitMod}}. This argument is directly passed to
+  fitMod.
+}
+\item{x}{
+  An object of class planMod
+}
+\item{type}{
+  Type of plot to produce
+}
+\item{Delta, direction}{
+  Additional arguments determining what dose estimate to plot, when
+  \samp{type = "ED"} or \samp{type = "TD"}
+}
+\item{placAdj}{
+  When \samp{type = "dose-response"}, this determines whether
+  dose-response estimates are shown on placebo-adjusted or original
+  scale
+}
+\item{xlab, ylab}{
+  Labels for the plot (ylab only applies for \samp{type = "dose-response"})
+}
+\item{len}{
+  Number of equally spaced points to determine the mean-squared error on
+  a grid (cRMSE).
+}
+\item{dLB, dUB}{
+  Which quantiles to use for calculation of \code{lengthTDCI}
+  and \code{lengthEDpCI}. By default dLB = 0.05 and dUB = 0.95,
+  so that this corresponds to a 90\% interval.
+}
+\item{object, digits}{
+  object: A planMod object. digits: Digits in summary output
+}
+\item{...}{
+  Additional arguments (currently ignored)
+}
+
+}
+\references{
+  TBD
+}
+\author{
+  Bjoern Bornkamp
+}
+
+\seealso{
+  \code{\link{fitMod}}
+}
+\examples{
+\dontrun{
+doses <- c(0,10,25,50,100,150)
+fmodels <- Mods(linear = NULL, emax = 25,
+                logistic = c(50, 10.88111), exponential= 85,
+                betaMod=rbind(c(0.33,2.31),c(1.39,1.39)),
+                doses = doses, addArgs=list(scal = 200),
+                placEff = 0, maxEff = 0.4)
+sigma <- 1
+n <- rep(62, 6)*2
+
+model <- "quadratic"
+pObj <- planMod(model, fmodels, n, sigma, doses=doses,
+               simulation = TRUE, 
+               alpha = 0.025, nSim = 200, 
+               p = 0.5, pLB = 0.25, pUB = 0.75)
+print(pObj)
+summary(pObj, p = 0.5, Delta = 0.3)
+plot(pObj)
+plot(pObj, type = "TD", Delta=0.3, direction = "increasing")
+plot(pObj, type = "ED", p = 0.5)
+}
+}

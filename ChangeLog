@@ -1,3 +1,11 @@
+2015-10-31 Bjoern Bornkamp (version 0.9-13)
+      * projPrBnds now also covers the case when parameter was exactly
+	on the bound
+      * bFitMod doseNam changes
+      * critVal Added self-written qmvt function qmvtDF	(as mvtnorm::qmvt
+	got instable on Windows 32bit from release 1.0-3), hopefully
+	superfluous once mvtnorm fixes this.
+	
 2014-09-28 Bjoern Bornkamp (version 0.9-12)
       * glycobrom dataset: Included column for number of observations
 	per treatment.

@@ -53,14 +53,12 @@ projPrBnds <- function(par, lbnd, ubnd){
     rng <- ubnd-lbnd
     if(!is.finite(rng))
       rng <- 5
-    if(par < lbnd)
+    if(par <= lbnd)
       return(lbnd+0.05*rng)
-    if(par > ubnd)
+    if(par >= ubnd)
       return(ubnd-0.05*rng)
   }
 }
-
-
 
 bFitMod <- function(dose, resp, model, S, placAdj = FALSE,
                     type = c("Bayes", "bootstrap"),
@@ -131,11 +129,13 @@ bFitMod <- function(dose, resp, model, S, placAdj = FALSE,
   if(placAdj & model != "linInt")
     nams <- nams[-1]
   colnames(out$samples) <- nams
-  attr(out, "data") <- list(dose = dose, resp = resp, S = S)
   attr(out, "model") <- model
-  dose <- as.list(match.call())$dose
-  resp <- as.list(match.call())$resp
-  attr(out, "doseRespNam") <- as.character(c(dose, resp))
+  lst <- list(dose, resp, S)
+  doseNam <- as.list(match.call())$dose
+  respNam <- as.list(match.call())$resp
+  attr(out, "doseRespNam") <- as.character(c(doseNam, respNam))
+  names(lst) <- c(doseNam, respNam, "S")
+  attr(out, "data") <- lst
   attr(out, "type") <- type
   attr(out, "call") <- match.call()
   attr(out, "placAdj") <- placAdj
@@ -306,8 +306,10 @@ ess.mcmc <- function(series, lag.max = NULL){
 
 print.bFitMod <- function(x, digits = 3, ...){
   ## print brief summary of MCMC samples
-  resp <- attr(x, "data")$resp
-  names(resp) <- attr(x, "data")$dose
+  doseNam <- attr(x, "doseRespNam")[1]
+  respNam <- attr(x, "doseRespNam")[2]
+  resp <- attr(x, "data")[[respNam]]
+  names(resp) <- attr(x, "data")[[doseNam]]
   cat("Dose Response Model\n\n")
   cat(paste("Model:", attr(x, "model")), "\n\n")
   if(attr(x, "type") == "Bayes"){
@@ -334,17 +336,18 @@ predict.bFitMod <- function(object, predType = c("full-model", "effect-curve"),
                             summaryFct = function(x) quantile(x, probs = c(0.025, 0.25, 0.5, 0.75, 0.975)),
                             doseSeq = NULL, lenSeq = 101, ...){
   predType <- match.arg(predType)
+  doseNam <- attr(object, "doseRespNam")[1]
   if (is.null(doseSeq)) {
-    doseSeq <- seq(0, max(attr(object, "data")$dose), length = lenSeq)
+    doseSeq <- seq(0, max(attr(object, "data")[[doseNam]]), length = lenSeq)
   }
   model <- attr(object, "model")
   scal <- attr(object, "scal")
   off <- attr(object, "off")
   placAdj <- attr(object, "placAdj")
   if(placAdj){
-    nodes <- c(0,attr(object, "data")$dose)
+    nodes <- c(0,attr(object, "data")[[doseNam]])
   } else {
-    nodes <- attr(object, "data")$dose    
+    nodes <- attr(object, "data")[[doseNam]]
   }
   out <- predSamples(samples = object$samples, doseSeq = doseSeq,
                      placAdj = placAdj, model = model, scal = scal,
@@ -412,10 +415,10 @@ plot.bFitMod <- function (x, plotType = c("dr-curve", "effect-curve"),
                           level = 0.95, lenDose = 201, ...){
   addArgs <- list(...)
   plotType <- match.arg(plotType)
-  dose <- attr(x, "data")$dose
-  resp <- attr(x, "data")$resp
   doseNam <- attr(x, "doseRespNam")[1]
   respNam <- attr(x, "doseRespNam")[2]
+  dose <- attr(x, "data")[[doseNam]]
+  resp <- attr(x, "data")[[respNam]]
   doseSeq <- seq(0, max(dose), length = lenDose)
   plotData <- match.arg(plotData)
   placAdj <- attr(x, "placAdj")

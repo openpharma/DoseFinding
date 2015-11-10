@@ -1,4 +1,12 @@
 import(mvtnorm, lattice)
+importFrom("grDevices", "rgb")
+importFrom("graphics", "lines", "plot", "points")
+importFrom("stats", "AIC", "IQR", "acf", "approx", "as.formula",
+           "binomial", "coef", "cov2cor", "glm", "lm", "logLik",
+           "model.matrix", "na.fail", "nlminb", "optim", "optimize",
+           "pnorm", "predict", "qnorm", "qt", "quantile", "quasi",
+           "sd", "terms", "uniroot", "var", "vcov")
+importFrom("utils", "setTxtProgressBar", "txtProgressBar")
 
 export(fitMod, defBnds, bFitMod, MCTtest, MCPMod,
        betaMod, quadratic, emax, exponential,linear, linlog, logistic, sigEmax, linInt,
@@ -10,7 +18,6 @@ export(fitMod, defBnds, bFitMod, MCTtest, MCPMod,
        optContr,
        powMCT, sampSize, sampSizeMCT, targN, powN, planMod,
        optDesign, calcCrit, rndDesign)
-
 S3method(predict, MCPMod)
 S3method(print, MCPMod)
 S3method(print, sampSize)

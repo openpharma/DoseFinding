@@ -1,3 +1,8 @@
+2016-02-02 Bjoern Bornkamp (version 0.9-14)
+      * planMod.Rd Documentation slightly extended.
+      * qmvtDF moved back to qmvt function from mvtnorm, as problems
+	in mvtnorm are fixed.
+
 2015-10-31 Bjoern Bornkamp (version 0.9-13)
       * projPrBnds now also covers the case when parameter was exactly
 	on the bound

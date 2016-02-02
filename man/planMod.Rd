@@ -8,33 +8,38 @@
 \description{
   This function evaluates, the performance metrics for fitting
   dose-response models (using asymptotic approximations or
-  simulations). Metrics are
+  simulations). Note that some metrics are available via the print
+  method and others only via the summary method applied to planMod
+  objects. The implemented metrics are
   \itemize{
     \item Root of the mean-squared error to estimate the placebo-adjusted
-    dose-response averaged over the used dose-levels
-    (\code{dRMSE}). 
+    dose-response averaged over the used dose-levels, i.e. a rather
+    discrete set (\code{dRMSE}). Available via the print method of planMod objects.
     \item Root of the mean-squared error to estimate the
     placebo-adjusted dose-response (\code{cRMSE})
     averaged over fine (almost continuous) grid at 101 equally spaced
-    values between placebo and the maximum dose. Available via the
-    summary method.
+    values between placebo and the maximum dose. NOTE: Available via the
+    summary method applied to planMod objects. 
     \item Ratio of the placebo-adjusted mean-squared error (at the
     observed doses) of model-based vs ANOVA approach (\code{Eff-vs-ANOVA}). This
-    can be interpreted on the sample size scale and is available via the
-    summary method.
+    can be interpreted on the sample size scale. NOTE: Available via the
+    summary method applied to planMod objects. 
     \item Power that the (unadjusted) one-sided \samp{1-alpha} confidence interval
     comparing the dose with maximum effect vs placebo is
     larger than \samp{tau}. By default \samp{alpha = 0.025} and
-    \samp{tau = 0} (\code{Pow(maxDose)}). 
+    \samp{tau = 0} (\code{Pow(maxDose)}). Available via the print method of planMod objects.
     \item Probability that the EDp estimate is within the true [EDpLB,
     EDpUB] (by default \samp{p=0.5}, \samp{pLB=0.25} and
     \samp{pUB=0.75}). This metric gives an idea on the ability to
     characterize the increasing part of the dose-response curve
-    (\code{P(EDp)}). 
-    \item Length of the confidence interval for a target dose (TD or
+    (\code{P(EDp)}). Available via the print method of planMod objects.
+    \item Length of the quantile range for a target dose (TD or
     EDp). This is calculated by taking the difference of the dUB and dLB
-    quantile of the empirical distribution of the target dose estimates.
-    (\code{lengthTDCI} and \code{lengthEDpCI}). Available via the summary method.
+    quantile of the empirical distribution of the dose estimates.
+    (\code{lengthTDCI} and \code{lengthEDpCI}). It is NOT calculated by
+    calculating confidence interval lengths in each simulated data-set
+    and taking the mean. NOTE: Available via the
+    summary method of planMod objects. 
   }
     
   A plot method exists to summarize dose-response and dose estimations
@@ -186,6 +191,7 @@ pObj <- planMod(model, fmodels, n, sigma, doses=doses,
                alpha = 0.025, nSim = 200, 
                p = 0.5, pLB = 0.25, pUB = 0.75)
 print(pObj)
+## to get additional metrics (e.g. Eff-vs-ANOVA, cRMSE, lengthTDCI, ...)
 summary(pObj, p = 0.5, Delta = 0.3)
 plot(pObj)
 plot(pObj, type = "TD", Delta=0.3, direction = "increasing")

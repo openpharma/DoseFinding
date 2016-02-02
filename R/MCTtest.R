@@ -129,11 +129,9 @@ critVal <- function(corMat, alpha = 0.025, df = NULL,
   }
   if(!is.finite(df)) # normal case
     df <- 0
-  ## qmvtCall <- c(list(1-alpha, tail = tail, df = df, corr = corMat,
-  ##               algorithm = ctrl, interval = ctrl$interval))
-  ## do.call("qmvt", qmvtCall)$quantile
-  qmvtDF(1-alpha, tail = tail, df=df, corr=corMat,
-         algorithm = ctrl)
+  qmvtCall <- c(list(1-alpha, tail = tail, df = df, corr = corMat,
+                algorithm = ctrl, interval = ctrl$interval))
+  do.call("qmvt", qmvtCall)$quantile
 }
 
 checkAnalyArgs <- function(dose, resp, data, S, type,

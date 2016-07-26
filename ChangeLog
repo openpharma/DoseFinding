@@ -1,3 +1,7 @@
+2016-07-26 Bjoern Bornkamp (version 0.9-15)
+      * Mods Added parameter names for all models in the output list
+        (thanks to Dong Xi for catching this)	
+
 2016-02-02 Bjoern Bornkamp (version 0.9-14)
       * planMod.Rd Documentation slightly extended.
       * qmvtDF moved back to qmvt function from mvtnorm, as problems

@@ -97,6 +97,7 @@ plot(fmodels)
 contMat <- optContr(fmodels, w = 1)
 powMCT(contMat, altModels = fmodels, n = 50, alpha = 0.05, sigma = 1)
 
+\dontrun{
 ## power under the Dunnett test
 ## contrast matrix for Dunnett test with informative names
 contMatD <- rbind(-1, diag(5))
@@ -123,6 +124,7 @@ linMat <- optContr(fmodels, doses = c(10,25,50,100,150),
                    S = V, placAdj = TRUE)
 powMCT(linMat, altModels = fmodels, placAdj=TRUE,
        alpha = 0.05, S = V, df=6*50-6) # match df with the df above
+}
 }
 
 

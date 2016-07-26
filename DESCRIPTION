@@ -1,8 +1,8 @@
 Package: DoseFinding
 Type: Package
 Title: Planning and Analyzing Dose Finding Experiments
-Version: 0.9-14
-Date: 2016-02-02
+Version: 0.9-15
+Date: 2016-07-26
 Author: Bjoern Bornkamp, Jose Pinheiro, Frank Bretz
 Depends: lattice, mvtnorm, R (>= 2.15.0)
 Suggests: numDeriv, Rsolnp, quadprog, parallel, multcomp

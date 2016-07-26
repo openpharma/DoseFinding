@@ -187,9 +187,12 @@ fullMod <-  function(models, doses, placEff, maxEff, scal, off){
         if(nmod > 1){
           Pars <- matrix(ncol=3, nrow=nmod)
           for(j in 1:length(pars)){
-            Pars[j,] <-  getLinPars(nm, doses, as.vector(pars[j]), placEff[z], maxEff[z])
+            tmp <- getLinPars(nm, doses, as.vector(pars[j]), placEff[z], maxEff[z])
+            Pars[j,] <- tmp
             z <- z+1
           }
+          colnames(Pars) <- names(tmp)
+          rownames(Pars) <- 1:length(pars)
           i <- i+1
         } else {
           Pars <-  getLinPars(nm, doses, as.vector(pars), placEff[z], maxEff[z])
@@ -200,9 +203,12 @@ fullMod <-  function(models, doses, placEff, maxEff, scal, off){
       if(is.matrix(pars)){
         Pars <- matrix(ncol=4, nrow=nrow(pars))
         for(j in 1:nrow(pars)){
-          Pars[j,] <-  getLinPars(nm, doses, as.vector(pars[j,]), placEff[z], maxEff[z])
+          tmp <- getLinPars(nm, doses, as.vector(pars[j,]), placEff[z], maxEff[z])
+          Pars[j,] <- tmp
           z <- z+1
         }
+        colnames(Pars) <- names(tmp)
+        rownames(Pars) <- 1:nrow(pars)
         i <- i+1
       } else {
         Pars <-  getLinPars(nm, doses, as.vector(pars), placEff[z], maxEff[z]); i <- i+1; z <- z+1
@@ -215,9 +221,12 @@ fullMod <-  function(models, doses, placEff, maxEff, scal, off){
           Pars[j,] <-  getLinPars(nm, doses, as.vector(pars[j,]), placEff[z], maxEff[z])
           z <- z+1
         }
+        colnames(Pars) <- paste("d", doses, sep="")
+        rownames(Pars) <- 1:nrow(pars)
         i <- i+1
       } else {
-        Pars <-  getLinPars(nm, doses, as.vector(pars), placEff[z], maxEff[z]); i <- i+1; z <- z+1
+        Pars <- getLinPars(nm, doses, as.vector(pars), placEff[z], maxEff[z]); i <- i+1; z <- z+1
+        names(Pars) <- paste("d", doses, sep="")
       }
     }
     complMod[[i]] <- Pars
@@ -903,36 +912,36 @@ getResp <- function(fmodels, doses){
 getLinPars <- function(model, doses, guesstim, placEff, maxEff, off, scal){
   if(model == "linear"){
     e1 <- maxEff/max(doses)
-    return(c(placEff, e1))
+    return(c(e0=placEff, delta=e1))
   }
   if(model == "linlog"){
     e1 <- maxEff/(log(max(doses) + off) - log(off))
-    return(c(placEff-e1*log(off), e1))
+    return(c(e0=(placEff-e1*log(off)), delta=e1))
   }
   if(model == "quadratic"){
     dMax <- 1/(-2*guesstim)
     b1 <- maxEff/(dMax + guesstim*dMax^2)
     b2 <- guesstim * b1
-    return(c(placEff, b1, b2))
+    return(c(e0=placEff, b1=b1, b2=b2))
   }
   if(model == "emax"){
     emax.p <- maxEff * (guesstim + max(doses))/max(doses)
-    return(c(placEff, emax.p, guesstim))
+    return(c(e0=placEff, eMax=emax.p, ed50=guesstim))
   }
   if(model == "exponential"){
     e1 <- maxEff/(exp(max(doses)/guesstim) - 1)
     e0 <- placEff
-    return(c(e0, e1, guesstim))
+    return(c(e0=e0, e1=e1, delta=guesstim))
   }
   if(model == "logistic"){
     emax.p <- maxEff/
       (logistic(max(doses),0,1, guesstim[1], guesstim[2]) -
        logistic(0, 0, 1, guesstim[1], guesstim[2]))
     e0 <- placEff-emax.p*logistic(0,0,1,guesstim[1], guesstim[2])
-    return(c(e0, emax.p, guesstim[1], guesstim[2]))
+    return(c(e0=e0, eMax=emax.p, ed50=guesstim[1], delta=guesstim[2]))
   }
   if(model == "betaMod"){
-    return(c(placEff, maxEff, guesstim))
+    return(c(e0=placEff, eMax=maxEff, delta1=guesstim[1], delta2=guesstim[2]))
   }
   if(model == "sigEmax"){
     ed50 <- guesstim[1]

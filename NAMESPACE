@@ -55,5 +55,5 @@ S3method(print, planMod)
 S3method(summary, planMod)
 S3method(print, summary.planMod)
 
-useDynLib(DoseFinding)
+useDynLib(DoseFinding, .registration = TRUE)
 

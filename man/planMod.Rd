@@ -52,12 +52,10 @@ planMod(model, altModels, n, sigma, S, doses, asyApprox = TRUE,
         showSimProgress = TRUE, bnds, addArgs = NULL)
 
 \method{plot}{planMod}(x, type = c("dose-response", "ED", "TD"),
-     p, Delta, direction, placAdj = FALSE,
-     xlab, ylab, ...)
+     p, Delta, placAdj = FALSE, xlab, ylab, ...)
 
 \method{summary}{planMod}(object, digits = 3, len = 101,
-        Delta, direction = c("increasing", "decreasing"),
-        p, dLB = 0.05, dUB = 0.95, ...)
+        Delta, p, dLB = 0.05, dUB = 0.95, ...)
 
 }
 \arguments{
@@ -135,7 +133,7 @@ planMod(model, altModels, n, sigma, S, doses, asyApprox = TRUE,
 \item{type}{
   Type of plot to produce
 }
-\item{Delta, direction}{
+\item{Delta}{
   Additional arguments determining what dose estimate to plot, when
   \samp{type = "ED"} or \samp{type = "TD"}
 }
@@ -194,7 +192,7 @@ print(pObj)
 ## to get additional metrics (e.g. Eff-vs-ANOVA, cRMSE, lengthTDCI, ...)
 summary(pObj, p = 0.5, Delta = 0.3)
 plot(pObj)
-plot(pObj, type = "TD", Delta=0.3, direction = "increasing")
+plot(pObj, type = "TD", Delta=0.3)
 plot(pObj, type = "ED", p = 0.5)
 }
 }

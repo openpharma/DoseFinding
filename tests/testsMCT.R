@@ -250,3 +250,27 @@ vc2 <- vc[ord,ord]
 doses2 <- doses[ord]
 fitMod(doses2, drEst2, S=vc2, model = "sigEmax", type = "general")
 MCTtest(doses2, drEst2, S = vc2, models = modlist, type = "general", df = Inf)
+
+########################################################################
+## catch cases where mvtnorm does not calculate result due to non-psd
+## covariance matrix
+doses<-c(0,10,20,40)
+exm1<-0.15
+exm2<-c(0.05,5)
+expo<-0.2
+quad<--0.6
+beta<-c(0.05,4)
+data.sim <- structure(list(X = structure(1:4, .Label = c("0", "10", "20", "40"), class = "factor"),
+                           dose = c(0L, 10L, 20L, 40L),
+                           Estimate = c(0.266942236, 3.792703657, 14.69084734, 17.71179102),
+                           Cov1 = c(3.685607913, 0.595285049, 0.651289991, 0.742901538),
+                           Cov2 = c(0.595285049, 3.31255546, 0.47843908, 0.545737127),
+                           Cov3 = c(0.651289991, 0.47843908, 3.398708786, 0.597080557),
+                           Cov4 = c(0.742901538, 0.545737127, 0.597080557, 3.556324648)),
+                      class = "data.frame", row.names = c(NA, -4L))
+mu<-data.sim[,3]
+S<-data.matrix(data.sim[,4:7],rownames.force = NA)
+models2<-Mods(doses=doses, emax=exm1,sigEmax=exm2,linear=NULL,exponential=expo,quadratic=quad,betaMod=beta)
+tst <- MCTtest(dose=doses,resp=mu,models = models2,S=S,type="general")
+## p-value of linear model should be NA
+is.na(attr(tst$tStat, "pVal")[3])

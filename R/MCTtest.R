@@ -65,8 +65,8 @@ MCTtest <- function(dose, resp, data = NULL, models, S = NULL,
     attr(critV, "Calc") <- FALSE
   }
   if(pVal){
-    pVals <- pValues(contMat, corMat, alpha, df,
-                     tStat, alternative, mvtcontrol)
+    pVals <- pValues(contMat, corMat, df, tStat,
+                     alternative, mvtcontrol)
   }
   res <- list(contMat = contMat, corMat = corMat, tStat = tStat,
               alpha = alpha, alternative = alternative[1])
@@ -194,8 +194,8 @@ checkAnalyArgs <- function(dose, resp, data, S, type,
               doseNam=doseNam, respNam=respNam))
 }
 
-pValues <- function(contMat, corMat, alpha = 0.025, df,
-                    tStat, alternative = c("one.sided", "two.sided"),
+pValues <- function(contMat, corMat, df, tStat,
+                    alternative = c("one.sided", "two.sided"),
                     control = mvtnorm.control()){
   ## function to calculate p-values
   nD <- nrow(contMat)
@@ -222,8 +222,16 @@ pValues <- function(contMat, corMat, alpha = 0.025, df,
                   two.sided = matrix(rep(tStat, each = nMod), nrow = nMod))
   pVals <- numeric(nMod)
   for(i in 1:nMod){
-    pVals[i] <-   1 - pmvt(lower[,i], upper[,i], df = df,
-                           corr = corMat, algorithm = ctrl)
+    tmp <- 1 - pmvt(lower[,i], upper[,i], df = df,
+                    corr = corMat, algorithm = ctrl)
+    pVals[i] <- tmp
+    if(attr(tmp,"msg") != "Normal Completion"){
+      warning(sprintf("Warning from mvtnorm::pmvt: %s.", attr(tmp, "msg")))
+      if(attr(tmp, "msg") == "Covariance matrix not positive semidefinite"){
+        warning("Setting calculated p-value to NA")
+        pVals[i] <- NA
+      }
+    }
   }
   pVals
 }

@@ -146,7 +146,10 @@ Mods <- function(..., doses, placEff = 0, maxEff, direction = c("increasing", "d
   }
   attr(modL, "placEff") <- placEff
   attr(modL, "maxEff") <- maxEff
-  attr(modL, "direction") <- ifelse(maxEff > 0, "increasing", "decreasing")
+  direc <- unique(ifelse(maxEff > 0, "increasing", "decreasing"))
+  if(length(direc) > 1)
+    stop("Inconsistent direction of effect specified in maxEff")
+  attr(modL, "direction") <- direc
   class(modL) <- "Mods"
   attr(modL, "doses") <- doses
   attr(modL, "scal") <- lst$scal

@@ -144,3 +144,18 @@
 ## plot(pp)
 ## plot(pp, type = "TD", Delta=0.3, direction = "i")
 ## plot(pp, type = "ED", p = 0.5)
+
+## ########################################################################
+## ## test 5: C's example
+## models <- Mods(linear = NULL, linlog = NULL, emax = c(8, 10),
+##                sigEmax = c(10, 2),
+##                doses = c(0, 10,20, 50, 100),
+##                placEff=0, maxEff=-2)
+## pObj <- planMod("sigEmax",models,n=100,sigma=1.2,
+##                 simulation=TRUE,nSim=100, cores=4)
+## summary(pObj,Delta=-1.1) ## this should fail
+## summary(pObj,Delta=1.1)
+## plot(pObj)
+## plot(pObj, type = "TD", Delta=-1.1) ## this should fail
+## plot(pObj, type = "TD", Delta=1.1)
+## plot(pObj, type = "ED", p=0.5)

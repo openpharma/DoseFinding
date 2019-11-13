@@ -300,21 +300,21 @@ print.planMod <- function(x, digits = 3,...){
 }
 
 summary.planMod <- function(object, digits = 3, len = 101,
-                            Delta=NULL, direction = c("increasing", "decreasing"),
+                            Delta=NULL, 
                             p=NULL, dLB = 0.05, dUB = 0.95, ...){
   class(object) <- "summary.planMod"
-  print(object, digits, len, Delta, direction,
-        p, dLB, dUB, ...)
+  print(object, digits, len, Delta, p, dLB, dUB, ...)
 }
 
 print.summary.planMod <- function(x, digits = 3, len = 101,
-                                  Delta=NULL, direction = c("increasing", "decreasing"),
+                                  Delta=NULL, 
                                   p=NULL, dLB = 0.05, dUB = 0.95, ...){
   ## provide more information than print method
   modelSel <- attr(x$sim, "modelSel") 
   model <- attr(x, "model")
   coefs <- attr(x$sim, "coefs")
   altModels <- attr(x, "altModels")
+  direction <- attr(altModels, "direction")
   doses <- attr(x, "doses")
   S <- attr(x, "S")
   off <- attr(x, "off")
@@ -336,7 +336,6 @@ print.summary.planMod <- function(x, digits = 3, len = 101,
   colnames(out) <- c("Eff-vs-ANOVA", "cRMSE", "lengthTDCI", "P(no TD)", "lengthEDCI")
   rownames(out) <- colnames(muMat)
   if(!is.null(Delta)){
-    direction <- match.arg(direction)
     tds <- getSimEst(x, "TD", Delta=Delta, direction=direction)
   }
   if(!is.null(p)){
@@ -386,9 +385,12 @@ getSimEst <- function(x, type = c("dose-response", "ED", "TD"),
   doses <- attr(x, "doses")
   maxD <- max(doses)
   type <- match.arg(type)
-  if(type == "TD" & missing(direction))
-    stop("need direction for TD calculation")
-
+  if(type == "TD"){
+    if(missing(direction))
+      stop("need direction for TD calculation")
+    if(Delta <= 0)
+      stop("\"Delta\" needs to be > 0")
+  }
   out <- vector("list", nAlt)
   for(i in 1:nAlt){
     ind <- matrix(ncol = length(model), nrow = nSim)
@@ -435,8 +437,9 @@ getSimEst <- function(x, type = c("dose-response", "ED", "TD"),
 }
   
 
-plotDoseSims <- function(x, type = c("ED", "TD"), p, Delta, direction, xlab){
+plotDoseSims <- function(x, type = c("ED", "TD"), p, Delta, xlab){
   altMods <- attr(x, "altModels")
+  direction <- attr(altMods, "direction")
   if(type == "ED"){
     out <- getSimEst(x, "ED", p=p)
     trueDoses <- ED(altMods, p=p, EDtype="continuous")
@@ -541,13 +544,12 @@ plotDRSims <- function(x, placAdj = FALSE, xlab, ylab){
 
 
 plot.planMod <- function(x, type = c("dose-response", "ED", "TD"),
-                         p, Delta, direction, placAdj = FALSE,
+                         p, Delta, placAdj = FALSE,
                          xlab = "Dose", ylab = "", ...){
   type <- match.arg(type)
   if(type == "dose-response"){
     plotDRSims(x, placAdj = placAdj, xlab=xlab, ylab = ylab)
   } else {
-    plotDoseSims(x, type=type, p=p, Delta=Delta,
-                 direction = direction, xlab = xlab)
+    plotDoseSims(x, type=type, p=p, Delta=Delta, xlab = xlab)
   }
 }

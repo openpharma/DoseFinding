@@ -197,7 +197,7 @@ plot(fmodels, plotTD = TRUE, Delta = 0.3)
 
 ## example for specifying all model parameters (fullMod=TRUE)
 fmods <- Mods(emax = c(0, 1, 0.1), linear = cbind(c(-0.4,0), c(0.2,0.1)),
-              sigEmax = c(0, -1.1, 0.5, 3),
+              sigEmax = c(0, 1.1, 0.5, 3),
               doses = 0:4, fullMod = TRUE)
 getResp(fmods, doses=seq(0,4,length=11))
 ## calculate doses giving an improvement of 0.3 over placebo

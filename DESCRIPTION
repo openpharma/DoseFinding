@@ -2,9 +2,9 @@ Package: DoseFinding
 Type: Package
 Title: Planning and Analyzing Dose Finding Experiments
 Version: 0.9-17
-Date: 2019-11-13
+Date: 2019-11-15
 Authors@R: c(
-   person("Bjoern", "Bornkamp", email = "bbknmp@gmail.com", comment = c(ORCID = "0000-0002-6294-8185"), role = c("aut", "cre")),
+   person("Bjoern", "Bornkamp", email = "bbnkmp@gmail.com", comment = c(ORCID = "0000-0002-6294-8185"), role = c("aut", "cre")),
    person("Jose", "Pinheiro", role = "ctb"),
    person("Frank", "Bretz", role = "ctb"))
 Depends: lattice, mvtnorm, R (>= 2.15.0)

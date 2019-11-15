@@ -1,4 +1,4 @@
-## ## commented out for time (and dependency reasons)
+## commented out for time (and dependency reasons)
 require("DoseFinding")
 if(!(require("quadprog") & require("Rsolnp")))
   stop("need packages quadprog and Rsolnp to run these tests")
@@ -51,7 +51,7 @@ if(!(require("quadprog") & require("Rsolnp")))
   
 ##   ## unconstrained solution
 ##   ones <- rep(1,kk)
-##   unConst <- solve(S)%*%(mu - t(mu)%*%solve(S)%*%ones/(t(ones)%*%solve(S)%*%ones))
+##   unConst <- solve(S)%*%(mu - c(t(mu)%*%solve(S)%*%ones/(t(ones)%*%solve(S)%*%ones)))
 ##   cont1 <- getStand(unConst)
   
 ##   ## function from DoseFinding package

@@ -193,6 +193,10 @@ Model-based dose finding under model uncertainty using general
 parametric models, \emph{Statistics in Medicine}, \bold{33},
 1646--1661
 
+Schorning, K., Bornkamp, B., Bretz, F., & Dette, H. (2016). Model
+selection versus model averaging in dose finding
+studies. \emph{Statistics in Medicine}, \bold{35}, 4021--4040
+
 Bretz, F., Pinheiro, J. C., and Branson, M. (2004), On a hybrid method
 in dose-finding studies, \emph{Methods of Information in Medicine},
 \bold{43}, 457--460

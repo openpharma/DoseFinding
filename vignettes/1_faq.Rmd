@@ -1,0 +1,152 @@
+---
+title: "Frequently Asked Questions"
+output: rmarkdown::html_vignette
+bibliography: refs.bib
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# What type of study designs can be handled with MCP-Mod?
+
+# What type of response can be handled with MCP-Mod?
+
+# How many doses do we need to perform MCP-Mod?
+
+# How to determine the doses to be used for a trial using MCP-Mod?
+
+# Can MCP-Mod be used in trials without placebo control?
+
+# How to set up the candidate set of models?
+
+Provide text but also provide example code for plotting candidate
+models (maybe use NVA example mentioned in the analysis Rmd), and
+observing contrasts and correlation matrix. Refer to sample size Rmd
+on evaluating power loss in case a model was mis-specified (using
+powMCT function with alternative models different from those used to
+define the candidate models).
+
+Some text that could be used here...
+
+------ 
+
+From interal MCP-Mod guidance: This section deals with selection of
+the model classes (Emax, exponential, etc) but also with selection of
+the guesstimates for the model parameters within the model class. Note
+that guesstimates are needed for the MCP step of the MCP-Mod
+methodology (to derive the optimal contrasts), but are not utilized in
+the Mod part. As a rule of thumb, typically a set of 3-7 dose-response
+shapes (here a dose-response shape refers to the combination of
+dose-response model and guesstimate) corresponding to 2-4
+dose-response models are appropriate. So that multiple dose-response
+shapes (parameter guesstimates) might be used for each dose-response
+model. For large uncertainty at the design stage a broad candidate set
+should be used, while in other situations a more narrow candidate set
+of models is appropriate. Below we provide a list of considerations to
+take into account when setting up the candidate set of models
+
+•	Existing information
+o	Information might be available on the dose-response curve for a
+similar compound in the same indication or the same compound in a
+different indication.
+
+o	A dose-exposure-response (PK/PD) model might have been developed
+based on earlier data (e.g. data from the PoC study). This can be used
+to predict the dose-response curve at a specific time-point.
+
+• Note that if substantial prior knowledge about the dose-response
+model is available and there is a sufficient number of doses, the
+candidate set could consist of only one dose-response model (such as
+the four-parameter sigmoid Emax model) that is flexible enough to
+cover a variety of different dose-response shapes at the MCP
+step. General experience suggests that an Emax type model should
+always be included in the candidate set of models. A meta-analysis of
+the dose-response curves for small molecules developed in the past few
+years at Pfizer showed, that in many situations the monotonic Emax
+model, or the sigmoid Emax model is able to describe the data
+adequately (see Thomas et al. 2015).
+
+•	Statistical considerations
+o	Model fitting: If only a few active doses are feasible to be used
+in a trial, it is difficult to fit the more complex models, such as
+the sigmoid Emax or the beta model with four parameters in a trial
+with three active doses. Such models would not be included in the
+candidate set and one would rather use more dose-response models with
+fewer parameters to obtain an adequate breadth of the candidate set.
+
+o Consequence of model misspecification: Omission of the “correct”
+dose-response shape from the set of candidate models does not
+necessarily have severe consequences, if other models can pick up the
+omitted shape. This can be evaluated for the MCP part (impact on
+power) using explicit calculations (see Pinheiro et al. (2006)) and
+for the Mod part (impact on estimation precision for dose-response and
+dose estimation) using simulations and the DoseFinding R package.
+
+o Impact on sample size: Using a very broad and flexible set of
+candidate models does not come “for free”. Generally the critical
+value for the MCP test will increase, in particular if many different
+candidate shapes are included, and consequently also the sample
+size. The actual impact will have to be investigated on a case-by-case
+basis. A similar trade-off exists in terms of dose-response model
+fitting, as a broader candidate set will decrease potential bias (in
+the case of a mis-specified model) but increase the variance of the
+estimates.
+
+o Umbrella-shaped dose-response curve: While biological
+exposure-response relationships are often monotonic, down-turns of the
+clinical dose-response relationship at higher doses have been
+observed. For example if due to adverse events more patients will
+discontinue treatment with higher doses of the drug, this might lead
+to a decrease in clinical efficacy at higher doses. If a treatment
+policy or composite estimand stratey is used for treatment
+discontinuation. We recommend to consider the inclusion of an
+umbrella-shaped dose-response model in the candidate set, if it is a
+plausible scenario given the current information (e.g. existing
+precedence for the compound class or indication, or based on
+mechanistic considerations).
+
+o Based on simulation studies utilizing the AIC, it has been observed
+that the linear model (as it has fewest parameters) is often too
+strongly favored (with the BIC this trend is even stronger), see
+results in Schorning et al (but also TUDO paper currently under
+review). The recommendation would be to exclude the linear model
+usually from the candidate set, the Emax and exponential model (and
+also the sigmoid Emax model) both can also approximate a linear shape
+well in the limiting case.
+
+o In case of for example 4 or 3 active doses it is challenging to fit
+sigmoid Emax (and beta models). One strategy in these situations is to
+fix the Hill parameter to a given value (for example 3 and/or 5), and
+then use different sigmoid Emax candidate models with fixed Hill
+parameter. Model fitting can be performed with the Emax model but with
+potentiated doses.
+
+----------
+
+Candidate models can be setup using these commands. Rule of thumb: 3 - 7 dose response shapes through 2 - 4 models are
+usually sufficient. The multiple contrast test is quite robust, even if the model is mis-specified.
+What information to utilize? 
+
+* Existing information
+    + Dose-response curve for a similar compound in the same indication or the same compound in a different indication
+    + A dose exposure response (PK/PD) model might have been developed based on earlier data (e.g. data from the PoC study). This can be used to predict the dose response curve at a specific time point.
+  
+* General experience
+    + An Emax type model should always be included in the candidate set of models
+  
+* Statistical considerations
+    + If only few active doses are available, it is difficult to fit complex models, so many simpler models may be appropriate
+    + Evaluate the performance of MCP-Mod under model misspecification
+    + Important question: Inclusion of an umbrella-shaped model or not (can we exclude it at design stage)?
+
+# Which model selection criterion should be used?
+
+# How to deal with missing data?
+
+# Can MCP-Mod be used in trials with multiple treatment regimens?
+
+# What about dose-response estimates, when the MCP part (or some of the model shapes) were not significant

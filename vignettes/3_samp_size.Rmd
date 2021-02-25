@@ -1,0 +1,55 @@
+---
+title: "Sample size template for MCP-Mod for normally distributed data"
+output: rmarkdown::html_vignette
+bibliography: refs.bib
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, cache = TRUE)
+```
+
+Provide useful power plots (maybe even going beyond what exists in the
+package now, e.g. using ggplot2), that can easily be re-used for other
+purposes.
+
+# Power calculations
+
+```{r}
+library(DoseFinding)
+doses <- c(0, 12.5, 25, 50, 100)
+## define candidate models (as used in NVA study)
+mods <- Mods(emax = c(2.6, 12.5), 
+             sigEmax = c(30.5, 3.5),
+             quadratic = -0.00776,
+             placEff = 1.25, maxEff = 0.15,
+         doses = doses)
+## graphical display of candidate shapes
+plot(mods)
+```
+
+```{r}
+## optimal contrasts
+contMat <- optContr(mods, w=1)
+pows <- powN(upperN = 100, lowerN=10, step = 10,  
+             contMat = contMat,sigma = 0.34,  
+             altModels = mods, alpha = 0.05, 
+             alRatio = rep(1, 5))
+plot(pows)
+## wrapper function sampSize performs sample-size calculations
+sampSizeMCT(upperN=100, contMat = contMat, sigma = 
+            0.34, altModels=mods, power = 0.9, 
+alRatio = rep(1, 5), alpha = 0.05, sumFct = mean)
+```
+
+Here add something on power for mis-specified scenarios?
+
+
+# Sample size based on metrics other than power
+
+Refer to Chapter 12 in [@oquigley:2017] for example code on how to
+evaluate precision in dose-response and dose estimate, using the
+DoseFinding package.

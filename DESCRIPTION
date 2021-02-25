@@ -1,14 +1,14 @@
 Package: DoseFinding
 Type: Package
 Title: Planning and Analyzing Dose Finding Experiments
-Version: 0.9-17
+Version: 1.0-1
 Date: 2019-11-15
 Authors@R: c(
    person("Bjoern", "Bornkamp", email = "bbnkmp@gmail.com", comment = c(ORCID = "0000-0002-6294-8185"), role = c("aut", "cre")),
    person("Jose", "Pinheiro", role = "ctb"),
    person("Frank", "Bretz", role = "ctb"))
 Depends: lattice, mvtnorm, R (>= 2.15.0)
-Suggests: numDeriv, Rsolnp, quadprog, parallel, multcomp
+Suggests: numDeriv, Rsolnp, quadprog, parallel, multcomp, knitr, rmarkdown
 Maintainer: Bjoern Bornkamp <bbnkmp@gmail.com>
 Description: The DoseFinding package provides functions for the design and analysis
 	     of dose-finding experiments (with focus on pharmaceutical Phase
@@ -17,5 +17,6 @@ Description: The DoseFinding package provides functions for the design and analy
 	     non-Bayesian estimation), calculating optimal designs and an
 	     implementation of the MCPMod methodology (Pinheiro et al. (2014)
 	     <doi:10.1002/sim.6052>).
+VignetteBuilder: knitr
 License: GPL-3
 LazyLoad: yes

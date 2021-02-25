@@ -1,0 +1,110 @@
+---
+title: "Analysis template MCP-Mod for continuous data"
+output: rmarkdown::html_vignette
+bibliography: refs.bib
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, cache = TRUE)
+```
+
+## Background
+
+Provide background for NVA example (see PMX MCPMod training slides)
+
+```{r}
+library(DoseFinding)
+doses <- c(0, 12.5, 25, 50, 100)
+## define candidate models (as used in NVA study)
+mods <- Mods(emax = c(2.6, 12.5), 
+             sigEmax = c(30.5, 3.5),
+             quadratic = -0.00776,
+             placEff = 1.25, maxEff = 0.15,
+         doses = doses)
+## graphical display of candidate shapes
+plot(mods)
+```
+
+## Generate example data based on summary estimates
+
+```{r}
+data(glycobrom) ## NVA summary data
+head(glycobrom)
+## simulate full data based on summary estimates
+set.seed(1)
+sigma <- sqrt(0.015^2*60)
+rand <- rep(MASS::mvrnorm(60, 0, sigma^2, empirical = TRUE), 5)
+NVA <- data.frame(dose = rep(glycobrom$dose, each=60),
+                  FEV1 = rep(glycobrom$fev1, each = 60) + rand)
+head(NVA)
+```
+
+## Display optimal contrasts
+
+```{r}
+## calculate optimal contrasts
+optC <- optContr(mods, w=1)
+## display and plot
+optC
+plot(optC)
+```
+
+## Run MCP-part of analysis
+```{r}
+## run multiple contrast test
+MMtest <- MCTtest(dose, FEV1, models=mods, data=NVA)
+## basic results (edited)
+MMtest
+```
+
+Here there is a clear dose-response trend.
+
+Now repeat testing based on generalized MCP-Mod (in practice it may
+often be based on an MMRM model, see below for code).
+
+## Dose-response estimation
+
+The approach here mixes bootstrapping and model averaging. 
+Bootstrapping is performed by sampling from the multivariate normal distribution of the estimates originating from
+the first stage model (here an ANOVA model, but could also come from an MMRM model or a logistic regression, ...).
+For each bootstrapped data-set then a model selection is performed using AIC and inferences for this model saved 
+(e.g. estimated dose-response curve).
+Inference at the end is then based on these bootstrapped estimates, for example the estimate of the dose-response
+curve is the average or median of the bootstrap estimates at each dose (which then might be from different models).
+Credible intervals can be derived based on bootstrap quantiles. Inference for other quantities of interest can be
+derived similarly. As different models contribute to the bootstrap resamples, the approach is more robust than
+model selection (see also [https://doi.org/10.1002/sim.6991] for the result of extensive simulations on this topic).
+Note that contrary to the MCP step, here all model parameters are estimated.
+
+```{r}
+## first produce summary estimates
+fit <- lm(FEV1~factor(dose)-1, data=NVA)
+mn <- coef(fit)
+S <- vcov(fit)
+dose <- c(0,12.5,25,50,100)
+## create bootstrap replicates
+nSim <- 1000
+sims <- rmvnorm(nSim, mn, S)
+## now actual model fitting and selection of best model for all bootstraps
+bnds <- defBnds(max(dose)) ## boundaries assumed for model fitting (force convergence)
+pred <- matrix(nrow=nSim, ncol=101) ## will contain dr-model predictions 
+fit <- vector("list", 3)
+for(i in 1:nSim){
+  fit[[1]] <- fitMod(dose, sims[i,], model="emax", S=S,
+                     type="general", bnds=bnds$emax)
+  fit[[2]] <- fitMod(dose, sims[i,], model="sigEmax", S=S,
+                     type="general", bnds=bnds$sigEmax)
+  fit[[3]] <- fitMod(dose, sims[i,], model="quadratic", S=S,
+                     type="general", bnds=bnds$quadratic)
+  ind <- which.min(sapply(fit, gAIC)) ## choose best model according to AIC
+  pred[i,] <- predict(fit[[ind]], doseSeq=0:100, predType="ls-means")
+}
+qq <- apply(pred, 2, function(x) quantile(x, c(0.025,0.25,0.5,0.75,0.975)))
+matplot(0:100, t(qq), type="l", lty=c(3,2,1,2,3), col=1, lwd=2,
+        xlab="Dose", ylab="Mean FEV1")
+points(dose, tapply(NVA$FEV1, NVA$dose, mean), pch=19, cex=1.5)
+```

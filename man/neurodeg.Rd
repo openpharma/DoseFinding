@@ -47,7 +47,7 @@
 data(neurodeg)
 ## first fit the linear mixed effect model
 library(nlme)
-fm <- lme(resp ~ as.factor(dose):time, neurodeg, ~time|id)
+fm <- lme(resp ~ as.factor(dose):time, neurodeg, ~time|id, method = "ML")
 muH <- fixef(fm)[-1] # extract estimates
 covH <- vcov(fm)[-1,-1]
 

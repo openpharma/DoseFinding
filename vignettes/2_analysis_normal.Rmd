@@ -82,15 +82,16 @@ Note that contrary to the MCP step, here all model parameters are estimated.
 
 ```{r}
 ## first produce summary estimates
-fit <- lm(FEV1~factor(dose)-1, data=NVA)
-mn <- coef(fit)
-S <- vcov(fit)
+fitlm <- lm(FEV1~factor(dose)-1, data=NVA)
+mn <- coef(fitlm)
+S <- vcov(fitlm)
 dose <- c(0,12.5,25,50,100)
 ## create bootstrap replicates
 nSim <- 1000
 sims <- rmvnorm(nSim, mn, S)
 ## now actual model fitting and selection of best model for all bootstraps
 bnds <- defBnds(max(dose)) ## boundaries assumed for model fitting (force convergence)
+dsq <- 0:100
 pred <- matrix(nrow=nSim, ncol=101) ## will contain dr-model predictions 
 fit <- vector("list", 3)
 for(i in 1:nSim){
@@ -101,10 +102,25 @@ for(i in 1:nSim){
   fit[[3]] <- fitMod(dose, sims[i,], model="quadratic", S=S,
                      type="general", bnds=bnds$quadratic)
   ind <- which.min(sapply(fit, gAIC)) ## choose best model according to AIC
-  pred[i,] <- predict(fit[[ind]], doseSeq=0:100, predType="ls-means")
+  pred[i,] <- predict(fit[[ind]], doseSeq=dsq, predType="ls-means")
 }
-qq <- apply(pred, 2, function(x) quantile(x, c(0.025,0.25,0.5,0.75,0.975)))
-matplot(0:100, t(qq), type="l", lty=c(3,2,1,2,3), col=1, lwd=2,
-        xlab="Dose", ylab="Mean FEV1")
-points(dose, tapply(NVA$FEV1, NVA$dose, mean), pch=19, cex=1.5)
+
+pp <- apply(pred, 2, function(x) quantile(x, c(0.025,0.25,0.5,0.75,0.975)))
+pdat <- data.table(dsq = dsq, pred = pp[3,],
+                   low1 = pp[2,], high1 = pp[4,],
+                   low2 = pp[1,], high2 = pp[5,])
+qq <- qt(0.975, df=fitlm$df.residual)
+pdat2 <- data.table(dose = doses, est=mn,
+                    LB = mn - qq*sqrt(diag(S)),
+                    UB = mn + qq*sqrt(diag(S)))
+
+qplot(dsq, pred, data=pdat, geom="line", xlab = "Dose",
+      ylab="XX")+
+  geom_point(aes(dose, y=est), data=pdat2, alpha=0.5)+
+  geom_errorbar(aes(x=dose, y=est, ymin = LB, ymax = UB),
+                 data=pdat2, width=0,alpha=0.5)+
+  geom_ribbon(aes(ymin = low1, ymax = high1), alpha=0.2)+
+  geom_ribbon(aes(ymin = low2, ymax = high2), alpha=0.2)+
+  scale_y_continuous(breaks = seq(1.2,1.45,by=0.02))+
+  theme_bw()
 ```

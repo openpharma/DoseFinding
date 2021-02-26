@@ -1,3 +1,4 @@
+
 ---
 title: "Design and analysis template MCP-Mod for binary data"
 output: rmarkdown::html_vignette
@@ -27,97 +28,177 @@ analysis stage (See pitfalls pdf document)
 
 ## Background
 
-May utilize atopic dermatitis example (with fake data): Ideally with
-covariate adjustment.
+Utilize fake example (motivated by QGE in atopic dermatitis):
+Ideally with covariate adjustment.
 
-## Design considerations
+Use doses 0, 0.5, 1.5, 2.5, 4 with assumed response rates 10%, ranging
+up to 45% with 30 patients per group.
+
+## Candidate set
 
 ```{r}
 library(DoseFinding)
-doses <- c(0, 12.5, 25, 50, 100)
+doses <- c(0, 0.5, 1.5, 2.5, 4)
 ## define candidate models (as used in NVA study)
-mods <- Mods(emax = c(2.6, 12.5), 
-             sigEmax = c(30.5, 3.5),
-             quadratic = -0.00776,
+mods <- Mods(emax = c(0.25, 1), 
+             sigEmax = rbind(c(1, 3), c(2.5, 4)),
+             betaMod = c(1.1, 1.1),
              placEff = 1.25, maxEff = 0.15,
          doses = doses)
 ## graphical display of candidate shapes
 plot(mods)
 ```
 
-## Analysis considerations
+## Sample size considerations
+
+Show how to perform sample size calculations for power considerations.
+Show formula for variance on logit scale. Refer to discussion on
+nuisance parameter (no problem for Gaussian data, but problem for
+binary, refer to simulations later).
+
+## Analysis
+Generate some example data according to setting above
 
 ```{r}
-data(glycobrom) ## NVA summary data
-head(glycobrom)
-## simulate full data based on summary estimates
-set.seed(1)
-sigma <- sqrt(0.015^2*60)
-rand <- rep(MASS::mvrnorm(60, 0, sigma^2, empirical = TRUE), 5)
-NVA <- data.frame(dose = rep(glycobrom$dose, each=60),
-                  FEV1 = rep(glycobrom$fev1, each = 60) + rand)
-head(NVA)
+logit <- function(p)
+  log(p/(1-p))
+inv_logit <- function(y)
+  1/(1+exp(-y))
+doseV <- rep(doses, each = 30)
+N <- length(doseV)
+## generate covariates
+x1 <- rnorm(N, 0, 1)
+x2 <- factor(sample(c("A", "B"), N, replace=TRUE, prob=c(0.75, 0.25)))
+## assume approximately 10% placebo and 45% asymptotic response
+prob <- inv_logit(emax(doseV, -2.2, 2, 0.5) + 0.3*x1 + 0.3*(x2=="B"))
+y <- rbinom(N, 1, prob)
+dat <- data.table(y=y, dose=doseV, x1=x1, x2=x2)
 ```
 
-## Display optimal contrasts
+## Analysis considerations (assuming no covariates)
+
+Same as outline in Pinheiro et al 2014
+Perform MCP-Mod test on logit scale (contrasts applied to logits).
 
 ```{r}
-## calculate optimal contrasts
-optC <- optContr(mods, w=1)
-## display and plot
-optC
-plot(optC)
-```
-
-## Run MCP-part of analysis
-```{r}
-## run multiple contrast test
-MMtest <- MCTtest(dose, FEV1, models=mods, data=NVA)
-## basic results (edited)
-MMtest
-```
-
-Here there is a clear dose-response trend.
-
-## Dose-response estimation
-
-The approach here mixes bootstrapping and model averaging. 
-Bootstrapping is performed by sampling from the multivariate normal distribution of the estimates originating from
-the first stage model (here an ANOVA model, but could also come from an MMRM model or a logistic regression, ...).
-For each bootstrapped data-set then a model selection is performed using AIC and inferences for this model saved 
-(e.g. estimated dose-response curve).
-Inference at the end is then based on these bootstrapped estimates, for example the estimate of the dose-response
-curve is the average or median of the bootstrap estimates at each dose (which then might be from different models).
-Credible intervals can be derived based on bootstrap quantiles. Inference for other quantities of interest can be
-derived similarly. As different models contribute to the bootstrap resamples, the approach is more robust than
-model selection (see also [https://doi.org/10.1002/sim.6991] for the result of extensive simulations on this topic).
-Note that contrary to the MCP step, here all model parameters are estimated.
-
-```{r}
-## first produce summary estimates
-fit <- lm(FEV1~factor(dose)-1, data=NVA)
-mn <- coef(fit)
+## First assume covariates had not been used in the analysis
+fit <- glm(y~factor(dose)-1, data=dat, family=binomial)
 S <- vcov(fit)
-dose <- c(0,12.5,25,50,100)
-## create bootstrap replicates
+est <- coef(fit)
+MCTtest(doses, est, S=S, models=mods, type="general")
+```
+Dose-response modelling proceeds as XYZ.
+
+```{r}
 nSim <- 1000
-sims <- rmvnorm(nSim, mn, S)
+sims <- rmvnorm(nSim, est, S)
 ## now actual model fitting and selection of best model for all bootstraps
-bnds <- defBnds(max(dose)) ## boundaries assumed for model fitting (force convergence)
-pred <- matrix(nrow=nSim, ncol=101) ## will contain dr-model predictions 
+bnds <- defBnds(max(doses)) ## boundaries assumed for model fitting (force convergence)
+dsq <- seq(0,4,length=51)
+pred <- matrix(nrow=nSim, ncol=51) ## will contain dr-model predictions 
 fit <- vector("list", 3)
 for(i in 1:nSim){
-  fit[[1]] <- fitMod(dose, sims[i,], model="emax", S=S,
+  fit[[1]] <- fitMod(doses, sims[i,], model="emax", S=S,
                      type="general", bnds=bnds$emax)
-  fit[[2]] <- fitMod(dose, sims[i,], model="sigEmax", S=S,
+  fit[[2]] <- fitMod(doses, sims[i,], model="sigEmax", S=S,
                      type="general", bnds=bnds$sigEmax)
-  fit[[3]] <- fitMod(dose, sims[i,], model="quadratic", S=S,
-                     type="general", bnds=bnds$quadratic)
+  fit[[3]] <- fitMod(doses, sims[i,], model="betaMod", S=S,
+                     type="general", bnds=bnds$betaMod)
   ind <- which.min(sapply(fit, gAIC)) ## choose best model according to AIC
-  pred[i,] <- predict(fit[[ind]], doseSeq=0:100, predType="ls-means")
+  pred[i,] <- predict(fit[[ind]], doseSeq=dsq, predType="ls-means")
 }
 qq <- apply(pred, 2, function(x) quantile(x, c(0.025,0.25,0.5,0.75,0.975)))
-matplot(0:100, t(qq), type="l", lty=c(3,2,1,2,3), col=1, lwd=2,
-        xlab="Dose", ylab="Mean FEV1")
-points(dose, tapply(NVA$FEV1, NVA$dose, mean), pch=19, cex=1.5)
+pp <- inv_logit(qq)
+
+pdat <- data.table(dsq = dsq, pred = pp[3,],
+                   low1 = pp[2,], high1 = pp[4,],
+                   low2 = pp[1,], high2 = pp[5,])
+qq <- qnorm(0.975)
+pdat2 <- data.table(dose = doses, est=inv_logit(est),
+                    LB = inv_logit(est - qq*sqrt(diag(S))),
+                    UB = inv_logit(est + qq*sqrt(diag(S))))
+
+qplot(dsq, pred, data=pdat, geom="line", xlab = "Dose",
+      ylab="Response Probability")+
+  geom_point(aes(dose, y=est), data=pdat2, alpha=0.5)+
+  geom_errorbar(aes(x=dose, y=est, ymin = LB, ymax = UB),
+                 data=pdat2, width=0,alpha=0.5)+
+  geom_ribbon(aes(ymin = low1, ymax = high1), alpha=0.2)+
+  geom_ribbon(aes(ymin = low2, ymax = high2), alpha=0.2)+
+  scale_y_continuous(breaks = seq(0,1,by=0.05))+
+  theme_bw()
 ```
+
+## Analysis considerations (assuming there are covariates)
+
+```{r}
+fit <- glm(y~factor(dose)+x1+x2, data=dat, family=binomial)
+## predict every patient under every dose
+pdat <- data.table(dose = rep(doses, each = nrow(dat)),
+                   x1 = rep(x1, length(doses)),
+                   x2 = rep(x2, length(doses)))
+get_pred <- function(X, par, doses){
+  p <- inv_logit(X%*%par)
+  logit(tapply(p, doses, mean))
+}
+X <- model.matrix(~factor(dose)+x1+x2, data=pdat)
+est <- get_pred(X, coef(fit), pdat$dose)
+## now calculate variance estimate
+sims <- rmvnorm(1000, coef(fit), vcov(fit))
+preds <- matrix(nrow=1000, ncol=length(doses))
+for(i in 1:1000){
+  preds[i,] <- get_pred(X, sims[i,], pdat$dose)
+}
+S <- cov(preds)
+
+## perform multiple contrast test
+MCTtest(doses, est, S=S, type = "general", models=mods)
+```
+
+Dose-response modelling proceeds in the same way as before (for
+completeness reproduced here).
+
+```{r}
+nSim <- 1000
+sims <- rmvnorm(nSim, est, S)
+## now actual model fitting and selection of best model for all bootstraps
+bnds <- defBnds(max(doses)) ## boundaries assumed for model fitting (force convergence)
+dsq <- seq(0,4,length=51)
+pred <- matrix(nrow=nSim, ncol=51) ## will contain dr-model predictions 
+fit <- vector("list", 3)
+for(i in 1:nSim){
+  fit[[1]] <- fitMod(doses, sims[i,], model="emax", S=S,
+                     type="general", bnds=bnds$emax)
+  fit[[2]] <- fitMod(doses, sims[i,], model="sigEmax", S=S,
+                     type="general", bnds=bnds$sigEmax)
+  fit[[3]] <- fitMod(doses, sims[i,], model="betaMod", S=S,
+                     type="general", bnds=bnds$betaMod)
+  ind <- which.min(sapply(fit, gAIC)) ## choose best model according to AIC
+  pred[i,] <- predict(fit[[ind]], doseSeq=dsq, predType="ls-means")
+}
+qq <- apply(pred, 2, function(x) quantile(x, c(0.025,0.25,0.5,0.75,0.975)))
+pp <- inv_logit(qq)
+
+pdat <- data.table(dsq = dsq, pred = pp[3,],
+                   low1 = pp[2,], high1 = pp[4,],
+                   low2 = pp[1,], high2 = pp[5,])
+qq <- qnorm(0.975)
+pdat2 <- data.table(dose = doses, est=inv_logit(est),
+                    LB = inv_logit(est - qq*sqrt(diag(S))),
+                    UB = inv_logit(est + qq*sqrt(diag(S))))
+
+qplot(dsq, pred, data=pdat, geom="line", xlab = "Dose",
+      ylab="Response Probability")+
+  geom_point(aes(dose, y=est), data=pdat2, alpha=0.5)+
+  geom_errorbar(aes(x=dose, y=est, ymin = LB, ymax = UB),
+                 data=pdat2, width=0,alpha=0.5)+
+  geom_ribbon(aes(ymin = low1, ymax = high1), alpha=0.2)+
+  geom_ribbon(aes(ymin = low2, ymax = high2), alpha=0.2)+
+  scale_y_continuous(breaks = seq(0,1,by=0.05))+
+  theme_bw()
+```
+
+
+## Re-calculation of optimal contrasts
+
+Show some simulation results here (from presentation)

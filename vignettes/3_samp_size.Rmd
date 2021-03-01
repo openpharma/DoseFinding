@@ -12,8 +12,8 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, cache = TRUE)
 ```
 
-Provide useful power plots (maybe even going beyond what exists in the
-package now, e.g. using ggplot2), that can easily be re-used for other
+Provide useful power plots (going beyond what exists in the package
+now, e.g. using ggplot2), that can easily be re-used for other
 purposes.
 
 # Power calculations

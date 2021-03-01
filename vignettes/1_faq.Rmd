@@ -11,6 +11,16 @@ vignette: >
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+Idea: Provide answers to some frequently asked questions.
+Below a first idea for some questions of interest. Some of the Q\&A
+can be taken over from the MCPMod_QA word document. But can add
+additional questions and some of the answers need updating.
+
+Can we create the html so that all the questions are shown and the
+answers only if you click on the question?
+
+
 # What type of study designs can be handled with MCP-Mod?
 
 # What type of response can be handled with MCP-Mod?

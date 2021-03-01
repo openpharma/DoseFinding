@@ -12,9 +12,12 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, cache = TRUE)
 ```
 
+Example of recommended analysis for standard case (this is taken from
+PMX MCPMod training slides)
+
 ## Background
 
-Provide background for NVA example (see PMX MCPMod training slides)
+Provide background for NVA example
 
 ```{r}
 library(DoseFinding)

@@ -198,6 +198,11 @@ qplot(dsq, pred, data=pdat, geom="line", xlab = "Dose",
   theme_bw()
 ```
 
+## Avoiding problems with complete seperation and 0 responders
+
+In some situations .... replace glm(..., family=binomial) with the
+logistf function from the logistf package (implements Firth
+regression).
 
 ## Re-calculation of optimal contrasts
 

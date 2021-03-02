@@ -30,6 +30,7 @@ mods <- Mods(emax = c(2.6, 12.5),
 ## graphical display of candidate shapes
 plot(mods)
 ```
+# Plot of power versus group sample size
 
 ```{r}
 ## optimal contrasts
@@ -42,11 +43,20 @@ plot(pows)
 ## wrapper function sampSize performs sample-size calculations
 sampSizeMCT(upperN=100, contMat = contMat, sigma = 
             0.34, altModels=mods, power = 0.9, 
-alRatio = rep(1, 5), alpha = 0.05, sumFct = mean)
+            alRatio = rep(1, 5), alpha = 0.05, sumFct = min)
 ```
 
-Here add something on power for mis-specified scenarios?
+# Plot of power versus treatment effect
 
+Plot power versus treatment effect for fixed sample size, maybe for
+two different choices of sigma (use loop over powMCT function)? Show
+average and minimum power. In ggplot2?
+
+# Power under mis-specification
+Add something on power for mis-specified scenarios?  For example add
+an exponential model. Define an exponential alternative model, and
+observe power (with including and excluding exponential model). Use
+powMCT function.
 
 # Sample size based on metrics other than power
 

@@ -125,6 +125,12 @@ powN(upperN, lowerN, step, ..., alRatio,
   Pinheiro, J. C., Bornkamp, B., and Bretz, F. (2006). Design and analysis of dose finding studies
   combining multiple comparisons and modeling procedures, \emph{Journal of Biopharmaceutical
   Statistics}, \bold{16}, 639--656
+  
+  Pinheiro, J.C., Bornkamp, B. (2017) Designing Phase II 
+  Dose-Finding Studies: Sample Size, Doses and Dose Allocation 
+  Weights, in O'Quigley, J., Iasonos, A. and Bornkamp, B. (eds)
+  Handbook of methods for designing, monitoring, and analyzing 
+  dose-finding trials, CRC press
 }
 \author{
   Jose Pinheiro, Bjoern Bornkamp

@@ -53,6 +53,10 @@ Maintainer: Bjoern Bornkamp <bbnkmp@gmail.com>
   J. C. (2008). Optimal Designs for Dose Finding Studies, \emph{Journal
   of the American Statisical Association}, \bold{103}, 1225--1237
   
+  O'Quigley, J., Iasonos, A. and Bornkamp, B. (2017) Handbook of
+  methods for designing, monitoring, and analyzing dose-finding trials,
+  CRC press, Part 3: Dose-Finding Studies in Phase II
+  
   Pinheiro, J. C., Bornkamp, B., and Bretz, F. (2006). Design and
   analysis of dose finding studies combining multiple comparisons
   and modeling procedures, \emph{Journal of Biopharmaceutical

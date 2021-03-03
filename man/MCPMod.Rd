@@ -197,9 +197,11 @@ Schorning, K., Bornkamp, B., Bretz, F., & Dette, H. (2016). Model
 selection versus model averaging in dose finding
 studies. \emph{Statistics in Medicine}, \bold{35}, 4021--4040
 
-Bretz, F., Pinheiro, J. C., and Branson, M. (2004), On a hybrid method
-in dose-finding studies, \emph{Methods of Information in Medicine},
-\bold{43}, 457--460
+Xun, X. and Bretz, F. (2017) The MCP-Mod methodology: 
+Practical Considerations and The DoseFinding R package, 
+in O'Quigley, J., Iasonos, A. and Bornkamp, B. (eds)
+Handbook of methods for designing, monitoring, and analyzing 
+dose-finding trials, CRC press
 
 Buckland, S. T., Burnham, K. P. and Augustin, N. H. (1997). Model selection an integral part
 of inference, \emph{Biometrics}, \bold{53}, 603--618

@@ -220,7 +220,13 @@ rndDesign(design, n, eps = 0.0001)
 
   Dette, H., Bretz, F., Pepelyshev, A. and Pinheiro,
   J. C. (2008). Optimal Designs for Dose Finding Studies, \emph{Journal
-    of the American Statisical Association}, \bold{103}, 1225--1237
+  of the American Statisical Association}, \bold{103}, 1225--1237
+  
+  Pinheiro, J.C., Bornkamp, B. (2017) Designing Phase II 
+  Dose-Finding Studies: Sample Size, Doses and Dose Allocation 
+  Weights, in O'Quigley, J., Iasonos, A. and Bornkamp, B. (eds)
+  Handbook of methods for designing, monitoring, and analyzing 
+  dose-finding trials, CRC press
 
   Pukelsheim, F. (1993). Optimal Design of Experiments, Wiley
 }

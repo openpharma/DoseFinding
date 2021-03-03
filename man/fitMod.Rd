@@ -33,7 +33,7 @@
   of the first stage estimates, which makes this method of interest only
   for sufficiently large sample size for the first stage fit. A modified
   model-selection criterion can be applied to these model fits (see also
-  Pinheiro et al. 2013 for details).
+  Pinheiro et al. 2014 for details).
 
   For details on the implemented numerical optimizer see the Details
   section below.
@@ -88,7 +88,7 @@ fitMod(dose, resp, data = NULL, model, S = NULL, type = c("normal", "general"),
     homoscedastic normality assumption (when \samp{type = "normal"}), or
     estimates at the doses and their covariance matrix and degrees of
     freedom are specified directly in \samp{resp}, \samp{S} and
-    \samp{df}. See also the Description above and Pinheiro et al. (2013).
+    \samp{df}. See also the Description above and Pinheiro et al. (2014).
   }
   \item{addCovars}{
     Formula specifying additional additive linear covariates (only for \samp{type = "normal"})
@@ -200,7 +200,7 @@ fitMod(dose, resp, data = NULL, model, S = NULL, type = c("normal", "general"),
   For details on the asymptotic approximation used for \samp{type = "normal"},
   see Seber and Wild (2003, chapter 5). For details on the asymptotic
   approximation used for \samp{type = "general"}, and the gAIC, see
-  Pinheiro et al. (2013).
+  Pinheiro et al. (2014).
 }
 \value{
   An object of class DRMod. Essentially a list containing information

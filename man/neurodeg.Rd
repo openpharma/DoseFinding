@@ -21,7 +21,7 @@
   be modeled a simple linear trend. See the example below on how to
   analyse this type of data.
 
-  This data set was used in Pinheiro et al. (2013) to illustrate the
+  This data set was used in Pinheiro et al. (2014) to illustrate the
   generalized MCPMod methodology.
 }
 \usage{data(neurodeg)}
@@ -43,7 +43,7 @@
 
 \examples{
 \dontrun{
-## reproduce analysis from Pinheiro et al. (2013)
+## reproduce analysis from Pinheiro et al. (2014)
 data(neurodeg)
 ## first fit the linear mixed effect model
 library(nlme)

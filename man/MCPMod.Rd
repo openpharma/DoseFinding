@@ -53,7 +53,7 @@ MCPMod(dose, resp, data, models, S = NULL, type = c("normal", "general"),
     homoscedastic normality assumption (when \samp{type = "normal"}), or
     estimates at the doses and their covariance matrix and degrees of
     freedom are specified directly in \samp{resp}, \samp{S} and
-    \samp{df}. See also \code{\link{fitMod}} and Pinheiro et al. (2013).
+    \samp{df}. See also \code{\link{fitMod}} and Pinheiro et al. (2014).
   }
   \item{addCovars}{
     Formula specifying additive linear covariates (for \samp{type = "normal"})

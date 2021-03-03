@@ -16,7 +16,7 @@
   \deqn{
     c^{opt} \propto S^{-1}\left(\mu - \frac{\mu^{\prime}S^{-1}
       1}{1^\prime S^{-1} 1}\right),}{c propto S^(-1) (mu - mu'S^(-1)1)/(1'S^(-1)1),}
-  see Pinheiro et al. (2013).
+  see Pinheiro et al. (2014).
 
   Note that the directionality (i.e. whether in "increase" in the
   response variable is beneficial or a "decrease", is inferred from the

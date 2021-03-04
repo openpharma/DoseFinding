@@ -1,22 +1,36 @@
 ---
 title: "Frequently Asked Questions for MCP-Mod"
-output: rmarkdown::html_vignette
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 2
 bibliography: refs.bib
 link-citations: yes
+csl: american-statistical-association.csl
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Frequently Asked Questions for MCP-Mod}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-[@oquigley:2017]
 
-<details>
-<summary>**For what type of study designs can I use with MCP-Mod?**</summary>
-<br>
+<!-- TODO:
+- [ ] Links to other vignettes and help pages (Ludger)
+- [ ] explain "potentiated doses" (Björn)
+- [ ] clarify that the "overall trend test" refers to the multiple contrast test (Björn)
+-->
+
+```{css, echo=FALSE}
+h2 {
+	font-size: 20px;
+	line-height: 1.35;
+}
+#TOC {
+	width: 100%;
+}
+```
+
+## For which types of study designs can I use MCP-Mod?
 
 MCP-Mod has been developed with having efficacy dose-finding studies
 in mind, as they are performed in Phase 2 of clinical
@@ -27,7 +41,7 @@ using generalized MCP-Mod (see below).
 
 Titration designs are out of scope, because the administered dose
 levels depend on observed responses in the same patients, thereby
-making any naïve dose-response modelling inappropriate. 
+making any naïve dose-response modelling inappropriate.
 
 Phase 1 dose escalation safety studies are also out of scope. The
 major question is dose selection for the next cohort during the trial,
@@ -35,18 +49,13 @@ and tools have been developed specifically for this purpose. In
 addition assessment of a dose-response signal over placebo is not so
 much of interest in these studies.
 
-</details>
-<br>
-
-<details>
-<summary>**What type of response can be handled with MCP-Mod?**</summary>
-<br>
+## What type of response can be handled with MCP-Mod?
 
 The original MCP-Mod approach was derived for a normally distributed
 response variable assuming homoscedasticity across doses. The
-generalized MCP-Mod approach (Pinheiro et al, 2014) is a flexible
+generalized MCP-Mod approach [@pinheiro2014] is a flexible
 extensions that allows for binary, count, continuous or time-to-event
-outcomes. 
+outcomes.
 
 Generalized MCP-Mod is a two-stage approach, where in the first stage
 a model is fitted, that allows to extract (covariate adjusted)
@@ -60,12 +69,7 @@ other vignette), another popular example is an MMRM model. Also
 other specific longitudinal models can be utilized (see help page of
 the neurodeg data set).
 
-</details>
-<br>
-
-<details>
-<summary>**How many doses do we need to perform MCP-Mod?**</summary>
-<br>
+## How many doses do we need to perform MCP-Mod?
 
 When using two active doses + placbo it is technically possible to
 perform the MCP and Mod steps, but in particular for the Mod step only
@@ -75,8 +79,8 @@ and the Mod step to make sense, three active doses and placebo should
 be available, with the general recommendation to use 4-7 active
 doses. When these doses cover the effective range well (i.e.,
 increasing part and plateau), a large number of active doses is
-unlikely to produce a benefit, as the simulations in Bornkamp et
-al. (2007) have also shown. As a general rule-of-thumb the
+unlikely to produce a benefit, as the simulations in @bornkamp2007 have also shown.
+As a general rule-of-thumb the
 recommendation is to use a dose range that is at least 10-fold (i.e.,
 the ratio of highest versus lowest dose should be > 10). Optimal
 design calculations can also provide useful information on the number
@@ -84,12 +88,7 @@ of doses (and which doses) to use. From experience with optimal design
 calculations for different candidate sets, the number of doses from an
 optimal design calculation also tend to be smaller than 7.
 
-</details>
-<br>
-
-<details>
-<summary>**How to determine the doses to be used for a trial using MCP-Mod?**</summary>
-<br>
+## How to determine the doses to be used for a trial using MCP-Mod?
 
 To gain most information on the compound, one should evaluate a
 dose-range that is as large as possible, that is, one should include
@@ -112,19 +111,14 @@ An alternative approach to calculate adequate doses is optimal design
 theory. The idea is to calculate a design (i.e. the doses and dose
 allocation weights) under a given fixed sample size so that the
 variability of the dose-response parameter estimates is "small" in a
-specified way (see Bretz, et al. (2010)). Refer to vignette for
+specified way [see @bretz2010]. Refer to vignette for
 dose-selection.
- 
-</details>
-<br>
 
-<details>
-<summary>**Can MCP-Mod be used in trials without placebo control?**</summary>
-<br>
+## Can MCP-Mod be used in trials without placebo control?
 
 In some cases the use of a placebo group is not possible due to
 ethical reasons (e.g., because good treatments exist already or the
-condition is very severe). 
+condition is very severe).
 
 In such cases, the MCP part of MCP-Mod focuses on establishing a
 dose-response trend among the active doses, which would correspond to
@@ -136,94 +130,82 @@ relationship among the active doses. One aim of such a dose-finding
 trial could be to estimate the smallest dose of the new compound
 achieving the same treatment effect as the active control.
 
-</details>
-<br>
+## How to set up the candidate set of models?
 
-<details>
-<summary>**How to set up the candidate set of models?**</summary>
-<br>
 Rule of thumb: 3 - 7 dose response shapes through 2 - 4 models are
 usually sufficient. The multiple contrast test is quite robust, even
 if the model-shapes are mis-specified.  What information to utilize?
-Some points to consider
 
-- Existing information
+It is possible to use __existing information__:
 
-	- Information might be available on the dose-response curve for a
-	similar compound in the same indication or the same compound in a
-	different indication.
+_Similar compounds:_ Information might be available on the dose-response curve for a
+similar compound in the same indication or the same compound in a
+different indication.
 
-	- A dose-exposure-response (PK/PD) model might have been developed
-	based on earlier data (e.g. data from the PoC study). This can be used
-	to predict the dose-response curve at a specific time-point.
+_Other models:_ A dose-exposure-response (PK/PD) model might have been developed
+based on earlier data (e.g. data from the PoC study). This can be used
+to predict the dose-response curve at a specific time-point.
 
-	- An Emax type model should always be included in the candidate
-	set of models. A meta-analysis of the dose-response curves for
-	small molecules developed in the past few years at Pfizer showed,
-	that in many situations the monotonic Emax model, or the sigmoid
-	Emax model is able to describe the data adequately (see Thomas et
-	al. 2015).
+_Emax flexibility:_ An Emax type model should always be included in the candidate
+set of models. A meta-analysis of the dose-response curves for
+small molecules developed in the past few years at Pfizer showed,
+that in many situations the monotonic Emax model, or the sigmoid
+Emax model is able to describe the data adequately [see @thomas2014; @thomas2017].
 
-- Statistical considerations
-	
-	- Model fitting: If only a few active doses are feasible to be used
-	in a trial, it is difficult to fit the more complex models, such as
-	the sigmoid Emax or the beta model with four parameters in a trial
-	with three active doses. Such models would not be included in the
-	candidate set and one would rather use more dose-response models with
-	fewer parameters to obtain an adequate breadth of the candidate set.
+There are also some __statistical considerations__ to be aware of:
 
-	- Consequence of model misspecification: Omission of the “correct”
-    dose-response shape from the set of candidate models does not
-    necessarily have severe consequences, if other models can pick up
-    the omitted shape. This can be evaluated for the MCP part (impact
-    on power) using explicit calculations (see Pinheiro et al. (2006))
-    and for the Mod part (impact on estimation precision for
-    dose-response and dose estimation) using simulations and the
-    DoseFinding R package.
-	
-	- Impact on sample size: Using a very broad and flexible set of
-    candidate models does not come “for free”. Generally the critical
-    value for the MCP test will increase, in particular if many
-    different candidate shapes are included, and consequently also the
-    sample size. The actual impact will have to be investigated on a
-    case-by-case basis. A similar trade-off exists in terms of
-    dose-response model fitting, as a broader candidate set will
-    decrease potential bias (in the case of a mis-specified model) but
-    increase the variance of the estimates.
+_Model fitting:_ If only a few active doses are feasible to be used
+in a trial, it is difficult to fit the more complex models, such as
+the sigmoid Emax or the beta model with four parameters in a trial
+with three active doses. Such models would not be included in the
+candidate set and one would rather use more dose-response models with
+fewer parameters to obtain an adequate breadth of the candidate set.
 
-	- Umbrella-shaped dose-response curve: While biological
-    exposure-response relationships are often monotonic, down-turns of
-    the clinical dose-response relationship at higher doses have been
-    observed. For example if due to adverse events more patients will
-    discontinue treatment with higher doses of the drug, this might
-    lead to a decrease in clinical efficacy at higher doses, if a
-    treatment policy or composite estimand stratey is used for
-    treatment discontinuation.
+_Consequence of model misspecification:_ Omission of the “correct”
+dose-response shape from the set of candidate models does not
+necessarily have severe consequences, if other models can pick up
+the omitted shape. This can be evaluated for the MCP part (impact
+on power) using explicit calculations (see @pinheiro2006)
+and for the Mod part (impact on estimation precision for
+dose-response and dose estimation) using simulations and the
+DoseFinding R package.
 
-	- In case of for example 4 or 3 active doses it is challenging to
-	fit sigmoid Emax (and beta models). One strategy in these
-	situations is to fix the Hill parameter to a given value (for
-	example 3 and/or 5), and then use different sigmoid Emax candidate
-	models with fixed Hill parameter. Model fitting can be performed
-	with the Emax model but with potentiated doses.
+_Impact on sample size:_ Using a very broad and flexible set of
+candidate models does not come “for free”. Generally the critical
+value for the MCP test will increase, in particular if many
+different candidate shapes are included, and consequently also the
+sample size. The actual impact will have to be investigated on a
+case-by-case basis. A similar trade-off exists in terms of
+dose-response model fitting, as a broader candidate set will
+decrease potential bias (in the case of a mis-specified model) but
+increase the variance of the estimates.
 
-	- Based on simulation studies utilizing the AIC, it has been
-	observed that the linear model (as it has fewest parameters) is
-	often too strongly favored (with the BIC this trend is even
-	stronger), see results in Schorning et al. The recommendation
-	would be to exclude the linear model usually from the candidate
-	set, the Emax and exponential model (and also the sigmoid Emax
-	model) can also approximate a linear shape well in the limiting
-	case.
+_Umbrella-shaped dose-response curve:_ While biological
+exposure-response relationships are often monotonic, down-turns of
+the clinical dose-response relationship at higher doses have been
+observed. For example if due to adverse events more patients will
+discontinue treatment with higher doses of the drug, this might
+lead to a decrease in clinical efficacy at higher doses, if a
+treatment policy or composite estimand stratey is used for
+treatment discontinuation.
 
-</details>
-<br>
+_Small number of doses:_ In case of for example 4 or 3 active doses it is challenging to
+fit sigmoid Emax (and beta models). One strategy in these
+situations is to fix the Hill parameter to a given value (for
+example 3 and/or 5), and then use different sigmoid Emax candidate
+models with fixed Hill parameter. Model fitting can be performed
+with the Emax model but with potentiated doses.
 
+_Caution with linear models:_ Based on simulation studies utilizing the AIC, it has been
+observed that the linear model (as it has fewest parameters) is
+often too strongly favored (with the BIC this trend is even
+stronger), see results in @schorning2016. The recommendation
+would be to exclude the linear model usually from the candidate
+set, the Emax and exponential model (and also the sigmoid Emax
+model) can also approximate a linear shape well in the limiting
+case.
 
-<details>
-<summary>**Why are bounds used for the nonlinear parameters in the fitMod function?**</summary>
-<br>
+## Why are bounds used for the nonlinear parameters in the fitMod function?
 
 Most of the common dose-response models are nonlinear in the
 parameters. This means that iterative algorithms need to be used to
@@ -244,73 +226,55 @@ proposes default boundaries (see the defBnds function).
 
 When utilizing bounds for model fitting it is recommended to use
 bootstrapping/bagging for estimation of the dose-response functions
-and for the confidence intervals, see Pinheiro et al 2014.
+and for the confidence intervals, see @pinheiro2014.
 
-</details>
-<br>
-
-
-<details>
-<summary>**Should model-selection or model-averaging be used for analysis?**</summary>
-<br>
+## Should model-selection or model-averaging be used for analysis?
 
 The Mod step can be performed using either a single model selected
 from the initial candidate set or a weighted average of the candidate
-models. 
+models. Model averaging has two main advantages
 
-Model averaging has two main advantages
-
-- Improved estimation performance: Simulations in the framework of
+_Improved estimation performance:_ Simulations in the framework of
 dose-response analyses in Phase II have shown (consistently over a
 large range of simulation scenarios) that model-averaging leads to a
 slightly better performance in terms of dose-response estimation and
-dose-estimation (see Schorning et al. (2016)). 
+dose-estimation [see @schorning2016].
 
-- Improved coverage probability of confidence intervals: Model
+_Improved coverage probability of confidence intervals:_ Model
 averaging techniques generally lead to a better performance in terms
 of confidence interval coverage under model uncertainty (confidence
-intervals are typically closer to their nominal level).  There are two
-main (non-Bayesian) ways of performing model averaging:
+intervals are typically closer to their nominal level).
 
-	1.	An approximate Bayesian approach, where the models are weighted
-	according exp(-0.5*IC), where IC is an information criterion
-	(e.g., AIC) corresponding to model under consideration. All
-	subsequent estimation for quantities of interest would then be
-	based on a weighted mean with the weights above. For numerical
-	stability the minimum IC across all models is typically
-	subtracted from the IC for each model, which does not change the
-	model weights.
+There are two main (non-Bayesian) ways of performing model averaging:
 
-	2.	Bagging (see Breiman, 1996), where one takes bootstrap samples,
-	performs model selection on each bootstrap re-sample (using, for
-	example AIC) and then uses the mean over all bootstrap predictions as
-	the overall estimate. As the predictions typically come from different
-	models (for each bootstrap resample), this method can be considered to
-	be an “implicit” way of model averaging.  Bagging has the advantage
-	that one automatically gets bootstrap confidence intervals for
-	quantities of interest (dose-response curve or target doses) from the
-	performed simulations. 
+_Approximate Bayesian approach:_ The models are weighted
+according exp(-0.5*IC), where IC is an information criterion
+(e.g., AIC) corresponding to the model under consideration. All
+subsequent estimation for quantities of interest would then be
+based on a weighted mean with the weights above. For numerical
+stability the minimum IC across all models is typically
+subtracted from the IC for each model, which does not change the
+model weights.
 
-</details>
-<br>
+_Bagging:_ One takes bootstrap samples,
+performs model selection on each bootstrap re-sample (using, for
+example AIC) and then uses the mean over all bootstrap predictions as
+the overall estimate [see @breiman1996]. As the predictions typically come from different
+models (for each bootstrap resample), this method can be considered to
+be an “implicit” way of model averaging.  Bagging has the advantage
+that one automatically gets bootstrap confidence intervals for
+quantities of interest (dose-response curve or target doses) from the
+performed simulations.
 
-
-<details>
-<summary>**Which model selection criterion should be used?**</summary>
-<br>
+## Which model selection criterion should be used?
 
 Whether MCP-Mod is implemented using model selection or model
 averaging, a suitable model selection criterion needs to be
-specified. See Schorning et al. (2016) for a brief review of the
+specified. See @schorning2016 for a brief review of the
 mathematical background of different selection criteria. A simulation
 in this paper supports a recommendation to utilize the AIC criterion.
 
-</details>
-<br>
-
-<details>
-<summary>**How to deal with intercurrent events and missing data?**</summary>
-<br>
+## How to deal with intercurrent events and missing data?
 
 As in any other trial intercurrent events and handling strategies need
 to be identified, as well as missing data handling (see [ICH E9(R1)
@@ -320,23 +284,18 @@ easiest to use generalized MCP-Mod, where the first stage model
 is already an appropriate analysis model (with adequate strategy for
 intercurrent events and missing data).
 
-</details>
-<br>
-
-<details>
-<summary>**Can MCP-Mod be used in trials with multiple treatment regimens?**</summary>
-<br>
+## Can MCP-Mod be used in trials with multiple treatment regimens?
 
 Many of the dose-finding trials study not only multiple doses of one
 treatment regimen, but include more than one treatment regimen (e.g.,
 once daily (od), twice daily (bid)). MCP-Mod is focused around
 assessing only one dose-response relationship, but can be extended to
 handle some of these cases, when one is willing to make additional
-assumptions. 
+assumptions.
 
 Out of scope are situations, when the primary question of the trial is
 the regimen and not the dose, e.g., multiple regimen are employed but
-each with only one or two doses. 
+each with only one or two doses.
 
 Out of scope are also situations when
 the different regimens differ substantially. For example in situations
@@ -360,12 +319,7 @@ plausible depends on the specifics of every drug.
 
 Link to vignette on this topic
 
-</details>
-<br>
-
-<details>
-<summary>**What about dose-response estimates, when the MCP part (or some of the model shapes) were not significant**</summary>
-<br>
+## What about dose-response estimates, when the MCP part (or some of the model shapes) were not significant?
 
 The proposal is to perform the Mod step always with all specified
 models (even if all or only some of the dose-response models are not
@@ -383,9 +337,4 @@ once the model parameters are estimated from the data, the model may
 fit the data adequately (if not it will be downweighted automatically
 by the AIC).
 
-</details>
-
-<br>
-**References**
-
-<div id="refs"></div>
+## References

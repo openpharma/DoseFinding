@@ -10,13 +10,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include=FALSE}
-library(data.table)
-library(ggplot2)
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, cache = TRUE,
-                      comment = NA,
-                      dev = "png", dpi = 150, fig.asp = 0.618, fig.width = 7, out.width = "85%", fig.align = "center")
-theme_set(theme_bw())
+```{r, child="children/settings.txt"}
 ```
 
 ## Background and Data
@@ -66,7 +60,6 @@ because it lets us generate random numbers with the specified _sample_ mean and 
 
 ```{r, simulate_dataset}
 set.seed(1)
-sigma <- sqrt(0.015^2*60)
 rand <- rep(MASS::mvrnorm(60, 0, 60 * 0.015^2, empirical = TRUE), 5)
 NVA <- data.frame(dose = rep(glycobrom$dose, each = 60),
                   FEV1 = rep(glycobrom$fev1, each = 60) + rand)
@@ -139,24 +132,48 @@ We run the multiple contrast test with the pre-specified models.
 Note that the `type` parameter defaults to `type="normal"`,
 which means that we assume a homoscedastic ANOVA model for `FEV1`,
 i.e. critical values are taken from a multivariate t distribution.
-Further note that the first two arguments `dose` and `FEV1` are _not evaluated_,
+Further note that when `data` is supplied,
+the first two arguments `dose` and `FEV1` are _not evaluated_,
 but symbolically refer to the columns in `data=NVA`.
-```{r}
-MMtest <- MCTtest(dose, FEV1, models=mods, data=NVA)
-print(MMtest)
+```{r, mctest_normal}
+test_normal <- MCTtest(dose = dose, resp = FEV1, models = mods, data = NVA)
+print(test_normal)
 ```
 
 The test results suggest a clear dose-response trend.
 
-<!--  TODO
-Now repeat testing based on generalized MCP-Mod (in practice it may
-often be based on an MMRM model, see below for code).
- -->
+Alternatively we can use generalized MCP-Mod
+(see the FAQ for the [difference](1_faq.html#what-type-of-response-can-be-handled-with-mcp-mod)).
+We us R's builtin `lm()` function to manually fit the ANOVA model
+and extract estimates for the model coefficients and their covariance matrix.
+We also need the model degrees of freedom.
+
+```{r, fit_lm_1}
+fitlm <- lm(FEV1 ~ factor(dose) - 1, data = NVA)
+mu_hat <- coef(fitlm)
+S_hat <- vcov(fitlm)
+anova_df <- fitlm$df.residual
+```
+
+Next we supply them to the `MCTtest` function together with `type="general"`.
+Note that in contrast to the invocation above we here supply the `doses` and the estimates `mu_hat` and `S_hat` directly and not within a `data.frame`.
+
+```{r, mctest_generalizes}
+test_general <- MCTtest(dose = doses, resp = mu_hat, S = S_hat, df = anova_df,
+                        models = mods, type = "general")
+print(test_general)
+```
+
+For the simple ANOVA case at hand the results of the original and the generalized MCP-Mod approaches actually coincide.
+
+```{r, compare_normal_generalized}
+cbind(normal = test_normal$tStat, generalized = test_general$tStat)
+```
 
 ## Dose-response estimation
 
 In the simplest case we would now proceed to fit only a single model type,
-for example the one with the largest t-statistic:
+for example the one with the largest t-statistic (or alternatively smallest AIC or BIC):
 ```{r, fit_single}
 fit_single <- fitMod(dose, FEV1, NVA, model = "emax")
 plot(fit_single)
@@ -171,13 +188,12 @@ and save the corresponding quantities of interest.
 This selection step implies that the bootstrap samples potentially come from different models.
 Finally we use these bootstrapped estimates for inference.
 For example, we can estimate a dose-response curve by averaging over the bootstrapped means at each dose.
-Similarly we can derive credible intervals based on bootstrap quantiles.
-Inference for other quantities of interest can be derived in an analogous way.
+Similarly we can derive confidence intervals based on bootstrap quantiles.
+Inference for other quantities of interest can be performed in an analogous way.
 
 As different models contribute to the bootstrap resamples,
 the approach can be considered more robust than simple model selection
 [see also @schorning2016 for the result of extensive simulations on this topic].
-Note that contrary to the MCP step, here all model parameters are estimated.
 
 Now let's apply this general idea to the case at hand.
 Our first-stage model is an ANOVA,
@@ -187,64 +203,68 @@ Our set of candidate model types consists of Emax, sigEmax and quadratic.
 We us R's builtin `lm()` function to fit an ANOVA model without intercept
 and extract estimates for the model coefficients and their covariance matrix.
 
-```{r, fit_lm}
-fitlm <- lm(FEV1~factor(dose) - 1, data = NVA)
+```{r, fit_lm_2}
+fitlm <- lm(FEV1 ~ factor(dose) - 1, data = NVA)
 mu_hat <- coef(fitlm)
 S_hat <- vcov(fitlm)
 ```
 
-In the following function we simulate a vector of response values,
+In the following function we simulate a vector of mean FEV1 values,
 fit our set of candidate models
 (generalized MCP-Mod is indicated by supplying `type = "general"`)
 and select the one with lowest AIC.
-From the selected model we predict the mean response at the doses supplied in the `dsq` argument.
+From the selected model we predict the mean response at the doses supplied in the `dose_seq` argument.
 
 Note that for technical reasons we have to supply boundaries to the fitting algorithm via the `bnds` argument to `fitMod`
-(see `?fitMod` and `?defBnds` for details)
+(see `?fitMod` and `?defBnds` for details).
+We also don't need to supply the degrees of freedom here,
+as they are used neither for fitting nor prediction.
 
 ```{r, bootstrap_draw}
-one_bootstrap_prediction <- function(mu_hat, S_hat, doses, bounds, dsq) {
+one_bootstrap_prediction <- function(mu_hat, S_hat, doses, bounds, dose_seq) {
   sim <- drop(rmvnorm(1, mu_hat, S_hat))
   fit <- lapply(c("emax", "sigEmax", "quadratic"), function(mod)
     fitMod(doses, sim, model = mod, S = S_hat, type = "general", bnds = bounds[[mod]]))
   index <- which.min(sapply(fit, gAIC))
-  pred <- predict(fit[[index]], doseSeq = dsq, predType = "ls-means")
+  pred <- predict(fit[[index]], doseSeq = dose_seq, predType = "ls-means")
   return(pred)
 }
 ```
 
-Now we need a function to calculate means and quantiles on a bootstrap sample.
+Now we need a function to calculate medians and other quantiles on a bootstrap sample.
+In principle we could also look a the mean instead of the median.
 
 ```{r, bootstrap_summarize}
-# bs_predictions is a doses x replications matrix
+# bs_predictions is a doses x replications matrix,
+# probs is a 4-element vector of increasing probabilities for the quantiles
 summarize_predictions <- function(bs_predictions, probs) {
   stopifnot(length(probs) == 4)
-  means <- rowMeans(bs_predictions)
+  med <- apply(bs_predictions, 1, median)
   quants <- apply(bs_predictions, 1, quantile, probs = probs)
-  bs_df <- as.data.frame(cbind(means, t(quants)))
-  names(bs_df) <- c("mean", "low_out", "low_in", "high_in", "high_out")
+  bs_df <- as.data.frame(cbind(med, t(quants)))
+  names(bs_df) <- c("median", "low_out", "low_in", "high_in", "high_out")
   return(bs_df)
 }
 ```
 
-Finally we plot the bootstrap predictions together with point estimates and confidence intervals from the first-stage ANOVA fit.
+Finally we plot the bootstrap quantiles together with point estimates and confidence intervals from the first-stage ANOVA fit.
 
 ```{r, bootstrap_plot}
-dsq <- 0:100
-bs_rep <- replicate(1000, one_bootstrap_prediction(mu_hat, S_hat, doses, defBnds(max(doses)), dsq))
-bs_summary <- summarize_predictions(bs_rep, c(0.025, 0.25, 0.75, 0.975))
+dose_seq <- 0:100
+bs_rep <- replicate(1000, one_bootstrap_prediction(mu_hat, S_hat, doses, defBnds(max(doses)), dose_seq))
+bs_summary <- summarize_predictions(bs_rep, probs = c(0.025, 0.25, 0.75, 0.975))
 ci_half_width <- qt(0.975, fitlm$df.residual) * sqrt(diag(S_hat))
 lm_summary <- data.frame(dose = doses, mu_hat = mu_hat,
                          low = mu_hat - ci_half_width, high = mu_hat + ci_half_width)
 
-ggplot(cbind(bs_summary, dsq = dsq)) + geom_line(aes(dsq, mean)) +
-  geom_ribbon(aes(x = dsq, ymin = low_in, ymax = high_in), alpha = 0.2) +
-  geom_ribbon(aes(x = dsq, ymin = low_out, ymax = high_out), alpha = 0.2) +
+ggplot(cbind(bs_summary, dose_seq = dose_seq)) + geom_line(aes(dose_seq, median)) +
+  geom_ribbon(aes(x = dose_seq, ymin = low_in, ymax = high_in), alpha = 0.2) +
+  geom_ribbon(aes(x = dose_seq, ymin = low_out, ymax = high_out), alpha = 0.2) +
   geom_point(aes(dose, mu_hat), lm_summary, alpha = 0.5) +
   geom_errorbar(aes(dose, ymin = low, ymax = high), lm_summary, width = 0, alpha = 0.5) +
   scale_y_continuous(breaks = seq(1.2,1.45,by=0.02)) +
   xlab("Dose") + ylab("FEV1") +
-  labs(title = "ANOVA and bootstrap estimates for mean FEV1",
+  labs(title = "ANOVA and bootstrap estimates for FEV1 population average",
        subtitle = "confidence levels 50% and 95%")
 ```
 

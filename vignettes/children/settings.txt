@@ -1,0 +1,7 @@
+```{r, settings-knitr, include=FALSE}
+library(ggplot2)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, cache = TRUE,
+                      comment = NA,
+                      dev = "png", dpi = 150, fig.asp = 0.618, fig.width = 7, out.width = "85%", fig.align = "center")
+theme_set(theme_bw())
+```

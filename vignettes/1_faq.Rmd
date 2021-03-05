@@ -49,6 +49,48 @@ and tools have been developed specifically for this purpose. In
 addition assessment of a dose-response signal over placebo is not so
 much of interest in these studies.
 
+## What is the difference between the original and generalized MCP-Mod?
+
+Both variants are dose-response models for $K$ doses $x_1,\dots,x_K$
+and $M$ candidate models given by functions $f_m(x_k, \theta_m)$.
+
+The _original MCP-Mod_ approach assumes normally distributed _observations_
+\[
+y_{k,j} \sim \mathrm{Normal}(\mu_k, \sigma^2)
+\]
+for $k=1,\dots,K$ and $i=1,\dots,n_k$ in each group,
+where $\mu_k = f_m(x_k, \theta_m)$ under the $m$-th candidate model.
+The null hypothesis of a flat response profile $c_m^T \mu = 0$ vs $c_m^T \mu > 0$ (or $\neq 0$)
+is tested with $c_m$ chosen to maximize power under the $m$-th candidate model.
+Critical values are taken from a multivariate t distribution with $(\sum_{k=1}^K n_k) - k$ degrees of freedom.
+The parameters $\theta$ are estimated by OLS, minimizing
+$\sum_{k,j} (y_{k,j} - f_m(x_{k,j}, \theta))^2$.
+
+In the _generalized MCP-Mod_ approach no specific type of distribution is assumed for the observations,
+\[
+y_{k,j} \sim \mathrm{SomeDistribution}(\mu_k),
+\]
+only that $\mu_k$ can be interpreted as a kind of "average response" for dose $k$.
+The key assumption is that the _estimator_
+\[
+\hat\mu \sim \mathrm{MultivariateNormal}(\mu, S),
+\]
+is normally distributed (at least asymptotically),
+and that a first-stage fitting procedure can provide estimates $\hat\mu$ and $\hat S$.
+The $m$-th candidate model is taken to imply $\mu_k = f_m(x_k, \theta)$
+and the null hypothesis $c_m^T \mu = 0$ is tested with optimal contrasts.
+When the estimate $\hat S$ is used in place of the unknown $S$,
+critical values are taken from a multivariate normal distribution.
+Alternatively, degrees of freedom for a multivariate t distribution can be specified.
+In the second-stage fit the model parameters $\theta$ are estimated with GLS by minimizing
+\[
+(\hat\mu - f_m(x, \theta))^T\hat{S}^{-1}(\hat\mu - f_m(x, \theta)).
+\]
+
+In generalized MCP-Mod with an ANOVA as the first stage,
+the multiple contrast test (with appropriate degrees of freedom)
+is equivalent to the test from the original MCP-Mod approach.
+
 ## What type of response can be handled with MCP-Mod?
 
 The original MCP-Mod approach was derived for a normally distributed

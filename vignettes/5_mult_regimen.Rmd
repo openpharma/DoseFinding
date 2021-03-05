@@ -1,5 +1,5 @@
 ---
-title: "Design and analysis template: MCP-Mod with multiple regimen"
+title: "Analysis template: MCP-Mod with multiple regimen"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Vignette Title}
@@ -11,35 +11,86 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, cache = TRUE)
 ```
 
-This is a more extensive example and covers both design and analysis stage.
+Often more than one regimen studied in dose-finding studies. If there
+are enough doses within each regimen, one may still utilize MCP-Mod,
+but specific assumptions are needed, and it depends on the situation,
+whether or not these are appropriate.
 
-Utilize LIK weight-loss example
+The first idea is to bring the doses for each regimen on a common
+scale (total dose per time unit). For example for once daily (o.d.)
+dosing and twice daily (b.i.d.) dosing, one may utilize the total
+daily dose.
+
+It usually not appropriate to then perform MCP-Mod on the total daily
+dose (ignoring from which regimen the doses originate): The study
+investigated more than one regimen, so the assessing the difference
+between regimen (for example for the same total daily dose) is of
+interest. This would not be possible with such a modelling approach.
+
+The most general approach would be to perform MCP-Mod separately by
+regimen, and for example to adjust p-values originating from the
+MCP-part using a Bonferroni correction. This approach assumes that the
+regimen don't share any commonality. This approach is often not
+feasible. Due to the double-blind nature of trials, in the example of
+o.d. and b.i.d., all patients would receive two administrations per
+day, so that there is no placebo o.d. group. In these situations one
+would then compare against a common placebo group (assumed to be the
+same across regimen). In the modelling step one would then assume the
+intercept to be the same across regimen, but all other parameters
+separate.
+
+One could also assume further parameters to be common across regimen
+(for example the Emax parameter for the Emax model), but in what
+follows no such assumption is made.
+
+Here we will 
+
+Utilize LIK weight-loss example 24 weeks endpoint for percent change
+from baseline
 https://clinicaltrials.gov/ct2/show/results/NCT03100058
 
-# Design stage
+```{r}
+## Ludger can you check numbers here are matching the NCT results
+doses <- c(0, 2.5, 10, 50, 150, 2.5, 5, 25, 50)
+regimen <- c(rep("od", 5), rep("bid", 4))
+mn <- c(-0.63, -1.24, -2.04, -3.52, -4.37, -1.67, -2.51, -4.06, -4.47)
+lb <-  c(-1.56, -2.5, -3.36, -4.62, -5.36, -2.61, -3.94, -5.52, -5.49)
+ub <- c(0.37, -0.45, -0.88, -1.87, -3.37, -0.27, -1.32, -2.87, -3.48)
+se <- (ub - lb)/(2*qnorm(0.975)) ## approximate standard error
+```
 
+
+# Contrast test
+
+Assume modelling is performed on the total daily dose scale, and that
+the same candidate models are utilized for the two regimen.
 
 ```{r}
 library(DoseFinding)
-dosesQD <- c(2.5, 10, 50, 150)
+dosesOD <- c(2.5, 10, 50, 150)
 dosesBID <- c(2.5, 5, 25, 50)
 
-modsQD <- Mods(emax = c(5, 50),
+modsOD <- Mods(emax = c(5, 50),
                sigEmax = rbind(c(75,3.5), c(25, 0.7)),
-               maxEff = -1,
-               doses=c(0, dosesQD))
+               maxEff = 1,
+               doses=c(0, dosesOD))
 modsBID <- Mods(emax = c(5, 50),
-                sigEmax = c(75, 3.2),
-                maxEff = -1,
-                doses=c(0, 2*dosesBID)
-plot(modsQD, superpose=TRUE)
+                sigEmax = rbind(c(75,3.5), c(25, 0.7)),
+                maxEff = 1,
+                doses=c(0, 2*dosesBID))
+plot(modsOD, superpose=TRUE)
 plot(modsBID, superpose=TRUE)
+```
+
+```{r}
+## covariance matrix (assume 0 off-diagonal)
+V <- diag(se^2)
 ## calculate optimal contrasts
-indQD <- c(1:5)
-indBID <- c(1,6,7,8,9)
-CQD <- optContr(modsQD, S=V[indQD,indQD])$contMat
-rownames(CQD)[2:5] <- paste(rownames(CQD)[2:5], "QD", sep="-")
-colnames(CQD) <- paste(colnames(CQD), "QD", sep="-")
+indOD <- c(1:5)
+indBID <- c(1, 6:9)
+COD <- optContr(modsOD, S=V[indOD,indOD])$contMat
+rownames(COD)[2:5] <- paste(rownames(COD)[2:5], "OD", sep="-")
+colnames(COD) <- paste(colnames(COD), "OD", sep="-")
 
 CBID <- optContr(modsBID, S=V[indBID,indBID])$contMat
 rownames(CBID)[2:5] <- paste(rownames(CBID)[2:5], "BID", sep="-")
@@ -47,11 +98,12 @@ colnames(CBID) <- paste(colnames(CBID), "BID", sep="-")
 
 ## create combined matrix
 cMat <- rbind(
-  c(CQD[1,], CBID[1,]),
-  cbind(CQD[-1,],0,0,0,0,0,0),
-  cbind(0,0,0,0,0,0,CBID[-1,])
+  c(COD[1,], CBID[1,]),
+  cbind(COD[-1,],0,0,0,0),
+  cbind(0,0,0,0,CBID[-1,])
 )
-
+## contrast matrix looks like this
+print(round(cMat, 3))
 ```
 
 Analysis using generalized approach

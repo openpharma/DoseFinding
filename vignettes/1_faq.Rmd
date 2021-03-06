@@ -16,8 +16,6 @@ vignette: >
 
 <!-- TODO:
 - [ ] Links to other vignettes and help pages (Ludger)
-- [ ] explain "potentiated doses" (Björn)
-- [ ] clarify that the "overall trend test" refers to the multiple contrast test (Björn)
 -->
 
 ```{css, echo=FALSE}
@@ -231,12 +229,16 @@ lead to a decrease in clinical efficacy at higher doses, if a
 treatment policy or composite estimand stratey is used for
 treatment discontinuation.
 
-_Small number of doses:_ In case of for example 4 or 3 active doses it is challenging to
-fit sigmoid Emax (and beta models). One strategy in these
-situations is to fix the Hill parameter to a given value (for
-example 3 and/or 5), and then use different sigmoid Emax candidate
-models with fixed Hill parameter. Model fitting can be performed
-with the Emax model but with potentiated doses.
+_Small number of doses:_ In case of for example 4 or 3 active doses it
+is challenging to fit sigmoid Emax (and beta) models. If one still
+would like to include for example a sigmoid shape this can be achieved
+by fixing the Hill parameter to a given value (for example 3 and/or
+5), and then use different sigmoid Emax candidate models with fixed
+Hill parameter also for model fitting. Model fitting of these models
+can be performed with the standard Emax model but utilizing $doses^h$
+instead of $doses$ as the dose variable, where $h$ is the assumed
+fixed Hill parameter (note that the interpretation of ED50 parameter
+returned by fitMod then also changes).
 
 _Caution with linear models:_ Based on simulation studies utilizing the AIC, it has been
 observed that the linear model (as it has fewest parameters) is
@@ -369,14 +371,13 @@ significant). The obtained dose-response estimate, however, needs to
 be interpreted very cautiously, when no dose-response trend has been
 established in the MCP step.
 
-Using all models is also advisable in case the overall trend test in
-the MCP part was significant, but the contrast test corresponding to
-some particular model was not significant. In this case such a model
-may still be the true (or at least a useful model), because the
-non-significance may only have been due to a particular choice of
-guesstimates that result in the chosen contrast test - nevertheless
-once the model parameters are estimated from the data, the model may
-fit the data adequately (if not it will be downweighted automatically
-by the AIC).
+Using all models may also advisable in case the MCP part was
+significant, but the contrast test corresponding to some particular
+model was not significant. In this case such a model may still be the
+true (or at least a useful model), because the non-significance may
+only have been due to a particular choice of guesstimates that result
+in the chosen contrast test - nevertheless once the model parameters
+are estimated from the data, the model may fit the data adequately (if
+not it will be downweighted automatically by the AIC).
 
 ## References

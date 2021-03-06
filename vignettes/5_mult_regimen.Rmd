@@ -2,7 +2,7 @@
 title: "Analysis template: MCP-Mod with multiple regimen"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Analysis template: MCP-Mod with multiple regimen}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -49,7 +49,7 @@ Utilize LIK weight-loss example 24 weeks endpoint for percent change
 from baseline
 https://clinicaltrials.gov/ct2/show/results/NCT03100058
 
-```{r}
+```{r, eval=FALSE}
 ## Ludger can you check numbers here are matching the NCT results
 doses <- c(0, 2.5, 10, 50, 150, 2.5, 5, 25, 50)
 regimen <- c(rep("od", 5), rep("bid", 4))
@@ -65,7 +65,7 @@ se <- (ub - lb)/(2*qnorm(0.975)) ## approximate standard error
 Assume modelling is performed on the total daily dose scale, and that
 the same candidate models are utilized for the two regimen.
 
-```{r}
+```{r, eval=FALSE}
 library(DoseFinding)
 dosesOD <- c(2.5, 10, 50, 150)
 dosesBID <- c(2.5, 5, 25, 50)
@@ -82,7 +82,7 @@ plot(modsOD, superpose=TRUE)
 plot(modsBID, superpose=TRUE)
 ```
 
-```{r}
+```{r, eval=FALSE}
 ## covariance matrix (assume 0 off-diagonal)
 V <- diag(se^2)
 ## calculate optimal contrasts
@@ -108,7 +108,7 @@ print(round(cMat, 3))
 
 Analysis using generalized approach
 
-```{r}
+```{r, eval=FALSE}
 
 MCT <- function(est, S, contMat, df){
   ct <- as.vector(est %*% contMat)

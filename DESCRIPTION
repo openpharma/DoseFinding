@@ -2,7 +2,7 @@ Package: DoseFinding
 Type: Package
 Title: Planning and Analyzing Dose Finding Experiments
 Version: 1.0-1
-Date: 2019-11-15
+Date: 2021-03-06
 Authors@R: c(
    person("Bjoern", "Bornkamp", email = "bbnkmp@gmail.com", comment = c(ORCID = "0000-0002-6294-8185"), role = c("aut", "cre")),
    person("Jose", "Pinheiro", role = "ctb"),

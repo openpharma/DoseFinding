@@ -53,10 +53,20 @@ https://clinicaltrials.gov/ct2/show/results/NCT03100058
 ## Ludger can you check numbers here are matching the NCT results
 doses <- c(0, 2.5, 10, 50, 150, 2.5, 5, 25, 50)
 regimen <- c(rep("od", 5), rep("bid", 4))
-mn <- c(-0.63, -1.24, -2.04, -3.52, -4.37, -1.67, -2.51, -4.06, -4.47)
+mn_est <- c(-0.63, -1.24, -2.04, -3.52, -4.37, -1.67, -2.51, -4.06, -4.47)
 lb <-  c(-1.56, -2.5, -3.36, -4.62, -5.36, -2.61, -3.94, -5.52, -5.49)
 ub <- c(0.37, -0.45, -0.88, -1.87, -3.37, -0.27, -1.32, -2.87, -3.48)
 se <- (ub - lb)/(2*qnorm(0.975)) ## approximate standard error
+## plot data (duplicate PBO group for plotting and calc daily dose)
+pdat <- data.frame(daily_doses = c(doses[1], doses[1:5], 2*doses[6:9]),
+                   regimen = c("bid", regimen),
+                   mn_est = c(mn_est[1], mn_est),
+                   lb = c(lb[1], lb), ub = c(ub[1], ub))
+
+ggplot(pdat, aes(daily_doses, mn_est))+
+  geom_point()+
+  geom_errorbar(aes(ymin=lb, ymax=ub))+
+  facet_wrap(~regimen)
 ```
 
 
@@ -72,11 +82,11 @@ dosesBID <- c(2.5, 5, 25, 50)
 
 modsOD <- Mods(emax = c(5, 50),
                sigEmax = rbind(c(75,3.5), c(25, 0.7)),
-               maxEff = 1,
+               maxEff = -1,
                doses=c(0, dosesOD))
 modsBID <- Mods(emax = c(5, 50),
                 sigEmax = rbind(c(75,3.5), c(25, 0.7)),
-                maxEff = 1,
+                maxEff = -1,
                 doses=c(0, 2*dosesBID))
 plot(modsOD, superpose=TRUE)
 plot(modsBID, superpose=TRUE)
@@ -84,7 +94,7 @@ plot(modsBID, superpose=TRUE)
 
 ```{r, eval=FALSE}
 ## covariance matrix (assume 0 off-diagonal)
-V <- diag(se^2)
+S <- diag(se^2)
 ## calculate optimal contrasts
 indOD <- c(1:5)
 indBID <- c(1, 6:9)
@@ -102,6 +112,7 @@ cMat <- rbind(
   cbind(COD[-1,],0,0,0,0),
   cbind(0,0,0,0,CBID[-1,])
 )
+rownames(cMat)[1] <- "0"
 ## contrast matrix looks like this
 print(round(cMat, 3))
 ```
@@ -109,22 +120,19 @@ print(round(cMat, 3))
 Analysis using generalized approach
 
 ```{r, eval=FALSE}
-
-MCT <- function(est, S, contMat, df){
-  ct <- as.vector(est %*% contMat)
-  covMat <- t(contMat) %*% S %*% contMat
-  den <- sqrt(diag(covMat))
-  tStat <- ct/den
-  corMat <- cov2cor(covMat)
-  pVals <- DoseFinding:::pValues(contMat, corMat, NA, df, tStat, "one.sided", 
-                                 mvtnorm.control())
-  res <- list(contMat = contMat, corMat = corMat, tStat = tStat,
-              pVals=pVals,
-              alternative = "one.sided")
-  res
-}
-
-MCT(mn, V, cMat, df=447)
+## calculate contrast test statistics
+ct <- as.vector(mn_est %*% cMat)
+## calculate covariance of contrasts
+covMat <- t(cMat) %*% S %*% cMat
+den <- sqrt(diag(covMat))
+tStat <- ct/den
+corMat <- cov2cor(covMat)
+## calculate p-values
+pVals <- DoseFinding:::pValues(contMat = cMat, corMat = corMat,
+                               df=Inf, tStat = tStat,
+                               alternative="one.sided")
+## results of contrast test
+data.frame(tStat=tStat, pVals=pVals)
 ```
 
 # Analysis stage: Dose-response modelling

@@ -3,63 +3,148 @@ title: "Sample size template for MCP-Mod for normally distributed data"
 output: rmarkdown::html_vignette
 bibliography: refs.bib
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Sample size template for MCP-Mod for normally distributed data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, cache = TRUE)
+```{r, child="children/settings.txt"}
 ```
 
-Provide useful power plots (going beyond what exists in the package
-now, e.g. using ggplot2), that can easily be re-used for other
-purposes.
+<!-- TODO
+- [ ] Where does the `sigma=0.34` come from? (Björn)
+- [ ] Is the mis-specified exponential model 'bad enough'? (Björn)
+-->
 
-# Power calculations
+In this vignette we'll take a closer look at the design stage
+and see how to perform power and sample size calculations with the DoseFinding package.
 
-```{r}
+We'll consider the same example study
+and the same candidate models as in the [basic usage vignette](2_analysis_normal.html).
+
+```{r, setup}
 library(DoseFinding)
+library(ggplot2)
 doses <- c(0, 12.5, 25, 50, 100)
-## define candidate models (as used in NVA study)
-mods <- Mods(emax = c(2.6, 12.5), 
-             sigEmax = c(30.5, 3.5),
-             quadratic = -0.00776,
-             placEff = 1.25, maxEff = 0.15,
-         doses = doses)
-## graphical display of candidate shapes
+guess <- list(emax = c(2.6, 12.5), sigEmax = c(30.5, 3.5), quadratic = -0.00776)
+mods <- do.call(Mods, append(guess, list(placEff = 1.25, maxEff = 0.15, doses = doses)))
 plot(mods)
 ```
-# Plot of power versus group sample size
 
-```{r}
-## optimal contrasts
+## Power versus group sample size
+
+In this section we'll look at how power varies with sample size.
+Note that the effect size is fixed through `maxEff` in the candidate models.
+
+First we calculate the matrix of optimal contrasts
+(`w=1` denotes homoscedastic residuals with equal group sizes, see `?optContr`).
+
+In `powN` we specify the sample sizes for which to calculate the power.
+We also request five equally sized groups with `alRatio = rep(1, 5)`.
+We fix the residual standard deviation with `sigma = 0.34`.
+
+```{r, power_sample_size_1}
 contMat <- optContr(mods, w=1)
-pows <- powN(upperN = 100, lowerN=10, step = 10,  
-             contMat = contMat,sigma = 0.34,  
-             altModels = mods, alpha = 0.05, 
-             alRatio = rep(1, 5))
+pows <- powN(upperN = 100, lowerN = 10, step = 10, contMat = contMat,
+             sigma = 0.34, altModels = mods, alpha = 0.05, alRatio = rep(1, 5))
 plot(pows)
-## wrapper function sampSize performs sample-size calculations
-sampSizeMCT(upperN=100, contMat = contMat, sigma = 
-            0.34, altModels=mods, power = 0.9, 
-            alRatio = rep(1, 5), alpha = 0.05, sumFct = min)
 ```
 
-# Plot of power versus treatment effect
+There also is a wrapper function that calculates the group sample sizes needed in order to attain a specific power.
+The powers under each alternative model are combined with `sumFct`.
+Here we look at the minimum power,
+other potential choices are `mean` or `max`.
 
-Plot power versus treatment effect for fixed sample size, maybe for
-two different choices of sigma (use loop over powMCT function)? Show
-average and minimum power. In ggplot2?
+```{r, power_sample_size_2}
+sampSizeMCT(upperN = 150, contMat = contMat, sigma = 0.34, altModels = mods,
+            power = 0.9, alRatio = rep(1, 5), alpha = 0.05, sumFct = min)
+```
 
-# Power under mis-specification
-Add something on power for mis-specified scenarios?  For example add
-an exponential model. Define an exponential alternative model, and
-observe power (with including and excluding exponential model). Use
-powMCT function.
+## Power versus treatment effect
 
-# Sample size based on metrics other than power
+In this section we fix the group sample size at 60 and vary the treatment Effect `maxEff`.
+Note how power decreases if we assume a higher residual standard deviation.
 
-Refer to Chapter 12 in [@oquigley:2017] for example code on how to
-evaluate precision in dose-response and dose estimate, using the
-DoseFinding package.
+```{r, power_effect_size}
+plot_power_vs_treatment_effect <- function(guess, doses, group_size, placEff, maxEffs,
+                                           sigma_low, sigma_high, alpha) {
+  mods_args_fixed <- append(guess, list(placEff = placEff, doses = doses))
+  grid <- expand.grid(max_eff = maxEffs, sigma = c(sigma_low, sigma_high))
+  grid$min_power <- grid$mean_power <- NA
+  for (i in 1:nrow(grid)) {
+    mods <- do.call(Mods, append(mods_args_fixed, list(maxEff = grid$max_eff[i])))
+    p <- powMCT(optContr(mods, w = 1), alpha, mods, group_size, grid$sigma[i])
+    grid$min_power[i] <- min(p)
+    grid$mean_power[i] <- mean(p)
+  }
+  subt <- sprintf("placEff = %.3f, group size = %d, α = %.3f", placEff, group_size, alpha)
+  gg <- ggplot(grid) + geom_line(aes(max_eff, min_power, linetype = "minimum")) +
+    geom_line(aes(max_eff, mean_power, linetype = "mean")) +
+    xlab("maximum treatment effect") + ylab("power") +
+    facet_wrap(vars(sigma), labeller = label_both) +
+    labs(title = "Power vs effect size for different residual standard deviations", subtitle = subt) +
+    scale_linetype_discrete(name = "aggregation") +
+    theme(legend.position = "bottom") +
+    coord_cartesian(ylim = c(0, 1))
+  return(gg)
+}
+
+plot_power_vs_treatment_effect(guess, doses, group_size = 60, placEff = 1.25,
+                               maxEffs = seq(0.01, 0.3, length.out = 10),
+                               sigma_low = 0.34, sigma_high = 0.68, alpha = 0.05)
+```
+
+## Power under mis-specification
+
+One of the motivations behind MCP-Mod is robustness against mis-specified alternative models.
+To illustrate this, let's include an exponential candidate model with only small responses for all doses but the last.
+
+```{r, power_miss_1}
+guess_miss <- list(exponential = guesst(25, 0.025, "exponential", Maxd = max(doses)))
+mods_miss <- do.call(Mods, c(guess, guess_miss, list(placEff = 1.25, maxEff = 0.15, doses = doses)))
+plot(mods_miss, superpose = TRUE)
+```
+
+Now we compare the power calculations with those based on the original candidate set.
+
+```{r, power_miss_2}
+plot_power_misspec <- function(guess, guess_miss, placEff, maxEff, doses,
+                               upperN, lowerN, step, sigma, alpha) {
+  mods_extra_par <- list(placEff = placEff, maxEff = maxEff, doses = doses)
+  pown_extra_par <- list(upperN = upperN, lowerN = lowerN, step = step,
+                         sigma = sigma, alpha = alpha, alRatio = rep(1, length(doses)))
+  mods_miss <- do.call(Mods, c(guess, guess_miss, mods_extra_par))
+  mods_ok <- do.call(Mods, c(guess, mods_extra_par))
+  cm_miss <- optContr(mods_miss, w = 1)
+  cm_ok <- optContr(mods_ok, w = 1)
+  p_miss <- do.call(powN, c(pown_extra_par, list(contMat = cm_miss, altModels = mods_miss)))
+  p_ok <- do.call(powN, c(pown_extra_par, list(contMat = cm_ok, altModels = mods_ok)))
+  pwr <- rbind(data.frame(n = as.numeric(rownames(p_ok)), p_ok[, c("min", "mean")], miss = FALSE),
+               data.frame(n = as.numeric(rownames(p_miss)), p_miss[, c("min", "mean")], miss = TRUE))
+
+  gg <- ggplot(pwr, aes(group = miss, color = miss)) +
+    geom_line(aes(n, min, linetype = "minimum")) +
+    geom_line(aes(n, mean, linetype = "mean")) +
+    scale_color_discrete(name = "miss-specified") +
+    scale_linetype_discrete(name = "aggregation") +
+    labs(title = "Mean and minimum power under mis-specification") +
+    xlab("group size") + ylab("power") +
+    coord_cartesian(ylim = c(0, 1))
+  return(gg)
+}
+
+plot_power_misspec(guess, guess_miss, placEff = 1.25, maxEff = 0.15, doses = doses,
+                   upperN = 100, lowerN = 10, step = 10, sigma = 0.34, alpha = 0.05)
+
+sampSizeMCT(upperN = 150, contMat = optContr(mods_miss, w = 1), sigma = 0.34, altModels = mods_miss,
+            power = 0.9, alRatio = rep(1, 5), alpha = 0.05, sumFct = min)
+```
+
+Note how the mean power drops only slightly.
+The required group size for 90% power only increases by 7.
+
+## Sample size based on metrics other than power
+
+Refer to Chapter 12 in @oquigley2017 for example code on how to evaluate precision in dose-response and dose estimation.
+
+## References

@@ -81,7 +81,7 @@ bFitMod <- function(dose, resp, model, S, placAdj = FALSE,
   dose <- dose[ord]
   resp <- resp[ord]
   if (nrow(S) != nD | ncol(S) != nD) 
-    stop("S and dose have non-confirming size")
+    stop("S and dose have non-conforming size")
   if (missing(model)) 
     stop("need to specify the model that should be fitted")
   scal <- off <- nodes <- NULL

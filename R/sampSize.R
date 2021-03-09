@@ -26,7 +26,7 @@ sampSize <- function (upperN, lowerN = floor(upperN/2),
   ## first call
   upper <- func(round(upperN*alRatio))
   if(length(upper) > 1)
-    stop("targFunc(n) to evaluate to a vector of length 1.")
+    stop("targFunc(n) needs to evaluate to a vector of length 1.")
   if(!is.numeric(upper))
     stop("targFunc(n) needs to evaluate to a numeric.")
 

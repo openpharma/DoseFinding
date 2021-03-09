@@ -183,7 +183,7 @@ checkAnalyArgs <- function(dose, resp, data, S, type,
       stop("S needs to be of class matrix")
     nD <- length(dd[[doseNam]])
     if(nrow(S) != nD | ncol(S) != nD)
-      stop("S and dose have non-confirming size")
+      stop("S and dose have non-conforming size")
   }
   ord <- order(dd[[doseNam]])
   dd <- dd[ord, ]

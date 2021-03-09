@@ -62,7 +62,7 @@ modContr <- function(means, W = NULL, Sinv = NULL, placAdj = FALSE,
     })
   }
   if(all(!ind))
-    stop("All models correspond to a constant shapes, no optimal contrasts calculated.")
+    stop("All models correspond to a constant shape, no optimal contrasts calculated.")
   if(any(!ind)){
     nam <- colnames(means)[!ind]
     namsC <- paste(nam, collapse = ", ")
@@ -208,4 +208,3 @@ plot.optContr <- function (x, superpose = TRUE, xlab = "Dose",
   }
   print(ltplot)
 }
-

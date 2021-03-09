@@ -56,7 +56,7 @@ powMCT <- function(contMat, alpha = 0.025, altModels,
   ## extract covariance matrix
   if(missing(S)){
     if(missing(n) | missing(sigma))
-      stop("Either S or n and sigma need to be specified")
+      stop("Either S or both n and sigma need to be specified")
     if(length(n) == 1)
       n <- rep(n, nD)
     if(length(n) != nD)
@@ -65,7 +65,7 @@ powMCT <- function(contMat, alpha = 0.025, altModels,
     df <- sum(n) - nD
   } else {
     if(!missing(n)|!missing(sigma))
-      stop("Need to specify exactly one of \"S\" or \"n\" and \"sigma\"")
+      stop("Need to specify either \"S\" or both \"n\" and \"sigma\"")
     if(nrow(S) != ncol(S))
       stop("S needs to be a square matrix")
     if(nrow(S) != nD)

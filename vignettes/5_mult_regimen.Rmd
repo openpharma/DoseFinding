@@ -10,47 +10,62 @@ vignette: >
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, cache = TRUE)
 ```
-
 Often more than one regimen studied in dose-finding studies. If there
-are enough doses within each regimen, one may still utilize MCP-Mod,
-but specific assumptions are needed, and it depends on the situation,
-whether or not these are appropriate.
+are enough doses within each regimen, one may still utilize MCP-Mod.
+But specific assumptions are needed, and it depends on the situation,
+whether or not these are appropriate (and thus usage of MCP-Mod).
 
 The first idea is to bring the doses for each regimen on a common
-scale (total dose per time unit). For example for once daily (o.d.)
-dosing and twice daily (b.i.d.) dosing, one may utilize the total
-daily dose.
+scale (total dose per time unit). For example if once daily (o.d.)
+dosing and twice daily (b.i.d.) dosing are used in a study, one may
+utilize the total daily dose.
 
 It usually not appropriate to then perform MCP-Mod on the total daily
 dose (ignoring from which regimen the doses originate): The study
-investigated more than one regimen, so the assessing the difference
+investigated more than one regimen, so assessing the difference
 between regimen (for example for the same total daily dose) is of
-interest. This would not be possible with such a modelling approach.
+interest. This would not be possible with a modelling approach
+that ignores the regimen.
 
 The most general approach would be to perform MCP-Mod separately by
 regimen, and for example to adjust p-values originating from the
 MCP-part using a Bonferroni correction. This approach assumes that the
-regimen don't share any commonality. This approach is often not
-feasible. Due to the double-blind nature of trials, in the example of
+regimen don't share any similarity. This approach is often not
+feasible, due to the double-blind nature of trials. In the example of
 o.d. and b.i.d., all patients would receive two administrations per
-day, so that there is no placebo o.d. group. In these situations one
-would then compare against a common placebo group (assumed to be the
-same across regimen). In the modelling step one would then assume the
-intercept to be the same across regimen, but all other parameters
-separate.
+day (patients in the o.d. group receive one placebo per day), so that
+there is no real o.d. group, and no placebo o.d. group.  The placebo
+group is then assumed common to both the o.d. and b.i.d. dose-response
+curve. For the MCP-step contrasts for both o.d. and b.i.d. are taken
+with respect to the same placebo group and in the modelling step one
+would then assume the intercept to be the same across regimen, but all
+other parameters separate.
 
 One could also assume further parameters to be common across regimen
 (for example the Emax parameter for the Emax model), but in what
 follows no such assumption is made.
 
-Here we will 
+The motivation for the simulated data below is taken from a recently
+completed dose-finding study, where the dose-response of the drug
+Licogliflozin was assessed for the o.d. and b.i.d. regimen. (Bays,
+H.E., Kozlovski, P., Shao, Q., Proot, P. and Keefe, D. (2020),
+Licogliflozin, a Novel SGLT1 and 2 Inhibitor: Body Weight Effects in a
+Randomized Trial in Adults with Overweight or Obesity. Obesity, 28:
+870-881. https://doi.org/10.1002/oby.22764, clinicaltrials.gov:
+https://clinicaltrials.gov/ct2/show/results/NCT03100058).
 
-Utilize LIK weight-loss example 24 weeks endpoint for percent change
-from baseline
-https://clinicaltrials.gov/ct2/show/results/NCT03100058
+Note that this study used MCP-Mod, but the analysis presented here has
+been modified and simplified (e.g. in terms of candidate models and
+dose-response modelling strategy).
 
-```{r, eval=FALSE}
-## Ludger can you check numbers here are matching the NCT results
+Ludger: Can you read of the LS-mean estimates and 95% CI for the doses
+from Figure 3 in the paper (e.g. using a plot digitizer)?
+Unfortunately in Table 1 only shows the dose-response estimates (not
+the lsmeans from the ancova model).
+
+```{r}
+library(DoseFinding)
+library(ggplot2)
 doses <- c(0, 2.5, 10, 50, 150, 2.5, 5, 25, 50)
 regimen <- c(rep("od", 5), rep("bid", 4))
 mn_est <- c(-0.63, -1.24, -2.04, -3.52, -4.37, -1.67, -2.51, -4.06, -4.47)
@@ -75,51 +90,50 @@ ggplot(pdat, aes(daily_doses, mn_est))+
 Assume modelling is performed on the total daily dose scale, and that
 the same candidate models are utilized for the two regimen.
 
-```{r, eval=FALSE}
-library(DoseFinding)
-dosesOD <- c(2.5, 10, 50, 150)
-dosesBID <- c(2.5, 5, 25, 50)
+```{r}
+doses_od <- c(2.5, 10, 50, 150)
+doses_bid <- 2*c(2.5, 5, 25, 50) ## daily dose
 
-modsOD <- Mods(emax = c(5, 50),
+mods_od <- Mods(emax = c(5, 50),
                sigEmax = rbind(c(75,3.5), c(25, 0.7)),
                maxEff = -1,
-               doses=c(0, dosesOD))
-modsBID <- Mods(emax = c(5, 50),
+               doses=c(0, doses_od))
+mods_bid <- Mods(emax = c(5, 50),
                 sigEmax = rbind(c(75,3.5), c(25, 0.7)),
                 maxEff = -1,
-                doses=c(0, 2*dosesBID))
-plot(modsOD, superpose=TRUE)
-plot(modsBID, superpose=TRUE)
+                doses=c(0, 2*doses_bid))
+plot(mods_od, superpose=TRUE)
+plot(mods_bid, superpose=TRUE)
 ```
 
-```{r, eval=FALSE}
+```{r}
 ## covariance matrix (assume 0 off-diagonal)
 S <- diag(se^2)
 ## calculate optimal contrasts
-indOD <- c(1:5)
-indBID <- c(1, 6:9)
-COD <- optContr(modsOD, S=V[indOD,indOD])$contMat
-rownames(COD)[2:5] <- paste(rownames(COD)[2:5], "OD", sep="-")
-colnames(COD) <- paste(colnames(COD), "OD", sep="-")
+indod <- c(1:5)
+indbid <- c(1, 6:9)
+Cod <- optContr(mods_od, S=S[indod,indod])$contMat
+rownames(Cod)[2:5] <- paste(rownames(Cod)[2:5], "od", sep="-")
+colnames(Cod) <- paste(colnames(Cod), "od", sep="-")
 
-CBID <- optContr(modsBID, S=V[indBID,indBID])$contMat
-rownames(CBID)[2:5] <- paste(rownames(CBID)[2:5], "BID", sep="-")
-colnames(CBID) <- paste(colnames(CBID), "BID", sep="-")
+Cbid <- optContr(mods_bid, S=S[indbid,indbid])$contMat
+rownames(Cbid)[2:5] <- paste(rownames(Cbid)[2:5], "bid", sep="-")
+colnames(Cbid) <- paste(colnames(Cbid), "bid", sep="-")
 
 ## create combined matrix
 cMat <- rbind(
-  c(COD[1,], CBID[1,]),
-  cbind(COD[-1,],0,0,0,0),
-  cbind(0,0,0,0,CBID[-1,])
+  c(Cod[1,], Cbid[1,]),
+  cbind(Cod[-1,],0,0,0,0),
+  cbind(0,0,0,0,Cbid[-1,])
 )
 rownames(cMat)[1] <- "0"
-## contrast matrix looks like this
+## combined contrast matrix looks like this
 print(round(cMat, 3))
 ```
 
 Analysis using generalized approach
 
-```{r, eval=FALSE}
+```{r}
 ## calculate contrast test statistics
 ct <- as.vector(mn_est %*% cMat)
 ## calculate covariance of contrasts
@@ -132,7 +146,112 @@ pVals <- DoseFinding:::pValues(contMat = cMat, corMat = corMat,
                                df=Inf, tStat = tStat,
                                alternative="one.sided")
 ## results of contrast test
-data.frame(tStat=tStat, pVals=pVals)
+ord <- rev(order(tStat))
+data.frame(tStat=tStat[ord], pVals=pVals[ord])
 ```
 
 # Analysis stage: Dose-response modelling
+
+First auxiliary code used for model fitting, based on the functions in
+the MCP-Mod package.
+
+```{r}
+## function to calcuate model mean given parameters
+modFunc <- function(par, dose, regimen, mod){
+  out <- numeric(length(dose))
+  indod <- regimen == "od" 
+  indbid <- regimen == "bid" 
+
+  if(mod == "emax"){
+    out[indod] <- par[1] + emax(dose[indod], 0, par[2], par[3])
+    out[indbid] <- par[1] + emax(dose[indbid], 0, par[4], par[5])
+  }
+  if(mod == "sigEmax"){
+    out[indod] <- par[1] + sigEmax(dose[indod], 0, par[2], par[3], par[4])
+    out[indbid] <- par[1] + sigEmax(dose[indbid], 0, par[5], par[6], par[7])
+  }
+  out
+}
+## function to fit model
+fitModReg <- function(dose, regimen, est, S, mod, strt){
+  optFunc <- function(par, dose, regimen, mod, est, Sinv){
+    pred <- modFunc(par, dose, regimen, mod)
+    dif <- pred-est
+    as.numeric(t(dif)%*%Sinv%*%dif)
+  }
+  if(mod == "emax"){
+    lower <- 0.15
+    upper <- 225
+  }
+  if(mod == "sigEmax"){
+    lower <- c(0.15, 0.5)
+    upper <- c(225, 5)
+  }
+  lower <- c(rep(-Inf,2), lower)
+  upper <- c(rep(Inf,2), upper)
+  Sinv <- solve(S)
+  fit <- nlminb(strt, optFunc,
+                dose=dose, regimen=regimen,
+                mod = mod,
+                est=est, Sinv = Sinv,
+                lower=lower, upper=upper)
+}
+
+
+## sample from ls-mean estimates
+daily_doses <- doses
+daily_doses[6:9] <- 2*doses[6:9]
+nSim <- 50
+res <- rmvnorm(nSim, mean=mn_est, sigma=S)
+pred_sq <- c(seq(0,150,length=21), seq(0,100,length=21))
+pred_reg <- rep(c("od", "bid"), each = 21)
+predmn <- matrix(nrow=nSim, ncol=42)
+for(i in 1:nSim){
+  ## get starting values using fitMod
+  ## fit od doses
+  fitsod <- vector("list", 2)
+  fitsod[[1]] <- fitMod(daily_doses[indod], res[i,indod], type="general", S=S[indod, indod],
+                        model="emax", bnds = c(0.15, 225))
+  fitsod[[2]] <- fitMod(daily_doses[indod], res[i,indod], type="general", S=S[indod, indod],
+                        model="sigEmax", bnds = rbind(c(0.15, 225),c(0.5, 5)))
+  ## fit bid doses
+  fitsbid <- vector("list", 2)
+  fitsbid[[1]] <- fitMod(daily_doses[indbid], res[i,indbid], type="general", S=S[indbid, indbid],
+                         model="emax", bnds = c(0.1, 150))
+  fitsbid[[2]] <- fitMod(daily_doses[indbid], res[i,indbid], type="general", S=S[indbid, indbid],
+                         model="sigEmax", bnds = rbind(c(0.1, 150), c(0.5,5)))
+
+  ## fit the combined od & bid Emax and sigEmax model
+  cfod <- coef(fitsod[[1]])
+  cfbid <- coef(fitsbid[[1]])
+  strt <- c(res[i,1], cfod[-1], cfbid[-1])
+  fit_emax <- fitModReg(daily_doses, regimen, res[i,], S, "emax", strt = strt)
+  
+  cfod <- coef(fitsod[[2]])
+  cfbid <- coef(fitsbid[[2]])
+  strt <- c(res[i,1], cfod[-1], cfbid[-1])
+  fit_sigEmax <- fitModReg(daily_doses, regimen, res[i,], S, "sigEmax", strt = strt)
+
+  ## select model with lowest AIC
+  gaics <- c(fit_emax$objective + 2*5, fit_sigEmax$objective + 2*7)
+  mod_sel <- "emax"
+  fit_par <- fit_emax$par
+  if(gaics[2] < gaics[1]){
+    mod_sel <- "sigEmax"
+    fit_par <- fit_sigEmax$par
+  }
+
+  predmn[i,] <- modFunc(fit_par, pred_sq, pred_reg, mod_sel)
+}
+
+tmp <- apply(predmn, 2, function(x){
+  quantile(x, c(0.025,0.25,0.5,0.75,0.975))
+})
+pdat2 <- data.frame(pred_sq=pred_sq, LB=tmp[1,], med=tmp[3,], UB=tmp[5,],
+                    regimen = pred_reg)
+
+qplot(pred_sq, med, data=pdat2, geom="line")+
+  geom_ribbon(aes(x = pred_sq, ymin = LB, ymax = UB), alpha = 0.2) +
+  facet_wrap(~regimen)+
+  geom_point(aes(daily_doses, mn_est), data=pdat)
+```

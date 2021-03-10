@@ -1,227 +1,282 @@
-
 ---
-title: "Design and analysis template MCP-Mod for binary data"
+title: "Binary Data MCP-Mod"
 output: rmarkdown::html_vignette
 bibliography: refs.bib
+link-citations: yes
+csl: american-statistical-association.csl
 vignette: >
   %\VignetteIndexEntry{Design and analysis template MCP-Mod for binary data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, cache = FALSE)
+```{r, child = "children/settings.txt"}
 ```
 
-Illustrate points to consider for binary data for planning and
-analysis stage (See also pitfalls pdf document)
+In this vignette we illustrate how to use the DoseFinding package with binary observations,
+by fitting a first-stage GLM
+and applying the generalized MCP-Mod methodology to the resulting estimates.
+We also show how to deal with prognostic covariates.
 
-## Background
+For continuously distributed data see [the corresponding vignette][v2].
 
-Assume a dose-finding study is planned for an hypothetical investigational treatment in 
-atopic dermatitis, for the binary endpoint Investigator's Global Assessment (IGA). 
-The treatment is tested with doses 0, 0.5, 1.5, 2.5, 4. It is assumed 
-the response rate for placebo will be around 10%, while the response rate for the
-top dose may be 35%.
-This is an example where the generalized MCP-Mod approach can be applied. 
-That is dose-response testing and estimation will be performed on the 
-logit scale.
+[v2]: 2_analysis_normal.html
 
-## Candidate set
+## Background and data set
 
-Assume the following candidate set is desired to be used (on logit scale).
+Assume a dose-finding study is planned for an hypothetical investigational treatment in
+atopic dermatitis, for the binary endpoint Investigator's Global Assessment (IGA).
+The treatment is tested with doses 0, 0.5, 1.5, 2.5, 4.
+It is assumed the response rate for placebo will be around 10%,
+while the response rate for the top dose may be 35%.
+This is an example where the generalized MCP-Mod approach can be applied,
+i.e. dose-response testing and estimation will be performed on the logit scale.
 
-```{r}
-library(data.table)
-library(ggplot2)
+We generate some example data in the setting just described.
+The 10% placebo effect translates to -2.2 on the logit scale,
+and the asymptotic effect of 25 percentage points above placebo becomes `logit(0.35) - logit(0.1)`, approximately 1.6.
+
+```{r, example_data}
 library(DoseFinding)
-logit <- function(p)
-  log(p/(1-p))
-inv_logit <- function(y)
-  1/(1+exp(-y))
+library(ggplot2)
+
+logit <- function(p) log(p / (1 - p))
+inv_logit <- function(y) 1 / (1 + exp(-y))
 doses <- c(0, 0.5, 1.5, 2.5, 4)
-## define candidate models
-mods <- Mods(emax = c(0.25, 1), 
-             sigEmax = rbind(c(1, 3), c(2.5, 4)),
-             betaMod = c(1.1, 1.1),
-             placEff = logit(0.1), maxEff = logit(0.35)-logit(0.1),
-         doses = doses)
-## graphical display of candidate shapes
-plot(mods)
-## graphical display on probability scale
-sq <- seq(0,4,by=0.05)
-rsp <- getResp(mods, doses=sq)
-modnam <- factor(colnames(rsp), levels=colnames(rsp))
-pdat <- data.table(resp = inv_logit(c(rsp)),
-                   mod = rep(modnam, each = 81),
-                   dose = rep(sq, 5))
-ggplot(pdat, aes(dose, resp))+
-  geom_line(lwd=I(1.2))+
-  facet_wrap(~mod)+
-  scale_y_continuous(breaks = seq(0,0.45,by=0.1),limits=c(0,0.45))
-```
 
-
-
-## Analysis
-Generate some example data according to setting above
-
-```{r}
-set.seed(1)
-doseV <- rep(doses, each = 60)
-N <- length(doseV)
+set.seed(1, kind = "Mersenne-Twister", sample.kind = "Rejection", normal.kind = "Inversion")
+group_size <- 100
+dose_vector <- rep(doses, each = group_size)
+N <- length(dose_vector)
 ## generate covariates
 x1 <- rnorm(N, 0, 1)
-x2 <- factor(sample(c("A", "B"), N, replace=TRUE, prob=c(0.75, 0.25)))
-## assume approximately 10% placebo and 35% asymptotic response
-prob <- inv_logit(emax(doseV, -2.2, 1.6, 0.5) + 0.3*x1 + 0.3*(x2=="B"))
-y <- rbinom(N, 1, prob)
-dat <- data.table(y=y, dose=doseV, x1=x1, x2=x2)
+x2 <- factor(sample(c("A", "B"), N, replace = TRUE, prob = c(0.6, 0.4)))
+## assume approximately logit(10%) placebo and logit(35%) asymptotic response with an ED50 dose of 0.5
+prob <- inv_logit(emax(dose_vector, -2.2, 1.6, 0.5) + 0.3 * x1 + 0.3 * (x2 == "B"))
+dat <- data.frame(y = rbinom(N, 1, prob),
+                  dose = dose_vector, x1 = x1, x2 = x2)
 ```
 
-## Analysis considerations (unadjusted analysis)
+## Candidate models
 
-Same as outlined in Pinheiro et al 2014
-Perform MCP-Mod test on logit scale (contrasts applied to logits).
+We will use the following candidate set of models for the mean response on the logit scale:
 
-```{r}
-## First assume covariates had not been used in the analysis (not recommended!)
-fit <- glm(y~factor(dose)-1, data=dat, family=binomial)
-S <- vcov(fit)
-est <- coef(fit)
-MCTtest(doses, est, S=S, models=mods, type="general")
-```
-Dose-response modelling proceeds as
-
-```{r}
-nSim <- 1000
-sims <- rmvnorm(nSim, est, S)
-## now actual model fitting and selection of best model for all bootstraps
-bnds <- defBnds(max(doses)) ## boundaries assumed for model fitting (force convergence)
-dsq <- seq(0,4,length=51)
-pred <- matrix(nrow=nSim, ncol=51) ## will contain dr-model predictions 
-fit <- vector("list", 3)
-for(i in 1:nSim){
-  fit[[1]] <- fitMod(doses, sims[i,], model="emax", S=S,
-                     type="general", bnds=bnds$emax)
-  fit[[2]] <- fitMod(doses, sims[i,], model="sigEmax", S=S,
-                     type="general", bnds=bnds$sigEmax)
-  fit[[3]] <- fitMod(doses, sims[i,], model="betaMod", S=S,
-                     type="general", bnds=bnds$betaMod)
-  ind <- which.min(sapply(fit, gAIC)) ## choose best model according to AIC
-  pred[i,] <- predict(fit[[ind]], doseSeq=dsq, predType="ls-means")
-}
-qq <- apply(pred, 2, function(x) quantile(x, c(0.025,0.25,0.5,0.75,0.975)))
-pp <- inv_logit(qq)
-
-pdat <- data.table(dsq = dsq, pred = pp[3,],
-                   low1 = pp[2,], high1 = pp[4,],
-                   low2 = pp[1,], high2 = pp[5,])
-qq <- qnorm(0.975)
-pdat2 <- data.table(dose = doses, est=inv_logit(est),
-                    LB = inv_logit(est - qq*sqrt(diag(S))),
-                    UB = inv_logit(est + qq*sqrt(diag(S))))
-
-qplot(dsq, pred, data=pdat, geom="line", xlab = "Dose",
-      ylab="Response Probability")+
-  geom_point(aes(dose, y=est), data=pdat2, alpha=0.5)+
-  geom_errorbar(aes(x=dose, y=est, ymin = LB, ymax = UB),
-                 data=pdat2, width=0,alpha=0.5)+
-  geom_ribbon(aes(ymin = low1, ymax = high1), alpha=0.2)+
-  geom_ribbon(aes(ymin = low2, ymax = high2), alpha=0.2)+
-  scale_y_continuous(breaks = seq(0,1,by=0.05))+
-  theme_bw()
+```{r, setup}
+mods <- Mods(emax = c(0.25, 1), sigEmax = rbind(c(1, 3), c(2.5, 4)), betaMod = c(1.1, 1.1),
+             placEff = logit(0.1), maxEff = logit(0.35)-logit(0.1),
+             doses = doses)
+plot(mods)
 ```
 
-## Adjusted analysis
+With a little bit of work we can also transform from log-odds back to probabilities:
 
-In many situations there are important prognostic covariates (main effects) to adjust for in the analysis. The code below illustrates, how this can be achieved. Ludger please check this makes sense...
-
-```{r}
-fit <- glm(y~factor(dose)+x1+x2, data=dat, family=binomial)
-## predict every patient under *every* dose
-pdat <- data.table(dose = rep(doses, each = nrow(dat)),
-                   x1 = rep(x1, length(doses)),
-                   x2 = rep(x2, length(doses)))
-## calculate the average response probability per dose (averaged over all patients)
-## return result on logit scale
-get_pred <- function(X, par, doses){
-  p <- inv_logit(X%*%par)
-  logit(tapply(p, doses, mean))
+```{r, prob_scale}
+plot_prob <- function(models, dose_seq) {
+  rsp <- getResp(models, doses = dose_seq) # returs a dose x model matrix
+  modnam <- factor(colnames(rsp), levels = colnames(rsp))
+  pdat <- data.frame(resp = inv_logit(as.numeric(rsp)),
+                     mod = rep(modnam, each = length(dose_seq)),
+                     dose = rep(dose_seq, times = length(modnam)))
+  gg <- ggplot(pdat, aes(dose, resp)) +
+    geom_line(size = 1.2) +
+    scale_y_continuous(breaks = seq(0, 1, by=0.1)) +
+    facet_wrap(vars(mod)) +
+    ylab("response (probability scale)") +
+    coord_cartesian(ylim = c(0, NA))
+  return(gg)
 }
-X <- model.matrix(~factor(dose)+x1+x2, data=pdat)
-est <- get_pred(X, coef(fit), pdat$dose)
-## now approximate variance estimate based on simulation
-sims <- rmvnorm(1000, coef(fit), vcov(fit))
-preds <- matrix(nrow=1000, ncol=length(doses))
-for(i in 1:1000){
-  preds[i,] <- get_pred(X, sims[i,], pdat$dose)
-}
-S <- cov(preds)
 
-## perform multiple contrast test
-MCTtest(doses, est, S=S, type = "general", models=mods)
+plot_prob(mods, seq(0, 4, by = 0.05))
+```
+
+## Analysis without covariates
+
+The following analysis is also outlined in @pinheiro2014.
+
+First assume covariates had not been used in the analysis (not recommended in practice).
+Let $\mu_k$ denote the logit response probability at dose $k$,
+so that for patient $j$ in group $k$ we have
+
+\[
+\begin{aligned}
+  Y_{kj} &\sim \mathrm{Bernoulli}(p_{kj}) \\
+  \mathrm{logit}(p_{kj}) &= \mu_{k}
+\end{aligned}
+\]
+
+We perform the MCP-Mod test on the logit scale estimates $\hat\mu=(\hat\mu_1,\dots,\hat\mu_K)$
+and their estimated covariance matrix $\hat S$.
+We can extract both from the object returned by the `glm()` call.
+
+```{r, test_no_covariates}
+fit_nocov <- glm(y~factor(dose) + 0, data = dat, family = binomial)
+mu_hat <- coef(fit_nocov)
+S_hat <- vcov(fit_nocov)
+MCTtest(doses, mu_hat, S = S_hat, models = mods, type = "general")
+```
+
+Dose-response modeling proceeds with a combination of bootstrapping and model averaging.
+For detailed explanations refer to the [basic usage vignette][v2].
+
+```{r, estimate_no_covariates}
+one_bootstrap_prediction <- function(mu_hat, S_hat, doses, bounds, dose_seq) {
+  sim <- drop(rmvnorm(1, mu_hat, S_hat))
+  fit <- lapply(c("emax", "sigEmax", "betaMod"), function(mod)
+    fitMod(doses, sim, model = mod, S = S_hat, type = "general", bnds = bounds[[mod]]))
+  index <- which.min(sapply(fit, gAIC))
+  pred <- predict(fit[[index]], doseSeq = dose_seq, predType = "ls-means")
+  return(pred)
+}
+
+# bs_predictions is a doses x replications matrix,
+# probs is a 4-element vector of increasing probabilities for the quantiles
+summarize_predictions <- function(bs_predictions, probs) {
+  stopifnot(length(probs) == 4)
+  med <- apply(bs_predictions, 1, median)
+  quants <- apply(bs_predictions, 1, quantile, probs = probs)
+  bs_df <- as.data.frame(cbind(med, t(quants)))
+  names(bs_df) <- c("median", "low_out", "low_in", "high_in", "high_out")
+  return(bs_df)
+}
+
+predict_and_plot <- function(mu_hat, S_hat, doses, dose_seq, n_rep) {
+  bs_rep <- replicate(
+    n_rep, one_bootstrap_prediction(mu_hat, S_hat, doses, defBnds(max(doses)), dose_seq))
+  bs_summary <- summarize_predictions(bs_rep, probs = c(0.025, 0.25, 0.75, 0.975))
+  bs_summary <- as.data.frame(inv_logit(bs_summary)) # back to probability scale
+  ci_half_width <- qnorm(0.975) * sqrt(diag(S_hat))
+  glm_summary <- data.frame(dose = doses, mu_hat = inv_logit(mu_hat),
+                            low = inv_logit(mu_hat - ci_half_width),
+                            high = inv_logit(mu_hat + ci_half_width))
+  gg <- ggplot(cbind(bs_summary, dose_seq = dose_seq)) + geom_line(aes(dose_seq, median)) +
+    geom_ribbon(aes(x = dose_seq, ymin = low_in, ymax = high_in), alpha = 0.2) +
+    geom_ribbon(aes(x = dose_seq, ymin = low_out, ymax = high_out), alpha = 0.2) +
+    geom_point(aes(dose, mu_hat), glm_summary, alpha = 0.5) +
+    geom_errorbar(aes(dose, ymin = low, ymax = high), glm_summary, width = 0, alpha = 0.5) +
+    scale_y_continuous(breaks = seq(0, 1, 0.05)) +
+    xlab("Dose") + ylab("Response Probability") +
+    labs(title = "Bootstrap estimates for population response probability",
+         subtitle = "confidence levels 50% and 95%")
+  return(gg)
+}
+dose_seq <- seq(0, 4, length.out = 51)
+predict_and_plot(mu_hat, S_hat, doses, dose_seq, 1000)
+```
+
+## Analysis with covariates
+
+In many situations there are important prognostic covariates (main effects) to adjust for in the analysis.
+Denote the vector of these additional covariates for patient $j$ with $x_{kj}$.
+
+\[
+\begin{aligned}
+  Y_{kj} &\sim \mathrm{Bernoulli}(p_{kj}) \\
+  \mathrm{logit}(p_{kj}) &= \mu_k^d + x_{kj}^T\mu^a
+\end{aligned}
+\]
+
+Fitting this model gives us estimated coefficients $\hat\mu=(\hat\mu^d, \hat\mu^a)$
+and an estimate $\hat S$ of the covariance matrix of the estimator $\hat\mu$.
+
+In principle we could perform testing and estimation based on $\hat\mu^d$
+and the corresponding sub-matrix of $\hat S$.
+To accommodate potential systematic differences between the covariates across the groups we go a slightly more complex route.
+We predict the mean response probability at dose k for the observed values of the covariates and transform back to logit scale:
+\[
+\mu^*_k := \mathrm{logit}\biggl(\frac{1}{n} \sum_{j=1}^n
+\mathrm{logit}^{-1}(\hat\mu^d_k + x_{jk}^T\hat\mu^a)\biggr)
+\]
+
+For a variance estimate we repeat this with draws from $\mathrm{MultivariateNormal}(\hat\mu, \hat S)$
+and calculate the empirical covariance matrix $S^*$ of theses draws.
+
+Then we use $\mu^*$ and $S^*$ in `MCTtest()`.
+
+```{r, test_covariates}
+fit_cov <- glm(y~factor(dose) + 0 + x1 + x2, data = dat, family = binomial)
+
+covariate_adjusted_estimates <- function(mu_hat, S_hat, formula_rhs, doses, other_covariates, n_sim) {
+  # predict every patient under *every* dose
+  oc_rep <- as.data.frame(lapply(other_covariates, function(col) rep(col, times = length(doses))))
+  d_rep <- rep(doses, each = nrow(other_covariates))
+  pdat <- cbind(oc_rep, dose = d_rep)
+  X <- model.matrix(formula_rhs, pdat)
+  mu_star <- logit(tapply(inv_logit(X %*% mu_hat), pdat$dose, mean))
+  sims <- rmvnorm(n_sim, mu_hat, S_hat)
+  pred <- replicate(n_sim, logit(tapply(inv_logit(X %*% drop(rmvnorm(1, mu_hat, S_hat))),
+                                        pdat$dose, mean)))
+  return(list(mu_star = mu_star, S_star = cov(t(pred))))
+}
+
+ca <- covariate_adjusted_estimates(coef(fit_cov), vcov(fit_cov), ~factor(dose)+0+x1+x2,
+                                   doses, dat[, c("x1", "x2")], 1000)
+MCTtest(doses, ca$mu_star, S = ca$S_star, type = "general", models = mods)
+```
+
+In the case at hand the results are not dramatically different.
+Adjusting for covariates gives slightly lower variance estimates.
+
+```{r, compare}
+ggplot(data.frame(dose = rep(doses, 4),
+                  est = c(inv_logit(mu_hat), diag(S_hat), inv_logit(ca$mu_star), diag(ca$S_star)),
+                  name = rep(rep(c("mean", "var"), each = length(doses)), times = 2),
+                  a = rep(c(FALSE, TRUE), each = 2*length(doses)))) +
+  geom_point(aes(dose, est, color = a)) +
+  scale_color_discrete(name = "adjusted") +
+  coord_cartesian(ylim = c(0, NA)) +
+  facet_wrap(vars(name), scales = "free_y") + ylab("")
 ```
 
 Dose-response modelling proceeds in the same way as before but now on the adjusted estimates.
 
-```{r}
-nSim <- 1000
-sims <- rmvnorm(nSim, est, S)
-## now actual model fitting and selection of best model for all bootstraps
-bnds <- defBnds(max(doses)) ## boundaries assumed for model fitting (force convergence)
-dsq <- seq(0,4,length=51)
-pred <- matrix(nrow=nSim, ncol=51) ## will contain dr-model predictions 
-fit <- vector("list", 3)
-for(i in 1:nSim){
-  fit[[1]] <- fitMod(doses, sims[i,], model="emax", S=S,
-                     type="general", bnds=bnds$emax)
-  fit[[2]] <- fitMod(doses, sims[i,], model="sigEmax", S=S,
-                     type="general", bnds=bnds$sigEmax)
-  fit[[3]] <- fitMod(doses, sims[i,], model="betaMod", S=S,
-                     type="general", bnds=bnds$betaMod)
-  ind <- which.min(sapply(fit, gAIC)) ## choose best model according to AIC
-  pred[i,] <- predict(fit[[ind]], doseSeq=dsq, predType="ls-means")
-}
-qq <- apply(pred, 2, function(x) quantile(x, c(0.025,0.25,0.5,0.75,0.975)))
-pp <- inv_logit(qq)
-
-pdat <- data.table(dsq = dsq, pred = pp[3,],
-                   low1 = pp[2,], high1 = pp[4,],
-                   low2 = pp[1,], high2 = pp[5,])
-qq <- qnorm(0.975)
-pdat2 <- data.table(dose = doses, est=inv_logit(est),
-                    LB = inv_logit(est - qq*sqrt(diag(S))),
-                    UB = inv_logit(est + qq*sqrt(diag(S))))
-
-qplot(dsq, pred, data=pdat, geom="line", xlab = "Dose",
-      ylab="Response Probability")+
-  geom_point(aes(dose, y=est), data=pdat2, alpha=0.5)+
-  geom_errorbar(aes(x=dose, y=est, ymin = LB, ymax = UB),
-                 data=pdat2, width=0,alpha=0.5)+
-  geom_ribbon(aes(ymin = low1, ymax = high1), alpha=0.2)+
-  geom_ribbon(aes(ymin = low2, ymax = high2), alpha=0.2)+
-  scale_y_continuous(breaks = seq(0,1,by=0.05))+
-  theme_bw()
+```{r, estimate_covariates}
+predict_and_plot(ca$mu_star, ca$S_star, doses, dose_seq, 1000) +
+  labs(title = "Covariate adjusted bootstrap estimates for population response probability")
 ```
 
 ## Avoiding problems with complete seperation and 0 responders
 
-In a number of situations it makes sense to replace ML estimation for logistic regression via glm(..., family=binomial), with the Firth logistic regression (Reference: Heinze, G., & Schemper, M. (2002). A solution to the problem of separation in logistic regression. Statistics in medicine, 21(16), 2409-2419.),
-implemented in logistf function from the logistf package. This is particularly important for small sample size per dose and if small number of responses are expected some or all treatment arms. Firth regression corresponds to a maximum a-posterior estimator, when using Jeffreys prior and can be shown always to exist, also in situations, where the ML estimate for logistic regression does not exist (e.g. for complete separation).
+In a number of situations it makes sense to replace ML estimation for logistic regression
+via `glm(..., family=binomial)`,
+with the Firth logistic regression [see @heinze2002],
+implemented as the `logistf` function from the `logistf` package.
+This is particularly important for small sample size per dose
+and if small number of responses are expected some or all treatment arms.
+The estimator of Firth regression corresponds to the posterior mode in a Bayesian logistic regression model
+with Jeffrey's prior on the parameter.
+This estimator is well defined even in situations where the ML estimate for logistic regression does not exist
+(e.g. for complete separation).
 
 ## Considerations around optimal contrasts at design stage and analysis stage
 
-For normally distributed data, mean and variance of the mean estimate are independent. This is not the case for binary data. The analysis will be performed on the logit scale, and the estimated variance of the estimate $logit(\hat{p})$ is given by $\frac{1}{n\hat{p}(1-\hat{p})}$, where $n$ is the sample size in this dose-group (Ludger kannst Du das nachrechnen?). 
+For calculating the optimal contrast for the generalized MCP step
+the covariance matrix $S$ of the estimator $\hat\mu$ needs to be re-estimated once the trial data are available.
+With normally distributed data this is possible with decent accuracy even at low sample sizes.
+In the case of binary data,
+$\hat\mu$ is on the logit scale
+and the diagonal elements of $S$ are approximately $(np(1-p))^{-1}$,
+where $n$ is the sample size of the dose group.
+This can be derived using the delta method.
+An estimate of this variance depends on the observed response rate
+and can be quite variable even for moderate sample sizes.
 
-One challenge, when estimating this variance from the data and then based on that optimal contrasts (as done in the code chunks above implicitly via MCTtest) is that estimation of the variance can get imprecise for small sample size per group (e.g. smaller 20). In these situations it may make sense to just use a constant term for the variance across doses that is just $\propto$ the sample size per dose. The so calculated contrast will asymptotically not be equal to the "optimal" contrast for the underlying model, but simulations show that they can be closer to the "true" optimal contrast (calculated based on the true variance per dose group) for small sample size.
+Such an estimation takes place in the calls of `MCTtest()` above.
+As the estimate can get imprecise for small sample sizes per group (e.g. smaller than 20),
+it may make sense no to estimate a variance at all in these situations.
+One can just use a constant that is proportional to the sample size per dose.
+The contrast calculated this way will asymptotically not be equal to the "optimal" contrast for the underlying model,
+but simulations show that they can be closer to the "true" optimal contrast
+(calculated based on the true variance per dose group)
+for small sample size.
 
-When re-running the adjusted analysis above for the optimal contrast, calculated as outlined above, we obtain an only slightly different result.
+When re-running the adjusted analysis above for the optimal contrast,
+calculated as outlined above,
+we obtain a result that is only slightly different.
 ```{r}
 ## here we have balanced sample sizes across groups, so we select w = 1
 ## otherwise would select w proportional to group sample sizes
 optCont <- optContr(mods, doses, w = 1)
-MCTtest(doses, est, S=S, type = "general", contMat = optCont)
+MCTtest(doses, ca$mu_star, S = ca$S_star, type = "general", contMat = optCont)
 ```
 
 
@@ -231,33 +286,33 @@ MCTtest(doses, est, S=S, type = "general", contMat = optCont)
 ## calculate optimal contrasts (here for simplicity using the slightly suboptimal approach above)
 ## again assume we have balanced sample size per dose
 contMat <- optContr(mods, w=1)
-## use candidate models as "true scenarios" 
-altModels1 <- Mods(emax = 0.25, 
-                   placEff = logit(0.1), 
+## use candidate models as "true scenarios"
+altModels1 <- Mods(emax = 0.25,
+                   placEff = logit(0.1),
                    maxEff = logit(0.35)-logit(0.1),
                    doses = doses)
 p1 <- 1/(1+exp(-getResp(altModels1)))
 var1 <- 1/(p1*(1-p1))
-altModels2 <- Mods(emax = 1, 
-                   placEff = logit(0.1), 
+altModels2 <- Mods(emax = 1,
+                   placEff = logit(0.1),
                    maxEff = logit(0.35)-logit(0.1),
                    doses = doses)
 p2 <- 1/(1+exp(-getResp(altModels2)))
 var2 <- 1/(p2*(1-p2))
-altModels3 <- Mods(sigEmax = c(1, 3), 
-                   placEff = logit(0.1), 
+altModels3 <- Mods(sigEmax = c(1, 3),
+                   placEff = logit(0.1),
                    maxEff = logit(0.35)-logit(0.1),
                    doses = doses)
 p3 <- 1/(1+exp(-getResp(altModels3)))
 var3 <- 1/(p3*(1-p3))
 altModels4 <- Mods(sigEmax = c(2.5, 4),
-                   placEff = logit(0.1), 
+                   placEff = logit(0.1),
                    maxEff = logit(0.35)-logit(0.1),
                    doses = doses)
 p4 <- 1/(1+exp(-getResp(altModels4)))
 var4 <- 1/(p4*(1-p4))
 altModels5 <- Mods(betaMod = c(1.1, 1.1),
-                   placEff = logit(0.1), 
+                   placEff = logit(0.1),
                    maxEff = logit(0.35)-logit(0.1),
                    doses = doses)
 p5 <- 1/(1+exp(-getResp(altModels5)))
@@ -277,4 +332,3 @@ n <- seq(5,80,by=5)
 pows <- sapply(n, func)
 qplot(n, pows, geom="line", ylab="Min. Power over candidate set")
 ```
-

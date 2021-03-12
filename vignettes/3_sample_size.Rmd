@@ -1,5 +1,5 @@
 ---
-title: "Sample size template for MCP-Mod for normally distributed data"
+title: "Sample size calculations with MCP-Mod"
 output: rmarkdown::html_vignette
 bibliography: refs.bib
 vignette: >

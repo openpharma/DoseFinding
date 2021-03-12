@@ -1,5 +1,5 @@
 ---
-title: "Frequently Asked Questions for MCP-Mod"
+title: "MCP-Mod FAQ"
 output:
   rmarkdown::html_vignette:
     toc: true

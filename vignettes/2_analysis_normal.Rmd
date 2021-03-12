@@ -1,5 +1,5 @@
 ---
-title: "Analysis template MCP-Mod for continuous data"
+title: "Continuous data MCP-Mod"
 output: rmarkdown::html_vignette
 bibliography: refs.bib
 csl: american-statistical-association.csl
@@ -143,7 +143,7 @@ print(test_normal)
 The test results suggest a clear dose-response trend.
 
 Alternatively we can use generalized MCP-Mod
-(see the FAQ for the [difference](1_faq.html#what-type-of-response-can-be-handled-with-mcp-mod)).
+(see the FAQ for the [difference](1_faq.html#what-is-the-difference-between-the-original-and-generalized-mcp-mod)).
 We us R's builtin `lm()` function to manually fit the ANOVA model
 and extract estimates for the model coefficients and their covariance matrix.
 We also need the model degrees of freedom.
@@ -165,9 +165,11 @@ print(test_general)
 ```
 
 For the simple ANOVA case at hand the results of the original and the generalized MCP-Mod approaches actually coincide.
+The p-values differ due to the numerical methods used for obtaining them.
 
 ```{r, compare_normal_generalized}
 cbind(normal = test_normal$tStat, generalized = test_general$tStat)
+cbind(normal = attr(test_normal$tStat, "pVal"), generalized = attr(test_general$tStat, "pVal"))
 ```
 
 ## Dose-response estimation

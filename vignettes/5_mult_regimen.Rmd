@@ -172,7 +172,7 @@ mct_test(cont_mat, est)
 First auxiliary code used for model fitting, based on the functions in
 the MCP-Mod package.
 
-```{r, estimation, warning=FALSE}
+```{r, estimation}
 # evaluate model for od/bid with common e0, but separate remaining parameters
 # arguments:
 # - model: as a string like "emax",
@@ -183,7 +183,9 @@ eval_model_shared_e0 <- function(model, dose_od, dose_bid, par, i_par) {
   resp_placebo <- par[1] # e0
   resp_od <- do.call(model, append(list(dose_od, par[1]), as.list(par[i_par$od])))
   resp_bid <- do.call(model, append(list(dose_bid, par[1]), as.list(par[i_par$bid])))
-  return(c(resp_placebo, resp_od, resp_bid))
+  resp <- c(resp_placebo, resp_od, resp_bid)
+  #if (any(is.na(resp))) browser()
+  return(resp)
 }
 
 # fits 'model' to mu_hat with GLS (usint S_hat_inv as weight matrix), using a common e0 for od and bid regimens.
@@ -216,6 +218,19 @@ calc_start_values <- function(model, full_mu, full_S, dose, index, bounds) {
   return(start)
 }
 
+# FIXME: DoseFinding::sigEmax is NaN for large dose & large h.
+# nlminb acutally stumbles into those regions.
+# More stable alternative implementation:
+sigEmax_alt <- function(dose, e0, eMax, ed50, h) {
+  e0 + eMax / (1 + exp(h * log(ed50 / dose)))
+}
+
+sigEmax_alt(10, 1, 5, 4, 10) == sigEmax(10, 1, 5, 4, 10)
+sigEmax_alt(150, 1, 5, 4, 150)
+sigEmax(150, 1, 5, 4, 150)
+
+sigEmax <- sigEmax_alt
+
 # predict population response in each regimen for dose_seq_*
 # note: both dose_seq_* vectors should contain a 0 if response at placebo is of interest
 one_bootstrap_sample <- function(est, dose_seq_od, dose_seq_bid) {
@@ -242,7 +257,7 @@ one_bootstrap_sample <- function(est, dose_seq_od, dose_seq_bid) {
 summarize_bootstrap_samples <- function(samples, probs = c(0.025, 0.25, 0.75, 0.975)) {
   stopifnot(length(probs) == 4)
   med <- apply(samples, 1, median)
-  quants <- apply(samples, 1, quantile, probs = probs, na.rm = TRUE) # FIXME: there shouldn't be any NAs here
+  quants <- apply(samples, 1, quantile, probs = probs)
   bs_df <- as.data.frame(cbind(med, t(quants)))
   names(bs_df) <- c("median", "low_out", "low_in", "high_in", "high_out")
   return(bs_df)

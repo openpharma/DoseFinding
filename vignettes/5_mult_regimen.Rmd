@@ -3,7 +3,7 @@ title: "Multiple Regimen MCP-Mod"
 output: rmarkdown::html_vignette
 bibliography: refs.bib
 link-citations: yes
-cls: american-statistical-association.csl
+csl: american-statistical-association.csl
 vignette: >
   %\VignetteIndexEntry{Analysis template: MCP-Mod with multiple regimen}
   %\VignetteEngine{knitr::rmarkdown}
@@ -59,7 +59,14 @@ Note that this study used MCP-Mod, but the analysis presented here has
 been modified and simplified (e.g. in terms of candidate models and
 dose-response modelling strategy).
 
-$\mu=(\mu_{\mathrm{placebo}}, \mu_{\mathrm{od}}, \mu_{\mathrm{bid}})$
+For most of the following code it is useful to structure the first-stage estimates like this:
+\[
+\hat\mu=(\hat\mu_{\mathrm{placebo}}, \hat\mu_{\mathrm{od}}, \hat\mu_{\mathrm{bid}})
+\]
+The length of the sub-vectors $\hat\mu_{\mathrm{od}}$ and $\hat\mu_{\mathrm{bid}}$ correspond to the number of different doses in the two regimens.
+They can be different, but in our example both have 4 elements.
+
+Also note that we decide to model everything on the total daily dose scale.
 
 ```{r, data}
 library(DoseFinding)
@@ -75,18 +82,18 @@ example_estimates <- function() {
   return(list(mu_hat = mn,
               daily_dose = c(0, 2.5, 10, 50, 150, 5, 10, 50, 100),
               S_hat = diag(se^2),
+              # keep track of which elements correspond to which regimen:
               index = list(placebo = 1, od = 2:5, bid = 6:9)))
 }
 
+# restructure estimates for easy plotting with ggplot
 tidy_estimates <- function(est) {
   se <- sqrt(diag(est$S_hat))
-  tidy_df <- data.frame(daily_dose = est$daily_dose,
-                        mu_hat = est$mu_hat,
-                        ub = est$mu_hat + qnorm(0.975) * se,
-                        lb = est$mu_hat - qnorm(0.975) * se)
-  tidy_df <- rbind(tidy_df[1, ], tidy_df) # duplicate placebo
-  tidy_df$regimen <- c("od", "bid", rep("od", length(est$index$od)), rep("bid", length(est$index$bid)))
-  return(tidy_df)
+  tidy <- data.frame(daily_dose = est$daily_dose, mu_hat = est$mu_hat,
+                     ub = est$mu_hat + qnorm(0.975) * se, lb = est$mu_hat - qnorm(0.975) * se)
+  tidy <- rbind(tidy[1, ], tidy) # duplicate placebo
+  tidy$regimen <- c("od", "bid", rep("od", length(est$index$od)), rep("bid", length(est$index$bid)))
+  return(tidy)
 }
 
 plot_estimates <- function(est) {
@@ -105,19 +112,18 @@ plot_estimates(est)
 
 ## Candidate models
 
-Assume modelling is performed on the total daily dose scale, and that
-the same candidate models are utilized for the two regimen.
+We will use the same candidate models for both regimen.
 
 ```{r, candidate_models}
 mods <- list(
   od = Mods(emax = c(5, 50),
-            sigEmax = rbind(c(75,3.5), c(25, 0.7)),
+            sigEmax = rbind(c(75, 3.5), c(25, 0.7)),
             maxEff = -1,
-            doses=c(0, est$od$daily_dose)),
+            doses = est$daily_dose[c(est$index$placebo, est$index$od)]),
   bid = Mods(emax = c(5, 50),
-             sigEmax = rbind(c(75,3.5), c(25, 0.7)),
+             sigEmax = rbind(c(75, 3.5), c(25, 0.7)),
              maxEff = -1,
-             doses=c(0, est$bid$daily_dose)))
+             doses=est$daily_dose[c(est$index$placebo, est$index$bid)]))
 
 plot(mods$od, superpose = TRUE)
 plot(mods$bid, superpose = TRUE)
@@ -125,8 +131,10 @@ plot(mods$bid, superpose = TRUE)
 
 ## Multiple contrast test
 
-The matrix of contrasts is built from two separate matrices,
-one for each regimen.
+The matrix of contrasts is built up from a separate matrix for each regimen.
+We stick them together in such a way
+that we compare $\hat\mu_{\mathrm{od}}$ and $\hat\mu_{\mathrm{bid}}$
+with the common placebo response estimate $\hat\mu_{\mathrm{placebo}}$.
 
 ```{r, contrasts}
 calculate_contrasts <- function(est, mods) {
@@ -169,11 +177,18 @@ mct_test(cont_mat, est)
 
 ## Dose-response modelling
 
-First auxiliary code used for model fitting, based on the functions in
-the MCP-Mod package.
+Dose-response estimation needs a handful of auxiliary functions.
+The model for $\hat\mu$ has a common intercept parameter for both regimen together
+and two sets of the remaining parameters of the family in question.
+For example, a model based on the Emax family has 5 parameters:
+one common `e0`,
+`(eMax, ed50)` for the o.d. regimen,
+and `(eMax, ed50)` for the b.i.d. regimen.
 
-```{r, estimation}
-# evaluate model for od/bid with common e0, but separate remaining parameters
+The following function calculates the responses given dose values and a model family.
+
+```{r, estimation_1}
+# calculate response under `model` for od/bid with common e0, but separate remaining parameters
 # arguments:
 # - model: as a string like "emax",
 # - i_par: list of vectors named "placebo", "od", "bid", used for indexing `par`
@@ -187,22 +202,14 @@ eval_model_shared_e0 <- function(model, dose_od, dose_bid, par, i_par) {
   #if (any(is.na(resp))) browser()
   return(resp)
 }
+```
 
-# fits 'model' to mu_hat with GLS (usint S_hat_inv as weight matrix), using a common e0 for od and bid regimens.
-# i_reg:  list of vectors named "placebo", "od", "bid", used for indexing `dose`
-# i_par: passed through to `eval_model_shared_e0`
-# dose: numeric with doses for placebo, od, bid
-# lower, upper, start: control parameters fro `nlminb`
-fit_model_shared_e0 <- function(model, dose, mu_hat, S_hat_inv, lower, upper, start, i_reg, i_par) {
-  opt_fun <- function(par) { # make use of lexical scope
-    resp <- eval_model_shared_e0(model, dose[i_reg$od], dose[i_reg$bid], par, i_par)
-    delta <- resp - mu_hat
-    return(drop(t(delta) %*% S_hat_inv %*% delta))
-  }
-  fit <- nlminb(start, opt_fun, lower = lower, upper = upper)
-  return(fit)
-}
+Next, we need to be able to fit a model family to the observed $\hat\mu$.
+For this we employ the usual generalized MCP-Mod approach,
+i.e. generalized least squares with the estimated covariance matrix $\hat S$
+[@pinheiro2014].
 
+```{r, estimation_2}
 # find sensible starting values for `fit_model_shared_e0` by fitting separate models,
 # index:  list of vectors named "placebo", "od", "bid", used for indexing `dose`
 # bounds: passed through to `fitMod`
@@ -218,6 +225,21 @@ calc_start_values <- function(model, full_mu, full_S, dose, index, bounds) {
   return(start)
 }
 
+# fits 'model' to mu_hat with GLS (using S_hat_inv as weight matrix), using a common e0 for od and bid regimens.
+# i_reg:  list of vectors named "placebo", "od", "bid", used for indexing `dose`
+# i_par: passed through to `eval_model_shared_e0`
+# dose: numeric with doses for placebo, od, bid
+# lower, upper, start: control parameters fro `nlminb`
+fit_model_shared_e0 <- function(model, dose, mu_hat, S_hat_inv, lower, upper, start, i_reg, i_par) {
+  opt_fun <- function(par) { # make use of lexical scope
+    resp <- eval_model_shared_e0(model, dose[i_reg$od], dose[i_reg$bid], par, i_par)
+    delta <- resp - mu_hat
+    return(drop(t(delta) %*% S_hat_inv %*% delta))
+  }
+  fit <- nlminb(start, opt_fun, lower = lower, upper = upper)
+  return(fit)
+}
+
 # FIXME: DoseFinding::sigEmax is NaN for large dose & large h.
 # nlminb acutally stumbles into those regions.
 # More stable alternative implementation:
@@ -225,12 +247,18 @@ sigEmax_alt <- function(dose, e0, eMax, ed50, h) {
   e0 + eMax / (1 + exp(h * log(ed50 / dose)))
 }
 
-sigEmax_alt(10, 1, 5, 4, 10) == sigEmax(10, 1, 5, 4, 10)
-sigEmax_alt(150, 1, 5, 4, 150)
-sigEmax(150, 1, 5, 4, 150)
+## sigEmax_alt(10, 1, 5, 4, 10) == sigEmax(10, 1, 5, 4, 10)
+## sigEmax_alt(150, 1, 5, 4, 150)
+## sigEmax(150, 1, 5, 4, 150)
 
 sigEmax <- sigEmax_alt
+```
 
+Finally, instead of only fitting a single model,
+we use the same bootstrap-plus-averaging approach
+that is detailed in the [basic usage vignette](2_analysis_normal.html#dose-response-estimation).
+
+```{r, estimation_3}
 # predict population response in each regimen for dose_seq_*
 # note: both dose_seq_* vectors should contain a 0 if response at placebo is of interest
 one_bootstrap_sample <- function(est, dose_seq_od, dose_seq_bid) {
@@ -241,7 +269,7 @@ one_bootstrap_sample <- function(est, dose_seq_od, dose_seq_bid) {
                         i_par = list(od = 2:4, bid = 5:7), n_par_gaic = 7))
   fit <- lapply(mod_info, function(m) {
     start <- calc_start_values(m$name, mu_new, est$S_hat, est$daily_dose, est$index, m$bounds)
-    low <- c(-Inf, -Inf, m$bounds[,1]) # no bounds on e0, ed50
+    low <- c(-Inf, -Inf, m$bounds[,1]) # no bounds on e0, eMax
     up <- c(Inf, Inf, m$bounds[,2])
     fit_model_shared_e0(m$name, est$daily_dose, mu_new, solve(est$S_hat), lower = low,  upper = up,
                         start = start, i_reg = est$index, i_par = m$i_par)
@@ -276,7 +304,8 @@ ggplot(bs_sum) + geom_ribbon(aes(daily_dose, ymin=low_out, ymax=high_out), alpha
   geom_line(aes(daily_dose, median)) +
   geom_point(aes(daily_dose, mu_hat), tidy_estimates(est)) +
   facet_wrap(vars(regimen), labeller = label_both) +
-  labs(title = "Bootstrap estimates for population response") +
+  labs(title = "Bootstrap estimates for population response",
+       subtitle = "Least squares estimates plus 50% and 95% confidence bands") +
   xlab("daily dose") + ylab("percent body weigh change") +
   coord_cartesian(ylim = c(-6, 0))
 ```

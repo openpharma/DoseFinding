@@ -1,0 +1,311 @@
+---
+title: "Multiple Regimen MCP-Mod"
+output: rmarkdown::html_vignette
+bibliography: refs.bib
+link-citations: yes
+csl: american-statistical-association.csl
+vignette: >
+  %\VignetteIndexEntry{Analysis template: MCP-Mod with multiple regimen}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, child="children/settings.txt"}
+```
+
+## Background
+
+Often more than one regimen is studied in dose-finding studies. If there
+are enough doses within each regimen, one may still utilize MCP-Mod.
+But specific assumptions are needed, and it depends on the situation,
+whether or not these are appropriate (and thus usage of MCP-Mod).
+
+The first idea is to bring the doses for each regimen on a common
+scale (total dose per time unit). For example if once daily (o.d.)
+dosing and twice daily (b.i.d.) dosing are used in a study, one might
+utilize the total daily dose.
+
+It is usually not appropriate to then perform MCP-Mod on the total daily
+dose (ignoring from which regimen the doses originate): The study
+investigated more than one regimen, so assessing the difference
+between regimen (for example for the same total daily dose) is of
+interest. This would not be possible with a modelling approach
+that ignores the regimen.
+
+The most general approach would be to perform MCP-Mod separately by
+regimen, and for example to adjust p-values originating from the
+MCP-part using a Bonferroni-Holm correction. This approach assumes that the
+regimen don't share any similarity. This approach is often not
+feasible, due to the double-blind nature of trials. In the example of
+o.d. and b.i.d., all patients would receive two administrations per
+day (patients in the o.d. group receive one placebo per day), so that
+there is no real o.d. group, and no placebo o.d. group.  The placebo
+group is then assumed common to both the o.d. and b.i.d. dose-response
+curve. For the MCP-step contrasts for both o.d. and b.i.d. are taken
+with respect to the same placebo group and in the modelling step one
+would then assume the intercept to be the same across regimen, but all
+other parameters separate.
+
+One could also assume further parameters to be common across regimen
+(for example the Emax parameter for the Emax model), but in the
+following example no such assumption is made.
+
+The motivation for the simulated data below is taken from a recently
+completed dose-finding study, where the dose-response of the drug
+Licogliflozin was assessed for the o.d. and b.i.d. regimen [@bays2020],
+see also the [corresponding page at clinicaltrials.gov](https://clinicaltrials.gov/ct2/show/results/NCT03100058).
+
+Note that this study used MCP-Mod, but the analysis presented here has
+been modified and simplified (e.g. in terms of candidate models and
+dose-response modelling strategy).
+
+For most of the following code it is useful to structure the first-stage estimates like this:
+\[
+\hat\mu=(\hat\mu_{\mathrm{placebo}}, \hat\mu_{\mathrm{od}}, \hat\mu_{\mathrm{bid}})
+\]
+The length of the sub-vectors $\hat\mu_{\mathrm{od}}$ and $\hat\mu_{\mathrm{bid}}$ correspond to the number of different doses in the two regimens.
+They can be different, but in our example both have 4 elements.
+
+Also note that we decide to model everything on the total daily dose scale.
+
+```{r, data}
+library(DoseFinding)
+library(ggplot2)
+# collect estimates and dosage information in one place
+example_estimates <- function() {
+  # ANOVA mean estimates and ci bounds extracted from fig. 3 of Bays (2020),
+  # because the clinicaltrials.gov page seems to contain values from a parametric model fit
+  mn <- c(-0.55, -1.78, -1.95, -3.29, -4.43, -1.14, -2.74, -4.03, -4.47)
+  lb <- c(-1.56, -3.15, -3.36, -4.85, -5.40, -2.49, -4.10, -5.50, -5.50)
+  ub <- c( 0.40, -0.30, -0.54, -1.76, -3.48, 0.24, -1.38, -2.65, -3.44)
+  se <- (ub - lb)/(2*qnorm(0.975)) # approximate standard error
+  return(list(mu_hat = mn,
+              daily_dose = c(0, 2.5, 10, 50, 150, 5, 10, 50, 100),
+              S_hat = diag(se^2),
+              # keep track of which elements correspond to which regimen:
+              index = list(placebo = 1, od = 2:5, bid = 6:9)))
+}
+
+# restructure estimates for easy plotting with ggplot
+tidy_estimates <- function(est) {
+  se <- sqrt(diag(est$S_hat))
+  tidy <- data.frame(daily_dose = est$daily_dose, mu_hat = est$mu_hat,
+                     ub = est$mu_hat + qnorm(0.975) * se, lb = est$mu_hat - qnorm(0.975) * se)
+  tidy <- rbind(tidy[1, ], tidy) # duplicate placebo
+  tidy$regimen <- c("od", "bid", rep("od", length(est$index$od)), rep("bid", length(est$index$bid)))
+  return(tidy)
+}
+
+plot_estimates <- function(est) {
+  df <- tidy_estimates(est)
+  ggplot(df, aes(daily_dose, mu_hat)) + geom_point() +
+    geom_errorbar(aes(ymin = lb, ymax = ub)) +
+    facet_wrap(vars(regimen), labeller = label_both) +
+    xlab("daily dose") + ylab("percent body weight cange") +
+    labs(title = "ANOVA estimates with 95% confindence intervals")
+}
+
+est <- example_estimates()
+plot_estimates(est)
+```
+
+
+## Candidate models
+
+We will use the same candidate models for both regimen.
+
+```{r, candidate_models}
+mods <- list(
+  od = Mods(emax = c(5, 50),
+            sigEmax = rbind(c(75, 3.5), c(25, 0.7)),
+            maxEff = -1,
+            doses = est$daily_dose[c(est$index$placebo, est$index$od)]),
+  bid = Mods(emax = c(5, 50),
+             sigEmax = rbind(c(75, 3.5), c(25, 0.7)),
+             maxEff = -1,
+             doses=est$daily_dose[c(est$index$placebo, est$index$bid)]))
+
+plot(mods$od, superpose = TRUE)
+plot(mods$bid, superpose = TRUE)
+```
+
+## Multiple contrast test
+
+The matrix of contrasts is built up from a separate matrix for each regimen.
+We stick them together in such a way
+that we compare $\hat\mu_{\mathrm{od}}$ and $\hat\mu_{\mathrm{bid}}$
+with the common placebo response estimate $\hat\mu_{\mathrm{placebo}}$.
+
+```{r, contrasts}
+calculate_contrasts <- function(est, mods) {
+  S_hat <- est$S_hat
+  i <- est$index
+  cm_od <- optContr(mods$od, S=S_hat[c(i$placebo, i$od), c(i$placebo, i$od)])$contMat
+  cm_bid <- optContr(mods$bid, S=S_hat[c(i$placebo, i$bid), c(i$placebo, i$bid)])$contMat
+  colnames(cm_od) <- paste0("od_", colnames(cm_od))
+  rownames(cm_od)[-1] <- paste0("od_", rownames(cm_od)[-1])
+  colnames(cm_bid) <- paste0("bid_", colnames(cm_bid))
+  rownames(cm_bid)[-1] <- paste0("bid_", rownames(cm_bid)[-1])
+  # now build a block matrix (contrasts in columns) like this:
+  # [placebo od | placebo bid ]
+  # [doses od   | 0           ]
+  # [0          | doses bid   ]
+  cm_full <- rbind(
+    "0"=c(cm_od[1,],                                cm_bid[1,]                              ),
+    cbind(cm_od[-1,],                               matrix(0, nrow(cm_od) - 1, ncol(cm_bid))),
+    cbind(matrix(0, nrow(cm_bid) - 1, ncol(cm_od)), cm_bid[-1, ]                            ))
+  return(cm_full)
+}
+
+cont_mat <- calculate_contrasts(est, mods)
+print(round(cont_mat, 2))
+```
+
+We also need to calculate the test statistics by hand.
+
+```{r, test}
+mct_test <- function(cont_mat, est) {
+  cont_cov <- t(cont_mat) %*% est$S_hat %*% cont_mat
+  t_stat <- drop(est$mu_hat %*% cont_mat) / sqrt(diag(cont_cov))
+  # FIXME: calling non-exported function
+  p <- DoseFinding:::pValues(cont_mat, cov2cor(cont_cov), Inf, t_stat, "one.sided")
+  ord <- rev(order(t_stat))
+  return(data.frame(tStat = t_stat[ord], pVals = p[ord]))
+}
+mct_test(cont_mat, est)
+```
+
+## Dose-response modelling
+
+Dose-response estimation needs a handful of auxiliary functions.
+The model for $\hat\mu$ has a common intercept parameter for both regimen together
+and two sets of the remaining parameters of the family in question.
+For example, a model based on the Emax family has 5 parameters:
+one common `e0`,
+`(eMax, ed50)` for the o.d. regimen,
+and `(eMax, ed50)` for the b.i.d. regimen.
+
+The following function calculates the responses given dose values and a model family.
+
+```{r, estimation_1}
+# calculate response under `model` for od/bid with common e0, but separate remaining parameters
+# arguments:
+# - model: as a string like "emax",
+# - i_par: list of vectors named "placebo", "od", "bid", used for indexing `par`
+# - par: numeric, model parameter structured as c(e0, pars_od, pars_bid)
+# returns: response at placebo, dose_od, dose_bid (in this order)
+eval_model_shared_e0 <- function(model, dose_od, dose_bid, par, i_par) {
+  resp_placebo <- par[1] # e0
+  resp_od <- do.call(model, append(list(dose_od, par[1]), as.list(par[i_par$od])))
+  resp_bid <- do.call(model, append(list(dose_bid, par[1]), as.list(par[i_par$bid])))
+  resp <- c(resp_placebo, resp_od, resp_bid)
+  #if (any(is.na(resp))) browser()
+  return(resp)
+}
+```
+
+Next, we need to be able to fit a model family to the observed $\hat\mu$.
+For this we employ the usual generalized MCP-Mod approach,
+i.e. generalized least squares with the estimated covariance matrix $\hat S$
+[@pinheiro2014].
+
+```{r, estimation_2}
+# find sensible starting values for `fit_model_shared_e0` by fitting separate models,
+# index:  list of vectors named "placebo", "od", "bid", used for indexing `dose`
+# bounds: passed through to `fitMod`
+calc_start_values <- function(model, full_mu, full_S, dose, index, bounds) {
+  separate_coefs <- sapply(c("od", "bid"), function(regimen) {
+    which <- c(index$placebo, index[[regimen]])
+    coef(fitMod(dose[which], full_mu[which], S = full_S[which, which],
+                type = "general",  model = model, bnds = bounds))[-1] # drop e0 estimate
+  })
+  # remove names to prevent error in do.call() in eval_model_shared_e0;
+  # od, bid coefs are in 1st / second column
+  start <- c(full_mu[1], as.numeric(separate_coefs), use.names=FALSE)
+  return(start)
+}
+
+# fits 'model' to mu_hat with GLS (using S_hat_inv as weight matrix), using a common e0 for od and bid regimens.
+# i_reg:  list of vectors named "placebo", "od", "bid", used for indexing `dose`
+# i_par: passed through to `eval_model_shared_e0`
+# dose: numeric with doses for placebo, od, bid
+# lower, upper, start: control parameters fro `nlminb`
+fit_model_shared_e0 <- function(model, dose, mu_hat, S_hat_inv, lower, upper, start, i_reg, i_par) {
+  opt_fun <- function(par) { # make use of lexical scope
+    resp <- eval_model_shared_e0(model, dose[i_reg$od], dose[i_reg$bid], par, i_par)
+    delta <- resp - mu_hat
+    return(drop(t(delta) %*% S_hat_inv %*% delta))
+  }
+  fit <- nlminb(start, opt_fun, lower = lower, upper = upper)
+  return(fit)
+}
+
+# FIXME: DoseFinding::sigEmax is NaN for large dose & large h.
+# nlminb acutally stumbles into those regions.
+# More stable alternative implementation:
+sigEmax_alt <- function(dose, e0, eMax, ed50, h) {
+  e0 + eMax / (1 + exp(h * log(ed50 / dose)))
+}
+
+## sigEmax_alt(10, 1, 5, 4, 10) == sigEmax(10, 1, 5, 4, 10)
+## sigEmax_alt(150, 1, 5, 4, 150)
+## sigEmax(150, 1, 5, 4, 150)
+
+sigEmax <- sigEmax_alt
+```
+
+Finally, instead of only fitting a single model,
+we use the same bootstrap-plus-averaging approach
+that is detailed in the [basic usage vignette](2_analysis_normal.html#dose-response-estimation).
+
+```{r, estimation_3}
+# predict population response in each regimen for dose_seq_*
+# note: both dose_seq_* vectors should contain a 0 if response at placebo is of interest
+one_bootstrap_sample <- function(est, dose_seq_od, dose_seq_bid) {
+  mu_new <- drop(rmvnorm(1, est$mu_hat, est$S_hat))
+  mod_info <- list(list(name = "emax", bounds = rbind(c(0.15, 225)),
+                        i_par = list(od = 2:3, bid = 4:5), n_par_gaic = 5),
+                   list(name = "sigEmax", bounds = rbind(c(0.15, 225), c(0.5, 5)),
+                        i_par = list(od = 2:4, bid = 5:7), n_par_gaic = 7))
+  fit <- lapply(mod_info, function(m) {
+    start <- calc_start_values(m$name, mu_new, est$S_hat, est$daily_dose, est$index, m$bounds)
+    low <- c(-Inf, -Inf, m$bounds[,1]) # no bounds on e0, eMax
+    up <- c(Inf, Inf, m$bounds[,2])
+    fit_model_shared_e0(m$name, est$daily_dose, mu_new, solve(est$S_hat), lower = low,  upper = up,
+                        start = start, i_reg = est$index, i_par = m$i_par)
+  })
+  gaics <- sapply(fit, `[[`, "objective") + 2 * sapply(mod_info, `[[`, "n_par_gaic")
+  sel <- which.min(gaics)
+  mod <- mod_info[[sel]]
+  # drop the placebo element
+  pred <- eval_model_shared_e0(mod$name, dose_seq_od, dose_seq_bid, fit[[sel]]$par, mod$i_par)[-1]
+  return(pred)
+}
+
+summarize_bootstrap_samples <- function(samples, probs = c(0.025, 0.25, 0.75, 0.975)) {
+  stopifnot(length(probs) == 4)
+  med <- apply(samples, 1, median)
+  quants <- apply(samples, 1, quantile, probs = probs)
+  bs_df <- as.data.frame(cbind(med, t(quants)))
+  names(bs_df) <- c("median", "low_out", "low_in", "high_in", "high_out")
+  return(bs_df)
+}
+
+dose_seq_od <- seq(0, 150, length.out = 21) # do include placebo!
+dose_seq_bid <- seq(0, 100, length.out = 21)
+set.seed(1)
+reps <- replicate(25, one_bootstrap_sample(est, dose_seq_od, dose_seq_bid))
+bs_sum <- summarize_bootstrap_samples(reps)
+bs_sum$daily_dose <- c(dose_seq_od, dose_seq_bid)
+bs_sum$regimen <- c(rep("od", length(dose_seq_od)), rep("bid", length(dose_seq_bid)))
+
+ggplot(bs_sum) + geom_ribbon(aes(daily_dose, ymin=low_out, ymax=high_out), alpha = 0.2) +
+  geom_ribbon(aes(daily_dose, ymin=low_in, ymax=high_in), alpha = 0.2) +
+  geom_line(aes(daily_dose, median)) +
+  geom_point(aes(daily_dose, mu_hat), tidy_estimates(est)) +
+  facet_wrap(vars(regimen), labeller = label_both) +
+  labs(title = "Bootstrap estimates for population response",
+       subtitle = "Least squares estimates plus 50% and 95% confidence bands") +
+  xlab("daily dose") + ylab("percent body weigh change") +
+  coord_cartesian(ylim = c(-6, 0))
+```

@@ -20,7 +20,7 @@ We also show how to deal with prognostic covariates.
 
 For continuously distributed data see [the corresponding vignette][v2].
 
-[v2]: 2_analysis_normal.html
+[v2]: analysis_normal.html
 
 ## Background and data set
 
@@ -151,7 +151,7 @@ predict_and_plot <- function(mu_hat, S_hat, doses, dose_seq, n_rep) {
   gg <- ggplot(cbind(bs_summary, dose_seq = dose_seq)) + geom_line(aes(dose_seq, median)) +
     geom_ribbon(aes(x = dose_seq, ymin = low_in, ymax = high_in), alpha = 0.2) +
     geom_ribbon(aes(x = dose_seq, ymin = low_out, ymax = high_out), alpha = 0.2) +
-    geom_point(aes(dose, mu_hat), glm_summary, alpha = 0.5) +
+    geom_point(aes(dose, mu_hat), glm_summary) +
     geom_errorbar(aes(dose, ymin = low, ymax = high), glm_summary, width = 0, alpha = 0.5) +
     scale_y_continuous(breaks = seq(0, 1, 0.05)) +
     xlab("Dose") + ylab("Response Probability") +
@@ -171,21 +171,25 @@ Denote the vector of these additional covariates for patient $j$ with $x_{kj}$.
 \[
 \begin{aligned}
   Y_{kj} &\sim \mathrm{Bernoulli}(p_{kj}) \\
-  \mathrm{logit}(p_{kj}) &= \mu_k^d + x_{kj}^T\mu^a
+  \mathrm{logit}(p_{kj}) &= \mu_k^d + x_{kj}^T\beta
 \end{aligned}
 \]
 
-Fitting this model gives us estimated coefficients $\hat\mu=(\hat\mu^d, \hat\mu^a)$
+Fitting this model gives us estimated coefficients $\hat\mu=(\hat\mu^d, \hat\beta)$
 and an estimate $\hat S$ of the covariance matrix of the estimator $\hat\mu$.
 
 In principle we could perform testing and estimation based on $\hat\mu^d$
-and the corresponding sub-matrix of $\hat S$.
-To accommodate potential systematic differences between the covariates across the groups we go a slightly more complex route.
-We predict the mean response probability at dose k for the observed values of the covariates and transform back to logit scale:
-\[
-\mu^*_k := \mathrm{logit}\biggl(\frac{1}{n} \sum_{j=1}^n
-\mathrm{logit}^{-1}(\hat\mu^d_k + x_{jk}^T\hat\mu^a)\biggr)
-\]
+and the corresponding sub-matrix of $\hat S$, but this would
+produce estimates for a patient with covariate vector $\beta=0$, and
+not reflect the overall population.
+
+To produce adjusted estimates per dose and to accommodate potential
+systematic differences in the covariates we predict the mean response
+probability at dose k for all observed values of the covariates and
+transform back to logit scale:
+
+\[ \mu^*_k := \mathrm{logit}\biggl(\frac{1}{n} \sum_{j=1}^n
+\mathrm{logit}^{-1}(\hat\mu^d_k + x_{jk}^T\hat\beta)\biggr) \]
 
 For a variance estimate we repeat this with draws from $\mathrm{MultivariateNormal}(\hat\mu, \hat S)$
 and calculate the empirical covariance matrix $S^*$ of theses draws.
@@ -243,33 +247,36 @@ implemented as the `logistf` function from the `logistf` package.
 This is particularly important for small sample size per dose
 and if small number of responses are expected some or all treatment arms.
 The estimator of Firth regression corresponds to the posterior mode in a Bayesian logistic regression model
-with Jeffrey's prior on the parameter.
+with Jeffrey's prior on the parameter vector.
 This estimator is well defined even in situations where the ML estimate for logistic regression does not exist
 (e.g. for complete separation).
 
 ## Considerations around optimal contrasts at design stage and analysis stage
 
-For calculating the optimal contrast for the generalized MCP step
-the covariance matrix $S$ of the estimator $\hat\mu$ needs to be re-estimated once the trial data are available.
-With normally distributed data this is possible with decent accuracy even at low sample sizes.
-In the case of binary data,
-$\hat\mu$ is on the logit scale
-and the diagonal elements of $S$ are approximately $(np(1-p))^{-1}$,
-where $n$ is the sample size of the dose group.
-This can be derived using the delta method.
-An estimate of this variance depends on the observed response rate
-and can be quite variable even for moderate sample sizes.
+For calculating the optimal contrast for the generalized MCP step the
+covariance matrix $S$ of the estimator $\hat\mu$ can be re-estimated
+once the trial data are available.  With normally distributed data
+this is possible with decent accuracy even at rather low sample sizes.  In
+the case of binary data, $\hat\mu$ is on the logit scale and the
+diagonal elements of $S$ are approximately $(np(1-p))^{-1}$, where $n$
+is the sample size of the dose group.  This can be derived using the
+delta method.  An estimate of this variance depends on the observed
+response rate and can be quite variable even for moderate sample
+sizes.
 
-Such an estimation takes place in the calls of `MCTtest()` above.
-As the estimate can get imprecise for small sample sizes per group (e.g. smaller than 20),
-it may make sense no to estimate a variance at all in these situations.
-One can just use a constant that is proportional to the sample size per dose.
-The contrast calculated this way will asymptotically not be equal to the "optimal" contrast for the underlying model,
-but simulations show that they can be closer to the "true" optimal contrast
-(calculated based on the true variance per dose group)
-for small sample size.
+Unless an alternative contrast matrix is specified, the optimal
+contrasts are automatically recalculated based on the matrix specified
+via `S` in the `MCTtest()` function. As the estimate of `S` can get
+imprecise for small sample sizes per group (e.g. smaller than 20), it
+may make sense no to estimate a variance at all in these situations,
+and just use a constant that is proportional to the sample size per
+dose.  The contrast calculated this way will asymptotically not be
+equal to the "optimal" contrast for the underlying model, but
+simulations show that they can be closer to the "true" optimal
+contrast (calculated based on the true variance per dose group) for
+small sample size.
 
-When re-running the adjusted analysis above for the optimal contrast,
+When re-running the adjusted analysis above for the contrasts,
 calculated as outlined above,
 we obtain a result that is only slightly different.
 ```{r}

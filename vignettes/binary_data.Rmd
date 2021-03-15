@@ -269,7 +269,7 @@ contrasts are automatically recalculated based on the matrix specified
 via `S` in the `MCTtest()` function. As the estimate of `S` can get
 imprecise for small sample sizes per group (e.g. smaller than 20), it
 may make sense no to estimate a variance at all in these situations,
-and just use a constant that is proportional to the sample size per
+and just use a constant that is proportional to the inverse of the sample size per
 dose.  The contrast calculated this way will asymptotically not be
 equal to the "optimal" contrast for the underlying model, but
 simulations show that they can be closer to the "true" optimal
@@ -289,53 +289,48 @@ MCTtest(doses, ca$mu_star, S = ca$S_star, type = "general", contMat = optCont)
 
 ## Power and sample size considerations
 
-```{r, eval = FALSE}
-## calculate optimal contrasts (here for simplicity using the slightly suboptimal approach above)
-## again assume we have balanced sample size per dose
-contMat <- optContr(mods, w=1)
-## use candidate models as "true scenarios"
-altModels1 <- Mods(emax = 0.25,
-                   placEff = logit(0.1),
-                   maxEff = logit(0.35)-logit(0.1),
-                   doses = doses)
-p1 <- 1/(1+exp(-getResp(altModels1)))
-var1 <- 1/(p1*(1-p1))
-altModels2 <- Mods(emax = 1,
-                   placEff = logit(0.1),
-                   maxEff = logit(0.35)-logit(0.1),
-                   doses = doses)
-p2 <- 1/(1+exp(-getResp(altModels2)))
-var2 <- 1/(p2*(1-p2))
-altModels3 <- Mods(sigEmax = c(1, 3),
-                   placEff = logit(0.1),
-                   maxEff = logit(0.35)-logit(0.1),
-                   doses = doses)
-p3 <- 1/(1+exp(-getResp(altModels3)))
-var3 <- 1/(p3*(1-p3))
-altModels4 <- Mods(sigEmax = c(2.5, 4),
-                   placEff = logit(0.1),
-                   maxEff = logit(0.35)-logit(0.1),
-                   doses = doses)
-p4 <- 1/(1+exp(-getResp(altModels4)))
-var4 <- 1/(p4*(1-p4))
-altModels5 <- Mods(betaMod = c(1.1, 1.1),
-                   placEff = logit(0.1),
-                   maxEff = logit(0.35)-logit(0.1),
-                   doses = doses)
-p5 <- 1/(1+exp(-getResp(altModels5)))
-var5 <- 1/(p5*(1-p5))
+We can calculate the power under each of the candidate models from the top of this vignette.
+For example, we assume a `Mods(emax = 0.25)` and calculate the vector of mean responses `lo` on the logit scale.
+When we transform it back to probability scale `p`,
+we can calculate the approximate variance of the (logit-scale) estimator `mu_hat` with the formula
+\[
+\mathrm{Var}(\hat\mu) = \frac{1}{np(1-p)}
+\]
+(see the section above).
+Next we calculate the minimum power across the candidate set using `powMCT()`
+and plot it for increasing `n`.
 
-func <- function(n){
-  power <- numeric(5)
-  power[1] <- powMCT(contMat, alpha=0.025, altModels=altModels1, S=diag(var1[,1]/n), df=Inf)
-  power[2] <- powMCT(contMat, alpha=0.025, altModels=altModels2, S=diag(var2[,1]/n), df=Inf)
-  power[3] <- powMCT(contMat, alpha=0.025, altModels=altModels3, S=diag(var3[,1]/n), df=Inf)
-  power[4] <- powMCT(contMat, alpha=0.025, altModels=altModels4, S=diag(var4[,1]/n), df=Inf)
-  power[5] <- powMCT(contMat, alpha=0.025, altModels=altModels5, S=diag(var5[,1]/n), df=Inf)
-  min(power)
+See also the [vignette on sample size calculation](sample_size.html).
+
+```{r, sample_size}
+# for simplicity: contrasts as discussed in the previous section
+contMat <- optContr(mods, w=1)
+
+# we need each alternative model as a separate object
+alt_model_par <- list(emax = 0.25, emax = 1, sigEmax = c(1, 3),
+                      sigEmax = c(2.5, 4), betaMod = c(1.1, 1.1))
+alt_common_par <- list(placEff = logit(0.1), maxEff = logit(0.35)-logit(0.1),
+                       doses = doses)
+# this is a bit hackish beacause we need to pass named arguments to Mods()
+alt_mods <- lapply(seq_along(alt_model_par), function(i) {
+  do.call(Mods, append(alt_model_par[i], alt_common_par))
+})
+
+prop_true_var_mu_hat <- lapply(seq_along(alt_model_par), function(i) {
+  # mean responses on logit scale
+  lo <- getResp(do.call(Mods, append(alt_model_par[i], alt_common_par)))
+  p <- inv_logit(lo) # mean responses on probability scale
+  v <- 1 / (p * (1-p)) # element-wise variance of mu_hat up to a factor of 1/n
+  return(as.numeric(v)) # drop unnecessary attributes
+})
+
+min_power_at_group_size <- function(n) {
+  pwr <- mapply(function(m, v) powMCT(contMat, alpha=0.025, altModels=m, S=diag(v/n), df=Inf),
+                alt_mods, prop_true_var_mu_hat)
+  return(min(pwr))
 }
 
-n <- seq(5,80,by=5)
-pows <- sapply(n, func)
-qplot(n, pows, geom="line", ylab="Min. Power over candidate set")
+n <- seq(5, 80, by=5)
+pwrs <- sapply(n, min_power_at_group_size)
+qplot(n, pwrs, geom="line", ylab="Min. Power over candidate set")
 ```

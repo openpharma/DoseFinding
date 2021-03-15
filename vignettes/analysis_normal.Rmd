@@ -127,6 +127,15 @@ plot(optC)
 It can be seen that in the balanced sample size case and equal
 variance assumed for each dose group, the optimal contrasts reflect
 the underlying assumed mean dose-response shape.
+This is no surprise, given that the optimal contrasts are given by
+\[
+c^{\textrm{opt}} \propto
+S^{-1}\biggl(\mu^0_m - \frac{(\mu^0_m)^T S^{-1}1_K}{1_K^T S^{-1} 1_K}\biggr)
+\]
+where $\mu^0_m$ is the standardized mean response,
+$K$ is the number doses,
+and $1_K$ is an all-ones vector of length $K$
+[see @pinheiro2014 for a detailed account].
 
 ## Analysis stage
 

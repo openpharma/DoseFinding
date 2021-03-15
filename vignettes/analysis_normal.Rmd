@@ -18,7 +18,7 @@ vignette: >
 In this vignette we will illustrate the usage of the DoseFinding package for analyzing continuously distributed data.
 In order not to complicate matters unnecessarily,
 we will focus on the planning and analysis stages for a parallel group design.
-There is a separate vignette with details on [sample size and power calculation](3_sample_size.html).
+There is a separate vignette with details on [sample size and power calculation](sample_size.html).
 
 We will use data from @verkindre2010,
 who actually use a cross-over design and utilize MCP-Mod in a supportive analysis.

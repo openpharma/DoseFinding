@@ -68,7 +68,7 @@ where $\mu_k = f_m(x_k, \theta_m)$ under the $m$-th candidate model.
 In the MCP part the null hypothesis of a flat response profile $c_m^T \mu = 0$ vs $c_m^T \mu > 0$ (or $\neq 0$)
 is tested with $c_m$ chosen to maximize power under the $m$-th
 candidate model.
-Critical values are taken from a multivariate t distribution with $(\sum_{k=1}^K n_k) - k$ degrees of freedom.
+Critical values are taken from the multivariate t distribution with $(\sum_{k=1}^K n_k) - k$ degrees of freedom.
 In the Mod part the dose-response model parameters $\theta$ are estimated by OLS, minimizing
 $\sum_{k,j} (y_{k,j} - f_m(x_{k,j}, \theta))^2$.
 
@@ -85,8 +85,8 @@ is at least asymptotically multivariate normally distributed
 and that a first-stage fitting procedure can provide estimates $\hat\mu$ and $\hat S$.
 The $m$-th candidate model is taken to imply $\mu_k = f_m(x_k, \theta)$
 and the null hypothesis $c_m^T \mu = 0$ is tested with optimal contrasts.
-When the estimate $\hat S$ is used in place of the unknown $S$,
-critical values are taken from a multivariate normal distribution.
+The estimate $\hat S$ is used in place of the unknown $S$,
+and critical values are taken from the multivariate normal distribution.
 Alternatively, degrees of freedom for a multivariate t distribution can be specified.
 For the Mod part the model parameters $\theta$ are estimated with GLS by minimizing
 \[
@@ -109,7 +109,7 @@ Popular examples for the first stage fit could be a logistic
 regression, which adjusts for dose as a categorical factor [see this
 vignette](binary_data.html), another popular example is an mixed model
 repeated measures (MMRM) model. Also other specific longitudinal
-models can be utilized (see help page of the neurodeg data set
+models can be utilized (see the help page of the neurodeg data set
 `?neurodeg`).
 
 ## How many doses do we need to perform MCP-Mod?
@@ -169,7 +169,7 @@ a very different question rather than a dose-response effect versus
 placebo, and may not necessarily be of interest.
 
 The Mod step would be conducted to model the dose-response
-relationship among the active doses, due to non-inclusion of a placebo
+relationship among the active doses. Due to non-inclusion of a placebo
 group, this may be challenging to perform.
 
 One aim of such a dose-finding trial could be to estimate the smallest
@@ -203,23 +203,23 @@ There are also some __statistical considerations__ to be aware of:
 
 _Small number of doses and model fitting:_ If only a few active doses
 are feasible to be used in a trial, it is difficult to fit the more
-complex models, such as the sigmoid Emax or the beta model with four
-parameters in a trial with three active doses. Such models would not
-be included in the candidate set and one would rather use more
+complex models, for example the sigmoid Emax or the beta model with
+four parameters in a trial with three active doses. Such models would
+not be included in the candidate set and one would rather use more
 dose-response models with fewer parameters to obtain an adequate
-breadth of the candidate set. 
+breadth of the candidate set (such as the simple Emax, exponential or
+quadratic model).
 
 Some sigmoid Emax (or beta) model shapes cannot be approximated well
-with the simple Emax, exponential or quadratic model. If one still
-would like to include for example a sigmoid shape this can be achieved
-by fixing the Hill parameter to a given value (for example 3 and/or
-5), and then use different sigmoid Emax candidate models with fixed
-Hill parameter also for model fitting. Model fitting of these models
-can be performed with the standard Emax model but utilizing $doses^h$
-instead of $doses$ as the dose variable, where $h$ is the assumed
-fixed Hill parameter (note that the interpretation of ED50 parameter
-returned by fitMod then changes). A similar approach can also be
-utilized with the beta model.
+by these models. If one still would like to include for example a
+sigmoid shape this can be achieved by fixing the Hill parameter to a
+given value (for example 3 and/or 5), and then use different sigmoid
+Emax candidate models with fixed Hill parameter also for model
+fitting. Model fitting of these models can be performed with the
+standard Emax model but utilizing $doses^h$ instead of $doses$ as the
+dose variable, where $h$ is the assumed fixed Hill parameter (note
+that the interpretation of ED50 parameter returned by fitMod then
+changes). 
 
 _Consequence of model misspecification:_ Omission of the “correct”
 dose-response shape from the set of candidate models does not
@@ -232,13 +232,13 @@ simulations see `?planMod`.
 
 _Impact on sample size:_ Using a very broad and flexible set of
 candidate models does not come “for free”. Generally the critical
-value for the MCP test will increase, in particular if many different
-(uncorrelated) candidate shapes are included, and consequently also
-the sample size. The actual impact will have to be investigated on a
-case-by-case basis. A similar trade-off exists in terms of
-dose-response model fitting (Mod part), as a broader candidate set
-will decrease potential bias (in the case of a mis-specified model)
-but increase the variance of the estimates.
+value for the MCP test will increase, if many different (uncorrelated)
+candidate shapes are included, and consequently also the sample
+size. The actual impact will have to be investigated on a case-by-case
+basis. A similar trade-off exists in terms of dose-response model
+fitting (Mod part), as a broader candidate set will decrease potential
+bias (in the case of a mis-specified model) but increase the variance
+of the estimates.
 
 _Umbrella-shaped dose-response curve:_ While biological
 exposure-response relationships are often monotonic, down-turns of the
@@ -265,10 +265,10 @@ Most of the common dose-response models are nonlinear in the
 parameters. This means that iterative algorithms need to be used to
 calculate the parameter estimates. Given that the number of dose
 levels is usually relatively small and the noise relatively large in
-these studies, convergence often fails. This is often due to the fact
-that the best fitting model shape corresponds to the case, where one
-of the model parameters is infinite or 0. When observing these cases
-more closely one observes that while on the parameter scale no
+these studies, convergence often fails. This is usually due to the
+fact that the best fitting model shape corresponds to the case, where
+one of the model parameters is infinite or 0. When observing these
+cases more closely one observes that while on the parameter scale no
 convergence is obtained, typically convergence towards a fixed model
 shape is obtained.
 
@@ -276,13 +276,13 @@ One approach to overcome this problem is to use bounds on the
 nonlinear parameters for the model, which thus ensure existence of an
 estimate. In many situations the assumed bounds can be justified in
 terms of requiring that the shape-space underlying the corresponding
-model is covered almost exhaustively (see the defBnds function, for
+model is covered almost exhaustively (see the `defBnds` function, for
 the default bounds proposed).
 
 When utilizing bounds for model fitting it is recommended to use
 bootstrapping/bagging for estimation of the dose-response functions
 and for the confidence intervals, see @pinheiro2014. Standard
-asymptotic confidence intervals are no longer reliable.
+asymptotic confidence intervals are not reliable.
 
 ## Should model-selection or model-averaging be used for analysis?
 
@@ -338,9 +338,10 @@ guideline](https://database.ich.org/sites/default/files/E9-R1_Step4_Guideline_20
 In many situations (e.g. if multiple imputation is used as part of the
 analysis) it may be easiest to use generalized MCP-Mod, where the
 first stage model is already an appropriate analysis model (with
-adequate strategy for intercurrent events and missing data), and then
-covariate adjusted estimates at the doses (as well as their covariance
-matrix) are produced and utilized in MCP-Mod.
+adequate strategy for intercurrent events and missing data). This
+model is then used to produce covariate adjusted estimates at the
+doses (as well as their covariance matrix), which are then utilized in
+generalized MCP-Mod.
 
 ## Can MCP-Mod be used in trials with multiple treatment regimens?
 
@@ -376,21 +377,18 @@ and to estimate the dose-response curve in each regimen. Whether or
 not simplifying assumptions of parameters shared between regimen are
 plausible depends on the specifics of every drug.
 
-## What about dose-response estimates, when the MCP part (or some of the model shapes) were not significant?
+## What about dose-response estimates, when the MCP part was (or some of the model shapes were) not significant?
 
 The proposal is to perform the Mod step always with all specified
 models (even if all or only some of the dose-response models are not
 significant). The obtained dose-response estimate, however, needs to
-be interpreted very cautiously, when no dose-response trend has been
-established in the MCP step.
+be interpreted very cautiously, when no overall dose-response trend
+has been established in the MCP step.
 
-Using all models may also advisable in case the MCP part was
-significant, but the contrast test corresponding to some particular
-model was not significant. In this case such a model may still be the
-true (or at least a useful model), because the non-significance may
-only have been due to a particular inadequate choice of guesstimates
- - nevertheless once the model parameters are estimated from the data
- in the Mod step, the model may fit the data adequately (if not it
- will be downweighted automatically by the AIC).
+Using all models is advisible, because non-significance of a
+particular contrast may only have been due to a particular inadequate
+choice of guesstimates - nevertheless once the model parameters are
+estimated from the data in the Mod step, the model may fit the data
+adequately (if not it will be downweighted automatically by the AIC).
 
 ## References

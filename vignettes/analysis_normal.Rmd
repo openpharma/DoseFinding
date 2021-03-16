@@ -134,8 +134,12 @@ S^{-1}\biggl(\mu^0_m - \frac{(\mu^0_m)^T S^{-1}1_K}{1_K^T S^{-1} 1_K}\biggr)
 \]
 where $\mu^0_m$ is the standardized mean response,
 $K$ is the number doses,
-and $1_K$ is an all-ones vector of length $K$
-[see @pinheiro2014 for a detailed account].
+and $1_K$ is an all-ones vector of length $K$ and $S$ is the
+covariance matrix of the estimates at the doses
+[see @pinheiro2014 for a detailed account]. As we have equal variance
+in all dose groups in our case and no correlation, the optimal
+contrasts are all proportional to the shapes of the candidate model
+mean vectors.
 
 ## Analysis stage
 
@@ -158,7 +162,7 @@ The test results suggest a clear dose-response trend.
 
 Alternatively we can use generalized MCP-Mod
 (see the FAQ for the [difference](faq.html)).
-we us R's builtin `lm()` function to manually fit the ANOVA model
+We use R's builtin `lm()` function to manually fit the ANOVA model
 and extract estimates for the model coefficients and their covariance matrix.
 We also need the model degrees of freedom.
 
@@ -197,7 +201,7 @@ plot(fit_single)
 
 But actually we want to use a more robust approach that combines bootstrapping with model averaging in the generalized MCP-Mod framework.
 
-First we draw bootstrap samples from the multivariate normal distribution of the estimates originating from the first-stage model (ANOVA, MMRM, logistic regression, …).
+First we draw bootstrap samples from the multivariate normal distribution of the estimates originating from the first-stage model.
 Next, for each bootstrapped data set we fit our candidate models,
 select the one with lowest AIC
 and save the corresponding estimated quantities of interest.
@@ -288,14 +292,13 @@ ggplot(cbind(bs_summary, dose_seq = dose_seq)) + geom_line(aes(dose_seq, median)
 
 In all practical situations covariates will be used to adjust for in
 the analysis. The MCP step can then be performed for example by
-including the covariates to adjust for in the `addCovars` argument.
-Another approach to perform the MCP step is to perform the MCP step
-based on the differences to placebo: In a first stage `lm(.)` is fit
-with an intercept included. Then the treatment differences and
-corresponding covariance matrix would be extracted. This could then be
-fed into the `MCTtest` function, with the `placAdj = TRUE` argument,
-see `?MCTtest` for an example. Both approaches will give the same
-result.
+including the covariates in the `addCovars` argument.  Another
+approach to perform the MCP step is based on the differences to
+placebo: In a first stage `lm(.)` is fit _with_ an intercept
+included. Then the treatment differences and corresponding covariance
+matrix would be extracted. This could then be fed into the `MCTtest`
+function, with the `placAdj = TRUE` argument, see `?MCTtest` for an
+example. Both approaches will give the same result.
 
 A third alternative is to calculate the adjusted means (and
 corresponding covariance matrix) and then perform generalized MCP-Mod

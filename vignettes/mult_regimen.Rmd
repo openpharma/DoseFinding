@@ -21,8 +21,8 @@ But specific assumptions are needed, and it depends on the situation,
 whether or not these are appropriate (and thus usage of MCP-Mod).
 
 The first idea is to bring the doses for each regimen on a common
-scale (total dose per time unit). For example if once daily (o.d.)
-dosing and twice daily (b.i.d.) dosing are used in a study, one might
+scale (total dose per time unit). For example if once daily (od)
+dosing and twice daily (bid) dosing are used in a study, one might
 utilize the total daily dose.
 
 It is usually not appropriate to then perform MCP-Mod on the total daily
@@ -37,11 +37,11 @@ regimen, and for example to adjust p-values originating from the
 MCP-part using a Bonferroni-Holm correction. This approach assumes that the
 regimen don't share any similarity. This approach is often not
 feasible, due to the double-blind nature of trials. In the example of
-o.d. and b.i.d., all patients would receive two administrations per
-day (patients in the o.d. group receive one placebo per day), so that
-there is no real o.d. group, and no placebo o.d. group.  The placebo
-group is then assumed common to both the o.d. and b.i.d. dose-response
-curve. For the MCP-step contrasts for both o.d. and b.i.d. are taken
+od and bid, all patients would receive two administrations per
+day (patients in the od group receive one placebo per day), so that
+there is no real od group, and no placebo od group.  The placebo
+group is then assumed common to both the od and bid dose-response
+curve. For the MCP-step contrasts for both od and bid are taken
 with respect to the same placebo group and in the modelling step one
 would then assume the intercept to be the same across regimen, but all
 other parameters separate.
@@ -52,7 +52,7 @@ following example no such assumption is made.
 
 The motivation for the simulated data below is taken from a recently
 completed dose-finding study, where the dose-response of the drug
-Licogliflozin was assessed for the o.d. and b.i.d. regimen [@bays2020],
+Licogliflozin was assessed for the od and bid regimen [@bays2020],
 see also the [corresponding page at clinicaltrials.gov](https://clinicaltrials.gov/ct2/show/results/NCT03100058).
 
 Note that this study used MCP-Mod, but the analysis presented here has
@@ -182,8 +182,8 @@ The model for $\hat\mu$ has a common intercept parameter for both regimen togeth
 and two sets of the remaining parameters of the family in question.
 For example, a model based on the Emax family has 5 parameters:
 one common `e0`,
-`(eMax, ed50)` for the o.d. regimen,
-and `(eMax, ed50)` for the b.i.d. regimen.
+`(eMax, ed50)` for the od regimen,
+and `(eMax, ed50)` for the bid regimen.
 
 The following function calculates the responses given dose values and a model family.
 
@@ -309,3 +309,5 @@ ggplot(bs_sum) + geom_ribbon(aes(daily_dose, ymin=low_out, ymax=high_out), alpha
   xlab("daily dose") + ylab("percent body weigh change") +
   coord_cartesian(ylim = c(-6, 0))
 ```
+
+## References

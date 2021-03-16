@@ -65,7 +65,7 @@ MCTtest <- function(dose, resp, data = NULL, models, S = NULL,
     attr(critV, "Calc") <- FALSE
   }
   if(pVal){
-    pVals <- pValues(contMat, corMat, df, tStat,
+    pVals <- MCTpval(contMat, corMat, df, tStat,
                      alternative, mvtcontrol)
   }
   res <- list(contMat = contMat, corMat = corMat, tStat = tStat,
@@ -194,7 +194,7 @@ checkAnalyArgs <- function(dose, resp, data, S, type,
               doseNam=doseNam, respNam=respNam))
 }
 
-pValues <- function(contMat, corMat, df, tStat,
+MCTpval <- function(contMat, corMat, df, tStat,
                     alternative = c("one.sided", "two.sided"),
                     control = mvtnorm.control()){
   ## function to calculate p-values

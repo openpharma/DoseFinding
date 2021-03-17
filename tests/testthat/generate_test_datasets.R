@@ -1,5 +1,9 @@
-########################################################################
-#### Testing function to generate doses and sample size allocs.
+# Functions for generating the datasets used in testing
+
+# TODO: unify this mess
+
+# from testsFitting.R ----------------------------------------------------------
+
 genDFdats <- function(model, argsMod, doses, n, sigma, mu = NULL){
   nD <- length(doses)
   dose <- sort(doses)
@@ -50,5 +54,50 @@ getDFdataSet <- function(doses, n){
   center <- c("blue", "green", "red", "yellow", "silver")
   aa <- data.frame(x= aa$dose, y=aa$resp, center=as.factor(sample(center, N, replace = T)),
                    age=runif(N, 1, 100))
+  aa[sample(1:nrow(aa)),]
+}
+
+# from testsMCT.R ---------------------------------------------------------------
+
+getDFdataSet_testsMCT <- function(doses, n){
+  ll <- getDosSampSiz()
+  e0 <- rnorm(1, 0, 10)
+  eMax <- rgamma(1, abs(e0)*0.5, 0.5)*I(runif(1)<0.25)
+  if(eMax > 0){ sig <- eMax/runif(1, 0.5, 5)}
+  else { sig <- rgamma(1, abs(e0)*0.5, 0.5) }
+  dosVec <- rep(ll$doses, ll$n)
+  if(runif(1)<0.3){
+    mnVec <- betaMod(dosVec, e0=e0, eMax=eMax, delta1=runif(1, 0.5, 5),
+                     delta2=runif(1, 0.5, 5), scal=1.2*max(ll$doses))
+  } else {
+    mnVec <- logistic(dosVec, e0 = e0, eMax = eMax,
+                      ed50=runif(1, 0.05*max(ll$doses), 1.5*max(ll$doses)),
+                      delta=runif(1, 0.5, max(ll$doses)/2))
+  }
+  resp <- rnorm(sum(ll$n), mnVec, sig)
+  N <- sum(ll$n)
+  cov1 <- as.factor(rpois(N, 5))
+  cov2 <- runif(N, 1, 100)
+  aa <- data.frame(x= dosVec, y=resp, cov1=cov1, cov2=cov2)
+  aa[sample(1:nrow(aa)),]
+}
+
+getDFdataSet.bin <- function(doses, n){
+  ll <- getDosSampSiz()
+  ll$n <- ll$n+10
+  e0 <- rnorm(1, 0, sqrt(3.28))
+  eMax <- rnorm(1, 0, 5)
+  dosVec <- rep(ll$doses, ll$n)
+  if(runif(1)<0.3){
+    mn <- betaMod(dosVec, e0 = e0, eMax = eMax, delta1=runif(1, 0.5, 5),
+                  delta2=runif(1, 0.5, 5), scal=1.2*max(ll$doses))
+  } else {
+    mn <- logistic(dosVec, e0 = e0,
+                   eMax = eMax, ed50=runif(1, 0.05*max(ll$doses), 1.5*max(ll$doses)),
+                   delta=runif(1, 0.5, max(ll$doses)/2))
+  }
+  resp <- rbinom(length(ll$n), ll$n, 1/(1+exp(-mn)))
+  aa <- data.frame(dose = ll$doses, resp = resp)
+  aa <- data.frame(x= aa$dose, y=aa$resp/ll$n, n=ll$n)
   aa[sample(1:nrow(aa)),]
 }

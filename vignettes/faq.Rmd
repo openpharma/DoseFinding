@@ -33,8 +33,8 @@ h2 {
 MCP-Mod has been developed with having efficacy dose-finding studies
 in mind, as they are performed in Phase 2 of clinical
 drug-development. Typically these studies are large scale parallel
-group randomized studies (e.g. from around 50 to almost 1000
-patients). It is also possible to use MCP-Mod in crossover designs
+group randomized studies (e.g. from around 50 to almost 1000 patients
+in total). It is also possible to use MCP-Mod in crossover designs
 using generalized MCP-Mod (see below).
 
 Titration designs are out of scope, because the administered dose
@@ -49,9 +49,9 @@ much of interest in these studies.
 
 ## What is the difference between the original and generalized MCP-Mod, and what type of response can generalized MCP-Mod handle?
 
-The _original_ MCP-Mod approach was derived for a normally distributed
+The original MCP-Mod approach was derived for a normally distributed
 response variable assuming homoscedasticity across doses. The
-_generalized_ MCP-Mod approach [@pinheiro2014] is a flexible extension
+generalized MCP-Mod approach [@pinheiro2014] is a flexible extension
 that allows for example for binary, count, continuous or time-to-event
 outcomes.
 
@@ -105,12 +105,13 @@ covariance matrix. Then in a second stage MCP-Mod is performed on
 these summary estimates in many ways similar as the original MCP-Mod
 approach.
 
-Popular examples for the first stage fit could be a logistic
-regression, which adjusts for dose as a categorical factor [see this
-vignette](binary_data.html), another popular example is an mixed model
-repeated measures (MMRM) model. Also other specific longitudinal
-models can be utilized (see the help page of the neurodeg data set
-`?neurodeg`).
+We discuss the situation when the first stage fit is a logistic
+regression [in this vignette](binary_data.html), but many other first
+stage models could be used, as long as the first fit is able to
+produce adjusted estimates at the doses as long as the associated
+covariance matrix. Another popular example is for example a mixed
+model repeated measures (MMRM) model. See also the help page of the
+neurodeg data set `?neurodeg`, for a different longitudinal example.
 
 ## How many doses do we need to perform MCP-Mod?
 
@@ -156,25 +157,6 @@ allocation weights) under a given fixed sample size so that the
 variability of the dose-response parameter estimates (or variance of
 some target dose estimate) is "small" in a specified way [see
 @bretz2010]. 
-
-## Can MCP-Mod be used in trials without placebo control?
-
-In some cases the use of a placebo group is not possible due to
-ethical reasons (e.g., because good treatments exist already or the
-condition is very severe).
-
-In such cases, the MCP part of MCP-Mod focuses on establishing a
-dose-response trend among the active doses, which would correspond to
-a very different question rather than a dose-response effect versus
-placebo, and may not necessarily be of interest.
-
-The Mod step would be conducted to model the dose-response
-relationship among the active doses. Due to non-inclusion of a placebo
-group, this may be challenging to perform.
-
-One aim of such a dose-finding trial could be to estimate the smallest
-dose of the new compound achieving the same treatment effect as the
-active control.
 
 ## How to set up the candidate set of models?
 
@@ -258,6 +240,25 @@ even stronger), see also results in @schorning2016. The recommendation
 would be to exclude the linear model usually from the candidate set.
 The Emax and exponential model (and also the sigmoid Emax model) can
 approximate a linear shape well in the limiting case.
+
+## Can MCP-Mod be used in trials without placebo control?
+
+In some cases the use of a placebo group is not possible due to
+ethical reasons (e.g., because good treatments exist already or the
+condition is very severe).
+
+In such cases, the MCP part of MCP-Mod focuses on establishing a
+dose-response trend among the active doses, which would correspond to
+a very different question rather than a dose-response effect versus
+placebo, and may not necessarily be of interest.
+
+The Mod step would be conducted to model the dose-response
+relationship among the active doses. Due to non-inclusion of a placebo
+group, this may be challenging to perform.
+
+One aim of such a dose-finding trial could be to estimate the smallest
+dose of the new compound achieving the same treatment effect as the
+active control.
 
 ## Why are bounds used for the nonlinear parameters in the fitMod function?
 

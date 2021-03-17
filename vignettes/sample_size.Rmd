@@ -151,8 +151,28 @@ the power loss is only in the range of 10-15%.
 
 ## Sample size based on metrics other than power
 
-Please consult Chapter 12 in @oquigley2017 for example code on how to
-evaluate precision in dose-response and dose estimation using the
-`planMod` function.
+The main purpose of a dose-finding study is selection of a dose to
+take forward into Phase 3, so why is sample size calculation based on
+the MCP-part of MCP-Mod even relevant?  The multiple contrast test is
+the minimum requirement, before even considering dose selection. It
+turns out, however, that dose selection is a much harder problem than
+establishing a dose-response effect versus placebo based on the
+MCP-part: The sample size required for adequate accuracy in estimation
+of a target dose (e.g. the smallest dose achieving a relevant
+improvement over placebo) is usually several-fold higher than the
+sample size needed to have adequate power for the MCP-part.  This
+should not come as a surprise as dose-selection is primarily a
+comparison among the investigational doses, while the MCP-part
+establishes an effect versus placebo.  Chapter 12 in @oquigley2017
+illustrates this with simulations, based on the `planMod` function
+(see `?planMod` for example usage). This consideration should be kept
+in mind for sample size calculation. For example the `planMod`
+function could be used to evaluate the dose estimation performance for
+a given sample size.
+
+On the other hand the efficacy dose-response curve is not the only
+consideration in dose-selection: Results for other efficacy/biomarker
+endpoints, but also the results for tolerability or safety markers,
+will contribute to that decision.
 
 ## References

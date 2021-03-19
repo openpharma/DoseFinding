@@ -11,11 +11,11 @@ vignette: >
 ```{r, child="children/settings.txt"}
 ```
 
-In this vignette we'll take a closer look at the design stage and see
+In this vignette we will take a closer look at the design stage and see
 how to perform power and sample size calculations for MCP-Mod with the
 DoseFinding package.
 
-We'll consider the same example study
+We will consider the same example study
 and the same candidate models as in the [basic usage vignette](analysis_normal.html).
 
 ```{r, setup, fig.asp = 1, out.width = "50%", fig.width = 5}
@@ -27,18 +27,19 @@ mods <- do.call(Mods, append(guess, list(placEff = 1.25, maxEff = 0.15, doses = 
 plot(mods)
 ```
 
-## Power versus group sample size
+## Power for multiple contrast test versus group sample size
 
-In this section we'll look at how power varies with sample size.  Note
-that the maximum effect size over the dose-range is fixed through
+In this section we will investigate at how power varies with sample size.  Note
+that the maximum effect size within the dose-range is fixed through
 `maxEff` in the candidate models.
 
 First we calculate the matrix of optimal contrasts
 (`w=1` denotes homoscedastic residuals with equal group sizes, see `?optContr`).
 
 In `powN` we specify the sample sizes for which to calculate the power.
-We also request five equally sized groups with `alRatio = rep(1, 5)`.
-We fix the residual standard deviation with `sigma = 0.34`.
+We request five equally sized groups with `alRatio = rep(1, 5)`.
+We fix the residual standard deviation with `sigma = 0.34`, and
+calculate the power for a one-sided test at level 0.05.
 
 ```{r, power_sample_size_1}
 contMat <- optContr(mods, w=1)
@@ -102,7 +103,7 @@ mis-specified alternative models.  To illustrate this, let's assume an
 exponential model shape is the true model, which only has small
 responses for all doses but the last (here assuming 20% of the overall
 treatment effect is achieved at the 50μg dose). All other candidate
-shapes that almost the full effect is achieved for the 50μg dose, so
+shapes assume that almost the full effect is achieved for the 50μg dose, so
 this shape is quite different from all other shapes included in the
 candidate set.
 
@@ -145,34 +146,39 @@ plot_power_misspec(guess, guess_miss, placEff = 1.25, maxEff = 0.15, doses = dos
                    upperN = 100, lowerN = 10, step = 10, sigma = 0.34, alpha = 0.05)
 ```
 
-It can be seen that, as expected, the power drops as the exponential
-model shape is quite different from all candidate shapes included, but
-the power loss is only in the range of 10-15%.
+As expected, the power decreases as the assumed underlying exponential
+model shape differs substantially from the shapes included in the
+candidate set. However, the power loss is only in the range of 10-15%.
 
-## Sample size based on metrics other than power
+## Sample size based on metrics other than power for the multiple contrast test
 
 The main purpose of a dose-finding study is selection of a dose to
 take forward into Phase 3, so why is sample size calculation based on
-the MCP-part of MCP-Mod even relevant?  The multiple contrast test is
-the minimum requirement, before even considering dose selection. It
-turns out, however, that dose selection is a much harder problem than
-establishing a dose-response effect versus placebo based on the
-MCP-part: The sample size required for adequate accuracy in estimation
-of a target dose (e.g. the smallest dose achieving a relevant
-improvement over placebo) is usually several-fold higher than the
-sample size needed to have adequate power for the MCP-part.  This
-should not come as a surprise as dose-selection is primarily a
+the MCP-part of MCP-Mod relevant?  Establishment of a trend over
+placebo could be thought of a minimum requirement, before even
+considering dose selection. 
+
+In addition it turns out that dose selection (see `?TD`) is a much
+harder problem than establishing a dose-response effect versus placebo
+based on the MCP-part: The sample size required for adequate accuracy
+in estimation of a target dose (e.g. the smallest dose achieving a
+relevant improvement over placebo) is usually several-fold higher than
+the sample size needed to have adequate power for the MCP-part.  This
+should not come as a surprise as dose-estimation is primarily a
 comparison among the investigational doses, while the MCP-part
 establishes an effect versus placebo.  Chapter 12 in @oquigley2017
 illustrates this with simulations, based on the `planMod` function
-(see `?planMod` for example usage). This consideration should be kept
-in mind for sample size calculation. For example the `planMod`
-function could be used to evaluate the dose estimation performance for
-a given sample size.
+(see `?planMod` for example usage). In practice, to keep the size of
+the study feasible, one needs to find a compromise between
+dose-response signal detection and estimation precision as the
+criteria for sample size determination. Irrespective, it is important
+to properly evaluate the operating characteristics of a given design
+(including sample size) to understand its strengths and limitations.
 
-On the other hand the efficacy dose-response curve is not the only
-consideration in dose-selection: Results for other efficacy/biomarker
-endpoints, but also the results for tolerability or safety markers,
-will contribute to that decision.
+In practice of course the dose-response curve of any particular
+efficacy endpoint, is not the only consideration in dose-selection for
+Phase III: Results for other efficacy/biomarker endpoints, but also
+the results for tolerability or safety markers, will contribute to
+that decision.
 
 ## References

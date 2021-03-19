@@ -257,7 +257,7 @@ test_that("predict with no argument uses the original data", {
                predict(ff2, predType = "effect-curve", doseSeq = IBScovars[,3]))
   dose <- unique(IBScovars$dose)
   ord <- c(2,4,1,3,5)
-  mns <- tapply(IBScovars$resp, IBScovars$dose, mean)[ord]
+  mns <- as.numeric(tapply(IBScovars$resp, IBScovars$dose, mean)[ord])
   ff3 <- fitMod(dose, mns, S=diag(5), model="quadratic", type = "general")
   expect_equal(predict(ff3, predType = "ls-means"),
                predict(ff3, predType = "ls-means", doseSeq = dose))
@@ -271,12 +271,12 @@ test_that("predict with no argument uses the original data", {
 test_that("S is also sorted when the dose is not entered sorted", {
   data(IBScovars)
   dose <- sort(unique(IBScovars$dose))
-  mns <- tapply(IBScovars$resp, IBScovars$dose, mean)
+  mns <- as.numeric(tapply(IBScovars$resp, IBScovars$dose, mean))
   S <- c(1000,1,1,1,1)*diag(5)
   ff1 <- fitMod(dose, mns, S = S, model="linear", type="general")
   dose <- unique(IBScovars$dose)
   ord <- c(2,4,1,3,5)
-  mns <- tapply(IBScovars$resp, IBScovars$dose, mean)[ord]
+  mns <- as.numeric(tapply(IBScovars$resp, IBScovars$dose, mean)[ord])
   ff2 <- fitMod(dose, mns, S = S, model="linear", type="general")
   ff3 <- fitMod(dose, mns, S = S[ord,ord], model="linear", type="general")
   expect_equal(coef(ff1), coef(ff3))
@@ -291,7 +291,7 @@ test_that("fitMod complains if `resp` is a row-vector", {
                 type = "general", bnds = defBnds(max(doses))$emax)
   coefs <- unname(coef(fit))
   expect_equal(coefs, c(2, 8, 50), tolerance = 1e-5)
-  expect_error(fitMod(doses, resp_row, model = "emax", S = cov_mat,
-                      type = "general", bnds = defBnds(max(doses))$emax),
-               "resp_row must be a numeric vector, not a matrix")
+  expect_warning(fitMod(doses, resp_row, model = "emax", S = cov_mat,
+                        type = "general", bnds = defBnds(max(doses))$emax),
+                 "resp_row is not a numeric but a matrix, converting with as.numeric()")
 })

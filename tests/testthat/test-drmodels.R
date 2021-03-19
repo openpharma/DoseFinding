@@ -26,4 +26,9 @@ test_that("sigEmax does not produce NaN for large dose and large h", {
   expect_equal(ud(sigEmaxGrad(150, 1, 50, 150)), c(1, 1, 0, 0))
   expect_equal(ud(sigEmaxGrad(0, 1, 50, 0)), c(1, 0.5, 0, 0))
   expect_equal(ud(sigEmaxGrad(0, 1, 50, 150)), c(1, 0, 0, 0))
+  # this is the only NaN we can't get rid off, as the function
+  #   (a,b,x) ↦ a^x/(a^x+b^x)
+  # has a non-removable discontinuity at (0, 0, x) for all x > 0
+  # fortunately an ed50=0 does not make much sense from a modeling perspective
+  expect_equal(sigEmax(0, 1, 1, 0, 5), NaN)
 })

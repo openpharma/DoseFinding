@@ -33,7 +33,7 @@ betaMod <- function(dose, e0, eMax, delta1, delta2, scal){
 }
 
 sigEmax <- function(dose, e0, eMax, ed50, h){
-  e0 + eMax*dose^h/(ed50^h + dose^h)
+  e0 + eMax * 1 /(1 + (ed50/dose)^h)
 }
 
 linInt <- function(dose, resp, nodes){
@@ -85,11 +85,11 @@ betaModGrad <- function(dose, eMax, delta1, delta2, scal, ...){
 }
 
 sigEmaxGrad <- function(dose, eMax, ed50, h, ...){
-  lg2 <- function(x) ifelse(x == 0, 0, log(x))
-  den <- (ed50^h + dose^h)
-  g1 <- dose^h/den
-  g2 <- -ed50^(h - 1) * dose^h * h * eMax/den^2
-  g3 <- eMax * dose^h * ed50^h * lg2(dose/ed50)/den^2
+  lg2 <- function(x) {l<-x; l[x==0] <- 0; l[x!=0] <- log(x[x!=0]); l}
+  a <-  1 / (1 + (dose/ed50)^h)
+  g1 <- 1 / (1 + (ed50/dose)^h)
+  g2 <- -(h * eMax / ed50) * g1 * a
+  g3 <- eMax * lg2(dose / ed50) * g1 * a
   cbind(e0=1, eMax=g1, ed50=g2, h=g3)
 }
 

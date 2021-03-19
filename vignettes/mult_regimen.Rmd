@@ -257,7 +257,7 @@ sigEmax <- sigEmax_alt
 
 Finally, instead of only fitting a single model,
 we use the same bootstrap-plus-averaging approach
-that is detailed in the [basic usage vignette](analysis_normal.html#dose-response-estimation).
+that is detailed in the [vignette for analysis of continuous data](analysis_normal.html#dose-response-estimation).
 
 ```{r, estimation_3}
 # predict population response in each regimen for dose_seq_*

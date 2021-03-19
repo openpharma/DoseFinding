@@ -113,7 +113,8 @@ MCTtest(doses, mu_hat, S = S_hat, models = mods, type = "general")
 ```
 
 Dose-response modeling proceeds with a combination of bootstrapping and model averaging.
-For detailed explanations refer to the [basic usage vignette][v2].
+For detailed explanations refer to the [vignette for analysis of
+continuous data][v2].
 
 ```{r, estimate_no_covariates}
 one_bootstrap_prediction <- function(mu_hat, S_hat, doses, bounds, dose_seq) {
@@ -241,7 +242,7 @@ via `glm(..., family=binomial)`,
 with the Firth logistic regression [see @heinze2002],
 implemented as the `logistf` function from the `logistf` package.
 This is particularly important for small sample size per dose
-and if small number of responses are expected some or all treatment arms.
+and if small number of responses are expected on some treatment arms.
 The estimator of Firth regression corresponds to the posterior mode in a Bayesian logistic regression model
 with Jeffrey's prior on the parameter vector.
 This estimator is well defined even in situations where the ML estimate for logistic regression does not exist
@@ -260,7 +261,7 @@ delta method.  An estimate of this variance depends on the observed
 response rate and can be quite variable even for small sample sizes per
 group (e.g. smaller than 20).
 
-In these situations it may thus make sense to not use the estimated
+A crude alternative in these situations is to not use the estimated
 $S$ but a diagonal matrix with the inverse of the sample size per dose
 on the diagonal in the formula for calculation of the optimal
 contrast.  The contrast calculated this way will asymptotically not be

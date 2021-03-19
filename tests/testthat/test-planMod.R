@@ -66,7 +66,8 @@ test_that("get_{TD,ED,Pred}Var gives the same result as a simulation", {
   edt7 <- ED(mm, p=0.7)
   edt3 <- ED(mm, p=0.3)
   expect_equal(mean(sim[1,] < edt7 & sim[1,] > edt3),
-               unname(pnorm(edt7, edt, sqrt(true_variances[1]))-pnorm(edt3, edt, true_variances[1])))
+               unname(pnorm(edt7, true_values[1], sqrt(true_variances[1])) -
+                      pnorm(edt3, true_values[1], true_variances[1])))
 })
 
 

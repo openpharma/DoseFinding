@@ -81,8 +81,7 @@ plot_prob <- function(models, dose_seq) {
     geom_line(size = 1.2) +
     scale_y_continuous(breaks = seq(0, 1, by=0.1)) +
     facet_wrap(vars(mod)) +
-    ylab("response (probability scale)") +
-    coord_cartesian(ylim = c(0, NA))
+    ylab("response (probability scale)")
   return(gg)
 }
 
@@ -225,7 +224,6 @@ ggplot(data.frame(dose = rep(doses, 4),
                   a = rep(c(FALSE, TRUE), each = 2*length(doses)))) +
   geom_point(aes(dose, est, color = a)) +
   scale_color_discrete(name = "adjusted") +
-  coord_cartesian(ylim = c(0, NA)) +
   facet_wrap(vars(name), scales = "free_y") + ylab("")
 ```
 

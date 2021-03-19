@@ -168,7 +168,8 @@ mct_test <- function(cont_mat, est) {
   cont_cov <- t(cont_mat) %*% est$S_hat %*% cont_mat
   t_stat <- drop(est$mu_hat %*% cont_mat) / sqrt(diag(cont_cov))
   # FIXME: calling non-exported function
-  p <- DoseFinding:::pValues(cont_mat, cov2cor(cont_cov), Inf, t_stat, "one.sided")
+  p <- DoseFinding:::pValues(contMat = cont_mat, corMat = cov2cor(cont_cov),
+                             df=Inf, tStat=t_stat, alternative = "one.sided")
   ord <- rev(order(t_stat))
   return(data.frame(tStat = t_stat[ord], pVals = p[ord]))
 }

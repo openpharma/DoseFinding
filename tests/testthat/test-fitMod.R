@@ -281,3 +281,17 @@ test_that("S is also sorted when the dose is not entered sorted", {
   ff3 <- fitMod(dose, mns, S = S[ord,ord], model="linear", type="general")
   expect_equal(coef(ff1), coef(ff3))
 })
+
+test_that("fitMod complains if `resp` is a row-vector", {
+  doses <- seq(0, 100, length.out=5)
+  resp_col <- emax(doses, 2, 8, 50)
+  resp_row <- t(resp_col)
+  cov_mat <- diag(0.5, 5)
+  fit <- fitMod(doses, resp_col, model = "emax", S = cov_mat,
+                type = "general", bnds = defBnds(max(doses))$emax)
+  coefs <- unname(coef(fit))
+  expect_equal(coefs, c(2, 8, 50), tolerance = 1e-5)
+  expect_error(fitMod(doses, resp_row, model = "emax", S = cov_mat,
+                      type = "general", bnds = defBnds(max(doses))$emax),
+               "resp_row must be a numeric vector, not a matrix")
+})

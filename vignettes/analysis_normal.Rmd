@@ -59,7 +59,7 @@ Note that here we use `MASS::mvrnorm` instead of `rnorm`
 because it lets us generate random numbers with the specified _sample_ mean and sd.
 
 ```{r, simulate_dataset}
-set.seed(1)
+set.seed(1, kind = "Mersenne-Twister", sample.kind = "Rejection", normal.kind = "Inversion")
 rand <- rep(MASS::mvrnorm(60, 0, 60 * 0.015^2, empirical = TRUE), 5)
 NVA <- data.frame(dose = rep(glycobrom$dose, each = 60),
                   FEV1 = rep(glycobrom$fev1, each = 60) + rand)

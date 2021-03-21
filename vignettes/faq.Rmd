@@ -27,6 +27,11 @@ h2 {
 	width: 100%;
 }
 ```
+## Preliminaries
+
+The purpose of this FAQ document is to provide answers to some
+commonly asked questions. For an introduction to MCP-Mod please see
+@bretz2005 and @pinheiro2014.
 
 ## For which types of study designs can I use MCP-Mod?
 
@@ -59,7 +64,7 @@ In both variants one tests and estimates the dose-response relationship
 among $K$ doses $x_1,\dots,x_K$ utilizing $M$ candidate models given by
 functions $f_m(x_k, \theta_m)$.
 
-The _original MCP-Mod_ approach assumes normally distributed _observations_
+The original MCP-Mod approach assumes normally distributed observations
 \[
 y_{k,j} \sim \mathrm{Normal}(\mu_k, \sigma^2)
 \]
@@ -72,12 +77,12 @@ Critical values are taken from the multivariate t distribution with $(\sum_{k=1}
 In the Mod part the dose-response model parameters $\theta$ are estimated by OLS, minimizing
 $\sum_{k,j} (y_{k,j} - f_m(x_{k,j}, \theta))^2$.
 
-In the _generalized MCP-Mod_ approach no specific type of distribution is assumed for the observations,
+In the generalized MCP-Mod approach no specific type of distribution is assumed for the observations,
 \[
 y_{k,j} \sim \mathrm{SomeDistribution}(\mu_k),
 \]
 only that $\mu_k$ can be interpreted as a kind of "average response" for dose $k$.
-The key assumption is that the _estimator_ of the vector
+The key assumption is that the estimator of the vector
 \[
 \hat\mu \sim \mathrm{MultivariateNormal}(\mu, S),
 \]
@@ -109,9 +114,8 @@ We discuss the situation when the first stage fit is a logistic
 regression [in this vignette](binary_data.html), but many other first
 stage models could be used, as long as the first fit is able to
 produce adjusted estimates at the doses as long as the associated
-covariance matrix. Another popular example is for example a mixed
-model repeated measures (MMRM) model. See also the help page of the
-neurodeg data set `?neurodeg`, for a different longitudinal example.
+covariance matrix. See also the help page of the neurodeg data set
+`?neurodeg`, for a different longitudinal example.
 
 ## How many doses do we need to perform MCP-Mod?
 
@@ -124,23 +128,19 @@ placebo should be available, with the general recommendation to use
 4-7 active doses. When these doses cover the effective range well
 (i.e., increasing part and plateau), a large number of active doses is
 unlikely to produce a benefit, as the simulations in @bornkamp2007
-have also shown.  As a general rule-of-thumb the recommendation is to
-use a dose range that is at least 10-fold (i.e., the ratio of highest
-versus lowest dose should be > 10). Optimal design calculations can
-also provide useful information on the number of doses (and which
-doses) to use. From experience with optimal design calculations for
-different candidate sets, the number of doses from an optimal design
-calculation often tend to be smaller than 7 (see also `?optDesign`).
+have also shown.  Optimal design calculations can also provide useful
+information on the number of doses (and which doses) to use. From
+experience with optimal design calculations for different candidate
+sets, the number of doses from an optimal design calculation often
+tend to be smaller than 7 (see also `?optDesign`).
 
 ## How to determine the doses to be used for a trial using MCP-Mod?
 
 To gain most information on the compound, one should evaluate a
-dose-range that is as large as possible, that is, one should include
-the largest dose that seems adequate to administer in terms of
-tolerability/safety, in addition the lowest dose should be small
-(establishing a not fully effective dose is part of proper
-dose-response estimation). As a rule of thumb at minimum a dose-range
-of > 10-fold should be investigated.
+dose-range that is as large as feasible in terms of lowest and highest
+dose. As a rule of thumb at minimum a dose-range of > 10-fold should
+be investigated (i.e., the ratio of highest versus lowest dose should
+be > 10).
 
 Plasma drug exposure values (e.g., steady state AUC values) can be a
 good predictor of effect. In these situations one can try to select
@@ -161,8 +161,8 @@ some target dose estimate) is "small" in a specified way [see
 ## How to set up the candidate set of models?
 
 Rule of thumb: 3 - 7 dose response shapes through 2 - 4 models are
-usually sufficient. The multiple contrast test is quite robust, even
-if the model-shapes are mis-specified.  What information to utilize?
+often sufficient. The multiple contrast test is quite robust, even if
+the model-shapes are mis-specified.  What information to utilize?
 
 It is possible to use __existing information__:
 
@@ -200,7 +200,7 @@ Emax candidate models with fixed Hill parameter also for model
 fitting. Model fitting of these models can be performed with the
 standard Emax model but utilizing $doses^h$ instead of $doses$ as the
 dose variable, where $h$ is the assumed fixed Hill parameter (note
-that the interpretation of ED50 parameter returned by fitMod then
+that the interpretation of ED50 parameter returned by `fitMod` then
 changes). 
 
 _Consequence of model misspecification:_ Omission of the “correct”
@@ -269,7 +269,7 @@ levels is usually relatively small and the noise relatively large in
 these studies, convergence often fails. This is usually due to the
 fact that the best fitting model shape corresponds to the case, where
 one of the model parameters is infinite or 0. When observing these
-cases more closely one observes that while on the parameter scale no
+cases more closely, one observes that while on the parameter scale no
 convergence is obtained, typically convergence towards a fixed model
 shape is obtained.
 
@@ -278,7 +278,7 @@ nonlinear parameters for the model, which thus ensure existence of an
 estimate. In many situations the assumed bounds can be justified in
 terms of requiring that the shape-space underlying the corresponding
 model is covered almost exhaustively (see the `defBnds` function, for
-the default bounds proposed).
+the proposed default bounds).
 
 When utilizing bounds for model fitting it is recommended to use
 bootstrapping/bagging for estimation of the dose-response functions
@@ -380,11 +380,11 @@ plausible depends on the specifics of every drug.
 
 ## What about dose-response estimates, when the MCP part was (or some of the model shapes were) not significant?
 
-The proposal is to perform the Mod step always with all specified
-models (even if all or only some of the dose-response models are not
-significant). The obtained dose-response estimate, however, needs to
-be interpreted very cautiously, when no overall dose-response trend
-has been established in the MCP step.
+For practical reasons, the proposal is to perform the Mod step always
+with all specified models (even if all or only some of the
+dose-response models are not significant). The obtained dose-response
+estimate, however, needs to be interpreted very cautiously, when no
+overall dose-response trend has been established in the MCP step.
 
 Using all models is advisible, because non-significance of a
 particular contrast may only have been due to a particular inadequate

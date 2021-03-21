@@ -71,10 +71,10 @@ Also note that we decide to model everything on the total daily dose scale.
 ```{r, data}
 library(DoseFinding)
 library(ggplot2)
-# collect estimates and dosage information in one place
+## collect estimates and dosage information in one place
 example_estimates <- function() {
-  # ANOVA mean estimates and ci bounds extracted from fig. 3 of Bays (2020),
-  # because the clinicaltrials.gov page seems to contain values from a parametric model fit
+  ## ANOVA mean estimates and ci bounds extracted from fig. 3 of Bays (2020),
+  ## because the clinicaltrials.gov page seems to contain values from the dose-response model fit
   mn <- c(-0.55, -1.78, -1.95, -3.29, -4.43, -1.14, -2.74, -4.03, -4.47)
   lb <- c(-1.56, -3.15, -3.36, -4.85, -5.40, -2.49, -4.10, -5.50, -5.50)
   ub <- c( 0.40, -0.30, -0.54, -1.76, -3.48, 0.24, -1.38, -2.65, -3.44)
@@ -86,7 +86,7 @@ example_estimates <- function() {
               index = list(placebo = 1, od = 2:5, bid = 6:9)))
 }
 
-# restructure estimates for easy plotting with ggplot
+## restructure estimates for easy plotting with ggplot
 tidy_estimates <- function(est) {
   se <- sqrt(diag(est$S_hat))
   tidy <- data.frame(daily_dose = est$daily_dose, mu_hat = est$mu_hat,
@@ -112,7 +112,8 @@ plot_estimates(est)
 
 ## Candidate models
 
-We will use the same candidate models for both regimen.
+Even though not necessary and not always desired we will use the same
+candidate models for both regimen here.
 
 ```{r, candidate_models}
 mods <- list(
@@ -189,18 +190,17 @@ and `(eMax, ed50)` for the bid regimen.
 The following function calculates the responses given dose values and a model family.
 
 ```{r, estimation_1}
-# calculate response under `model` for od/bid with common e0, but separate remaining parameters
-# arguments:
-# - model: as a string like "emax",
-# - i_par: list of vectors named "placebo", "od", "bid", used for indexing `par`
-# - par: numeric, model parameter structured as c(e0, pars_od, pars_bid)
-# returns: response at placebo, dose_od, dose_bid (in this order)
+## calculate response under `model` for od/bid with common e0, but separate remaining parameters
+## arguments:
+## - model: as a string like "emax",
+## - i_par: list of vectors named "placebo", "od", "bid", used for indexing `par`
+## - par: numeric, model parameter structured as c(e0, pars_od, pars_bid)
+## returns: response at placebo, dose_od, dose_bid (in this order)
 eval_model_shared_e0 <- function(model, dose_od, dose_bid, par, i_par) {
   resp_placebo <- par[1] # e0
   resp_od <- do.call(model, append(list(dose_od, par[1]), as.list(par[i_par$od])))
   resp_bid <- do.call(model, append(list(dose_bid, par[1]), as.list(par[i_par$bid])))
   resp <- c(resp_placebo, resp_od, resp_bid)
-  #if (any(is.na(resp))) browser()
   return(resp)
 }
 ```
@@ -211,26 +211,26 @@ i.e. generalized least squares with the estimated covariance matrix $\hat S$
 [@pinheiro2014].
 
 ```{r, estimation_2}
-# find sensible starting values for `fit_model_shared_e0` by fitting separate models,
-# index:  list of vectors named "placebo", "od", "bid", used for indexing `dose`
-# bounds: passed through to `fitMod`
+## find sensible starting values for `fit_model_shared_e0` by fitting separate models,
+## index:  list of vectors named "placebo", "od", "bid", used for indexing `dose`
+## bounds: passed through to `fitMod`
 calc_start_values <- function(model, full_mu, full_S, dose, index, bounds) {
   separate_coefs <- sapply(c("od", "bid"), function(regimen) {
-    which <- c(index$placebo, index[[regimen]])
-    coef(fitMod(dose[which], full_mu[which], S = full_S[which, which],
+    inds <- c(index$placebo, index[[regimen]])
+    coef(fitMod(dose[inds], full_mu[inds], S = full_S[inds, inds],
                 type = "general",  model = model, bnds = bounds))[-1] # drop e0 estimate
   })
-  # remove names to prevent error in do.call() in eval_model_shared_e0;
-  # od, bid coefs are in 1st / second column
+  ## remove names to prevent error in do.call() in eval_model_shared_e0;
+  ## od, bid coefs are in 1st / second column
   start <- c(full_mu[1], as.numeric(separate_coefs), use.names=FALSE)
   return(start)
 }
 
-# fits 'model' to mu_hat with GLS (using S_hat_inv as weight matrix), using a common e0 for od and bid regimens.
-# i_reg:  list of vectors named "placebo", "od", "bid", used for indexing `dose`
-# i_par: passed through to `eval_model_shared_e0`
-# dose: numeric with doses for placebo, od, bid
-# lower, upper, start: control parameters fro `nlminb`
+## fits 'model' to mu_hat with GLS (using S_hat_inv as weight matrix), using a common e0 for od and bid regimens.
+## i_reg:  list of vectors named "placebo", "od", "bid", used for indexing `dose`
+## i_par: passed through to `eval_model_shared_e0`
+## dose: numeric with doses for placebo, od, bid
+## lower, upper, start: control parameters fro `nlminb`
 fit_model_shared_e0 <- function(model, dose, mu_hat, S_hat_inv, lower, upper, start, i_reg, i_par) {
   opt_fun <- function(par) { # make use of lexical scope
     resp <- eval_model_shared_e0(model, dose[i_reg$od], dose[i_reg$bid], par, i_par)
@@ -241,9 +241,9 @@ fit_model_shared_e0 <- function(model, dose, mu_hat, S_hat_inv, lower, upper, st
   return(fit)
 }
 
-# FIXME: DoseFinding::sigEmax is NaN for large dose & large h.
-# nlminb acutally stumbles into those regions.
-# More stable alternative implementation:
+## FIXME: DoseFinding::sigEmax is NaN for large dose & large h.
+## nlminb acutally stumbles into those regions.
+## More stable alternative implementation:
 sigEmax_alt <- function(dose, e0, eMax, ed50, h) {
   e0 + eMax / (1 + exp(h * log(ed50 / dose)))
 }
@@ -260,8 +260,8 @@ we use the same bootstrap-plus-averaging approach
 that is detailed in the [vignette for analysis of continuous data](analysis_normal.html#dose-response-estimation).
 
 ```{r, estimation_3}
-# predict population response in each regimen for dose_seq_*
-# note: both dose_seq_* vectors should contain a 0 if response at placebo is of interest
+## predict population response in each regimen for dose_seq_*
+## note: both dose_seq_* vectors should contain a 0 if response at placebo is of interest
 one_bootstrap_sample <- function(est, dose_seq_od, dose_seq_bid) {
   mu_new <- drop(rmvnorm(1, est$mu_hat, est$S_hat))
   mod_info <- list(list(name = "emax", bounds = rbind(c(0.15, 225)),
@@ -278,7 +278,7 @@ one_bootstrap_sample <- function(est, dose_seq_od, dose_seq_bid) {
   gaics <- sapply(fit, `[[`, "objective") + 2 * sapply(mod_info, `[[`, "n_par_gaic")
   sel <- which.min(gaics)
   mod <- mod_info[[sel]]
-  # drop the placebo element
+  ## drop the placebo element
   pred <- eval_model_shared_e0(mod$name, dose_seq_od, dose_seq_bid, fit[[sel]]$par, mod$i_par)[-1]
   return(pred)
 }
@@ -294,8 +294,8 @@ summarize_bootstrap_samples <- function(samples, probs = c(0.025, 0.25, 0.75, 0.
 
 dose_seq_od <- seq(0, 150, length.out = 21) # do include placebo!
 dose_seq_bid <- seq(0, 100, length.out = 21)
-set.seed(1)
-reps <- replicate(25, one_bootstrap_sample(est, dose_seq_od, dose_seq_bid))
+set.seed(1, kind = "Mersenne-Twister", sample.kind = "Rejection", normal.kind = "Inversion")
+reps <- replicate(1000, one_bootstrap_sample(est, dose_seq_od, dose_seq_bid))
 bs_sum <- summarize_bootstrap_samples(reps)
 bs_sum$daily_dose <- c(dose_seq_od, dose_seq_bid)
 bs_sum$regimen <- c(rep("od", length(dose_seq_od)), rep("bid", length(dose_seq_bid)))

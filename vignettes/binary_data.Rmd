@@ -44,6 +44,7 @@ logit <- function(p) log(p / (1 - p))
 inv_logit <- function(y) 1 / (1 + exp(-y))
 doses <- c(0, 0.5, 1.5, 2.5, 4)
 
+## set seed and ensure reproducuibility across R versions
 set.seed(1, kind = "Mersenne-Twister", sample.kind = "Rejection", normal.kind = "Inversion")
 group_size <- 100
 dose_vector <- rep(doses, each = group_size)
@@ -126,8 +127,8 @@ one_bootstrap_prediction <- function(mu_hat, S_hat, doses, bounds, dose_seq) {
   return(pred)
 }
 
-# bs_predictions is a doses x replications matrix,
-# probs is a 4-element vector of increasing probabilities for the quantiles
+## bs_predictions is a doses x replications matrix,
+## probs is a 4-element vector of increasing probabilities for the quantiles
 summarize_predictions <- function(bs_predictions, probs) {
   stopifnot(length(probs) == 4)
   med <- apply(bs_predictions, 1, median)
@@ -198,12 +199,14 @@ Then we use $\mu^*$ and $S^*$ in `MCTtest()`.
 fit_cov <- glm(y~factor(dose) + 0 + x1 + x2, data = dat, family = binomial)
 
 covariate_adjusted_estimates <- function(mu_hat, S_hat, formula_rhs, doses, other_covariates, n_sim) {
-  # predict every patient under *every* dose
+  ## predict every patient under *every* dose
   oc_rep <- as.data.frame(lapply(other_covariates, function(col) rep(col, times = length(doses))))
   d_rep <- rep(doses, each = nrow(other_covariates))
   pdat <- cbind(oc_rep, dose = d_rep)
   X <- model.matrix(formula_rhs, pdat)
+  ## average on probability scale then backtransform to logit scale
   mu_star <- logit(tapply(inv_logit(X %*% mu_hat), pdat$dose, mean))
+  ## estimate covariance matrix of mu_star
   sims <- rmvnorm(n_sim, mu_hat, S_hat)
   pred <- replicate(n_sim, logit(tapply(inv_logit(X %*% drop(rmvnorm(1, mu_hat, S_hat))),
                                         pdat$dose, mean)))
@@ -215,7 +218,7 @@ ca <- covariate_adjusted_estimates(coef(fit_cov), vcov(fit_cov), ~factor(dose)+0
 MCTtest(doses, ca$mu_star, S = ca$S_star, type = "general", models = mods)
 ```
 
-In the case at hand the results are not dramatically different.
+In the case at hand the results here are not dramatically different.
 Adjusting for covariates gives slightly lower variance estimates.
 
 ```{r, compare}
@@ -237,18 +240,29 @@ predict_and_plot(ca$mu_star, ca$S_star, doses, dose_seq, 1000) +
 
 ## Avoiding problems with complete seperation and 0 responders
 
-In a number of situations it makes sense to replace ML estimation for logistic regression
-via `glm(..., family=binomial)`,
-with the Firth logistic regression [see @heinze2002],
-implemented as the `logistf` function from the `logistf` package.
-This is particularly important for small sample size per dose
-and if small number of responses are expected on some treatment arms.
-The estimator of Firth regression corresponds to the posterior mode in a Bayesian logistic regression model
-with Jeffrey's prior on the parameter vector.
-This estimator is well defined even in situations where the ML estimate for logistic regression does not exist
-(e.g. for complete separation).
+In a number of situations it makes sense to replace ML estimation for
+logistic regression via `glm(..., family=binomial)`, with the Firth
+logistic regression [see @heinze2002], implemented as the `logistf`
+function from the `logistf` package.  This is particularly important
+for small sample size per dose and if small number of responses are
+expected on some treatment arms.  The estimator of Firth regression
+corresponds to the posterior mode in a Bayesian logistic regression
+model with Jeffrey's prior on the parameter vector.  This estimator is
+well defined even in situations where the ML estimate for logistic
+regression does not exist (e.g. for complete separation).
 
 ## Considerations around optimal contrasts at design stage and analysis stage
+
+The formula for the optimal contrasts is given by
+\[
+c^{\textrm{opt}} \propto
+S^{-1}\biggl(\mu^0_m - \frac{(\mu^0_m)^T S^{-1}1_K}{1_K^T S^{-1} 1_K}\biggr)
+\]
+where $\mu^0_m$ is the standardized mean response,
+$K$ is the number doses,
+and $1_K$ is an all-ones vector of length $K$ and $S$ is the
+covariance matrix of the estimates at the doses
+[see @pinheiro2014]. 
 
 For calculating the optimal contrast for the generalized MCP step the
 covariance matrix $S$ of the estimator $\hat\mu$ can be re-estimated
@@ -274,7 +288,7 @@ estimated variance.
 To re-run the adjusted analysis above for the contrasts, calculated as
 outlined above, we need to calculate and hand-over the contrast matrix
 manually via `contMat` in the `MCTtest()` function. 
-In our case we obtain a result that is only slightly different.
+In our case (with 100 patients per group) we obtain a result that is only slightly different.
 ```{r}
 ## here we have balanced sample sizes across groups, so we select w = 1
 ## otherwise would select w proportional to group sample sizes
@@ -297,21 +311,21 @@ candidate set using `powMCT()` and plot it for increasing `n`.
 See also the [vignette on sample size calculation](sample_size.html).
 
 ```{r, sample_size}
-# for simplicity: contrasts as discussed in the previous section
+## for simplicity: contrasts as discussed in the previous section
 contMat <- optContr(mods, w=1)
 
-# we need each alternative model as a separate object
+## we need each alternative model as a separate object
 alt_model_par <- list(emax = 0.25, emax = 1, sigEmax = c(1, 3),
                       sigEmax = c(2.5, 4), betaMod = c(1.1, 1.1))
 alt_common_par <- list(placEff = logit(0.1), maxEff = logit(0.35)-logit(0.1),
                        doses = doses)
-# this is a bit hackish beacause we need to pass named arguments to Mods()
+## this is a bit hackish because we need to pass named arguments to Mods()
 alt_mods <- lapply(seq_along(alt_model_par), function(i) {
   do.call(Mods, append(alt_model_par[i], alt_common_par))
 })
 
 prop_true_var_mu_hat <- lapply(seq_along(alt_model_par), function(i) {
-  # mean responses on logit scale
+  ## mean responses on logit scale
   lo <- getResp(do.call(Mods, append(alt_model_par[i], alt_common_par)))
   p <- inv_logit(lo) # mean responses on probability scale
   v <- 1 / (p * (1-p)) # element-wise variance of mu_hat up to a factor of 1/n
@@ -326,7 +340,8 @@ min_power_at_group_size <- function(n) {
 
 n <- seq(5, 80, by=5)
 pwrs <- sapply(n, min_power_at_group_size)
-qplot(n, pwrs, geom="line", ylab="Min. Power over candidate set")
+qplot(n, pwrs, geom="line", ylab="Min. Power over candidate set")+
+  scale_y_continuous(breaks = seq(0,1,by=0.1), limits = c(0,1))
 ```
 
 ## References

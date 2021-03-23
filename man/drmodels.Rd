@@ -146,7 +146,9 @@ emax model it is sometimes also called hyperbolic emax model.
 The \bold{sigmoid Emax} model is an extension of the (hyperbolic) Emax
 model by introducing an additional parameter h, that determines the
 steepness of the curve at the ed50 value. The sigmoid Emax model
-describes monotonic, sigmoid dose-response relationships.
+describes monotonic, sigmoid dose-response relationships. In the
+toxicology literature this model is also called four-parameter
+log-logistic (4pLL) model.
 
 The \bold{quadratic} model is intended to capture a possible
 non-monotonic dose-response relationship.

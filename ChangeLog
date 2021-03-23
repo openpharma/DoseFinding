@@ -1,4 +1,8 @@
-2019-11-13 Bjoern Bornkamp (version 0.9-17)
+To thank for next version:
+Dong Xi, Hilke Kracker, Julia Duda, (Tobias Mielke?)
+
+
+2019-11-13 Bjoern Bornkamp (version 0.9-17)	
       * Added citation to DESCRIPTION file
       * Removed alpha argument for pValues function (not used)
       * Propagate error messages from mvtnorm in pValues function

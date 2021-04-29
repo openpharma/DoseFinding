@@ -257,12 +257,13 @@ In principle we could also look a the mean instead of the median.
 ```{r, bootstrap_summarize}
 # bs_predictions is a doses x replications matrix,
 # probs is a 4-element vector of increasing probabilities for the quantiles
+#   that will be used in the plotting code for outer and inner confidence intervals
 summarize_predictions <- function(bs_predictions, probs) {
   stopifnot(length(probs) == 4)
   med <- apply(bs_predictions, 1, median)
   quants <- apply(bs_predictions, 1, quantile, probs = probs)
   bs_df <- as.data.frame(cbind(med, t(quants)))
-  names(bs_df) <- c("median", "low_out", "low_in", "high_in", "high_out")
+  names(bs_df) <- c("median", "outer_low", "inner_low", "inner_high", "outer_high")
   return(bs_df)
 }
 ```
@@ -278,8 +279,8 @@ lm_summary <- data.frame(dose = doses, mu_hat = mu_hat,
                          low = mu_hat - ci_half_width, high = mu_hat + ci_half_width)
 
 ggplot(cbind(bs_summary, dose_seq = dose_seq)) + geom_line(aes(dose_seq, median)) +
-  geom_ribbon(aes(x = dose_seq, ymin = low_in, ymax = high_in), alpha = 0.2) +
-  geom_ribbon(aes(x = dose_seq, ymin = low_out, ymax = high_out), alpha = 0.2) +
+  geom_ribbon(aes(x = dose_seq, ymin = inner_low, ymax = inner_high), alpha = 0.2) +
+  geom_ribbon(aes(x = dose_seq, ymin = outer_low, ymax = outer_high), alpha = 0.2) +
   geom_point(aes(dose, mu_hat), lm_summary) +
   geom_errorbar(aes(dose, ymin = low, ymax = high), lm_summary, width = 0, alpha = 0.5) +
   scale_y_continuous(breaks = seq(1.2,1.45,by=0.02)) +

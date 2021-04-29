@@ -34,7 +34,7 @@ that ignores the regimen.
 
 The most general approach would be to perform MCP-Mod separately by
 regimen, and for example to adjust p-values originating from the
-MCP-part using a Bonferroni-Holm correction. This approach assumes that the
+MCP-part using a Bonferroni correction. This approach assumes that the
 regimen don't share any similarity. This approach is often not
 feasible, due to the double-blind nature of trials. In the example of
 od and bid, all patients would receive two administrations per
@@ -148,9 +148,11 @@ calculate_contrasts <- function(est, mods) {
   colnames(cm_bid) <- paste0("bid_", colnames(cm_bid))
   rownames(cm_bid)[-1] <- paste0("bid_", rownames(cm_bid)[-1])
   # now build a block matrix (contrasts in columns) like this:
-  # [placebo od | placebo bid ]
-  # [doses od   | 0           ]
-  # [0          | doses bid   ]
+  # [ row of placebo coefficients od   | row of placebo coefficients bid   ]
+  # [----------------------------------+-----------------------------------]
+  # [ remaining doses' coefficents od  | fill with all zeros               ]
+  # [----------------------------------+-----------------------------------]
+  # [ fill with all zeros              | remaining doses' coefficients bid ]
   cm_full <- rbind(
     "0"=c(cm_od[1,],                                cm_bid[1,]                              ),
     cbind(cm_od[-1,],                               matrix(0, nrow(cm_od) - 1, ncol(cm_bid))),

@@ -169,7 +169,35 @@ should not come as a surprise as dose-estimation is primarily a
 comparison among the investigational doses, while the MCP-part
 establishes an effect versus placebo.  Chapter 12 in @oquigley2017
 illustrates this with simulations, based on the `planMod` function
-(see `?planMod` for example usage). In practice, to keep the size of
+(see `?planMod` for example usage).
+
+Here we only give a very brief example from the book:
+Consider the `sigEmax(30.5, 3.5)` model from the first section
+and assume that it is the "true model" under which we want to investigate the operating characteristics of fitting sigEmax models.
+Suppose we want to achieve a target improvement of $\Delta=0.12 L$ over placebo.
+One can calculate that this needs a target dose TD of 44.4 mg under the true model.
+Keep this number in mind for later.
+Now we can ask the question what the average length of a 90% confidence interval for TD would be.
+To answer it, we can run a simulation using the `planMod` function.
+If we use the sample size n=93 from the power calculation above, we find:
+```{r, tdci93}
+# TODO: this gives a lot of warnings and sometimes NA results
+set.seed(42)
+pm <- planMod("sigEmax", Mods(sigEmax=c(30.5, 3.5), placEff=1.25, maxEff=0.15, doses=doses),
+              n=93, sigma = 0.34, doses=doses, simulation=TRUE, nSim=5000, showSimProgress = FALSE)
+summary(pm,  Delta=0.12)
+```
+The expected length of the CI (`lengthTDCI`) is larger than the true TD value.
+This is clearly unsatisfactory.
+Experimenting with different values of `n`,
+one quickly realizes that we would need for example 1650 patients to get the expected length of the CI down to 20 mg.
+```{r, tdci1650}
+pm <- planMod("sigEmax", Mods(sigEmax=c(30.5, 3.5), placEff=1.25, maxEff=0.15, doses=doses),
+              n=1650, sigma = 0.34, doses=doses, simulation=TRUE, nSim=5000, showSimProgress = FALSE)
+summary(pm, Delta=0.12)
+```
+
+In practice, to keep the size of
 the study feasible, one needs to find a compromise between
 dose-response signal detection and estimation precision as the
 criteria for sample size determination. Irrespective, it is important

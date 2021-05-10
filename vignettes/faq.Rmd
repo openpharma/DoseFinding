@@ -68,7 +68,7 @@ The original MCP-Mod approach assumes normally distributed observations
 \[
 y_{k,j} \sim \mathrm{Normal}(\mu_k, \sigma^2)
 \]
-for $k=1,\dots,K$ and $i=1,\dots,n_k$ in each group,
+for $k=1,\dots,K$ and $j=1,\dots,n_k$ in each group,
 where $\mu_k = f_m(x_k, \theta_m)$ under the $m$-th candidate model.
 In the MCP part the null hypothesis of a flat response profile $c_m^T \mu = 0$ vs $c_m^T \mu > 0$ (or $\neq 0$)
 is tested with $c_m$ chosen to maximize power under the $m$-th
@@ -82,11 +82,11 @@ In the generalized MCP-Mod approach no specific type of distribution is assumed 
 y_{k,j} \sim \mathrm{SomeDistribution}(\mu_k),
 \]
 only that $\mu_k$ can be interpreted as a kind of "average response" for dose $k$.
-The key assumption is that the estimator of the vector
+The key assumption is that an estimator $\hat\mu=(\mu_1,\dots,\mu_k)$ exists,
+which has (at least asymptotically) a multivariate normal distribution,
 \[
 \hat\mu \sim \mathrm{MultivariateNormal}(\mu, S),
 \]
-is at least asymptotically multivariate normally distributed 
 and that a first-stage fitting procedure can provide estimates $\hat\mu$ and $\hat S$.
 The $m$-th candidate model is taken to imply $\mu_k = f_m(x_k, \theta)$
 and the null hypothesis $c_m^T \mu = 0$ is tested with optimal contrasts.
@@ -156,7 +156,7 @@ theory. The idea is to calculate a design (i.e. the doses and dose
 allocation weights) under a given fixed sample size so that the
 variability of the dose-response parameter estimates (or variance of
 some target dose estimate) is "small" in a specified way [see
-@bretz2010]. 
+@bretz2010].
 
 ## How to set up the candidate set of models?
 
@@ -201,7 +201,7 @@ fitting. Model fitting of these models can be performed with the
 standard Emax model but utilizing $doses^h$ instead of $doses$ as the
 dose variable, where $h$ is the assumed fixed Hill parameter (note
 that the interpretation of ED50 parameter returned by `fitMod` then
-changes). 
+changes).
 
 _Consequence of model misspecification:_ Omission of the “correct”
 dose-response shape from the set of candidate models does not

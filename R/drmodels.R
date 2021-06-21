@@ -21,19 +21,19 @@ exponential <- function(dose, e0, e1, delta){
   e0 + e1*(exp(dose/delta) - 1)
 }
 
-logistic <- function(dose, e0, eMax, ed50, delta){ 
+logistic <- function(dose, e0, eMax, ed50, delta){
   e0 + eMax/(1 + exp((ed50 - dose)/delta))
 }
 
 betaMod <- function(dose, e0, eMax, delta1, delta2, scal){
-  maxDens <- (delta1^delta1)*(delta2^delta2)/
-    ((delta1 + delta2)^(delta1+delta2))
+  xlogx <- function(x) if(x == 0) 0 else x * log(x) # will not be called with vector x
+  logMaxDens <- xlogx(delta1) + xlogx(delta2) - xlogx(delta1 + delta2)
   dose <- dose/scal
-  e0 + eMax/maxDens * (dose^delta1) * (1 - dose)^delta2
+  e0 + eMax/exp(logMaxDens) * (dose^delta1) * (1 - dose)^delta2
 }
 
 sigEmax <- function(dose, e0, eMax, ed50, h){
-  e0 + eMax*dose^h/(ed50^h + dose^h)
+  e0 + eMax * 1 /(1 + (ed50/dose)^h)
 }
 
 linInt <- function(dose, resp, nodes){
@@ -71,25 +71,25 @@ logisticGrad <- function(dose, eMax, ed50, delta, ...){
 }
 
 betaModGrad <- function(dose, eMax, delta1, delta2, scal, ...){
-  lg2 <- function(x) ifelse(x == 0, 0, log(x))
+  lg2 <- function(x) {l<-x; l[x==0] <- 0; l[x!=0] <- log(x[x!=0]); l}
+  xlogx <- function(x) if(x == 0) 0 else x * log(x) # will not be called with vector x
   dose <- dose/scal
   if(any(dose > 1)) {
     stop("doses cannot be larger than scal in betaModel")
   }
-  maxDens <- (delta1^delta1) * (delta2^delta2)/((delta1 + 
-                                                 delta2)^(delta1 + delta2))
-  g1 <- ((dose^delta1) * (1 - dose)^delta2)/maxDens
+  logMaxDens <- xlogx(delta1) + xlogx(delta2) - xlogx(delta1 + delta2)
+  g1 <- ((dose^delta1) * (1 - dose)^delta2)/exp(logMaxDens)
   g2 <- g1 * eMax * (lg2(dose) + lg2(delta1 + delta2) - lg2(delta1))
   g3 <- g1 * eMax * (lg2(1 - dose) + lg2(delta1 + delta2) - lg2(delta2))
   cbind(e0=1, eMax=g1, delta1=g2, delta2=g3)
 }
 
 sigEmaxGrad <- function(dose, eMax, ed50, h, ...){
-  lg2 <- function(x) ifelse(x == 0, 0, log(x))
-  den <- (ed50^h + dose^h)
-  g1 <- dose^h/den
-  g2 <- -ed50^(h - 1) * dose^h * h * eMax/den^2
-  g3 <- eMax * dose^h * ed50^h * lg2(dose/ed50)/den^2
+  lg2 <- function(x) {l<-x; l[x==0] <- 0; l[x!=0] <- log(x[x!=0]); l}
+  a <-  1 / (1 + (dose/ed50)^h)
+  g1 <- 1 / (1 + (ed50/dose)^h)
+  g2 <- -(h * eMax / ed50) * g1 * a
+  g3 <- eMax * lg2(dose / ed50) * g1 * a
   cbind(e0=1, eMax=g1, ed50=g2, h=g3)
 }
 

@@ -157,6 +157,11 @@ checkAnalyArgs <- function(dose, resp, data, S, type,
   } else { # data handed over via vectors
     if(addCovars != ~1)
       stop("need to hand over data and covariates in data frame")
+    if(!(is.numeric(resp) && is.null(dim(resp)))) {
+      warning(cal[3], " is not a numeric but a ", class(resp)[1],
+              ", converting with as.numeric()")
+      resp <- as.numeric(resp)
+    }
     if(length(dose) != length(resp))
       stop(cal[2], " and ", cal[3], " not of equal length")
     dd <- na.action(data.frame(dose, resp))

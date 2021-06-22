@@ -1,9 +1,5 @@
 context("Optimal Contrasts")
 
-# TODO
-# * some test cases for constant shapes (what is expected?)
-# * solnp gives other results than DoseFinding, quadratic programming or enumeration
-
 require_extra_packages <- function() {
   if (!(require("quadprog") && require("Rsolnp"))) {
     skip("packages quadprog and Rsolnp not available")
@@ -86,10 +82,10 @@ test_that("calculation of contrasts works", {
   set.seed(1)
   require_extra_packages()
   ncps <- replicate(1000, one_sim())
-  q <- apply(ncps, 1, quantile)
-  expect_equal(q[, 5], q[, 2])
-  expect_equal(q[, 5], q[, 3])
-  expect_equal(q[, 5], q[, 4])
+  ## calculate best result among alternative methods (solnp sometimes fails)
+  best_ncp <- apply(ncps[c(3,4,5),], 2, max)
+  ## compare to DoseFinding::constOptC
+  expect_equal(ncps[2,], best_ncp)
 })
 
 test_that("constant shapes are handled correctly", {
@@ -101,11 +97,24 @@ test_that("constant shapes are handled correctly", {
   cont_mat <- function(doses, placAdj, type) {
     optContr(modlist, w=1, doses=doses, placAdj=placAdj, type = type)$contMat
   }
-  expect_equal(cont_mat(0.05, TRUE, "u"), cont_mat(0.05, TRUE, "c"))
-  expect_equal(cont_mat(c(0.05, 0.5), TRUE, "u"), cont_mat(c(0.05, 0.5), TRUE, "c"))
-  expect_equal(cont_mat(c(0, 0.05), FALSE, "u"), cont_mat(c(0, 0.05), FALSE, "c"))
-  # FIXME: what do we expect here?
-  # expect_equal(cont_mat(c(0, 0.05, 0.5), FALSE, "u"), cont_mat(c(0, 0.05, 0.5), FALSE, "c"))
+  ## code should notice that linInt shapes are constant over specified dose rng (no contrast can be calculated)
+  expect_message(cont_mat(0.05, TRUE, "u"), "The linInt1, linInt2 models have a constant shape, cannot
+calculate optimal contrasts for these shapes.")
+  expect_message(cont_mat(0.05, TRUE, "c"), "The linInt1, linInt2 models have a constant shape, cannot
+calculate optimal contrasts for these shapes.")
+  expect_message(cont_mat(c(0.05, 0.5), TRUE, "u"), "The linInt1 model has a constant shape, cannot
+calculate optimal contrasts for this shape.")
+  expect_message(cont_mat(c(0.05, 0.5), TRUE, "c"), "The linInt1 model has a constant shape, cannot
+calculate optimal contrasts for this shape.")
+  expect_message(cont_mat(c(0, 0.05), FALSE, "u"), "The linInt1, linInt2 models have a constant shape, cannot
+calculate optimal contrasts for these shapes.")
+  expect_message(cont_mat(c(0, 0.05), FALSE, "c"), "The linInt1, linInt2 models have a constant shape, cannot
+calculate optimal contrasts for these shapes.")
+  expect_message(cont_mat(c(0, 0.05, 0.5), FALSE, "u"), "The linInt1 model has a constant shape, cannot
+calculate optimal contrasts for this shape.")
+  expect_message(cont_mat(c(0, 0.05, 0.5), FALSE, "c"), "The linInt1 model has a constant shape, cannot
+calculate optimal contrasts for this shape.")
+  ## in case of all constant shapes stop with error
   modlist2 <- Mods(linInt = rbind(c(0, 1, 1, 1), c(0, 0, 0, 1)),
                    doses = c(0, 0.05, 0.2, 0.6, 1), placEff = 1)
   expect_error(optContr(modlist2, w=1, doses=c(0.05), placAdj=TRUE, type = "u"),
@@ -116,9 +125,13 @@ test_that("constant shapes are handled correctly", {
                "All models correspond to a constant shape, no optimal contrasts calculated.")
   expect_error(optContr(modlist2, w=1, doses=c(0, 0.05), placAdj=FALSE, type = "c"),
                "All models correspond to a constant shape, no optimal contrasts calculated.")
-  # FIXME: what about these?
-  ## optContr(modlist2, w=1, doses=c(0.05, 0.5), placAdj=TRUE, type = "u")
-  ## optContr(modlist2, w=1, doses=c(0.05, 0.5), placAdj=TRUE, type = "c")
-  ## optContr(modlist2, w=1, doses=c(0, 0.05, 0.5), placAdj=FALSE, type = "u")
-  ## optContr(modlist2, w=1, doses=c(0, 0.05, 0.5), placAdj=FALSE, type = "c")
+  ## mixed cases where some linInt models are non-constant
+  expect_message(optContr(modlist2, w=1, doses=c(0.05, 0.5), placAdj=TRUE, type = "u"), "The linInt2 model has a constant shape, cannot
+calculate optimal contrasts for this shape.")
+  expect_message(optContr(modlist2, w=1, doses=c(0.05, 0.5), placAdj=TRUE, type = "c"), "The linInt2 model has a constant shape, cannot
+calculate optimal contrasts for this shape.")
+  expect_message(optContr(modlist2, w=1, doses=c(0, 0.05, 0.5), placAdj=FALSE, type = "u"), "The linInt2 model has a constant shape, cannot
+calculate optimal contrasts for this shape.") 
+  expect_message(optContr(modlist2, w=1, doses=c(0, 0.05, 0.5), placAdj=FALSE, type = "c"), "The linInt2 model has a constant shape, cannot
+calculate optimal contrasts for this shape.")
 })

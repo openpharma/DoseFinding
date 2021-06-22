@@ -8,8 +8,8 @@
   corresponding to a set of contrasts and given a set of observed test
   statistics. This function is exported as it may be a useful building
   block and used in more complex testing situations that are not covered
-  by \code{\link{MCTtest}}, but most users probably don't need to use
-  this.
+  by \code{\link{MCTtest}}. Most users probably don't need to use
+  this function.
 }
 \usage{
 MCTpval(contMat, corMat, df, tStat,

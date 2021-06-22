@@ -1,7 +1,6 @@
 context("planning models")
 
 # TODO
-# * various FIXMEs in test #2
 # * what do we want to do with tests #3-5 (mostly plots)
 # * test #4 crashes in planMod
 
@@ -27,8 +26,8 @@ test_that("getPredVar gives the same results as predict.DRMod", {
 test_that("get_{TD,ED,Pred}Var gives the same result as a simulation", {
   skip_on_cran()
   # select very large sample size (to validate asymptotics)
-  n <- c(100000, 50000, 50000, 50000, 100000) # FIXME: which one?
-  n <- c(100, 50, 50, 50, 100)
+  n <- c(100000, 50000, 50000, 50000, 100000) 
+  ##n <- c(100, 50, 50, 50, 100) 
   doses <- c(0,10,20,40,50)
   cf <- c(0,0.4,10)
   Delta <- 0.2
@@ -54,20 +53,15 @@ test_that("get_{TD,ED,Pred}Var gives the same result as a simulation", {
              td = TD(ff, Delta = Delta),
              pl = predict(ff, doseSeq=50, predType = "effect-curve")))
   }
-  sim <- replicate(100, one_sim()) # FIXME: originally 10000
-  expect_equal(unname(rowMeans(sim)), true_values) # FIXME: tolerance?
-  expect_equal(unname(apply(sim, 1, var)), true_variances)
-
-  ## FIXME: what do we do with this?
-  ## tdvart <- DoseFinding:::getTDVar("emax", cf, V=V,scale = "log", Delta=Delta)
-  ## hist(td[td < 100], freq=FALSE, breaks = 101)
-  ## curve(dlnorm(x, log(tdt), sqrt(tdvart)), add=TRUE)
+  sim <- replicate(100, one_sim()) # for a real check use 10000
+  expect_equal(unname(rowMeans(sim)), true_values, tolerance = 0.01)
+  expect_equal(unname(apply(sim, 1, var)), true_variances, tolerance = 0.01)
 
   edt7 <- ED(mm, p=0.7)
   edt3 <- ED(mm, p=0.3)
   expect_equal(mean(sim[1,] < edt7 & sim[1,] > edt3),
                unname(pnorm(edt7, true_values[1], sqrt(true_variances[1])) -
-                      pnorm(edt3, true_values[1], true_variances[1])))
+                      pnorm(edt3, true_values[1], true_variances[1])), tolerance = 0.01)
 })
 
 
@@ -78,7 +72,7 @@ test_that("negative values for Delta lead to an error", {
                  doses = c(0, 10,20, 50, 100),
                  placEff=0, maxEff=-2)
   pObj <- planMod("sigEmax",models,n=100,sigma=1.2,
-                  simulation=TRUE,nSim=100, cores=4)
+                  simulation=TRUE,nSim=100)
   expect_error(summary(pObj,Delta=-1.1),
                "\"Delta\" needs to be > 0")
 })

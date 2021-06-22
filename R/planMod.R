@@ -325,7 +325,6 @@ print.summary.planMod <- function(x, digits = 3, len = 101,
 
   if(is.null(x$sim))
     stop("Additional metrics only available if simulations were performed")
-  cat("Calculating additional summary metrics, please wait.")
   ## calculate average mse of placebo-adjusted dose-response for ANOVA
   CM <- cbind(-1, diag(length(doses)-1))
   mseANOVA <- mean(diag(CM%*%S%*%t(CM)))
@@ -365,7 +364,6 @@ print.summary.planMod <- function(x, digits = 3, len = 101,
       out[i,5] <- NA
     }
   }
-  cat("\r")
   cat(sprintf("Additional simulation metrics (nSim=%i)\n",
               attr(x$sim, "nSim")))
   print(signif(out, digits=digits))

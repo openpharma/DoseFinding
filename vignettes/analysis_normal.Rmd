@@ -83,7 +83,7 @@ the quadratic model is there to accommodate a potentially decreasing effect at h
 Next we have to supply guesstimates for the nonlinear parameters:
 
 - ED50 for an Emax model
-- ED50 and the hill parameter h for a sigmoid emax model
+- ED50 and the Hill parameter h for a sigmoid emax model
 - coefficient ratio $\delta = \beta_2/\lvert\beta_1\rvert$ in the quadratic model $f(d, \theta) = E_0 + \beta_1 d + \beta_2 d^2$
 
 The following choices cover a range of plausible relationships:

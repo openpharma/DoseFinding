@@ -82,7 +82,7 @@ plot_power_vs_treatment_effect <- function(guess, doses, group_size, placEff, ma
   grd$sigma <- factor(grd$sigma)
   pdat <- cbind(grd, power = c(min_power, mean_power),
                 sumFct = rep(factor(1:2, labels = c("min", "mean")), each = nrow(grd)))
-  subt <- sprintf("placEff = %.3f, group size = %d, α = %.3f", placEff, group_size, alpha)
+  subt <- sprintf("group size = %d, α = %.3f", group_size, alpha)
   gg <- ggplot(pdat) + geom_line(aes(max_eff, power, lty = sigma)) +
     facet_wrap(~sumFct, labeller = label_both)+
     xlab("maximum treatment effect") + ylab("power") +
@@ -101,7 +101,7 @@ plot_power_vs_treatment_effect(guess, doses, group_size = 90, placEff = 1.25,
 
 MCP-Mod depends on the candidate models selected. What if the true
 model is not among the chosen candidate shapes? Usually MCP-Mod is
-quite robust.  To illustrate this, let's assume an exponential model
+rather robust.  To illustrate this, let's assume an exponential model
 shape is the true model, which is not among the candidate shapes. Let
 this exponential model have small responses for all doses but the last
 (here assuming 20% of the overall treatment effect is achieved at the
@@ -171,38 +171,52 @@ establishes an effect versus placebo.  Chapter 12 in @oquigley2017
 illustrates this with simulations, based on the `planMod` function
 (see `?planMod` for example usage).
 
-Here we only give a very brief example from the book:
-Consider the `sigEmax(30.5, 3.5)` model from the first section
+Here we only consider a brief example: Consider the `sigEmax(30.5, 3.5)` model from the first section
 and assume that it is the "true model" under which we want to investigate the operating characteristics of fitting sigEmax models.
 Suppose we want to achieve a target improvement of $\Delta=0.12 L$ over placebo.
 One can calculate that this needs a target dose TD of 44.4 mg under the true model.
 Keep this number in mind for later.
-Now we can ask the question what the average length of a 90% confidence interval for TD would be.
+Now we can ask the question what the variability in TD estimation
+would be.
 To answer it, we can run a simulation using the `planMod` function.
 If we use the sample size n=93 from the power calculation above, we find:
-```{r, tdci93}
-# TODO: this gives a lot of warnings and sometimes NA results
+```{r, tdci93, warning = FALSE}
 set.seed(42)
+## Note: Warnings related to vcov.DRMod can be ignored if small relative to the total number of simulations
 pm <- planMod("sigEmax", Mods(sigEmax=c(30.5, 3.5), placEff=1.25, maxEff=0.15, doses=doses),
-              n=93, sigma = 0.34, doses=doses, simulation=TRUE, nSim=5000, showSimProgress = FALSE)
+              n=93, sigma = 0.34, doses=doses, simulation=TRUE, nSim=5000, showSimProgress = FALSE,
+              bnds = defBnds(max(doses)))
 summary(pm,  Delta=0.12)
 ```
-The expected length of the CI (`lengthTDCI`) is larger than the true TD value.
-This is clearly unsatisfactory.
-Experimenting with different values of `n`,
-one quickly realizes that we would need for example 1650 patients to get the expected length of the CI down to 20 mg.
+The output shows the efficiency versus ANOVA (`Eff-vs-ANOVA`), which is
+the ratio of the placebo-adjusted mean-squared error (at the observed doses) of
+model-based vs ANOVA approach. This can be
+interpreted on the sample size scale. In addition the root of the
+mean-squared error to estimate the placebo-adjusted dose-response
+(`cRMSE`) averaged over a grid of 101 equally spaced values between
+placebo and the maximum dose. Length of the quantile range for a
+target dose (`lengthTDCI`). By default this is calculated by taking the difference 
+of 5\% and 95\% quantile of the empirical distribution of the dose 
+estimates in the simulation. The metric `P(no TD)` indicates in how many
+simulations runs no TD could be identified.
+
+From the output it can be seen that the variation in the TD estimates
+is quite large and clearly unsatisfactory. Experimenting with different values of `n`,
+one quickly realizes that we would need for example 1650 patients to
+get the length of this interval down to 20 mg.
 ```{r, tdci1650}
 pm <- planMod("sigEmax", Mods(sigEmax=c(30.5, 3.5), placEff=1.25, maxEff=0.15, doses=doses),
-              n=1650, sigma = 0.34, doses=doses, simulation=TRUE, nSim=5000, showSimProgress = FALSE)
+              n=1650, sigma = 0.34, doses=doses, simulation=TRUE, nSim=5000, showSimProgress = FALSE,
+              bnds = defBnds(max(doses)))
 summary(pm, Delta=0.12)
 ```
 
-In practice, to keep the size of
-the study feasible, one needs to find a compromise between
-dose-response signal detection and estimation precision as the
-criteria for sample size determination. Irrespective, it is important
-to properly evaluate the operating characteristics of a given design
-(including sample size) to understand its strengths and limitations.
+In practice, to keep the size of the study feasible, one needs to find
+a compromise between dose-response signal detection and estimation
+precision as the criteria for sample size determination. Irrespective,
+it is important to properly evaluate the operating characteristics of
+a given design (including sample size) to understand its strengths and
+limitations.
 
 In practice of course the dose-response curve of the main efficacy
 endpoint, is not the only consideration in dose-selection for Phase

@@ -44,7 +44,7 @@ logit <- function(p) log(p / (1 - p))
 inv_logit <- function(y) 1 / (1 + exp(-y))
 doses <- c(0, 0.5, 1.5, 2.5, 4)
 
-## set seed and ensure reproducuibility across R versions
+## set seed and ensure reproducibility across R versions
 set.seed(1, kind = "Mersenne-Twister", sample.kind = "Rejection", normal.kind = "Inversion")
 group_size <- 100
 dose_vector <- rep(doses, each = group_size)
@@ -52,7 +52,7 @@ N <- length(dose_vector)
 ## generate covariates
 x1 <- rnorm(N, 0, 1)
 x2 <- factor(sample(c("A", "B"), N, replace = TRUE, prob = c(0.6, 0.4)))
-## assume approximately logit(10%) placebo and logit(35%) asymptotic response with an ED50 dose of 0.5
+## assume approximately logit(10%) placebo and logit(35%) asymptotic response with ED50=0.5
 prob <- inv_logit(emax(dose_vector, -2.2, 1.6, 0.5) + 0.3 * x1 + 0.3 * (x2 == "B"))
 dat <- data.frame(y = rbinom(N, 1, prob),
                   dose = dose_vector, x1 = x1, x2 = x2)
@@ -113,7 +113,7 @@ S_hat <- vcov(fit_nocov)
 MCTtest(doses, mu_hat, S = S_hat, models = mods, type = "general")
 ```
 
-Dose-response modeling proceeds with a combination of bootstrapping and model averaging.
+Dose-response modeling then can proceed with a combination of bootstrapping and model averaging.
 For detailed explanations refer to the [vignette for analysis of
 continuous data][v2].
 
@@ -187,10 +187,13 @@ systematic differences in the covariates we predict the mean response
 probability at dose k for all observed values of the covariates and
 transform back to logit scale:
 
-\[ \mu^*_k := \mathrm{logit}\biggl(\frac{1}{n} \sum_{j=1}^n
-\mathrm{logit}^{-1}(\hat\mu^d_k + x_{jk}^T\hat\beta)\biggr) \]
+\[ \mu^*_k := \mathrm{logit}\biggl(\frac{1}{n} \sum_{i=1}^n
+\mathrm{logit}^{-1}(\hat\mu^d_k + x_{i}^T\hat\beta)\biggr) \]
 
-For a variance estimate we repeat this with draws from $\mathrm{MultivariateNormal}(\hat\mu, \hat S)$
+Note here we index $x$ with $i$ that runs from 1 to $n$ (all patients
+randomized in the study).
+
+To obtain a variance estimate we repeat this with draws from $\mathrm{MultivariateNormal}(\hat\mu, \hat S)$
 and calculate the empirical covariance matrix $S^*$ of theses draws.
 
 Then we use $\mu^*$ and $S^*$ in `MCTtest()`.
@@ -207,7 +210,6 @@ covariate_adjusted_estimates <- function(mu_hat, S_hat, formula_rhs, doses, othe
   ## average on probability scale then backtransform to logit scale
   mu_star <- logit(tapply(inv_logit(X %*% mu_hat), pdat$dose, mean))
   ## estimate covariance matrix of mu_star
-  sims <- rmvnorm(n_sim, mu_hat, S_hat)
   pred <- replicate(n_sim, logit(tapply(inv_logit(X %*% drop(rmvnorm(1, mu_hat, S_hat))),
                                         pdat$dose, mean)))
   return(list(mu_star = mu_star, S_star = cov(t(pred))))
@@ -231,7 +233,7 @@ ggplot(data.frame(dose = rep(doses, 4),
   facet_wrap(vars(name), scales = "free_y") + ylab("")
 ```
 
-Dose-response modelling proceeds in the same way as before but now on the adjusted estimates.
+Dose-response modelling proceeds in the same way as before, but now on the adjusted estimates.
 
 ```{r, estimate_covariates}
 predict_and_plot(ca$mu_star, ca$S_star, doses, dose_seq, 1000) +
@@ -272,8 +274,8 @@ In the case of binary data, $\hat\mu$ is on the logit scale and the
 diagonal elements of $S$ are approximately $(np(1-p))^{-1}$, where $n$
 is the sample size of the dose group.  This can be derived using the
 delta method.  An estimate of this variance depends on the observed
-response rate and can be quite variable even for small sample sizes per
-group (e.g. smaller than 20).
+response rate and can thus be quite variable in particular for small
+sample sizes per group (e.g. smaller than 20).
 
 A crude alternative in these situations is to not use the estimated
 $S$ but a diagonal matrix with the inverse of the sample size per dose

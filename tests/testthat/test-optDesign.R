@@ -11,7 +11,7 @@ context("optimal designs")
 #
 # * Example from Padmanabhan and Dragalin, Biometrical Journal 52 (2010) p. 836-852
 #
-# * optimial design logistic regression; compare this to Atkinson et al. (2007), p. 400
+# * optimal design logistic regression; compare this to Atkinson et al. (2007), p. 400
 
 ## Recreate examples from this this article
 ##

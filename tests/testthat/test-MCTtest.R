@@ -1,10 +1,8 @@
 context("multiple contrast test")
 
 # TODO:
-# * think about suitable tolerances
 # * maybe define common candidate models outside of test_that() calls?
 # * how do we check for equal p-values (calculated with MC algorighm)?
-# * the non-psd covariance matrix is actually psd (!?)
 # * pull shared code out of test_that() calls
 
 source("generate_test_datasets.R")
@@ -53,13 +51,13 @@ test_that("MCTtest gives the same output as multcomp::glht (beta and sigEmax mod
   fit <- lm(y~x+cov1+cov2, data=dd_x_factor)
   mcp <- glht(fit, linfct = mcp(x = t(obj$contMat)), alternative = "greater")
   expect_equal(tstat(obj), tstat(mcp))
-  expect_equal(pval(obj), pval(mcp))
+  expect_equal(pval(obj), pval(mcp), tolerance = 0.001)
   # model without covariates
   obj <- MCTtest(x,y, dd, models=models, addCovars = ~1, pVal = TRUE)
   fit <- lm(y~x, data=dd_x_factor)
   mcp <- glht(fit, linfct = mcp(x = t(obj$contMat)), alternative = "greater")
   expect_equal(tstat(obj), tstat(mcp))
-  expect_equal(pval(obj), pval(mcp))
+  expect_equal(pval(obj), pval(mcp), tolerance = 0.001)
 })
 
 test_that("MCTtest gives the same output as multcomp::glht (logistic, exponential, quadratic models)", {
@@ -81,13 +79,13 @@ test_that("MCTtest gives the same output as multcomp::glht (logistic, exponentia
   fit <- lm(y~x+cov1+cov2, data=dd_x_factor)
   mcp <- glht(fit, linfct = mcp(x = t(obj$contMat)), alternative = "greater")
   expect_equal(tstat(obj), tstat(mcp))
-  expect_equal(pval(obj), pval(mcp))
+  expect_equal(pval(obj), pval(mcp), tolerance = 0.001)
   # model without covariates
   obj <- MCTtest(x,y, dd, models=models, addCovars = ~1, pVal = TRUE)
   fit <- lm(y~x, data=dd_x_factor)
   mcp <- glht(fit, linfct = mcp(x = t(obj$contMat)), alternative = "greater")
   expect_equal(tstat(obj), tstat(mcp))
-  expect_equal(pval(obj), pval(mcp))
+  expect_equal(pval(obj), pval(mcp), tolerance = 0.001)
 })
 
 test_that("MCTtest works with contrast matrix handed over", {
@@ -108,7 +106,7 @@ test_that("MCTtest works with contrast matrix handed over", {
   fit <- lm(y~x, data=dd)
   mcp <- glht(fit, linfct = mcp(x = t(obj$contMat)), alternative = "greater")
   expect_equal(tstat(obj), tstat(mcp))
-  expect_equal(pval(obj), pval(mcp))
+  expect_equal(pval(obj), pval(mcp), tolerance = 0.001)
 })
 
 test_that("MCTtest works with binary data (1)", {
@@ -130,7 +128,7 @@ test_that("MCTtest works with binary data (1)", {
   fit <- glm(y~x-1, family = binomial, data=dd, weights = n)
   mcp <- glht(fit, linfct = mcp(x = t(obj$contMat)), alternative = "greater")
   expect_equal(tstat(obj), tstat(mcp))
-  expect_equal(pval(obj), pval(mcp))
+  expect_equal(pval(obj), pval(mcp), tolerance = 0.001)
 })
 
 test_that("MCTtest works with binary data (2)", {
@@ -152,7 +150,7 @@ test_that("MCTtest works with binary data (2)", {
   fit <- glm(y~x-1, family = binomial, data=dd, weights = n)
   mcp <- glht(fit, linfct = mcp(x = t(obj$contMat)), alternative = "greater")
   expect_equal(tstat(obj), tstat(mcp))
-  expect_equal(pval(obj), pval(mcp))
+  expect_equal(pval(obj), pval(mcp), tolerance = 0.001)
 })
 
 test_that("MCTtest works with binary data (3)", {
@@ -174,7 +172,7 @@ test_that("MCTtest works with binary data (3)", {
   fit <- glm(y~x-1, family = binomial, data=dd, weights = n)
   mcp <- glht(fit, linfct = mcp(x = t(obj$contMat)), alternative = "greater")
   expect_equal(tstat(obj), tstat(mcp))
-  expect_equal(pval(obj), pval(mcp))
+  expect_equal(pval(obj), pval(mcp), tolerance = 0.001)
 })
 
 test_that("a one-dimensional test works", {
@@ -218,7 +216,7 @@ test_that("unordered values in MCTtest work (placebo adjusted scale)", {
   attr(fit_orig, "data") <- attr(fit_perm, "data") <- NULL
   attr(fit_orig, "doseRespNam") <- attr(fit_perm, "doseRespNam") <- NULL
   expect_equal(fit_orig, fit_perm)
-  expect_equal(test_orig, test_perm)
+  expect_equal(tstat(test_orig), tstat(test_perm))
 })
 
 test_that("unordered values in MCTtest work (unadjusted scale)", {
@@ -230,19 +228,20 @@ test_that("unordered values in MCTtest work (unadjusted scale)", {
   drEst <- coef(ancMod)
   vc <- vcov(ancMod)
   doses <- 0:4
-  fit_orig <- fitMod(doses, drEst, S=vc, model = "sigEmax", type = "general")
+  bnds <- defBnds(max(doses))$sigEmax
+  fit_orig <- fitMod(doses, drEst, S=vc, model = "sigEmax", type = "general", bnds=bnds)
   test_orig <- MCTtest(doses, drEst, S = vc, models = modlist, type = "general", df = Inf)
   ord <- c(3,4,1,2,5)
   drEst2 <- drEst[ord]
   vc2 <- vc[ord,ord]
   doses2 <- doses[ord]
-  fit_perm <- fitMod(doses2, drEst2, S=vc2, model = "sigEmax", type = "general")
+  fit_perm <- fitMod(doses2, drEst2, S=vc2, model = "sigEmax", type = "general", bnds=bnds)
   test_perm <- MCTtest(doses2, drEst2, S = vc2, models = modlist, type = "general", df = Inf)
   # we don't compare stuff we want to be different
   attr(fit_orig, "data") <- attr(fit_perm, "data") <- NULL
   attr(fit_orig, "doseRespNam") <- attr(fit_perm, "doseRespNam") <- NULL
   expect_equal(fit_orig, fit_perm)
-  expect_equal(test_orig, test_perm)
+  expect_equal(tstat(test_orig), tstat(test_perm))
 })
 
 test_that("a non-psd covariance matrix produces NA p-values", {
@@ -260,7 +259,9 @@ test_that("a non-psd covariance matrix produces NA p-values", {
   mu <- data.sim[,3]
   S <- data.matrix(data.sim[,4:7],rownames.force = NA)
   tst <- MCTtest(dose=doses,resp=mu,models = models,S=S,type="general")
-  # p-value of linear model should be NA
-  # FIXME: eigen(S) == 5.327424 2.875258 2.875258 2.875258 => S is psd!
-  expect_equal(attr(tst$tStat, "pVal")[3], NA)
+  ## mvtnorm detects corMat of contrasts as "not psd" (interestingly only for the linear contrast)
+  ## and returns a p-value of 1.
+  ## Catch this and set to NA in the MCTtest output (1 may be mis-leading)
+  ## p-value of linear model should be NA
+  expect_true(is.na(attr(tst$tStat, "pVal")[3]))
 })

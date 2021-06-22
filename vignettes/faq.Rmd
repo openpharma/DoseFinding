@@ -82,7 +82,7 @@ In the generalized MCP-Mod approach no specific type of distribution is assumed 
 y_{k,j} \sim \mathrm{SomeDistribution}(\mu_k),
 \]
 only that $\mu_k$ can be interpreted as a kind of "average response" for dose $k$.
-The key assumption is that an estimator $\hat\mu=(\mu_1,\dots,\mu_k)$ exists,
+The key assumption is that an estimator $\hat\mu=(\hat\mu_1,\dots,\hat\mu_k)$ exists,
 which has (at least asymptotically) a multivariate normal distribution,
 \[
 \hat\mu \sim \mathrm{MultivariateNormal}(\mu, S),
@@ -152,11 +152,11 @@ with increasing doses. Often log-spacing of doses (i.e., the ratio of
 consecutive doses is constant for example equal to 2 or 3) is used.
 
 An alternative approach to calculate adequate doses is optimal design
-theory. The idea is to calculate a design (i.e. the doses and dose
-allocation weights) under a given fixed sample size so that the
-variability of the dose-response parameter estimates (or variance of
-some target dose estimate) is "small" in a specified way [see
-@bretz2010].
+theory (see ?optDesign). The idea is to calculate a design (i.e. the
+doses and dose allocation weights) under a given fixed sample size so
+that the variability of the dose-response parameter estimates (or
+variance of some target dose estimate) is "small" in a specified way
+[see @bretz2010].
 
 ## How to set up the candidate set of models?
 
@@ -225,7 +225,7 @@ of the estimates.
 _Umbrella-shaped dose-response curve:_ While biological
 exposure-response relationships are often monotonic, down-turns of the
 clinical dose-response relationship at higher doses have been
-observed. For example if due to tolerability issues more patients will
+observed. For example if, due to tolerability issues, more patients will
 discontinue treatment with higher doses of the drug. Depending on the
 estimand strategy of handling this intercurrent event (e.g. for
 treatment policy or composite) this might lead to a decrease in
@@ -280,7 +280,7 @@ terms of requiring that the shape-space underlying the corresponding
 model is covered almost exhaustively (see the `defBnds` function, for
 the proposed default bounds).
 
-When utilizing bounds for model fitting it is recommended to use
+When utilizing bounds for model fitting, it is recommended to use
 bootstrapping/bagging for estimation of the dose-response functions
 and for the confidence intervals, see @pinheiro2014. Standard
 asymptotic confidence intervals are not reliable.
@@ -338,11 +338,10 @@ to be identified, as well as missing data handling (see [ICH E9(R1)
 guideline](https://database.ich.org/sites/default/files/E9-R1_Step4_Guideline_2019_1203.pdf)).
 In many situations (e.g. if multiple imputation is used as part of the
 analysis) it may be easiest to use generalized MCP-Mod, where the
-first stage model is already an appropriate analysis model (with
-adequate strategy for intercurrent events and missing data). This
-model is then used to produce covariate adjusted estimates at the
-doses (as well as their covariance matrix), which are then utilized in
-generalized MCP-Mod.
+first stage model already accounts for intercurrent events and missing
+data. This model is then used to produce covariate adjusted estimates
+at the doses (as well as their covariance matrix), which are then
+utilized in generalized MCP-Mod.
 
 ## Can MCP-Mod be used in trials with multiple treatment regimens?
 

@@ -35,20 +35,19 @@ that ignores the regimen.
 The most general approach would be to perform MCP-Mod separately by
 regimen, and for example to adjust p-values originating from the
 MCP-part using a Bonferroni correction. This approach assumes that the
-regimen don't share any similarity. This approach is often not
-feasible, due to the double-blind nature of trials. In the example of
-od and bid, all patients would receive two administrations per
-day (patients in the od group receive one placebo per day), so that
-there is no real od group, and no placebo od group.  The placebo
-group is then assumed common to both the od and bid dose-response
-curve. For the MCP-step contrasts for both od and bid are taken
-with respect to the same placebo group and in the modelling step one
-would then assume the intercept to be the same across regimen, but all
-other parameters separate.
+regimen don't share any similarity. Due to the double-blind nature of
+trials, all patients would receive two administrations per day
+(patients in the od group receive one placebo per day), so that there
+is no real od group and in particular no separate placebo od group.
+So it often makes more sense to assume that the placebo group is
+common to both the od and bid dose-response curve. For the MCP-step
+contrasts for both od and bid are taken with respect to the same
+placebo group and in the modelling step one would assume the intercept
+to be the same across regimen, but all other parameters separate.
 
 One could also assume further parameters to be common across regimen
-(for example the Emax parameter for the Emax model), but in the
-following example no such assumption is made.
+(for example the Emax or the ED50 parameter for the Emax model), but
+in the following example no such assumption is made.
 
 The motivation for the simulated data below is taken from a recently
 completed dose-finding study, where the dose-response of the drug
@@ -56,7 +55,7 @@ Licogliflozin was assessed for the od and bid regimen [@bays2020],
 see also the [corresponding page at clinicaltrials.gov](https://clinicaltrials.gov/ct2/show/results/NCT03100058).
 
 Note that this study used MCP-Mod, but the analysis presented here has
-been modified and simplified (e.g. in terms of candidate models and
+been modified and simplified (in terms of candidate models and
 dose-response modelling strategy).
 
 For most of the following code it is useful to structure the first-stage estimates like this:
@@ -66,15 +65,15 @@ For most of the following code it is useful to structure the first-stage estimat
 The length of the sub-vectors $\hat\mu_{\mathrm{od}}$ and $\hat\mu_{\mathrm{bid}}$ correspond to the number of different doses in the two regimens.
 They can be different, but in our example both have 4 elements.
 
-Also note that we decide to model everything on the total daily dose scale.
+Also as discussed above everything is modeled on the total daily dose scale.
 
 ```{r, data}
 library(DoseFinding)
 library(ggplot2)
 ## collect estimates and dosage information in one place
 example_estimates <- function() {
-  ## ANOVA mean estimates and ci bounds extracted from fig. 3 of Bays (2020),
-  ## because the clinicaltrials.gov page seems to contain values from the dose-response model fit
+  ## ANOVA mean estimates and ci bounds extracted from fig. 3 of Bays (2020).
+  ## clinicaltrials.gov page already seems to contain values from the dose-response model fit
   mn <- c(-0.55, -1.78, -1.95, -3.29, -4.43, -1.14, -2.74, -4.03, -4.47)
   lb <- c(-1.56, -3.15, -3.36, -4.85, -5.40, -2.49, -4.10, -5.50, -5.50)
   ub <- c( 0.40, -0.30, -0.54, -1.76, -3.48, 0.24, -1.38, -2.65, -3.44)
@@ -171,13 +170,15 @@ mct_test <- function(cont_mat, est) {
   cont_cov <- t(cont_mat) %*% est$S_hat %*% cont_mat
   t_stat <- drop(est$mu_hat %*% cont_mat) / sqrt(diag(cont_cov))
   # FIXME: calling non-exported function
-  p <- DoseFinding:::pValues(contMat = cont_mat, corMat = cov2cor(cont_cov),
-                             df=Inf, tStat=t_stat, alternative = "one.sided")
+  p <- MCTpval(contMat = cont_mat, corMat = cov2cor(cont_cov),
+               df=Inf, tStat=t_stat, alternative = "one.sided")
   ord <- rev(order(t_stat))
   return(data.frame(tStat = t_stat[ord], pVals = p[ord]))
 }
 mct_test(cont_mat, est)
 ```
+
+A clear dose-response trend can be established for both regimen.
 
 ## Dose-response modelling
 
@@ -242,19 +243,6 @@ fit_model_shared_e0 <- function(model, dose, mu_hat, S_hat_inv, lower, upper, st
   fit <- nlminb(start, opt_fun, lower = lower, upper = upper)
   return(fit)
 }
-
-## FIXME: DoseFinding::sigEmax is NaN for large dose & large h.
-## nlminb acutally stumbles into those regions.
-## More stable alternative implementation:
-sigEmax_alt <- function(dose, e0, eMax, ed50, h) {
-  e0 + eMax / (1 + exp(h * log(ed50 / dose)))
-}
-
-## sigEmax_alt(10, 1, 5, 4, 10) == sigEmax(10, 1, 5, 4, 10)
-## sigEmax_alt(150, 1, 5, 4, 150)
-## sigEmax(150, 1, 5, 4, 150)
-
-sigEmax <- sigEmax_alt
 ```
 
 Finally, instead of only fitting a single model,
@@ -277,6 +265,7 @@ one_bootstrap_sample <- function(est, dose_seq_od, dose_seq_bid) {
     fit_model_shared_e0(m$name, est$daily_dose, mu_new, solve(est$S_hat), lower = low,  upper = up,
                         start = start, i_reg = est$index, i_par = m$i_par)
   })
+  ## calculate gAICs
   gaics <- sapply(fit, `[[`, "objective") + 2 * sapply(mod_info, `[[`, "n_par_gaic")
   sel <- which.min(gaics)
   mod <- mod_info[[sel]]

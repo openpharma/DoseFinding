@@ -1,7 +1,11 @@
-To thank for next version:
-Dong Xi, Hilke Kracker, Julia Duda, (Tobias Mielke?)
-
-
+2020-06-22 Bjoern Bornkamp (version 1.0-1)
+      * Big thanks to Ludger Sandig, who was instrumental in adding
+	vignettes for practical MCP-Mod implementation guidance;
+	introducing tests based on testthat and further bug fixes.
+      * Thanks to Dong Xi, Hilke Kracker for review of earlier versions of
+	the draft vignettes
+      * Thanks to Julia Duda for her helpful comments on the package
+	
 2019-11-13 Bjoern Bornkamp (version 0.9-17)	
       * Added citation to DESCRIPTION file
       * Removed alpha argument for pValues function (not used)

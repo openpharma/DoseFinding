@@ -14,11 +14,7 @@ source("generate_test_datasets.R")
 #   - predict(fit0, predType="full-model", se.fit=TRUE)
 #   - TD(fit0, Delta = 1)
 # * Using `unname` to make all.equal shut up about unequal dimnames is a bit ugly
-# * What is an acceptable numerical tolerance for expect_equal()?
-#   About 1e-4 seems to be the right magnitude (?)
-# * sigemax: set.seed(25) as an example where nls and bndnls find different optimum
-# * re-set seeds for every model type?
-
+# * exponential model with covariates
 
 # beta model -------------------------------------------------------------------
 set.seed(2000)
@@ -31,10 +27,10 @@ test_that("the beta model can be fitted (without covariates)", {
                  addArgs=list(scal=1.2*max(datset$x)), bnds=bnds, start=c(0.6, 0.6))
   fitnls <- nls(y~betaMod(x, e0, eMax, delta1, delta2, 1.2*max(datset$x)),
                 start=c(e0=15, eMax=14, delta1=0.8, delta2=0.5), data=datset)
-  expect_equal(AIC(fit0), AIC(fitnls))
-  expect_equal(fit0$df, summary(fitnls)$df[2])
-  expect_equal(coef(fit0), coef(fitnls))
-  expect_equal(vcov(fit0), vcov(fitnls))
+  expect_equal(AIC(fit0), AIC(fitnls), tolerance = 0.0001)
+  expect_equal(fit0$df, summary(fitnls)$df[2], tolerance = 0.0001)
+  expect_equal(coef(fit0), coef(fitnls), tolerance = 0.0001)
+  expect_equal(vcov(fit0), vcov(fitnls), tolerance = 0.0001)
 })
 
 test_that("the beta model can be fitted (with covariates)", {
@@ -45,15 +41,15 @@ test_that("the beta model can be fitted (with covariates)", {
   fitnls <- nls(y~cbind(XX, betaMod(x, 0, 1, delta1, delta2, scl)),
                 data=datset, start=c(delta1=1, delta2=0.2),
                 algorithm = "plinear")
-  expect_equal(AIC(fit0), AIC(fitnls))
-  expect_equal(fit0$df, summary(fitnls)$df[2])
+  expect_equal(AIC(fit0), AIC(fitnls), tolerance = 0.0001)
+  expect_equal(fit0$df, summary(fitnls)$df[2], tolerance = 0.0001)
   ord <- c(3, 9, 1, 2, 8, 4, 5, 6, 7)
-  expect_equal(unname(coef(fit0)), unname(coef(fitnls))[ord])
-  expect_equal(unname(vcov(fit0)), unname(vcov(fitnls))[ord, ord])
+  expect_equal(unname(coef(fit0)), unname(coef(fitnls))[ord], tolerance = 0.0001)
+  expect_equal(unname(vcov(fit0)), unname(vcov(fitnls))[ord, ord], tolerance = 0.0001)
 })
 
 # emax model -------------------------------------------------------------------
-set.seed(15)
+set.seed(1)
 ll <- getDosSampSiz()
 datset <- getDFdataSet(ll$doses, ll$n)
 bnds <- c(1e-5, max(datset$x))
@@ -61,10 +57,10 @@ bnds <- c(1e-5, max(datset$x))
 test_that("the emax model can be fitted (without covariates)", {
   fit0 <- fitMod(x,y, datset, model="emax", addCovars = ~1, bnds=bnds)
   fitnls <- nls(y~emax(x, e0, eMax, ed50), start=c(e0=-1, eMax=1.3, ed50=0.1), data=datset)
-  expect_equal(AIC(fit0), AIC(fitnls))
-  expect_equal(fit0$df, summary(fitnls)$df[2])
-  expect_equal(coef(fit0), coef(fitnls))
-  expect_equal(vcov(fit0), vcov(fitnls))
+  expect_equal(AIC(fit0), AIC(fitnls), tolerance = 0.0001)
+  expect_equal(fit0$df, summary(fitnls)$df[2], tolerance = 0.0001)
+  expect_equal(coef(fit0), coef(fitnls), tolerance = 0.0001)
+  expect_equal(vcov(fit0), vcov(fitnls), tolerance = 0.0001)
 })
 
 test_that("the emax model can be fitted (with covariates)", {
@@ -72,11 +68,11 @@ test_that("the emax model can be fitted (with covariates)", {
   XX <- model.matrix(~center+age, data=datset)
   fitnls <- nls(y~cbind(XX, emax(x, 0, 1, ed50)),
                 data=datset, start=list(ed50=1), algorithm = "plinear")
-  expect_equal(AIC(fit0), AIC(fitnls))
-  expect_equal(fit0$df, summary(fitnls)$df[2])
+  expect_equal(AIC(fit0), AIC(fitnls), tolerance = 0.0001)
+  expect_equal(fit0$df, summary(fitnls)$df[2], tolerance = 0.0001)
   ord <- c(2, 8, 1, 7, 3, 4, 5, 6)
-  expect_equal(unname(coef(fit0)), unname(coef(fitnls))[ord])
-  expect_equal(unname(vcov(fit0)), unname(vcov(fitnls))[ord, ord])
+  expect_equal(unname(coef(fit0)), unname(coef(fitnls))[ord], tolerance = 0.0001)
+  expect_equal(unname(vcov(fit0)), unname(vcov(fitnls))[ord, ord], tolerance = 0.0001)
 })
 
 # sigEmax model ----------------------------------------------------------------
@@ -89,10 +85,10 @@ test_that("the sigEmax model can be fitted (without covariates)", {
   fit0 <- fitMod(x,y, datset, model = "sigEmax", addCovars = ~1, bnds=bnds)
   fitnls <- nls(y~sigEmax(x, e0, eMax, ed50, h),
                 start=c(e0=6, eMax=17, ed50=240, h=2), data=datset)
-  expect_equal(AIC(fit0), AIC(fitnls))
-  expect_equal(fit0$df, summary(fitnls)$df[2])
-  expect_equal(coef(fit0), coef(fitnls))
-  expect_equal(vcov(fit0), vcov(fitnls))
+  expect_equal(AIC(fit0), AIC(fitnls), tolerance = 0.0001)
+  expect_equal(fit0$df, summary(fitnls)$df[2], tolerance = 0.0001)
+  expect_equal(coef(fit0), coef(fitnls), tolerance = 0.0001)
+  expect_equal(vcov(fit0), vcov(fitnls), tolerance = 0.0001)
 })
 
 test_that("the sigEmax model can be fitted (with covariates)", {
@@ -100,11 +96,11 @@ test_that("the sigEmax model can be fitted (with covariates)", {
   XX <- model.matrix(~center+age, data=datset)
   fitnls <- nls(y~cbind(XX, sigEmax(x, 0, 1, ed50, h)),
                 data=datset, start=list(ed50=368, h=2), algorithm = "plinear")
-  expect_equal(AIC(fit0), AIC(fitnls))
-  expect_equal(fit0$df, summary(fitnls)$df[2])
+  expect_equal(AIC(fit0), AIC(fitnls), tolerance = 0.0001)
+  expect_equal(fit0$df, summary(fitnls)$df[2], tolerance = 0.0001)
   ord <- c(3, 9, 1, 2, 8, 4, 5, 6, 7)
-  expect_equal(unname(coef(fit0)), unname(coef(fitnls))[ord])
-  expect_equal(unname(vcov(fit0)), unname(vcov(fitnls))[ord, ord])
+  expect_equal(unname(coef(fit0)), unname(coef(fitnls))[ord], tolerance = 0.0001)
+  expect_equal(unname(vcov(fit0)), unname(vcov(fitnls))[ord, ord], tolerance = 0.0001)
 })
 
 # logistic model ---------------------------------------------------------------
@@ -117,10 +113,10 @@ test_that("the logistic model can be fitted (without covariates)", {
   fit0 <- fitMod(x,y, datset, model="logistic", addCovars = ~1, bnds=bnds)
   fitnls <- nls(y~logistic(x, e0, eMax, ed50, delta),
                 start=c(e0=0, eMax=16, ed50=250, delta=90), data=datset)
-  expect_equal(AIC(fit0), AIC(fitnls))
-  expect_equal(fit0$df, summary(fitnls)$df[2])
-  expect_equal(coef(fit0), coef(fitnls))
-  expect_equal(vcov(fit0), vcov(fitnls))
+  expect_equal(AIC(fit0), AIC(fitnls), tolerance = 0.0001)
+  expect_equal(fit0$df, summary(fitnls)$df[2], tolerance = 0.0001)
+  expect_equal(coef(fit0), coef(fitnls), tolerance = 0.0001)
+  expect_equal(vcov(fit0), vcov(fitnls), tolerance = 0.0001)
 })
 
 test_that("the logistic model can be fitted (with covariates)", {
@@ -128,15 +124,15 @@ test_that("the logistic model can be fitted (with covariates)", {
   XX <- model.matrix(~center+age, data=datset)
   fitnls <- nls(y~cbind(XX, logistic(x, 0, 1, ed50, delta)),
                 data=datset, start=list(ed50=220, delta=48), algorithm = "plinear")
-  expect_equal(AIC(fit0), AIC(fitnls))
-  expect_equal(fit0$df, summary(fitnls)$df[2])
+  expect_equal(AIC(fit0), AIC(fitnls), tolerance = 0.0001)
+  expect_equal(fit0$df, summary(fitnls)$df[2], tolerance = 0.0001)
   ord <- c(3, 9, 1, 2, 8, 4, 5, 6, 7)
-  expect_equal(unname(coef(fit0)), unname(coef(fitnls))[ord])
-  expect_equal(unname(vcov(fit0)), unname(vcov(fitnls))[ord, ord])
+  expect_equal(unname(coef(fit0)), unname(coef(fitnls))[ord], tolerance = 0.0001)
+  expect_equal(unname(vcov(fit0)), unname(vcov(fitnls))[ord, ord], tolerance = 0.0001)
 })
 
 # exponential model ------------------------------------------------------------
-set.seed(4)
+set.seed(104)
 ll <- getDosSampSiz()
 datset <- getDFdataSet(ll$doses, ll$n)
 bnds <- c(0.1, 2)*max(datset$x)
@@ -144,10 +140,10 @@ bnds <- c(0.1, 2)*max(datset$x)
 test_that("the exponential model can be fitted (without covariates)", {
   fit0 <- fitMod(x,y, datset, model = "exponential", addCovars = ~1, bnds=bnds)
   fitnls <- nls(y~exponential(x, e0, e1, delta), start=coef(fit0), data=datset)
-  expect_equal(AIC(fit0), AIC(fitnls))
-  expect_equal(fit0$df, summary(fitnls)$df[2])
-  expect_equal(coef(fit0), coef(fitnls))
-  expect_equal(vcov(fit0), vcov(fitnls))
+  expect_equal(AIC(fit0), AIC(fitnls), tolerance = 0.0001)
+  expect_equal(fit0$df, summary(fitnls)$df[2], tolerance = 0.0001)
+  expect_equal(coef(fit0), coef(fitnls), tolerance = 0.0001)
+  expect_equal(vcov(fit0), vcov(fitnls), tolerance = 0.0001)
 })
 
 test_that("the exponential model can be fitted (with covariates)", {
@@ -156,15 +152,14 @@ test_that("the exponential model can be fitted (with covariates)", {
   XX <- model.matrix(~center+age, data=datset)
   fitnls <- nls(y~cbind(XX, exponential(x, 0, 1, delta)),
                 data=datset, start=c(delta=450), algorithm = "plinear")
-  expect_equal(AIC(fit0), AIC(fitnls))
-  expect_equal(fit0$df, summary(fitnls)$df[2])
+  expect_equal(AIC(fit0), AIC(fitnls), tolerance = 0.0001)
+  expect_equal(fit0$df, summary(fitnls)$df[2], tolerance = 0.0001)
   ord <- c(2, 8, 1, 7, 3, 4, 5, 6)
-  expect_equal(unname(coef(fit0)), unname(coef(fitnls))[ord])
-  expect_equal(unname(vcov(fit0)), unname(vcov(fitnls))[ord, ord])
+  expect_equal(unname(coef(fit0)), unname(coef(fitnls))[ord], tolerance = 0.0001)
+  expect_equal(unname(vcov(fit0)), unname(vcov(fitnls))[ord, ord], tolerance = 0.0001)
 })
 
 # linear model -----------------------------------------------------------------
-# FIXME: seed?
 ll <- getDosSampSiz()
 datset <- getDFdataSet(ll$doses, ll$n)
 
@@ -187,7 +182,6 @@ test_that("the linear model can be fitted (with covariates)", {
 })
 
 # linlog model -----------------------------------------------------------------
-# FIXME: seed?
 ll <- getDosSampSiz()
 datset <- getDFdataSet(ll$doses, ll$n)
 off <- 0.05*max(datset$x)
@@ -212,7 +206,6 @@ test_that("the linlog model can be fitted (with covariates)", {
 })
 
 # quadratic model --------------------------------------------------------------
-# FIXME: seed?
 ll <- getDosSampSiz()
 datset <- getDFdataSet(ll$doses, ll$n)
 

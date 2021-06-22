@@ -1,0 +1,77 @@
+---
+title: "Overview DoseFinding package"
+output:
+  rmarkdown::html_vignette:
+bibliography: refs.bib
+link-citations: yes
+csl: american-statistical-association.csl
+vignette: >
+  %\VignetteIndexEntry{Overview}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, child="children/settings.txt"}
+```
+
+The DoseFinding package provides functions for the design and analysis
+of dose-finding experiments (for example pharmaceutical Phase II
+clinical trials). It provides functions for: multiple contrast tests
+(`MCTtest` for analysis and `powMCT`, `sampSizeMCT` for sample size
+calculation), fitting non-linear dose-response models (`fitMod` for ML
+estimation and `bFitMod` for Bayesian and bootstrap/bagging ML
+estimation), calculating optimal designs (`optDesign` or `calcCrit`
+for evaluation of given designs), both for normal and general response
+variable. In addition the package can be used to implement the MCP-Mod
+procedure, a combination of testing and dose-response modelling
+(`MCPMod`) (@bretz2005, @pinheiro2014). A number of vignettes cover
+practical aspects on how MCP-Mod can be implemented using the
+DoseFinding package. For example a [FAQ](faq.html) document for
+MCP-Mod, analysis approaches for [normal](analysis_normal.html) and
+[binary](binary_data.html) data, [sample size and power
+calculations](sample_size.html) as well as handling data from more
+than one dosing [regimen](mult_regimen.html) in certain scenarios.
+
+Below a short overview of the main functions.
+
+```{r, overview}
+library(DoseFinding)
+data(IBScovars)
+head(IBScovars)
+
+## perform (model based) multiple contrast test
+## define candidate dose-response shapes
+models <- Mods(linear = NULL, emax = 0.2, quadratic = -0.17,
+               doses = c(0, 1, 2, 3, 4))
+## plot models
+plot(models)
+## perform multiple contrast test
+## functions powMCT and sampSizeMCT provide tools for sample size
+## calculation for multiple contrast tests
+test <- MCTtest(dose, resp, IBScovars, models=models,
+                addCovars = ~ gender)
+test
+```
+
+Fit non-linear dose-response models here illustrated with Emax model.
+```{r, overview 2}
+fitemax <- fitMod(dose, resp, data=IBScovars, model="emax",
+                  bnds = c(0.01,5))
+## display fitted dose-effect curve
+plot(fitemax, CI=TRUE, plotData="meansCI")
+```
+
+Calculate optimal designs, here illustrated for target dose (TD) estimation
+```{r, overview 3}
+doses <- c(0, 10, 25, 50, 100, 150)
+fmodels <- Mods(linear = NULL, emax = 25, exponential = 85,
+                logistic = c(50, 10.8811),
+                doses = doses, placEff=0, maxEff=0.4)
+plot(fmodels, plotTD = TRUE, Delta = 0.2)
+weights <- rep(1/4, 4)
+desTD <- optDesign(fmodels, weights, Delta=0.2, designCrit="TD")
+desTD
+plot(desTD, fmodels)
+```
+
+## References

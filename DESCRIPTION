@@ -5,9 +5,9 @@ Version: 1.0-1
 Date: 2021-06-22
 Authors@R: c(
    person("Bjoern", "Bornkamp", email = "bbnkmp@mail.de", comment = c(ORCID = "0000-0002-6294-8185"), role = c("aut", "cre")),
-   person("Jose", "Pinheiro", role = "ctb"),
-   person("Frank", "Bretz", role = "ctb"),
-   person("Ludger", "Sandig", role = "ctb"))
+   person("Jose", "Pinheiro", role = "aut"),
+   person("Frank", "Bretz", role = "aut"),
+   person("Ludger", "Sandig", role = "aut"))
 Depends: lattice, mvtnorm, R (>= 2.15.0)
 Suggests: numDeriv, Rsolnp, quadprog, parallel, multcomp, ggplot2, knitr, rmarkdown, MASS, testthat
 Maintainer: Bjoern Bornkamp <bbnkmp@mail.de>

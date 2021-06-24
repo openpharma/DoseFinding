@@ -243,25 +243,3 @@ test_that("unordered values in MCTtest work (unadjusted scale)", {
   expect_equal(fit_orig, fit_perm)
   expect_equal(tstat(test_orig), tstat(test_perm))
 })
-
-test_that("a non-psd covariance matrix produces NA p-values", {
-  doses <- c(0,10,20,40)
-  models <- Mods(doses=doses, emax=0.15, sigEmax=c(0.05, 5), linear=NULL,
-               exponential=0.2,quadratic=-0.6,betaMod=c(0.05, 4))
-  data.sim <- structure(list(X = structure(1:4, .Label = c("0", "10", "20", "40"), class = "factor"),
-                             dose = c(0L, 10L, 20L, 40L),
-                             Estimate = c(0.266942236, 3.792703657, 14.69084734, 17.71179102),
-                             Cov1 = c(3.685607913, 0.595285049, 0.651289991, 0.742901538),
-                             Cov2 = c(0.595285049, 3.31255546, 0.47843908, 0.545737127),
-                             Cov3 = c(0.651289991, 0.47843908, 3.398708786, 0.597080557),
-                             Cov4 = c(0.742901538, 0.545737127, 0.597080557, 3.556324648)),
-                        class = "data.frame", row.names = c(NA, -4L))
-  mu <- data.sim[,3]
-  S <- data.matrix(data.sim[,4:7],rownames.force = NA)
-  tst <- MCTtest(dose=doses,resp=mu,models = models,S=S,type="general")
-  ## mvtnorm detects corMat of contrasts as "not psd" (interestingly only for the linear contrast)
-  ## and returns a p-value of 1.
-  ## Catch this and set to NA in the MCTtest output (1 may be mis-leading)
-  ## p-value of linear model should be NA
-  expect_true(is.na(attr(tst$tStat, "pVal")[3]))
-})

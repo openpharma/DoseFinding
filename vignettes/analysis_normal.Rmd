@@ -16,8 +16,6 @@ vignette: >
 ## Background and Data
 
 In this vignette we will illustrate the usage of the DoseFinding package for analyzing continuously distributed data.
-In order not to complicate matters unnecessarily,
-we will focus on the planning and analysis stages for a parallel group design.
 There is a separate vignette with details on [sample size and power calculation](sample_size.html).
 
 We will use data from @verkindre2010,
@@ -38,7 +36,7 @@ we will ignore the active control
 and focus on the placebo group and the four dose groups (12.5, 25, 50, and 100μg).
 
 For the purpose here,
-we recreate a dataset from the published summary statistics.
+we recreate a dataset that mimicks a parallel group design, based on the published summary statistics.
 These can be found in the `glycobrom` dataset coming with the `DoseFinding` package.
 Here `fev1` and `sdev` contain the mean and standard deviation of the
 mean (standard error) of the primary endpoint for each group,
@@ -139,7 +137,9 @@ covariance matrix of the estimates at the doses
 [see @pinheiro2014 for a detailed account]. As we have equal variance
 in all dose groups in our case and no correlation, the optimal
 contrasts are all proportional to the shapes of the candidate model
-mean vectors.
+mean vectors. As the standardized model is used in the formula, the
+values of the linear parameters of the models do not impact the
+optimal contrasts.
 
 ## Analysis stage
 
@@ -211,9 +211,9 @@ For example, we can estimate a dose-response curve by using the median over the 
 Similarly we can derive confidence intervals based on bootstrap quantiles.
 Inference for other quantities of interest can be performed in an analogous way.
 
-As different models contribute to the bootstrap resamples,
-the approach can be considered more robust than simple model selection
-[see also @schorning2016 for the result of extensive simulations on this topic].
+As different models contribute to the bootstrap resamples, the
+approach can be considered more robust than simple model selection
+[see also @schorning2016 for simulations on this topic].
 
 Now let's apply this general idea to the case at hand.
 Our first-stage model is an ANOVA,
@@ -312,8 +312,6 @@ the [analysis of binary data](binary_data.html), so not repeated here.
 For the case of normally distributed data adjusted means are
 calculated by predicting the outcome (using the covariate adjusted
 model) of each patient in the study under every dose, and then
-averaging over all patients per dose (for an identity link function
-this is equivalent to prediction of a single patient with "average"
-covariate values).
+averaging over all patients per dose.
 
 ## References

@@ -34,6 +34,7 @@ than one dosing [regimen](mult_regimen.html) in certain scenarios.
 
 Below a short overview of the main functions.
 
+## Perform multiple contrast test
 ```{r, overview}
 library(DoseFinding)
 data(IBScovars)
@@ -53,7 +54,7 @@ test <- MCTtest(dose, resp, IBScovars, models=models,
 test
 ```
 
-Fit non-linear dose-response models here illustrated with Emax model.
+## Fit non-linear dose-response models here illustrated with Emax model
 ```{r, overview 2}
 fitemax <- fitMod(dose, resp, data=IBScovars, model="emax",
                   bnds = c(0.01,5))
@@ -61,8 +62,11 @@ fitemax <- fitMod(dose, resp, data=IBScovars, model="emax",
 plot(fitemax, CI=TRUE, plotData="meansCI")
 ```
 
-Calculate optimal designs, here illustrated for target dose (TD) estimation
+## Calculate optimal designs, here illustrated for target dose (TD) estimation
 ```{r, overview 3}
+## optimal design for estimation of the smallest dose that gives an
+## improvement of 0.2 over placebo, a model-averaged design criterion
+## is used (over the models defined in Mods)
 doses <- c(0, 10, 25, 50, 100, 150)
 fmodels <- Mods(linear = NULL, emax = 25, exponential = 85,
                 logistic = c(50, 10.8811),

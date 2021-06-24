@@ -30,8 +30,9 @@ h2 {
 ## Preliminaries
 
 The purpose of this FAQ document is to provide answers to some
-commonly asked questions. For an introduction to MCP-Mod please see
-@bretz2005 and @pinheiro2014.
+commonly asked questions, based on personal opinions and
+experiences. For an introduction to MCP-Mod please see @bretz2005 and
+@pinheiro2014.
 
 ## For which types of study designs can I use MCP-Mod?
 
@@ -152,7 +153,7 @@ with increasing doses. Often log-spacing of doses (i.e., the ratio of
 consecutive doses is constant for example equal to 2 or 3) is used.
 
 An alternative approach to calculate adequate doses is optimal design
-theory (see ?optDesign). The idea is to calculate a design (i.e. the
+theory (see `?optDesign`). The idea is to calculate a design (i.e. the
 doses and dose allocation weights) under a given fixed sample size so
 that the variability of the dose-response parameter estimates (or
 variance of some target dose estimate) is "small" in a specified way
@@ -204,7 +205,7 @@ that the interpretation of ED50 parameter returned by `fitMod` then
 changes).
 
 _Consequence of model misspecification:_ Omission of the “correct”
-dose-response shape from the set of candidate models does not
+dose-response shape from the set of candidate models might not
 necessarily have severe consequences, if other models can pick up the
 omitted shape. This can be evaluated for the MCP part (impact on
 power) using explicit calculations (see @pinheiro2006 and [the
@@ -280,10 +281,10 @@ terms of requiring that the shape-space underlying the corresponding
 model is covered almost exhaustively (see the `defBnds` function, for
 the proposed default bounds).
 
-When utilizing bounds for model fitting, it is recommended to use
-bootstrapping/bagging for estimation of the dose-response functions
-and for the confidence intervals, see @pinheiro2014. Standard
-asymptotic confidence intervals are not reliable.
+When utilizing bounds for model fitting, it bootstrapping/bagging can
+be used for estimation of the dose-response functions and for the
+confidence intervals, see @pinheiro2014. Standard asymptotic
+confidence intervals are not reliable.
 
 ## Should model-selection or model-averaging be used for analysis?
 
@@ -292,10 +293,10 @@ from the initial candidate set or a weighted average of the candidate
 models. Model averaging has two main advantages
 
 _Improved estimation performance:_ Simulations in the framework of
-dose-response analyses in Phase II have shown (consistently over a
-large range of simulation scenarios) that model-averaging leads to a
-slightly better performance in terms of dose-response estimation and
-dose-estimation [see @schorning2016].
+dose-response analyses in Phase II have shown (over a range of
+simulation scenarios) that model-averaging leads to a slightly better
+performance in terms of dose-response estimation and dose-estimation
+[see @schorning2016].
 
 _Improved coverage probability of confidence intervals:_ Model
 averaging techniques generally lead to a better performance in terms

@@ -100,7 +100,7 @@ plot_power_vs_treatment_effect(guess, doses, group_size = 90, placEff = 1.25,
 ## Power under mis-specification
 
 MCP-Mod depends on the candidate models selected. What if the true
-model is not among the chosen candidate shapes? Usually MCP-Mod is
+model is not among the chosen candidate shapes? Often MCP-Mod is
 rather robust.  To illustrate this, let's assume an exponential model
 shape is the true model, which is not among the candidate shapes. Let
 this exponential model have small responses for all doses but the last
@@ -155,7 +155,7 @@ candidate set. However, the power loss is only in the range of 10-15%.
 ## Sample size based on metrics other than power for the multiple contrast test
 
 The main purpose of a dose-finding study is selection of a dose to
-take forward into Phase 3 and establishment of a trend over placebo is
+take forward into Phase 3. Establishment of a trend over placebo is
 hence only a minimum requirement before considering dose-selection.
 
 If one considers sample size calculation to allow for adequate dose
@@ -188,20 +188,15 @@ pm <- planMod("sigEmax", Mods(sigEmax=c(30.5, 3.5), placEff=1.25, maxEff=0.15, d
               bnds = defBnds(max(doses)))
 summary(pm,  Delta=0.12)
 ```
-The output shows the efficiency versus ANOVA (`Eff-vs-ANOVA`), which is
-the ratio of the placebo-adjusted mean-squared error (at the observed doses) of
-model-based vs ANOVA approach. This can be
-interpreted on the sample size scale. In addition the root of the
-mean-squared error to estimate the placebo-adjusted dose-response
-(`cRMSE`) averaged over a grid of 101 equally spaced values between
-placebo and the maximum dose. Length of the quantile range for a
+The output shows different outputs (see `?planMod` for details) of
+most interest here is the length of the quantile range for a
 target dose (`lengthTDCI`). By default this is calculated by taking the difference 
 of 5\% and 95\% quantile of the empirical distribution of the dose 
 estimates in the simulation. The metric `P(no TD)` indicates in how many
 simulations runs no TD could be identified.
 
 From the output it can be seen that the variation in the TD estimates
-is quite large and clearly unsatisfactory. Experimenting with different values of `n`,
+is quite large and quite unsatisfactory. Experimenting with different values of `n`,
 one quickly realizes that we would need for example 1650 patients to
 get the length of this interval down to 20 mg.
 ```{r, tdci1650}
@@ -210,6 +205,10 @@ pm <- planMod("sigEmax", Mods(sigEmax=c(30.5, 3.5), placEff=1.25, maxEff=0.15, d
               bnds = defBnds(max(doses)))
 summary(pm, Delta=0.12)
 ```
+
+Note that the variability in TD estimation depends quite strongly on
+the assumed true dose-response model, see the simulation results in
+Chapter 12 in @oquigley2017.
 
 In practice, to keep the size of the study feasible, one needs to find
 a compromise between dose-response signal detection and estimation

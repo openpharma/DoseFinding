@@ -193,7 +193,7 @@ transform back to logit scale:
 Note here we index $x$ with $i$ that runs from 1 to $n$ (all patients
 randomized in the study).
 
-To obtain a variance estimate we repeat this with draws from $\mathrm{MultivariateNormal}(\hat\mu, \hat S)$
+To obtain a variance estimate for $\mu^*$ we repeat this with draws from $\mathrm{MultivariateNormal}(\hat\mu, \hat S)$
 and calculate the empirical covariance matrix $S^*$ of theses draws.
 
 Then we use $\mu^*$ and $S^*$ in `MCTtest()`.
@@ -212,7 +212,7 @@ covariate_adjusted_estimates <- function(mu_hat, S_hat, formula_rhs, doses, othe
   ## estimate covariance matrix of mu_star
   pred <- replicate(n_sim, logit(tapply(inv_logit(X %*% drop(rmvnorm(1, mu_hat, S_hat))),
                                         pdat$dose, mean)))
-  return(list(mu_star = mu_star, S_star = cov(t(pred))))
+  return(list(mu_star = as.numeric(mu_star), S_star = cov(t(pred))))
 }
 
 ca <- covariate_adjusted_estimates(coef(fit_cov), vcov(fit_cov), ~factor(dose)+0+x1+x2,

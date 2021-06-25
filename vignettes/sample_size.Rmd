@@ -1,9 +1,9 @@
 ---
-title: "Sample size calculations with MCP-Mod"
+title: "Sample size calculations for MCP-Mod"
 output: rmarkdown::html_vignette
 bibliography: refs.bib
 vignette: >
-  %\VignetteIndexEntry{Sample size template for MCP-Mod for normally distributed data}
+  %\VignetteIndexEntry{Sample size calculations for MCP-Mod}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

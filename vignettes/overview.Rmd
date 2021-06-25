@@ -6,7 +6,7 @@ bibliography: refs.bib
 link-citations: yes
 csl: american-statistical-association.csl
 vignette: >
-  %\VignetteIndexEntry{Overview}
+  %\VignetteIndexEntry{Overview DoseFinding package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

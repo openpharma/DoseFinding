@@ -5,7 +5,7 @@ bibliography: refs.bib
 link-citations: yes
 csl: american-statistical-association.csl
 vignette: >
-  %\VignetteIndexEntry{Design and analysis template MCP-Mod for binary data}
+  %\VignetteIndexEntry{Binary Data MCP-Mod}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

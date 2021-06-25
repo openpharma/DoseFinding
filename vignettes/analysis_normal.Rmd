@@ -5,7 +5,7 @@ bibliography: refs.bib
 csl: american-statistical-association.csl
 link-citations: yes
 vignette: >
-  %\VignetteIndexEntry{Analysis template MCP-Mod for continuous data}
+  %\VignetteIndexEntry{Continuous data MCP-Mod}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

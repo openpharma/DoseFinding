@@ -1,12 +1,18 @@
-2020-06-22 Bjoern Bornkamp (version 1.0-1)
+2021-10-03 Bjoern Bornkamp (version 1.0-2)
+      * Define USE_FC_LEN_T and add length of character arguments in
+	Fortran code called from C, to reflect recent changes in gfortran.
+      * Fix incorrect error message in fitMod (in case placAdj = TRUE and
+	data are handed over in a data frame via data argument)
+
+2021-06-22 Bjoern Bornkamp (version 1.0-1)
       * Big thanks to Ludger Sandig, who was instrumental in adding
 	vignettes for practical MCP-Mod implementation guidance;
 	introducing tests based on testthat and further bug fixes.
       * Thanks to Dong Xi, Hilke Kracker for review of earlier versions of
 	the draft vignettes
       * Thanks to Julia Duda for her helpful comments on the package
-	
-2019-11-13 Bjoern Bornkamp (version 0.9-17)	
+
+2019-11-13 Bjoern Bornkamp (version 0.9-17)
       * Added citation to DESCRIPTION file
       * Removed alpha argument for pValues function (not used)
       * Propagate error messages from mvtnorm in pValues function
@@ -15,10 +21,10 @@
 
 2017-12-07 Bjoern Bornkamp (version 0.9-16)
       * Fixed minor bug in print.summary.planMod
-	
+
 2016-07-26 Bjoern Bornkamp (version 0.9-15)
       * Mods Added parameter names for all models in the output list
-        (thanks to Dong Xi for catching this)	
+        (thanks to Dong Xi for catching this)
 
 2016-02-02 Bjoern Bornkamp (version 0.9-14)
       * planMod.Rd Documentation slightly extended.
@@ -32,7 +38,7 @@
       * critVal Added self-written qmvt function qmvtDF	(as mvtnorm::qmvt
 	got instable on Windows 32bit from release 1.0-3), hopefully
 	superfluous once mvtnorm fixes this.
-	
+
 2014-09-28 Bjoern Bornkamp (version 0.9-12)
       * glycobrom dataset: Included column for number of observations
 	per treatment.

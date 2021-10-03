@@ -14,12 +14,17 @@
 ## along with this program. If not, see http://www.gnu.org/licenses/.
 */
 
+#define USE_FC_LEN_T
+#include <Rconfig.h>
+#include <R_ext/BLAS.h>
+#ifndef FCONE
+# define FCONE
+#endif
 #include<R.h>
 #include<Rmath.h>
 #include<Rdefines.h>
 #include<Rinternals.h>
 #include<R_ext/Lapack.h>
-#include<R_ext/BLAS.h>
 #include<R_ext/Applic.h>
 
 
@@ -27,7 +32,8 @@ void rank1vec(double *grad, int *nPar, double *alpha, double *A){
   // calculates alpha*grad*grad'+A
   char uplo='U';
   int inc=1;
-  F77_CALL(dsyr)(&uplo, nPar, alpha, grad, &inc, A, nPar);
+  F77_CALL(dsyr)(&uplo, nPar, alpha, grad, &inc,
+		 A, nPar FCONE);
 }
 
 // calculate design matrix
@@ -67,7 +73,8 @@ void calcDetGinv(double *A, int *nPar, double *work,
   
   // Calculate singular value decomposition
   F77_CALL(dgesvd)(&jobu, &jobvt, nPar, nPar, A, nPar,
-		   s, U, nPar, VT, nPar, work, &lwork, &info);
+		   s, U, nPar, VT, nPar, work, &lwork,
+		   &info FCONE FCONE);
   
   if((*type == 1) || (*type == 3)){ // calculate g-inverse
     for (i = 1; i < *nPar; i++){

@@ -23,13 +23,19 @@ To do:
 - dbeta seems to be really slow in R (pre-calculate normalizing constant?)
  */
 
+#define USE_FC_LEN_T
+#include <Rconfig.h>
+#include <R_ext/BLAS.h>
+#ifndef FCONE
+# define FCONE
+#endif
+
 #include<float.h>
 #include<R.h>
 #include<Rmath.h>
 #include<Rdefines.h>
 #include<Rinternals.h>
 #include<R_ext/Lapack.h>
-#include<R_ext/BLAS.h>
 #include<R_ext/Applic.h>
 
 /* structure to store basic information on problem */
@@ -61,7 +67,8 @@ void R_CheckUserInterrupt(void);
 void trmatvec(double *A, int *dim, double *x){
   char *uplo="U", *trans="N", *diag="N";
   int incx=1;
-  F77_CALL(dtrmv)(uplo, trans, diag, dim, A, dim, x, &incx);
+  F77_CALL(dtrmv)(uplo, trans, diag, dim, A, dim,
+		  x, &incx FCONE FCONE FCONE);
 }
 
 /* calculates A*x for general A */
@@ -71,7 +78,7 @@ void matvec(double *A, int *nrow, int *ncol,
   double alpha = 1.0, beta = 0.0;
   int incx=1;
   F77_CALL(dgemv)(trans, nrow, ncol, &alpha, A, nrow, 
-		  x, &incx, &beta, y, &incx);
+		  x, &incx, &beta, y, &incx FCONE);
 }
 
 void crsprod(double *A, double *B, int *nrow, int *ncol, double *C){
@@ -82,7 +89,7 @@ void crsprod(double *A, double *B, int *nrow, int *ncol, double *C){
   double alpha = 1.0, beta = 0.0;
   F77_CALL(dgemm)(transa, transb, ncol, nrow, nrow,
   		  &alpha, A, nrow, B, nrow, &beta,
-  		  C, ncol);
+  		  C, ncol FCONE FCONE);
 }
 
 /* model functions */

@@ -143,8 +143,6 @@ checkAnalyArgs <- function(dose, resp, data, S, type,
   if(placAdj){
     if(type == "normal")
       stop("\"placAdj == TRUE\" only allowed for type = \"general\"")
-    if(any(dose == 0))
-      stop("If placAdj == TRUE there should be no placebo group")
   }
   if(!is.null(data)){ # data handed over in data frame
     if(!is.data.frame(data))
@@ -170,6 +168,10 @@ checkAnalyArgs <- function(dose, resp, data, S, type,
     colnames(dd) <- cal[2:3]
   }
   doseNam <- cal[2];respNam <- cal[3]
+  if(placAdj){
+    if(any(dd[[doseNam]] == 0))
+      stop("If placAdj == TRUE there should be no placebo group")
+  }
   if(any(dd[[doseNam]] < -.Machine$double.eps))
     stop("dose values need to be non-negative")
   if(!is.numeric(dd[[doseNam]]))

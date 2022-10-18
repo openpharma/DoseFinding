@@ -63,6 +63,8 @@ powMCT <- function(contMat, alpha = 0.025, altModels,
       stop("n needs to be of length nrow(contMat)")
     S <- sigma^2*diag(1/n)
     df <- sum(n) - nD
+    if(df == 0)
+      stop("cannot compute power: specified \"n\" and dose vector result in df = 0")
   } else {
     if(!missing(n)|!missing(sigma))
       stop("Need to specify either \"S\" or both \"n\" and \"sigma\"")
@@ -83,12 +85,6 @@ powMCT <- function(contMat, alpha = 0.025, altModels,
   }
   if(nrow(muMat) != nD)
     stop("Incompatible contMat and muMat")
-  ## extract df
-  if(missing(S)){
-    if(missing(df))
-      stop("degrees of freedom need to be specified in df")
-    df <- sum(n) - nD
-  }
   ## calculate non-centrality parameter
   deltaMat <- t(contMat) %*% muMat
   covMat <- t(contMat) %*% S %*% contMat

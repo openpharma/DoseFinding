@@ -1,3 +1,7 @@
+2022-10-18 Bjoern Bornkamp (version 1.0-3)
+      * Stop and throw error if calculated df=0 in powMCT (passed to
+	mvtnorm where df=0 implies use of a normal distribution)
+
 2021-10-03 Bjoern Bornkamp (version 1.0-2)
       * Define USE_FC_LEN_T and add length of character arguments in
 	Fortran code called from C, to reflect recent changes in gfortran.

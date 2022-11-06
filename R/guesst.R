@@ -32,13 +32,13 @@ guesst <- function(d, p, model = c("emax", "exponential", "logistic", "quadratic
     if(length(d) == 2) {
       ed50  <- diff(rev(d)*logit(p))/diff(logit(p))
       delta <- diff(d)/diff(logit(p))
-      return(c(ed50 = ed50, delta = delta))
+      res <- c(ed50 = ed50, delta = delta)
     } else {
       m <- lm(logit(p)~d)
       par <- coef(m)
       names(par) <- NULL
-      return(c(ed50 = -par[1]/par[2], delta = 1/par[2]))
-    } 
+        res <- c(ed50 = -par[1]/par[2], delta = 1/par[2])
+    }
     if(local){
       foolog <- function(par, d, p, Maxd) {
         e0 <- logistic(0,0,1,par[1],par[2])
@@ -80,14 +80,14 @@ guesst <- function(d, p, model = c("emax", "exponential", "logistic", "quadratic
       num <- log((p[1]*(1-p[2]))/(p[2]*(1-p[1])))
       h <- num/log(d[1]/d[2])
       ed50 <- ((1-p[1])/p[1])^(1/h)*d[1]
-      return(c(ed50=ed50, h=h))
+      res <- c(ed50=ed50, h=h)
     } else {
       y <- log((1-p)/p)
       x <- log(d)
       par <- coef(lm(y~x))
       names(par) <- NULL
-      return(c(ed50 = exp(par[1]/-par[2]), delta = -par[2]))
-    } 
+      res <- c(ed50 = exp(par[1]/-par[2]), delta = -par[2])
+    }
     if(local) {
       fooSE <- function(par, d, p, Maxd) {
         sum((sigEmax(d,0,1,par[1],par[2])/

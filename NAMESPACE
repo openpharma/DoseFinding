@@ -1,4 +1,4 @@
-import(mvtnorm, lattice)
+import(mvtnorm, lattice, ggplot2)
 importFrom("grDevices", "rgb")
 importFrom("graphics", "lines", "plot", "points")
 importFrom("stats", "AIC", "IQR", "acf", "approx", "as.formula",
@@ -12,7 +12,7 @@ export(fitMod, defBnds, bFitMod, MCTtest, MCPMod,
        betaMod, quadratic, emax, exponential,linear, linlog, logistic, sigEmax, linInt,
        betaModGrad, quadraticGrad, emaxGrad, exponentialGrad,
        linearGrad, linlogGrad, logisticGrad, sigEmaxGrad, linIntGrad,
-       Mods, getResp, TD, ED,
+       Mods, getResp, TD, ED, plotMods,
        guesst, MCTtest, MCTpval, gAIC,
        mvtnorm.control, 
        optContr,

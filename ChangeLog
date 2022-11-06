@@ -1,6 +1,9 @@
-2022-10-18 Bjoern Bornkamp (version 1.0-3)
+2022-11-06 Bjoern Bornkamp (version 1.0-3)
       * Stop and throw error if calculated df=0 in powMCT (passed to
 	mvtnorm where df=0 implies use of a normal distribution)
+      * Added function plotMods to plot candidate models using ggplot2
+      * Added documentation for quadratic model (definition of delta)
+      * Fixed local options in guesst for logistic and sigEmax models
 
 2021-10-03 Bjoern Bornkamp (version 1.0-2)
       * Define USE_FC_LEN_T and add length of character arguments in

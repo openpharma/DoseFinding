@@ -25,7 +25,7 @@ library(ggplot2)
 doses <- c(0, 12.5, 25, 50, 100)
 guess <- list(emax = c(2.6, 12.5), sigEmax = c(30.5, 3.5), quadratic = -0.00776)
 mods <- do.call(Mods, append(guess, list(placEff = 1.25, maxEff = 0.15, doses = doses)))
-plot(mods)
+plotMods(mods)
 ```
 
 ## Power for multiple contrast test versus group sample size

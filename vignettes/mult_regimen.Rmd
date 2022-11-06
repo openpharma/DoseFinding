@@ -125,8 +125,8 @@ mods <- list(
              maxEff = -1,
              doses=est$daily_dose[c(est$index$placebo, est$index$bid)]))
 
-plot(mods$od, superpose = TRUE)
-plot(mods$bid, superpose = TRUE)
+plotMods(mods$od, superpose = TRUE, xlab = "daily dose")
+plotMods(mods$bid, superpose = TRUE, xlab = "daily dose")
 ```
 
 ## Multiple contrast test

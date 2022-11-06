@@ -35,7 +35,7 @@ than one dosing [regimen](mult_regimen.html) in certain scenarios.
 Below a short overview of the main functions.
 
 ## Perform multiple contrast test
-```{r, overview}
+```{r, overview, fig.asp = .4}
 library(DoseFinding)
 data(IBScovars)
 head(IBScovars)
@@ -45,7 +45,7 @@ head(IBScovars)
 models <- Mods(linear = NULL, emax = 0.2, quadratic = -0.17,
                doses = c(0, 1, 2, 3, 4))
 ## plot models
-plot(models)
+plotMods(models)
 ## perform multiple contrast test
 ## functions powMCT and sampSizeMCT provide tools for sample size
 ## calculation for multiple contrast tests

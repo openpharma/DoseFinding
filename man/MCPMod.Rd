@@ -220,6 +220,7 @@ data(biom)
 ## first define candidate model set (only need "standardized" models)
 models <- Mods(linear = NULL, emax=c(0.05,0.2), linInt=c(1, 1, 1, 1),
                doses=c(0,0.05,0.2,0.6,1))
+plot(models)
 ## perform MCPMod procedure
 MM <- MCPMod(dose, resp, biom, models, Delta=0.5)
 ## a number of things can be done with an MCPMod object
@@ -251,6 +252,7 @@ vCov <- vcov(anovaMod)[2:5,2:5]
 dose <- sort(unique(IBScovars$dose))[-1] # no estimate for placebo
 ## candidate models
 models <- Mods(emax = c(0.5, 1), betaMod=c(1,1), doses=c(0,4))
+plot(models)
 ## hand over placebo-adjusted estimates drFit to MCPMod
 MM3 <- MCPMod(dose, drFit, S=vCov, models = models, type = "general",
               placAdj = TRUE, Delta=0.2)

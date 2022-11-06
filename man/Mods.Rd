@@ -2,6 +2,7 @@
 \alias{Mods}
 \alias{getResp}
 \alias{plot.Mods}
+\alias{plotMods}
 \title{
   Define dose-response models
 }
@@ -29,8 +30,13 @@
   \code{\link{optDesign}}
   
   Some models, for example the beta model (\samp{scal}) and the linlog
-  model (\samp{off}) have parameters that are not estimated by the code,
+  model (\samp{off}) have parameters that are not estimated from the data,
   they need to be specified via the \samp{addArgs} argument.
+
+  The default plot method for \samp{Mods} objects is based on a plot
+  using the \samp{lattice} package for backward compatibility. The
+  function \samp{plotMods} function implements a plot using the
+  \samp{ggplot2} package.
 
   NOTE: If a decreasing effect is beneficial for the considered response
   variable it needs to specified here, either by using \samp{direction =
@@ -46,6 +52,10 @@ getResp(fmodels, doses)
 \method{plot}{Mods}(x, nPoints = 200, superpose = FALSE, 
      xlab = "Dose", ylab = "Model means", modNams = NULL, 
      plotTD = FALSE, Delta, ...)
+
+plotMods(ModsObj, nPoints = 200, superpose = FALSE,
+         xlab = "Dose", ylab = "Model means",
+         modNams = NULL)
 
 }
 \arguments{
@@ -108,6 +118,11 @@ getResp(fmodels, doses)
     \samp{plotTD} is a logical determining, whether the TD should be
     plotted. \samp{Delta} is the target effect to estimate for the TD.
   }
+  \item{ModsObj}{
+    For function \samp{plotMods} the \samp{ModsObj} should contain an
+    object of class \samp{Mods}.
+  }
+
 }
 \value{
   Returns an object of class \samp{"Mods"}. The object contains the
@@ -164,8 +179,10 @@ models <- Mods(linear = NULL, linlog = NULL, emax = c(0.05, 0.3),
 ## direction were not specified a placebo effect of 0 and an effect of 1
 ## is assumed
 
-## display of specified candidate set
+## display of specified candidate set using default plot (based on lattice)
 plot(models)
+## display using ggplot2
+plotMods(models)
 
 ## example for creating a candidate set with decreasing response 
 doses <- c(0, 10, 25, 50, 100, 150)
@@ -177,6 +194,7 @@ fmodels <- Mods(linear = NULL, emax = 25,
                    doses=doses, placEff = 0.5, maxEff = -0.4,
                    addArgs=list(scal=200))
 plot(fmodels)
+plotMods(fmodels)
 ## some customizations (different model names, symbols, line-width)
 plot(fmodels, lwd = 3, pch = 3, cex=1.2, col="red",
      modNams = paste("mod", 1:8, sep="-"))

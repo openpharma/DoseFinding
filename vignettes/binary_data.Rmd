@@ -62,11 +62,11 @@ dat <- data.frame(y = rbinom(N, 1, prob),
 
 We will use the following candidate set of models for the mean response on the logit scale:
 
-```{r, setup}
+```{r, setup, fig.width = 8, out.width = '100%'}
 mods <- Mods(emax = c(0.25, 1), sigEmax = rbind(c(1, 3), c(2.5, 4)), betaMod = c(1.1, 1.1),
              placEff = logit(0.1), maxEff = logit(0.35)-logit(0.1),
              doses = doses)
-plot(mods)
+plotMods(mods)
 ```
 
 With a little bit of work we can also transform from log-odds back to probabilities:

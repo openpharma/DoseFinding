@@ -959,3 +959,80 @@ getLinPars <- function(model, doses, guesstim, placEff, maxEff, off, scal){
   }
 }
 
+plotMods <- function(ModsObj, nPoints = 200, superpose = FALSE,
+                     xlab = "Dose", ylab = "Model means",
+                     modNams = NULL){
+  ## candidate model plot using ggplot2
+  ## check for class Mods
+  if(!inherits(ModsObj, "Mods"))
+    stop("\"ModsObj\" needs to be of class Mods")
+  doses <- nodes <- attr(ModsObj, "doses")
+  placEff <- attr(ModsObj, "placEff")
+  maxEff <- attr(ModsObj, "maxEff")
+  off <- attr(ModsObj, "off")
+  scal <- attr(ModsObj, "scal")
+  nM <- modCount(ModsObj, fullMod = TRUE)
+  if(nM > 50)
+    stop("too many models in Mods object to plot (> 50 models).")
+  
+  doseSeq <- sort(union(seq(min(doses), max(doses), length = nPoints), 
+                        doses))
+  resp <- calcResp(ModsObj, doseSeq, off, scal, nodes)
+  
+  if(is.null(modNams)){ # use default model names
+    nams <- attr(resp, "parList")
+    mod_nams <- names(nams)
+    for(i in 1:nM){
+      if(startsWith(mod_nams[i], "linlog"))
+        mod_nams[i] <- sprintf("linlog (off=%s)", nams[[i]][3])
+      if(startsWith(mod_nams[i], "emax"))
+        mod_nams[i] <- sprintf("emax (ED50=%s)", nams[[i]][3])
+      if(startsWith(mod_nams[i], "exponential"))
+        mod_nams[i] <- sprintf("exponential (delta=%s)", nams[[i]][3])
+      if(startsWith(mod_nams[i], "quadratic"))
+        mod_nams[i] <- sprintf("quadratic (delta=%s)", nams[[i]][3]/nams[[i]][2])
+      if(startsWith(mod_nams[i], "sigEmax"))
+        mod_nams[i] <- sprintf("sigEmax (ED50=%s,h=%s)", nams[[i]][3], nams[[i]][4])
+      if(startsWith(mod_nams[i], "logistic"))
+        mod_nams[i] <- sprintf("logistic (ED50=%s,delta=%s)",
+                               nams[[i]][3], nams[[i]][4])
+      if(startsWith(mod_nams[i], "betaMod"))
+        mod_nams[i] <- sprintf("betaMod (delta1=%s,delta2=%s,scal=%s)",
+                               nams[[i]][3], nams[[i]][4], nams[[i]][5])
+      if(startsWith(mod_nams[i], "linInt"))
+        mod_nams[i] <- sprintf("linInt (%s)", paste0(nams[[i]], collapse=","))
+    }
+  } else { # use specified model names
+    if(length(modNams) != nM)
+      stop("specified model-names in \"modNams\" of invalid length")
+    mod_nams <- modNams
+  }
+  
+  modelfact <- factor(rep(mod_nams, each = length(doseSeq)),
+                      levels = mod_nams)
+  respdata <- data.frame(response = c(resp), 
+                         dose = rep(doseSeq, ncol(resp)),
+                         model = modelfact)
+  if(superpose){
+    pp <- ggplot(respdata, aes_string(x="dose", y="response", col="model"))+
+      geom_line(size=1.2)+
+      theme_bw()+
+      theme(legend.position = "top", legend.title = element_blank())
+  } else {
+    pp <- ggplot(respdata, aes_string(x="dose", y="response"))+
+      geom_line(size=1.2)+
+      theme_bw()+
+      facet_wrap(~model, labeller = label_wrap_gen())
+  }
+  resp2 <- calcResp(ModsObj, doses, off, scal, nodes)
+  modelfact2 <- factor(rep(mod_nams, each = length(doses)),
+                       levels = mod_nams)
+  respdata2 <- data.frame(response = c(resp2), 
+                          dose = rep(doses, ncol(resp)),
+                          model = modelfact2)
+  pp +
+    geom_point(aes_string(x="dose", y="response"), size=1.8, data=respdata2) +
+    xlab(xlab) +
+    ylab(ylab)
+}
+

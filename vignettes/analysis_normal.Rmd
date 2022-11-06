@@ -106,8 +106,8 @@ mods <- Mods(emax = c(2.6, 12.5), sigEmax = c(30.5, 3.5), quadratic = -0.00776,
 
 It's always a good idea to perform a visual sanity check of the functional relationships implied by the guesstimates.
 
-```{r, plot_models, fig.asp = 0.42}
-plot(mods, ylab = "FEV1", layout = c(4, 1))
+```{r, plot_models}
+plotMods(mods, ylab = "FEV1")
 ```
 
 This concludes the design phase.

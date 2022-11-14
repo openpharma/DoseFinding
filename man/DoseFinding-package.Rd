@@ -19,7 +19,7 @@
 Package: \tab DoseFinding\cr
 Type: \tab Package\cr
 Version: \tab 1.0-3\cr
-Date: \tab 2022-11-06\cr
+Date: \tab 2022-11-14\cr
 License: \tab GPL-3
 }
 The main functions are:\cr

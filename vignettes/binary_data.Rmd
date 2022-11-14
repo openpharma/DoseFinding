@@ -67,28 +67,9 @@ mods <- Mods(emax = c(0.25, 1), sigEmax = rbind(c(1, 3), c(2.5, 4)), betaMod = c
              placEff = logit(0.1), maxEff = logit(0.35)-logit(0.1),
              doses = doses)
 plotMods(mods)
+## plot candidate models on probability scale
+plotMods(mods, trafo = inv_logit)
 ```
-
-With a little bit of work we can also transform from log-odds back to probabilities:
-
-```{r, prob_scale}
-plot_prob <- function(models, dose_seq) {
-  rsp <- getResp(models, doses = dose_seq) # returs a dose x model matrix
-  modnam <- factor(colnames(rsp), levels = colnames(rsp))
-  pdat <- data.frame(resp = inv_logit(as.numeric(rsp)),
-                     mod = rep(modnam, each = length(dose_seq)),
-                     dose = rep(dose_seq, times = length(modnam)))
-  gg <- ggplot(pdat, aes(dose, resp)) +
-    geom_line(size = 1.2) +
-    scale_y_continuous(breaks = seq(0, 1, by=0.1)) +
-    facet_wrap(vars(mod)) +
-    ylab("response (probability scale)")
-  return(gg)
-}
-
-plot_prob(mods, seq(0, 4, by = 0.05))
-```
-
 ## Analysis without covariates
 
 First assume covariates had not been used in the analysis (not recommended in practice).

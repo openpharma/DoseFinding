@@ -961,7 +961,7 @@ getLinPars <- function(model, doses, guesstim, placEff, maxEff, off, scal){
 
 plotMods <- function(ModsObj, nPoints = 200, superpose = FALSE,
                      xlab = "Dose", ylab = "Model means",
-                     modNams = NULL){
+                     modNams = NULL, trafo = function(x) x){
   ## candidate model plot using ggplot2
   ## check for class Mods
   if(!inherits(ModsObj, "Mods"))
@@ -978,6 +978,7 @@ plotMods <- function(ModsObj, nPoints = 200, superpose = FALSE,
   doseSeq <- sort(union(seq(min(doses), max(doses), length = nPoints), 
                         doses))
   resp <- calcResp(ModsObj, doseSeq, off, scal, nodes)
+  resp <- trafo(resp)
   
   if(is.null(modNams)){ # use default model names
     nams <- attr(resp, "parList")
@@ -1025,6 +1026,7 @@ plotMods <- function(ModsObj, nPoints = 200, superpose = FALSE,
       facet_wrap(~model, labeller = label_wrap_gen())
   }
   resp2 <- calcResp(ModsObj, doses, off, scal, nodes)
+  resp2 <- trafo(resp2)
   modelfact2 <- factor(rep(mod_nams, each = length(doses)),
                        levels = mod_nams)
   respdata2 <- data.frame(response = c(resp2), 

@@ -55,7 +55,7 @@ getResp(fmodels, doses)
 
 plotMods(ModsObj, nPoints = 200, superpose = FALSE,
          xlab = "Dose", ylab = "Model means",
-         modNams = NULL)
+         modNams = NULL, trafo = function(x) x)
 
 }
 \arguments{
@@ -121,6 +121,12 @@ plotMods(ModsObj, nPoints = 200, superpose = FALSE,
   \item{ModsObj}{
     For function \samp{plotMods} the \samp{ModsObj} should contain an
     object of class \samp{Mods}.
+  }
+  \item{trafo}{
+    For function \samp{plotMods} there is the option to plot the
+    candidate model set on a transformed scale (e.g. probability scale
+    if the candidate models are formulated on log-odds scale). The
+    default for \samp{trafo} is the identity function.
   }
 
 }

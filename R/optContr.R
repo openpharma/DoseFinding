@@ -208,3 +208,19 @@ plot.optContr <- function (x, superpose = TRUE, xlab = "Dose",
   }
   print(ltplot)
 }
+
+plotContr <- function(optContrObj, xlab = "Dose", ylab = "Contrast coefficients"){
+  cM <- optContrObj$contMat
+  nD <- nrow(cM)
+  nM <- ncol(cM)
+  cMtr <- data.frame(resp = as.vector(cM),
+                     dose = rep(as.numeric(dimnames(cM)[[1]]), nM),
+                     model = factor(rep(dimnames(cM)[[2]], each = nD),
+                     levels = dimnames(cM)[[2]]))
+  ggplot(cMtr, aes(dose, resp, col=model))+
+    geom_line(size=1.2)+
+    geom_point()+
+    theme_bw()+
+    geom_point(size=1.8)+
+    theme(legend.position = "top", legend.title = element_blank())
+}

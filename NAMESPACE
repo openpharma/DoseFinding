@@ -15,7 +15,7 @@ export(fitMod, defBnds, bFitMod, MCTtest, MCPMod,
        Mods, getResp, TD, ED, plotMods,
        guesst, MCTtest, MCTpval, gAIC,
        mvtnorm.control, 
-       optContr,
+       optContr, plotContr,
        powMCT, sampSize, sampSizeMCT, targN, powN, planMod,
        optDesign, calcCrit, rndDesign)
 S3method(predict, MCPMod)

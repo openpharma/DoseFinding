@@ -959,6 +959,34 @@ getLinPars <- function(model, doses, guesstim, placEff, maxEff, off, scal){
   }
 }
 
+getModNams <- function(parList){
+  ## extract model names with parameter values
+  nM <- length(parList)
+  mod_nams <- names(parList)
+  for(i in 1:nM){
+    if(startsWith(mod_nams[i], "linlog"))
+      mod_nams[i] <- sprintf("linlog (off=%s)", parList[[i]][3])
+    if(startsWith(mod_nams[i], "emax"))
+      mod_nams[i] <- sprintf("emax (ED50=%s)", parList[[i]][3])
+    if(startsWith(mod_nams[i], "exponential"))
+      mod_nams[i] <- sprintf("exponential (delta=%s)", parList[[i]][3])
+    if(startsWith(mod_nams[i], "quadratic"))
+      mod_nams[i] <- sprintf("quadratic (delta=%s)", parList[[i]][3]/parList[[i]][2])
+    if(startsWith(mod_nams[i], "sigEmax"))
+      mod_nams[i] <- sprintf("sigEmax (ED50=%s,h=%s)", parList[[i]][3], parList[[i]][4])
+    if(startsWith(mod_nams[i], "logistic"))
+      mod_nams[i] <- sprintf("logistic (ED50=%s,delta=%s)",
+                             parList[[i]][3], parList[[i]][4])
+    if(startsWith(mod_nams[i], "betaMod"))
+      mod_nams[i] <- sprintf("betaMod (delta1=%s,delta2=%s,scal=%s)",
+                             parList[[i]][3], parList[[i]][4], parList[[i]][5])
+      if(startsWith(mod_nams[i], "linInt"))
+        mod_nams[i] <- sprintf("linInt (%s)", paste0(parList[[i]], collapse=","))
+  }
+  mod_nams
+}
+
+
 plotMods <- function(ModsObj, nPoints = 200, superpose = FALSE,
                      xlab = "Dose", ylab = "Model means",
                      modNams = NULL, trafo = function(x) x){
@@ -981,28 +1009,8 @@ plotMods <- function(ModsObj, nPoints = 200, superpose = FALSE,
   resp <- trafo(resp)
   
   if(is.null(modNams)){ # use default model names
-    nams <- attr(resp, "parList")
-    mod_nams <- names(nams)
-    for(i in 1:nM){
-      if(startsWith(mod_nams[i], "linlog"))
-        mod_nams[i] <- sprintf("linlog (off=%s)", nams[[i]][3])
-      if(startsWith(mod_nams[i], "emax"))
-        mod_nams[i] <- sprintf("emax (ED50=%s)", nams[[i]][3])
-      if(startsWith(mod_nams[i], "exponential"))
-        mod_nams[i] <- sprintf("exponential (delta=%s)", nams[[i]][3])
-      if(startsWith(mod_nams[i], "quadratic"))
-        mod_nams[i] <- sprintf("quadratic (delta=%s)", nams[[i]][3]/nams[[i]][2])
-      if(startsWith(mod_nams[i], "sigEmax"))
-        mod_nams[i] <- sprintf("sigEmax (ED50=%s,h=%s)", nams[[i]][3], nams[[i]][4])
-      if(startsWith(mod_nams[i], "logistic"))
-        mod_nams[i] <- sprintf("logistic (ED50=%s,delta=%s)",
-                               nams[[i]][3], nams[[i]][4])
-      if(startsWith(mod_nams[i], "betaMod"))
-        mod_nams[i] <- sprintf("betaMod (delta1=%s,delta2=%s,scal=%s)",
-                               nams[[i]][3], nams[[i]][4], nams[[i]][5])
-      if(startsWith(mod_nams[i], "linInt"))
-        mod_nams[i] <- sprintf("linInt (%s)", paste0(nams[[i]], collapse=","))
-    }
+    parList <- attr(resp, "parList")
+    mod_nams <- getModNams(parList)
   } else { # use specified model names
     if(length(modNams) != nM)
       stop("specified model-names in \"modNams\" of invalid length")

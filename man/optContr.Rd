@@ -1,6 +1,7 @@
 \name{optContr}
 \alias{optContr}
 \alias{plot.optContr}
+\alias{plotContr}
 \title{
   Calculate optimal contrasts
 }
@@ -34,6 +35,9 @@ optContr(models, doses, w, S, placAdj = FALSE,
 
 \method{plot}{optContr}(x, superpose = TRUE, xlab = "Dose",
      ylab = NULL, plotType = c("contrasts", "means"), ...)
+
+plotContr(optContrObj, xlab = "Dose",
+          ylab = "Contrast coefficients")
 
 }
 \arguments{
@@ -84,6 +88,10 @@ optContr(models, doses, w, S, placAdj = FALSE,
   determines, whether the contrasts or the underlying (standardized)
   mean matrix should be plotted.
 }
+\item{optContrObj}{
+  For function \samp{plotContr} the \samp{optContrObj} should contain an
+  object of class \samp{optContr}.
+}
 \item{...}{
   Additional arguments for plot method
 }
@@ -117,6 +125,7 @@ models <- Mods(linear = NULL, emax = 25,
                doses = doses, addArgs = list(scal = 200))
 contMat <- optContr(models, w = rep(50,6))
 plot(contMat)
+plotContr(contMat) # display contrasts using ggplot2
 
 ## now we would like the "contrasts" for placebo adjusted estimates
 dosPlac <- doses[-1]

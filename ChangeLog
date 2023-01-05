@@ -1,4 +1,4 @@
-2022-11-06 Bjoern Bornkamp (version 1.0-3)
+2022-01-05 Bjoern Bornkamp (version 1.0-3)
       * Stop and throw error if calculated df=0 in powMCT (passed to
 	mvtnorm where df=0 implies use of a normal distribution)
       * Added function plotMods to plot candidate models using ggplot2

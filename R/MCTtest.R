@@ -136,9 +136,9 @@ critVal <- function(corMat, alpha = 0.025, df = NULL,
 
 checkAnalyArgs <- function(dose, resp, data, S, type,
                            addCovars, placAdj, na.action, cal){
-  if(class(addCovars) != "formula")
+  if(!inherits(addCovars, "formula"))
     stop("addCovars argument needs to be of class formula")
-  if(class(placAdj) != "logical")
+  if(!inherits(placAdj, "logical"))
     stop("placAdj argument needs to be of class logical")
   if(placAdj){
     if(type == "normal")

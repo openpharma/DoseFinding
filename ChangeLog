@@ -2,7 +2,8 @@
       * Stop and throw error if calculated df=0 in powMCT (passed to
 	mvtnorm where df=0 implies use of a normal distribution)
       * Added function plotMods to plot candidate models using ggplot2
-      * Added function plotContr to plot optimal contrasts using ggplot2
+	and function plotContr to plot optimal contrasts using ggplot2
+	(thanks to Sophie Sun for testing and feedback)
       * Added documentation for quadratic model (definition of delta)
       * Fixed local options in guesst for logistic and sigEmax models
 

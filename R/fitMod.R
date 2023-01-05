@@ -996,9 +996,9 @@ plotFunc <- function(x, CI = FALSE, level = 0.95,
                      plotData = c("means", "meansCI", "raw", "none"),
                      plotGrid = TRUE, colMn = 1, colFit = 1, ...){
   ## Extract relevant information from object
-  if(class(x) == "DRMod")
+  if(inherits(x, "DRMod"))
     obj <- x
-  if(class(x) == "MCPMod")
+  if(inherits(x, "MCPMod"))
     obj <- x$mods[[1]]
   addCovars <- attr(obj, "addCovars")
   covarsUsed <- addCovars != ~1
@@ -1070,7 +1070,7 @@ plotFunc <- function(x, CI = FALSE, level = 0.95,
   doseSeq <- seq(0, max(data[[doseNam]]), length=201)
   ## create data frame for plotting dr-functions
   predtype <- ifelse(placAdj, "effect-curve", "ls-means")
-  if(class(x) == "MCPMod"){
+  if(inherits(x, "MCPMod")){
     nmods <- length(x$mods)
     lst <- vector(mode = "list", nmods)
     for(i in 1:nmods){
@@ -1088,7 +1088,7 @@ plotFunc <- function(x, CI = FALSE, level = 0.95,
     }
     plotdf <- do.call("rbind", lst)
   }
-  if(class(x) == "DRMod"){
+  if(inherits(x, "DRMod")){
     pred <- predict(x, predType = predtype, doseSeq = doseSeq, se.fit = CI)
     lbnd <- ubnd <- rep(NA, length(doseSeq))
     if(CI){

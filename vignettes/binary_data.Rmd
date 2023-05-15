@@ -70,6 +70,7 @@ plotMods(mods)
 ## plot candidate models on probability scale
 plotMods(mods, trafo = inv_logit)
 ```
+
 ## Analysis without covariates
 
 First assume covariates had not been used in the analysis (not recommended in practice).

@@ -27,6 +27,7 @@ h2 {
 	width: 100%;
 }
 ```
+
 ## Preliminaries
 
 The purpose of this FAQ document is to provide answers to some

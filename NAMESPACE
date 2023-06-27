@@ -6,7 +6,7 @@ importFrom("stats", "AIC", "IQR", "acf", "approx", "as.formula",
            "model.matrix", "na.fail", "nlminb", "optim", "optimize",
            "pnorm", "predict", "qnorm", "qt", "quantile", "quasi",
            "sd", "terms", "uniroot", "var", "vcov")
-importFrom("utils", "setTxtProgressBar", "txtProgressBar")
+importFrom("utils", "setTxtProgressBar", "txtProgressBar", "browseURL")
 
 export(fitMod, defBnds, bFitMod, MCTtest, MCPMod,
        betaMod, quadratic, emax, exponential,linear, linlog, logistic, sigEmax, linInt,
@@ -17,7 +17,8 @@ export(fitMod, defBnds, bFitMod, MCTtest, MCPMod,
        mvtnorm.control, 
        optContr, plotContr,
        powMCT, sampSize, sampSizeMCT, targN, powN, planMod,
-       optDesign, calcCrit, rndDesign)
+       optDesign, calcCrit, rndDesign,
+       DesignMCPModApp)
 S3method(predict, MCPMod)
 S3method(print, MCPMod)
 S3method(print, sampSize)

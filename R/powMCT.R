@@ -134,12 +134,13 @@ powMCT <- function(contMat, alpha = 0.025, altModels,
 #'   for each assumed true model (option "A") or not option "B"
 #' @param alpha Significance level (one-sided testing is assumed)
 #' @param theta Overdispersion parameter required for the negative
-#'   binomial model. Parameterization of negative binomial:
-#'   E(Y)=mu, Var(Y)=mu*(1+mu/theta) 
+#'   binomial model. Parameterization of negative binomial: E(Y)=mu,
+#'   Var(Y)=mu*(1+mu/theta)
 #' @param control Control parameter for mvtnorm::qmvt, mvtnorm::pmvt
 #'   (see ?mvtnorm.control)
 #' @param contMat Contrast matrix (if non-model-based contrasts should
-#'   be used)
+#'   be used). If a user-defined contrast matrix the argument option
+#'   is ignored (automatically set to "B").
 #' @param addArgs additional arguments for betaMod and linlog model
 #'   (passed to Mods function)
 #' 
@@ -153,14 +154,16 @@ powMCT <- function(contMat, alpha = 0.025, altModels,
 #'               type = "binary_logit", option = "A",
 #'               alpha = 0.1, theta, control = mvt_control,
 #'               addArgs = list(scal = 4.8))
-powMCTBinCount <- function(n, doses, candModList, respModList,
+powMCTBinCount <- function(n, doses, candModList = NULL, respModList,
                            placEffu, maxEffu, 
                            type = c("binary_logit", "negative_binomial"),
                            option = c("A", "B"),
-                           alpha, theta, control, contMat = NULL, addArgs){
+                           alpha, theta = NULL,
+                           control, contMat = NULL, addArgs){
   type <- match.arg(type)
-  option <- match.arg(option)
   stopifnot(length(doses) == length(n))
+  if(is.null(candModList) & is.null(contMat))
+    stop("either candModList or contMat need to be non-NULL")
   if(type == "binary_logit"){ 
     logit <- function(p)
       log(p/(1-p))
@@ -173,17 +176,17 @@ powMCTBinCount <- function(n, doses, candModList, respModList,
   }
   placEff_tr <- trafo(placEffu)
   maxEff_tr <- trafo(placEffu+maxEffu)-placEff_tr
-  
+
   if(is.null(contMat)){
     mods <- do.call(Mods, append(candModList,
                                  list(placEff = placEff_tr, maxEff = maxEff_tr,
                                       doses = doses, addArgs=addArgs)))
     
     if(option == "B"){ # opt. contrasts not recalculated only calculated here
-      contMat <- optContr(mods, w=n) # assume diagonal cov matrix with entries 1/n_i
-      cm <- contMat$contMat
+      cm <- optContr(mods, w=n)$contMat # assume diagonal cov matrix with entries 1/n_i
     }
   } else {
+    option <- "B"
     cm <- contMat
   }
 
@@ -231,8 +234,8 @@ powMCTBinCount <- function(n, doses, candModList, respModList,
       critV <- do.call("qmvt", qmvtCall)$quantile
     }
     ## calculate power
-    lower <- rep(-Inf, nMod)
-    upper <- rep(critV, nMod)
+    lower <- rep(-Inf, ncol(corMat))
+    upper <- rep(critV, ncol(corMat))
     control$interval <- NULL
     pmvtCall <- c(list(lower, upper, df = 0, corr = corMat,
                        delta = as.vector(delta), algorithm = control))

@@ -1,12 +1,12 @@
 context("power calculation binary and count data")
 
 ## general options
-mvt_control <- mvtnorm.control(maxpts=1e5, abseps = 0.0001)
+mvt_control <- DoseFinding:::mvtnorm.control(maxpts=1e5, abseps = 0.0001)
 
 ## example (binary data)
 candModList <- list(emax = c(0.25, 1), sigEmax = rbind(c(1, 3), c(2.5, 4)), betaMod = c(1.1, 1.1))
 
-powA <- powMCTBinCount(rep(20,5), doses = c(0, 0.5, 1.5, 2.5, 4),
+powA <- DoseFinding:::powMCTBinCount(rep(20,5), doses = c(0, 0.5, 1.5, 2.5, 4),
                        candModList=candModList, respModList=candModList,
                        placEffu = 0.1, maxEffu = 0.25, 
                        type = "binary_logit", option = "A",
@@ -17,7 +17,7 @@ extern_pow <- c(0.6792, 0.7365, 0.825, 0.8007, 0.7139)
 expect_equal(unname(powA), extern_pow, tolerance = 0.001)
 
 ## just test whether code fails (for testing option = "B" see further below)
-powB <- powMCTBinCount(rep(20,5),doses = c(0, 0.5, 1.5, 2.5, 4),
+powB <- DoseFinding:::powMCTBinCount(rep(20,5),doses = c(0, 0.5, 1.5, 2.5, 4),
                        candModList=candModList, respModList=candModList,
                        placEffu = 0.1, maxEffu = 0.25, 
                        type = "binary_logit", option = "B",
@@ -27,7 +27,7 @@ powB <- powMCTBinCount(rep(20,5),doses = c(0, 0.5, 1.5, 2.5, 4),
 ## example (negative binomial data)
 candModList <- list(emax = c(0.1, 0.5, 1, 2), sigEmax = rbind(c(1, 3), c(3, 3)),
                     betaMod = c(0.37, 0.74))
-powA <- powMCTBinCount(c(100,50,50,100,100), doses = c(0, 0.5, 2, 4, 8), 
+powA <- DoseFinding:::powMCTBinCount(c(100,50,50,100,100), doses = c(0, 0.5, 2, 4, 8), 
                        candModList=candModList, respModList=candModList,
                        placEffu = 0.6, maxEffu = -0.3, 
                        type = "negative_binomial", option = "A",
@@ -38,7 +38,7 @@ extern_pow <- c(0.9035, 0.8816, 0.8691, 0.8518, 0.9264,  0.8518, 0.7913)
 expect_equal(unname(powA), extern_pow, tolerance = 0.001)
 
 ## just test whether code fails (for testing option = "B" see further below)
-powB <- powMCTBinCount(c(100,50,50,100,100), doses = c(0, 0.5, 2, 4, 8), 
+powB <- DoseFinding:::powMCTBinCount(c(100,50,50,100,100), doses = c(0, 0.5, 2, 4, 8), 
                        candModList=candModList, respModList=candModList,
                        placEffu = 0.6, maxEffu = -0.3, 
                        type = "negative_binomial", option = "B",
@@ -91,3 +91,26 @@ powB <- DoseFinding:::powMCTBinCount(c(n,n), doses = c(0, 1),
                        alpha = 0.05, theta = theta, control = mvt_control,
                        addArgs = list(scal = 1))
 expect_equal(unname(powB), power_nb, tolerance = 0.000001)
+
+## tests for contrast matrix handed over (just test whether code fails)
+contMat <- rbind(rep(-1, 4), diag(4))
+respModList <- list(emax = c(0.25, 1), sigEmax = rbind(c(1, 3), c(2.5, 4)), betaMod = c(1.1, 1.1))
+powA <- DoseFinding:::powMCTBinCount(n=rep(20,5), doses = c(0, 0.5, 1.5, 2.5, 4),
+                       candModList=NULL,
+                       respModList=respModList,
+                       placEffu = 0.1, maxEffu = 0.25, 
+                       type = "binary_logit", 
+                       alpha = 0.1, theta, control = mvt_control,
+                       contMat = contMat,
+                       addArgs = list(scal = 4.8))
+
+respModList <- list(emax = c(0.1, 0.5, 1, 2), sigEmax = rbind(c(1, 3), c(3, 3)),
+                    betaMod = c(0.37, 0.74))
+contMat <- rbind(rep(1, 4), -diag(4))
+powA <- DoseFinding:::powMCTBinCount(c(100,50,50,100,100), doses = c(0, 0.5, 2, 4, 8), 
+                       respModList=respModList,
+                       placEffu = 0.6, maxEffu = -0.3, 
+                       type = "negative_binomial", 
+                       alpha = 0.025, theta = 1.25, control = mvt_control,
+                       contMat = contMat,
+                       addArgs = list(scal = 9.6))

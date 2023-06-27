@@ -21,7 +21,7 @@ There is a separate vignette with details on [sample size and power calculation]
 We will use data from @verkindre2010,
 who actually use a cross-over design and utilize MCP-Mod in a supportive analysis.
 More information can be found at the corresponding
-[clinicaltrials.gov page](https://clinicaltrials.gov/ct2/show/NCT00501852)
+[clinicaltrials.gov page](https://www.clinicaltrials.gov/study/NCT00501852)
 and on the R help page `?glycobrom`.
 
 The main purpose @verkindre2010 was to provide safety and efficacy data on Glycopyrronium Bromide (NVA237)

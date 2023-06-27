@@ -1,3 +1,11 @@
+2023-06-27 Bjoern Bornkamp (version 1.0-5)
+      * Fixed bug in non-exported function powMCTBinCount, for situation
+	when user defined contrast matrix is handed over.
+      * Added function DesignMCPModApp which starts the externally hosted
+	R-Shiny app DesignMCPMod to perform power and sample size
+	calculations (main authors of the app are Sophie Sun and Danyi
+	Xiong).
+
 2023-05-18 Bjoern Bornkamp (version 1.0-4)
       * Added non-exported function powMCTBinCount, for power calculation
 	for binary and count data.

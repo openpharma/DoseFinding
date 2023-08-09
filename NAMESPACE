@@ -1,4 +1,4 @@
-import(mvtnorm, lattice, ggplot2)
+import(mvtnorm, lattice, ggplot2, MASS)
 importFrom("grDevices", "rgb")
 importFrom("graphics", "lines", "plot", "points")
 importFrom("stats", "AIC", "IQR", "acf", "approx", "as.formula",
@@ -8,7 +8,7 @@ importFrom("stats", "AIC", "IQR", "acf", "approx", "as.formula",
            "sd", "terms", "uniroot", "var", "vcov")
 importFrom("utils", "setTxtProgressBar", "txtProgressBar", "browseURL")
 
-export(fitMod, defBnds, bFitMod, MCTtest, MCPMod,
+export(fitMod, defBnds, bFitMod, MCTtest, bMCTtest, MCPMod,
        betaMod, quadratic, emax, exponential,linear, linlog, logistic, sigEmax, linInt,
        betaModGrad, quadraticGrad, emaxGrad, exponentialGrad,
        linearGrad, linlogGrad, logisticGrad, sigEmaxGrad, linIntGrad,
@@ -33,6 +33,7 @@ S3method(vcov, DRMod)
 S3method(coef, DRMod)
 S3method(predict, DRMod)
 S3method(print, MCTtest)
+S3method(print, bMCTtest)
 S3method(print, DRdesign)
 S3method(plot, DRdesign)
 S3method(print, optContr)

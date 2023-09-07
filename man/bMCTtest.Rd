@@ -56,11 +56,6 @@ bMCTtest <- function (dose, resp, data = NULL, models, S = NULL, type = c("norma
     List of length equal to the number of doses with the prior for each arm. 
     Each element needs to be of class \samp{normMix} (See \samp{RBesT} package documentation).
   }
-  \item{critVal}{
-    Supply a critical value for the maximum posterior probability of the contrasts 
-    being greater (or less) than zero that needs to be surpassed to establish a non-flat dose-response. If this argument is NULL, 
-    this will be derived from critical values for frequentist MCP-Mod using the provided \samp{alpha}.
-  }
   \item{alpha}{
     Significance level for the frequentist multiple contrast test. 
     If no critical values are supplied via \samp{critV} this is used 
@@ -83,6 +78,11 @@ bMCTtest <- function (dose, resp, data = NULL, models, S = NULL, type = c("norma
     Contrast matrix to apply to the posterior dose-response estimates. The
     contrasts need to be in the columns of the matrix (i.e. the column
     sums need to be 0).   
+  }
+  \item{critV}{
+    Supply a critical value for the maximum posterior probability of the contrasts 
+    being greater (or less) than zero that needs to be surpassed to establish a non-flat dose-response. If this argument is NULL, 
+    this will be derived from critical values for frequentist MCP-Mod using the provided \samp{alpha}.
   }
 }
 \details{

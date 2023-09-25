@@ -66,7 +66,7 @@ bMCTtest <- function (dose, resp, data = NULL, models, S = NULL, type = c("norma
   
   ## calculate frequentist critical values if none supplied
   if(is.null(critV)){
-    critV <- DoseFinding:::critVal(corMat, alpha, df = Inf, alternative = "one.sided", mvtcontrol) ## using df = INF so values are derived using multivariate normal
+    critV <- critVal(corMat, alpha, df = Inf, alternative = "one.sided", mvtcontrol) ## using df = INF so values are derived using multivariate normal
     critV <- pnorm(critV)
     attr(critV, "Calc") <- TRUE
   }
@@ -218,9 +218,14 @@ print.bMCTtest <- function(x, digits = 3, eps = 1e-3, ...){
 #' @examples
 mvpostmix <- function(priormix, mu_hat, S_hat)
 {
+
+  logSumExp <- function(lx){
+    lm <- max(lx)
+    lm + log(sum(exp(lx - lm)))
+  }
   
-  dataPrec <- ginv(S_hat)
-  priorPrec <- lapply(priormix[[3]], ginv)
+  dataPrec <- solve(S_hat)
+  priorPrec <- lapply(priormix[[3]], solve)
   postPrec <- lapply(priorPrec, function(x) x + dataPrec)
   SigmaPred <- lapply(priormix[[3]], function(x) x + S_hat)
   
@@ -231,11 +236,11 @@ mvpostmix <- function(priormix, mu_hat, S_hat)
   
   for(i in 1:length(lw)){
     lw[i] <- log(priormix[[1]][[i]]) + dmvnorm(mu_hat, priormix[[2]][[i]], SigmaPred[[i]], log = TRUE)
-    postmix[[2]][[i]] <- ginv(priorPrec[[i]] + dataPrec) %*% (priorPrec[[i]] %*% priormix[[2]][[i]] + dataPrec %*% mu_hat)
-    postmix[[3]][[i]] <- ginv(priorPrec[[i]] + dataPrec)
+    postmix[[2]][[i]] <- solve(priorPrec[[i]] + dataPrec) %*% (priorPrec[[i]] %*% priormix[[2]][[i]] + dataPrec %*% mu_hat)
+    postmix[[3]][[i]] <- solve(priorPrec[[i]] + dataPrec)
   }
   
-  postmix[[1]] <- as.list(exp(lw - matrixStats::logSumExp(lw)))
+  postmix[[1]] <- as.list(exp(lw - logSumExp(lw)))
   
   postmix
 }

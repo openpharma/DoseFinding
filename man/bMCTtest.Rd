@@ -23,10 +23,10 @@
   the same results as the frequentist multiple contrast test if uninformative priors are used.
 }
 \usage{
-bMCTtest <- function (dose, resp, data = NULL, models, S = NULL, type = c("normal", "general"), 
-                      prior, alpha = 0.025, alternative = c("greater", "less"), na.action = na.fail,
-                      mvtcontrol = mvtnorm.control(), contMat = NULL,
-                      critV = NULL)
+bMCTtest(dose, resp, data = NULL, models, S = NULL, type = c("normal", "general"), 
+         prior, alpha = 0.025, alternative = c("greater", "less"), na.action = na.fail,
+         mvtcontrol = mvtnorm.control(), contMat = NULL,
+         critV = NULL)
 }
 \arguments{
     \item{dose, resp}{
@@ -173,9 +173,9 @@ covariate_adjusted_estimates <- function(mu_hat, S_hat, formula_rhs, doses, othe
   pdat <- cbind(oc_rep, dose = d_rep)
   X <- model.matrix(formula_rhs, pdat)
   ## average on probability scale then backtransform to logit scale
-  mu_star <- logit(tapply(inv_logit(X %*% mu_hat), pdat$dose, mean))
+  mu_star <- logit(tapply(inv_logit(X \%*\% mu_hat), pdat$dose, mean))
   ## estimate covariance matrix of mu_star
-  pred <- replicate(n_sim, logit(tapply(inv_logit(X %*% drop(rmvnorm(1, mu_hat, S_hat))),
+  pred <- replicate(n_sim, logit(tapply(inv_logit(X \%*\% drop(rmvnorm(1, mu_hat, S_hat))),
                                         pdat$dose, mean)))
   return(list(mu_star = as.numeric(mu_star), S_star = cov(t(pred))))
 }

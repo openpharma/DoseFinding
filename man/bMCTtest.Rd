@@ -24,9 +24,8 @@
 }
 \usage{
 bMCTtest(dose, resp, data = NULL, models, S = NULL, type = c("normal", "general"), 
-         prior, alpha = 0.025, alternative = c("greater", "less"), na.action = na.fail,
-         mvtcontrol = mvtnorm.control(), contMat = NULL,
-         critV = NULL)
+         prior, alpha = 0.025, na.action = na.fail, mvtcontrol = mvtnorm.control(), 
+         contMat = NULL, critV = NULL)
 }
 \arguments{
     \item{dose, resp}{
@@ -60,10 +59,6 @@ bMCTtest(dose, resp, data = NULL, models, S = NULL, type = c("normal", "general"
     Significance level for the frequentist multiple contrast test. 
     If no critical values are supplied via \samp{critV} this is used 
     to derive critical values for Bayesian decision rule.
-}
-  \item{alternative}{
-    Character determining the alternative for the multiple contrast
-    trend test. 
   }
   \item{na.action}{
     A function which indicates what should happen when
@@ -86,7 +81,7 @@ bMCTtest(dose, resp, data = NULL, models, S = NULL, type = c("normal", "general"
   }
 }
 \details{
-  For the default calculation of optimal contrasts the prior information is ignored (i.e. contrasts are caulcated 
+  For the default calculation of optimal contrasts the prior information is ignored (i.e. contrasts are calculated 
   in the same way as in \code{\link{MCTtest}}). 
   Fleischer et al. (2022) discuss using contrasts that take the prior effective sample sizes into account, which can be
   slightly more favourable for the Bayesian MCT test. Such alternative contrasts can be directly handed over via
@@ -95,7 +90,6 @@ bMCTtest(dose, resp, data = NULL, models, S = NULL, type = c("normal", "general"
   For analysis with covariate adjustment, covariate-adjusted \samp{resp} and \samp{S} can be supplied together
   with using \samp{type = "general"}. See the vignette
   "Design and analysis template MCP-Mod for binary data" for an example on how to obtain covariate adjusted estimates.
-  Adequate care nee
 }
 \value{
   An object of class bMCTtest, a list containing the output.

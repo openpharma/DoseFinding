@@ -15,13 +15,6 @@
   both for normal and general response variable.
 }
 \details{
-\tabular{ll}{
-Package: \tab DoseFinding\cr
-Type: \tab Package\cr
-Version: \tab 1.0-6\cr
-Date: \tab 2023-09-25\cr
-License: \tab GPL-3
-}
 The main functions are:\cr
 \bold{MCTtest}: Implements a multiple contrast tests\cr
 \bold{powMCT}: Power calculations for multiple contrast tests\cr

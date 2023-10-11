@@ -10,7 +10,6 @@
 #' @param critV Supply a critical value for the maximum posterior probability of the contrasts being greater (or less) than zero. If this argument is NULL, this will be calculated
 #' based on frequentist critical values.
 #' @param alpha Significance level for the frequentist multiple contrast test, that is used to derive critical values for Bayesian decision rule, if none supplied via critV.
-#' @param alternative Character determining the alternative for the multiple contrast trend test.
 #' @param na.action A function which indicates what should happen when the data contain NAs.
 #' @param mvtcontrol A list specifying additional control parameters for the qmvt and pmvt calls in the code, which are used to obtain critical values from frequentist MCP-Mod see also mvtnorm.control for details.
 #' @param contMat Contrast matrix to apply to the ANCOVA dose-response estimates. The contrasts need to be in the columns of the matrix (i.e. the column sums need to be 0). If no contrast matrix is supplied
@@ -21,9 +20,8 @@
 #'
 #' @examples
 bMCTtest <- function (dose, resp, data = NULL, models, S = NULL, type = c("normal", "general"), 
-                      prior, alpha = 0.025, alternative = c("greater", "less"), na.action = na.fail,
-                      mvtcontrol = mvtnorm.control(), contMat = NULL,
-                      critV = NULL) 
+                      prior, alpha = 0.025, na.action = na.fail, mvtcontrol = mvtnorm.control(),
+                      contMat = NULL, critV = NULL) 
 {
   type <- match.arg(type)
   alternative <- match.arg(alternative)

@@ -1,7 +1,7 @@
 2023-10-10 Bjoern Bornkamp (version 1.0-6)
       * Big thanks to Marius Thomas for adding the bMCTtest function,
-	implementing the Bayesian MCP-Mod methodology from
-	Fleischer et al (2022) (https://doi.org/10.1002/pst.2193)
+	implementing a generalized version of the Bayesian MCP-Mod
+	methodology from Fleischer et al (2022) (https://doi.org/10.1002/pst.2193)
       * Thanks to Sebastian Bossert for feedback on bMCTtest
       * Function critVal is now exported
 

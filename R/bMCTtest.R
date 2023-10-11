@@ -24,7 +24,6 @@ bMCTtest <- function (dose, resp, data = NULL, models, S = NULL, type = c("norma
                       contMat = NULL, critV = NULL) 
 {
   type <- match.arg(type)
-  alternative <- match.arg(alternative)
   cal <- as.character(match.call())
   
   lst <- checkAnalyArgs_bMCP(dose, resp, data, S, type, prior, na.action, cal)
@@ -98,17 +97,11 @@ bMCTtest <- function (dose, resp, data = NULL, models, S = NULL, type = c("norma
   den <- sqrt(do.call(cbind, lapply(den, diag)))
   tStat <- ct/den
   
-  if (alternative == "greater") {
-    dec_prob <- pnorm(tStat) %*% unlist(post_res[[1]])
-  }
-  else{
-    dec_prob <- pnorm(-tStat) %*% unlist(post_res[[1]])
-  }
+  dec_prob <- pnorm(tStat) %*% unlist(post_res[[1]])
   ## maxprob <- max(dec_prob)
   
   res <- list(contMat = contMat, corMat = corMat, tStat = tStat, 
-              alpha = alpha, alternative = alternative[1],
-              critVal = 1 -critV,
+              alpha = alpha, critVal = 1 -critV,
               posterior = post_res)
   attr(res$tStat, "pVal") <- dec_prob
   class(res) <- "bMCTtest"

@@ -98,7 +98,6 @@ bMCTtest <- function (dose, resp, data = NULL, models, S = NULL, type = c("norma
   tStat <- ct/den
   
   dec_prob <- pnorm(tStat) %*% unlist(post_res[[1]])
-  ## maxprob <- max(dec_prob)
   
   res <- list(contMat = contMat, corMat = corMat, tStat = tStat, 
               alpha = alpha, critVal = 1 -critV,
@@ -187,7 +186,7 @@ print.bMCTtest <- function(x, digits = 3, eps = 1e-3, ...){
 
   print(dfrm)
   if(!is.null(x$critVal)){
-    cat("\n","Critical value: ", round(1- x$critVal, digits), sep="")
+    cat("\n","Critical value (for maximum posterior probability): ", round(1- x$critVal, digits), sep="")
     if(attr(x$critVal, "Calc")){
       cat(" (alpha = ", x$alpha,", one-sided) \n", sep="")
     } else {
@@ -222,16 +221,26 @@ mvpostmix <- function(priormix, mu_hat, S_hat)
   
   lw <- numeric(length(priormix[[1]]))
   postmix <- vector("list", 3)
-  for(i in 1:length(postmix))
+  names(postmix) <- c("weights", "mean", "covmat")
+  for(i in 1:3)
     postmix[[i]] <- vector("list", length(lw))
   
+  ## The posterior distribution is a mixture of multivariate normals with updated mixture weights.
+  ## Posterior weights are updated based on the prior predictive (marginal) probabilities of the data under each
+  ## component of the mixture. 
+  ## In the case of a MVN likelihood with known covariance and MVN priors for the mean the 
+  ## prior predictive distributions are MVN distribution with mean vectors equal to the prior components' mean vectors 
+  ## and covariance matrices which are the sum of the prior components' covariance matrices and the "known" covariance 
+  ## matrix of the data (for which S_hat is plugged in here)
   for(i in 1:length(lw)){
     lw[i] <- log(priormix[[1]][[i]]) + dmvnorm(mu_hat, priormix[[2]][[i]], SigmaPred[[i]], log = TRUE)
     postmix[[2]][[i]] <- solve(priorPrec[[i]] + dataPrec) %*% (priorPrec[[i]] %*% priormix[[2]][[i]] + dataPrec %*% mu_hat)
     postmix[[3]][[i]] <- solve(priorPrec[[i]] + dataPrec)
   }
-  
   postmix[[1]] <- as.list(exp(lw - logSumExp(lw)))
   
-  postmix
+  for(i in 1:3)
+    names(postmix[[i]]) <- paste0("Comp", 1:length(lw))
+
+   postmix
 }

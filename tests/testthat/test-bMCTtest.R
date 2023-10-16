@@ -228,3 +228,19 @@ test_that("bMCTtest gives same results as RBesT two-sample analysis with informa
   mcp_bayes <- bMCTtest(x,y, dd, models=model, prior = prior)
   expect_equal(twoarm, pVal.bMCTtest(mcp_bayes))
 })
+
+test_that("bMCTtest gives same results as RBesT two-sample analysis with informative prior for both arms", {
+  require_rbest()
+  set.seed(24)
+  dd <- getDFdataSet_testsMCT()
+  ## only keep the highest and lowest dose
+  dd <- dd[dd$x %in% range(dd$x), ]
+  mD <- max(dd$x)
+  model <- Mods(linear = NULL, doses=sort(unique(dd$x)))
+  inf_prior_cont <- mixnorm(c(0.8, 0, 1), c(0.1, 1, 2), c(0.1, -1, 2))
+  inf_prior_trt <- mixnorm(c(0.5, 1, 1), c(0.3, 0.8, 2), c(0.2, 1.5, 2))
+  prior <- list(inf_prior_cont, inf_prior_trt)
+  twoarm <- twoarm_rbest(dd, prior[[1]], prior[[2]])
+  mcp_bayes <- bMCTtest(x,y, dd, models=model, prior = prior)
+  expect_equal(twoarm, pVal.bMCTtest(mcp_bayes))
+})

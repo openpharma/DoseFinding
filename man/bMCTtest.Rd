@@ -18,7 +18,7 @@
   Posteriors for dose-response and contrast vectors are then obtained assuming a known covariance matrix S
   
   The multiple contrast test decision is based on the maximum posterior probability of a contrast being 
-  greater (or smaller) than zero. Thresholds for the posterior probability can either be supplied or
+  greater than zero. Thresholds for the posterior probability can either be supplied or
   will be derived from frequentist critical values. In the latter case the Bayesian test will give approximately
   the same results as the frequentist multiple contrast test if uninformative priors are used.
 }
@@ -72,11 +72,13 @@ bMCTtest(dose, resp, data = NULL, models, S = NULL, type = c("normal", "general"
   \item{contMat}{
     Contrast matrix to apply to the posterior dose-response estimates. The
     contrasts need to be in the columns of the matrix (i.e. the column
-    sums need to be 0).   
+    sums need to be 0). If not specified optimal contrasts are
+    calculated using \code{\link{optContr}}.
+    
   }
   \item{critV}{
     Supply a critical value for the maximum posterior probability of the contrasts 
-    being greater (or less) than zero that needs to be surpassed to establish a non-flat dose-response. If this argument is NULL, 
+    being greater than zero that needs to be surpassed to establish a non-flat dose-response. If this argument is NULL, 
     this will be derived from critical values for frequentist MCP-Mod using the provided \samp{alpha}.
   }
 }
@@ -120,10 +122,11 @@ modlist <- Mods(emax = 0.05, linear = NULL, logistic = c(0.5, 0.1),
 ## specify an informative prior for placebo, weakly informative for other arms
 plc_prior <- mixnorm(inf = c(0.8, 0.4, 0.1), rob = c(0.2, 0.4, 10))
 vague_prior <- mixnorm(c(1, 0, 10))
+## one component of the list corresponds to each dose
 prior <- c(list(plc_prior), rep(list(vague_prior), length(unique(biom$dose)) - 1))
 
 m1 <- bMCTtest(dose, resp, biom, models=modlist, prior = prior)
-## now supply a critical value
+## now supply a critical value (= threshold for maxmimum posterior probability)
 m2 <- bMCTtest(dose, resp, biom, models=modlist, prior = prior, critV = 0.99)
 
 ####################################
@@ -184,7 +187,7 @@ bMCTtest(doses, ca$mu_star, S = ca$S_star, type = "general", models = mods, prio
 
 data(biom)
 ## define shapes for which to calculate optimal contrasts
-modlist <- Mods(emax = 0.05, linear = NULL, logistic = c(0.5, 0.1),
+modlist <- Mods(emax = 0.05, linear = NULL, sigEmax = c(0.5, 5),
                 linInt = c(0, 1, 1, 1), doses = c(0, 0.05, 0.2, 0.6, 1))
                 
 ## specify an informative prior for placebo, weakly informative for other arms

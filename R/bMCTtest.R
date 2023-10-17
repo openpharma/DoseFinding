@@ -58,11 +58,10 @@ bMCTtest <- function (dose, resp, data = NULL, models, S = NULL, type = c("norma
       stop("contMat of incorrect dimensions")
   }
   
-  covMat <- t(contMat) %*% vc %*% contMat
-  corMat <- cov2cor(covMat)
-  
   ## calculate frequentist critical values if none supplied
   if(is.null(critV)){
+    covMat <- t(contMat) %*% vc %*% contMat
+    corMat <- cov2cor(covMat)
     critV <- critVal(corMat, alpha, df = Inf, alternative = "one.sided", mvtcontrol) ## using df = INF so values are derived using multivariate normal
     critV <- pnorm(critV)
     attr(critV, "Calc") <- TRUE
@@ -99,8 +98,8 @@ bMCTtest <- function (dose, resp, data = NULL, models, S = NULL, type = c("norma
   
   dec_prob <- pnorm(tStat) %*% unlist(post_res[[1]])
   
-  res <- list(contMat = contMat, corMat = corMat, tStat = tStat, 
-              alpha = alpha, critVal = 1 -critV,
+  res <- list(contMat = contMat, tStat = tStat, 
+              alpha = alpha, critVal = 1 - critV,
               posterior = post_res)
   attr(res$tStat, "pVal") <- dec_prob
   class(res) <- "bMCTtest"
@@ -152,16 +151,17 @@ checkAnalyArgs_bMCP <- function (dose, resp, data, S, type, prior, na.action, ca
     if (nrow(S) != nD | ncol(S) != nD) 
       stop("S and dose have non-conforming size")
   }
-  if (length(unique(dd[[doseNam]])) != length(prior)) 
-    stop("Dose and prior have non-conforming size")
-  if (!all(unlist(lapply(prior, function(x) "normMix" %in% class(x))))) 
-    stop("Prior needs to be of class normMix")
-  
   ord <- order(dd[[doseNam]])
   dd <- dd[ord, ]
   Sout <- NULL
   if (type == "general") 
     Sout <- S[ord, ord]
+
+  if (length(unique(dd[[doseNam]])) != length(prior)) 
+    stop("Dose and prior have non-conforming size")
+  if (!all(unlist(lapply(prior, function(x) "normMix" %in% class(x))))) 
+    stop("priors need to be of class normMix")
+  
   return(list(dd = dd, type = type, S = Sout, ord = ord, doseNam = doseNam, 
               respNam = respNam))
 }
@@ -170,20 +170,17 @@ print.bMCTtest <- function(x, digits = 3, eps = 1e-3, ...){
   cat("Bayesian MCP-Mod\n")
   cat("\n","Contrasts:","\n", sep="")
   print(round(x$contMat, digits))
-  cat("\n","Contrast Correlation:","\n", sep="")
-  print(round(x$corMat, digits))
   cat("\n","Posterior Mixture Weights:","\n",sep="")
   w <- round(unlist(x$posterior[[1]]), digits = digits)
   names(w) <- paste("Comp.", 1:length(w))
   print(w)
-  cat("\n","Multiple Contrasts:","\n",sep="")
   ord <- rev(order(attr(x$tStat, "pVal")))
   pval <- format.pval(attr(x$tStat, "pVal"),
                       digits = digits, eps = eps)
-  dfrm <- data.frame(round(x$tStat, digits)[ord, ],
+  dfrm <- data.frame(round(x$tStat, digits)[ord, , drop = FALSE],
                      pval[ord])
-  names(dfrm) <- c(paste0("t-Stat (Comp. ", 1:ncol(x$tStat), ")"), "posterior probability")
-
+  names(dfrm) <- c(paste0("Comp. ", 1:ncol(x$tStat)), "posterior probability")
+  cat("\n","Bayesian t-statistics:","\n",sep="")
   print(dfrm)
   if(!is.null(x$critVal)){
     cat("\n","Critical value (for maximum posterior probability): ", round(1- x$critVal, digits), sep="")

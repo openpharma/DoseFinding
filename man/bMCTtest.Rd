@@ -53,7 +53,14 @@ bMCTtest(dose, resp, data = NULL, models, S = NULL, type = c("normal", "general"
   }
   \item{prior}{
     List of length equal to the number of doses with the prior for each arm. 
-    Each element needs to be of class \samp{normMix} (See \samp{RBesT} package documentation).
+    Each element needs to be of class \samp{normMix} (See \samp{RBesT}
+    package documentation). It is assumed that the first entry in the
+    list is the prior for the placebo group, the second entry the prior
+    for the second lowest dose and so on.
+    Internally the priors across the different arms are
+    combined (densities multiplied) assuming independence. The resulting
+    multivariate normal mixture prior will have as many components as
+    the product of the number of components of the individual mixture priors.
   }
   \item{alpha}{
     Significance level for the frequentist multiple contrast test. 
@@ -117,13 +124,14 @@ require(RBesT)
 
 data(biom)
 ## define shapes for which to calculate optimal contrasts
+doses <- c(0, 0.05, 0.2, 0.6, 1)
 modlist <- Mods(emax = 0.05, linear = NULL, logistic = c(0.5, 0.1),
-                linInt = c(0, 1, 1, 1), doses = c(0, 0.05, 0.2, 0.6, 1))
+                linInt = c(0, 1, 1, 1), doses = doses)
 ## specify an informative prior for placebo, weakly informative for other arms
 plc_prior <- mixnorm(inf = c(0.8, 0.4, 0.1), rob = c(0.2, 0.4, 10))
 vague_prior <- mixnorm(c(1, 0, 10))
 ## one component of the list corresponds to each dose
-prior <- c(list(plc_prior), rep(list(vague_prior), length(unique(biom$dose)) - 1))
+prior <- list(plc_prior, vague_prior, vague_prior, vague_prior, vague_prior)
 
 m1 <- bMCTtest(dose, resp, biom, models=modlist, prior = prior)
 ## now supply a critical value (= threshold for maxmimum posterior probability)
@@ -154,7 +162,7 @@ dat <- data.frame(y = rbinom(N, 1, prob),
 ## specify an informative prior for placebo (on logit scale), weakly informative for other arms                  
 plc_prior <- mixnorm(inf = c(0.8, -2, 0.5), rob = c(0.2, -2, 10))
 vague_prior <- mixnorm(c(1, 0, 10))
-prior <- c(list(plc_prior), rep(list(vague_prior), length(unique(biom$dose)) - 1))
+prior <- list(plc_prior, vague_prior, vague_prior, vague_prior, vague_prior)
 
 ## candidate models
 mods <- Mods(emax = c(0.25, 1), sigEmax = rbind(c(1, 3), c(2.5, 4)), betaMod = c(1.1, 1.1),
@@ -187,13 +195,14 @@ bMCTtest(doses, ca$mu_star, S = ca$S_star, type = "general", models = mods, prio
 
 data(biom)
 ## define shapes for which to calculate optimal contrasts
+doses <- c(0, 0.05, 0.2, 0.6, 1)
 modlist <- Mods(emax = 0.05, linear = NULL, sigEmax = c(0.5, 5),
-                linInt = c(0, 1, 1, 1), doses = c(0, 0.05, 0.2, 0.6, 1))
+                linInt = c(0, 1, 1, 1), doses = doses)
                 
 ## specify an informative prior for placebo, weakly informative for other arms
 plc_prior <- mixnorm(inf = c(0.8, 0.4, 0.1), rob = c(0.2, 0.4, 10), sigma = 0.7)
 vague_prior <- mixnorm(c(1, 0, 10), sigma = 0.7)
-prior <- c(list(plc_prior), rep(list(vague_prior), length(unique(biom$dose)) - 1))
+prior <- list(plc_prior, vague_prior, vague_prior, vague_prior, vague_prior)
 
 ## use prior effective sample sizes to calculate optimal contrasts
 prior_ess <- unlist(lapply(prior, ess))

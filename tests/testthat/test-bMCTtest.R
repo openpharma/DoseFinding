@@ -58,12 +58,16 @@ test_that("bMCTtest with uninformative prior produces same results as frequentis
   set.seed(23)
   dd <- getDFdataSet_testsMCT()
   mD <- max(dd$x)
+  nD <- length(unique(dd$x))
   lg1 <- guesst(c(0.3*mD, 0.4*mD), c(0.3, 0.9), "logistic")
   lg2 <- guesst(c(0.3*mD, 0.4*mD), c(0.3, 0.5), "logistic")
   expo <- guesst(c(0.9*mD), c(0.7), "exponential", Maxd=mD)
   quad <- guesst(c(0.6*mD), c(1), "quadratic")
   noninf_prior <- mixnorm(c(1, 0, 10000))
-  prior <- rep(list(noninf_prior), length(unique(dd$x)))
+  prior <- vector("list", nD)
+  for(i in 1:nD)
+    prior[[i]] <- noninf_prior
+  
   models <- Mods(linlog = NULL, logistic = rbind(lg1, lg2),
                  exponential = expo, quadratic = quad,
                  doses = dd$x, addArgs=list(off = 0.2*max(dd$x)))
@@ -78,12 +82,14 @@ test_that("bMCTtest works with contrast matrix handed over and produces same res
   set.seed(23)
   dd <- getDFdataSet_testsMCT()
   mD <- max(dd$x)
+  nD <- length(unique(dd$x))
   lg1 <- guesst(c(0.3*mD, 0.4*mD), c(0.3, 0.9), "logistic")
   lg2 <- guesst(c(0.3*mD, 0.4*mD), c(0.3, 0.5), "logistic")
   expo <- guesst(c(0.9*mD), c(0.7), "exponential", Maxd=mD)
   quad <- guesst(c(0.6*mD), c(1), "quadratic")
-  noninf_prior <- mixnorm(c(1, 0, 10000))
-  prior <- prior <- rep(list(noninf_prior), length(unique(dd$x)))
+  prior <- vector("list", nD)
+  for(i in 1:nD)
+    prior[[i]] <- mixnorm(c(1, 0, 10000))
   models <- Mods(linlog = NULL, logistic = rbind(lg1, lg2),
                  exponential = expo, quadratic = quad,
                  doses = dd$x, addArgs=list(off = 0.2*max(dd$x)))
@@ -106,8 +112,9 @@ test_that("bMCTtest works with binary data (1)", {
   dePar <- coef(logReg)
   vCov <- vcov(logReg)
   dose <- sort(unique(dd$x))
-  noninf_prior <- mixnorm(c(1, 0, 10000))
-  prior <- prior <- rep(list(noninf_prior), length(unique(dd$x)))
+  prior <- vector("list", length(dose))
+  for(i in 1:length(unique(dd$x)))
+    prior[[i]] <- mixnorm(c(1, 0, 10000))
   mcp_freq <- MCTtest(dose, dePar, S=vCov, models=models, type = "general", df = Inf, critV = TRUE)
   mcp_bayes <- bMCTtest(dose, dePar, S=vCov, models=models, prior = prior, type = "general")
   expect_equal(tstat(mcp_freq), tstat(mcp_bayes), tolerance = 0.001)
@@ -127,8 +134,9 @@ test_that("MCTtest works with binary data (2)", {
   dePar <- coef(logReg)
   vCov <- vcov(logReg)
   dose <- sort(unique(dd$x))
-  noninf_prior <- mixnorm(c(1, 0, 10000))
-  prior <- prior <- rep(list(noninf_prior), length(unique(dd$x)))
+  prior <- vector("list", length(dose))
+  for(i in 1:length(dose))
+    prior[[i]] <- mixnorm(c(1, 0, 10000))
   mcp_freq <- MCTtest(dose, dePar, S=vCov, models=models, type = "general", df = Inf, critV = TRUE)
   mcp_bayes <- bMCTtest(dose, dePar, S=vCov, models=models, prior = prior, type = "general")
   expect_equal(tstat(mcp_freq), tstat(mcp_bayes), tolerance = 0.001)
@@ -148,8 +156,9 @@ test_that("MCTtest works with binary data (3)", {
   dePar <- coef(logReg)
   vCov <- vcov(logReg)
   dose <- sort(unique(dd$x))
-  noninf_prior <- mixnorm(c(1, 0, 10000))
-  prior <- prior <- rep(list(noninf_prior), length(unique(dd$x)))
+  prior <- vector("list", length(dose))
+  for(i in 1:length(dose))
+    prior[[i]] <- mixnorm(c(1, 0, 10000))
   mcp_freq <- MCTtest(dose, dePar, S=vCov, models=models, type = "general", df = Inf, critV = TRUE)
   mcp_bayes <- bMCTtest(dose, dePar, S=vCov, models=models, prior = prior, type = "general")
   expect_equal(tstat(mcp_freq), tstat(mcp_bayes), tolerance = 0.001)
@@ -165,8 +174,9 @@ test_that("a one-dimensional test works", {
   dePar <- coef(logReg)
   vCov <- vcov(logReg)
   dose <- sort(unique(dd$x))
-  noninf_prior <- mixnorm(c(1, 0, 10000))
-  prior <- prior <- rep(list(noninf_prior), length(unique(dd$x)))
+  prior <- vector("list", length(dose))
+  for(i in 1:length(dose))
+    prior[[i]] <- mixnorm(c(1, 0, 10000))
   mcp_freq <- expect_warning(MCTtest(dose, dePar, S=vCov, models=model, type = "general", critV = TRUE, df=Inf),
                  "univariate: using pnorm")
   mcp_bayes <- bMCTtest(dose, dePar, S=vCov, models=model, type = "general", prior = prior)
@@ -185,7 +195,9 @@ test_that("unordered values in MCTtest work (unadjusted scale)", {
   vc <- vcov(ancMod)
   doses <- 0:4
   noninf_prior <- mixnorm(c(1, 0, 10000))
-  prior <- prior <- rep(list(noninf_prior), length(unique(doses)))
+  prior <- vector("list", length(doses))
+  for(i in 1:length(doses))
+    prior[[i]] <- mixnorm(c(1, 0, 10000))
   bnds <- defBnds(max(doses))$sigEmax
   test_orig <- bMCTtest(doses, drEst, S = vc, models = modlist, type = "general", prior = prior)
   ord <- c(3,4,1,2,5)
@@ -205,8 +217,7 @@ test_that("bMCTtest gives same results as RBesT two-sample analysis with non-inf
   dd <- dd[dd$x %in% range(dd$x), ]
   mD <- max(dd$x)
   model <- Mods(linear = NULL, doses=sort(unique(dd$x)))
-  noninf_prior <- mixnorm(c(1, 0, 1000))
-  prior <- rep(list(noninf_prior), length(unique(dd$x)))
+  prior <- list(mixnorm(c(1, 0, 1000)), mixnorm(c(1, 0, 1000)))
   twoarm <- twoarm_rbest(dd, prior[[1]], prior[[2]])
   mcp_bayes <- bMCTtest(x,y, dd, models=model, prior = prior)
   expect_equal(twoarm, pVal.bMCTtest(mcp_bayes))
@@ -243,4 +254,22 @@ test_that("bMCTtest gives same results as RBesT two-sample analysis with informa
   twoarm <- twoarm_rbest(dd, prior[[1]], prior[[2]])
   mcp_bayes <- bMCTtest(x,y, dd, models=model, prior = prior)
   expect_equal(twoarm, pVal.bMCTtest(mcp_bayes))
+})
+
+test_that("Error message for incorrect prior arguments", {
+  data(biom)
+  ## define shapes for which to calculate optimal contrasts
+  doses <- c(0, 0.05, 0.2, 0.6, 1)
+  modlist <- Mods(emax = 0.05, linear = NULL, logistic = c(0.5, 0.1),
+                  linInt = c(0, 1, 1, 1), doses = doses)
+  ## specify an informative prior for placebo, weakly informative for other arms
+  plc_prior <- mixnorm(inf = c(0.8, 0.4, 0.1), rob = c(0.2, 0.4, 10))
+  vague_prior <- mixnorm(c(1, 0, 10))
+  ## one component of the list corresponds to each dose
+  prior1 <- list(plc_prior, vague_prior)
+  prior2 <- list(plc_prior, "foo", "foo", "foo", "foo")
+  expect_error(bMCTtest(dose, resp, biom, models=modlist, prior = prior1),
+               "Dose and prior have non-conforming size")
+  expect_error(bMCTtest(dose, resp, biom, models=modlist, prior = prior2),
+               "priors need to be of class normMix")
 })

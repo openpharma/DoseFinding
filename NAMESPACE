@@ -1,4 +1,4 @@
-import(mvtnorm, lattice, ggplot2, MASS)
+import(mvtnorm, lattice, ggplot2)
 importFrom("grDevices", "rgb")
 importFrom("graphics", "lines", "plot", "points")
 importFrom("stats", "AIC", "IQR", "acf", "approx", "as.formula",
@@ -13,7 +13,7 @@ export(fitMod, defBnds, bFitMod, MCTtest, bMCTtest, MCPMod,
        betaModGrad, quadraticGrad, emaxGrad, exponentialGrad,
        linearGrad, linlogGrad, logisticGrad, sigEmaxGrad, linIntGrad,
        Mods, getResp, TD, ED, plotMods,
-       guesst, MCTtest, MCTpval, gAIC,
+       guesst, MCTtest, MCTpval, critVal, mvpostmix, gAIC,
        mvtnorm.control, 
        optContr, plotContr,
        powMCT, sampSize, sampSizeMCT, targN, powN, planMod,

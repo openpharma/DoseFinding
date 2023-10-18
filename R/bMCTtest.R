@@ -10,7 +10,6 @@
 #' @param critV Supply a critical value for the maximum posterior probability of the contrasts being greater (or less) than zero. If this argument is NULL, this will be calculated
 #' based on frequentist critical values.
 #' @param alpha Significance level for the frequentist multiple contrast test, that is used to derive critical values for Bayesian decision rule, if none supplied via critV.
-#' @param alternative Character determining the alternative for the multiple contrast trend test.
 #' @param na.action A function which indicates what should happen when the data contain NAs.
 #' @param mvtcontrol A list specifying additional control parameters for the qmvt and pmvt calls in the code, which are used to obtain critical values from frequentist MCP-Mod see also mvtnorm.control for details.
 #' @param contMat Contrast matrix to apply to the ANCOVA dose-response estimates. The contrasts need to be in the columns of the matrix (i.e. the column sums need to be 0). If no contrast matrix is supplied
@@ -21,12 +20,10 @@
 #'
 #' @examples
 bMCTtest <- function (dose, resp, data = NULL, models, S = NULL, type = c("normal", "general"), 
-                      prior, alpha = 0.025, alternative = c("greater", "less"), na.action = na.fail,
-                      mvtcontrol = mvtnorm.control(), contMat = NULL,
-                      critV = NULL) 
+                      prior, alpha = 0.025, na.action = na.fail, mvtcontrol = mvtnorm.control(),
+                      contMat = NULL, critV = NULL) 
 {
   type <- match.arg(type)
-  alternative <- match.arg(alternative)
   cal <- as.character(match.call())
   
   lst <- checkAnalyArgs_bMCP(dose, resp, data, S, type, prior, na.action, cal)
@@ -61,12 +58,11 @@ bMCTtest <- function (dose, resp, data = NULL, models, S = NULL, type = c("norma
       stop("contMat of incorrect dimensions")
   }
   
-  covMat <- t(contMat) %*% vc %*% contMat
-  corMat <- cov2cor(covMat)
-  
   ## calculate frequentist critical values if none supplied
   if(is.null(critV)){
-    critV <- DoseFinding:::critVal(corMat, alpha, df = Inf, alternative = "one.sided", mvtcontrol) ## using df = INF so values are derived using multivariate normal
+    covMat <- t(contMat) %*% vc %*% contMat
+    corMat <- cov2cor(covMat)
+    critV <- critVal(corMat, alpha, df = Inf, alternative = "one.sided", mvtcontrol) ## using df = INF so values are derived using multivariate normal
     critV <- pnorm(critV)
     attr(critV, "Calc") <- TRUE
   }
@@ -100,17 +96,10 @@ bMCTtest <- function (dose, resp, data = NULL, models, S = NULL, type = c("norma
   den <- sqrt(do.call(cbind, lapply(den, diag)))
   tStat <- ct/den
   
-  if (alternative == "greater") {
-    dec_prob <- pnorm(tStat) %*% unlist(post_res[[1]])
-  }
-  else{
-    dec_prob <- pnorm(-tStat) %*% unlist(post_res[[1]])
-  }
-  ## maxprob <- max(dec_prob)
+  dec_prob <- pnorm(tStat) %*% unlist(post_res[[1]])
   
-  res <- list(contMat = contMat, corMat = corMat, tStat = tStat, 
-              alpha = alpha, alternative = alternative[1],
-              critVal = 1 -critV,
+  res <- list(contMat = contMat, tStat = tStat, 
+              alpha = alpha, critVal = 1 - critV,
               posterior = post_res)
   attr(res$tStat, "pVal") <- dec_prob
   class(res) <- "bMCTtest"
@@ -162,16 +151,17 @@ checkAnalyArgs_bMCP <- function (dose, resp, data, S, type, prior, na.action, ca
     if (nrow(S) != nD | ncol(S) != nD) 
       stop("S and dose have non-conforming size")
   }
-  if (length(unique(dd[[doseNam]])) != length(prior)) 
-    stop("Dose and prior have non-conforming size")
-  if (!all(unlist(lapply(prior, function(x) "normMix" %in% class(x))))) 
-    stop("Prior needs to be of class normMix")
-  
   ord <- order(dd[[doseNam]])
   dd <- dd[ord, ]
   Sout <- NULL
   if (type == "general") 
     Sout <- S[ord, ord]
+
+  if (length(unique(dd[[doseNam]])) != length(prior)) 
+    stop("Dose and prior have non-conforming size")
+  if (!all(unlist(lapply(prior, function(x) "normMix" %in% class(x))))) 
+    stop("priors need to be of class normMix")
+  
   return(list(dd = dd, type = type, S = Sout, ord = ord, doseNam = doseNam, 
               respNam = respNam))
 }
@@ -180,23 +170,20 @@ print.bMCTtest <- function(x, digits = 3, eps = 1e-3, ...){
   cat("Bayesian MCP-Mod\n")
   cat("\n","Contrasts:","\n", sep="")
   print(round(x$contMat, digits))
-  cat("\n","Contrast Correlation:","\n", sep="")
-  print(round(x$corMat, digits))
   cat("\n","Posterior Mixture Weights:","\n",sep="")
   w <- round(unlist(x$posterior[[1]]), digits = digits)
   names(w) <- paste("Comp.", 1:length(w))
   print(w)
-  cat("\n","Multiple Contrasts:","\n",sep="")
   ord <- rev(order(attr(x$tStat, "pVal")))
   pval <- format.pval(attr(x$tStat, "pVal"),
                       digits = digits, eps = eps)
-  dfrm <- data.frame(round(x$tStat, digits)[ord, ],
+  dfrm <- data.frame(round(x$tStat, digits)[ord, , drop = FALSE],
                      pval[ord])
-  names(dfrm) <- c(paste0("t-Stat (Comp. ", 1:ncol(x$tStat), ")"), "posterior probability")
-
+  names(dfrm) <- c(paste0("Comp. ", 1:ncol(x$tStat)), "posterior probability")
+  cat("\n","Bayesian t-statistics:","\n",sep="")
   print(dfrm)
   if(!is.null(x$critVal)){
-    cat("\n","Critical value: ", round(1- x$critVal, digits), sep="")
+    cat("\n","Critical value (for maximum posterior probability): ", round(1- x$critVal, digits), sep="")
     if(attr(x$critVal, "Calc")){
       cat(" (alpha = ", x$alpha,", one-sided) \n", sep="")
     } else {
@@ -218,24 +205,39 @@ print.bMCTtest <- function(x, digits = 3, eps = 1e-3, ...){
 #' @examples
 mvpostmix <- function(priormix, mu_hat, S_hat)
 {
+
+  logSumExp <- function(lx){
+    lm <- max(lx)
+    lm + log(sum(exp(lx - lm)))
+  }
   
-  dataPrec <- ginv(S_hat)
-  priorPrec <- lapply(priormix[[3]], ginv)
+  dataPrec <- solve(S_hat)
+  priorPrec <- lapply(priormix[[3]], solve)
   postPrec <- lapply(priorPrec, function(x) x + dataPrec)
   SigmaPred <- lapply(priormix[[3]], function(x) x + S_hat)
   
   lw <- numeric(length(priormix[[1]]))
   postmix <- vector("list", 3)
-  for(i in 1:length(postmix))
+  names(postmix) <- c("weights", "mean", "covmat")
+  for(i in 1:3)
     postmix[[i]] <- vector("list", length(lw))
   
+  ## The posterior distribution is a mixture of multivariate normals with updated mixture weights.
+  ## Posterior weights are updated based on the prior predictive (marginal) probabilities of the data under each
+  ## component of the mixture. 
+  ## In the case of a MVN likelihood with known covariance and MVN priors for the mean the 
+  ## prior predictive distributions are MVN distribution with mean vectors equal to the prior components' mean vectors 
+  ## and covariance matrices which are the sum of the prior components' covariance matrices and the "known" covariance 
+  ## matrix of the data (for which S_hat is plugged in here)
   for(i in 1:length(lw)){
     lw[i] <- log(priormix[[1]][[i]]) + dmvnorm(mu_hat, priormix[[2]][[i]], SigmaPred[[i]], log = TRUE)
-    postmix[[2]][[i]] <- ginv(priorPrec[[i]] + dataPrec) %*% (priorPrec[[i]] %*% priormix[[2]][[i]] + dataPrec %*% mu_hat)
-    postmix[[3]][[i]] <- ginv(priorPrec[[i]] + dataPrec)
+    postmix[[2]][[i]] <- solve(priorPrec[[i]] + dataPrec) %*% (priorPrec[[i]] %*% priormix[[2]][[i]] + dataPrec %*% mu_hat)
+    postmix[[3]][[i]] <- solve(priorPrec[[i]] + dataPrec)
   }
+  postmix[[1]] <- as.list(exp(lw - logSumExp(lw)))
   
-  postmix[[1]] <- as.list(exp(lw - matrixStats::logSumExp(lw)))
-  
-  postmix
+  for(i in 1:3)
+    names(postmix[[i]]) <- paste0("Comp", 1:length(lw))
+
+   postmix
 }

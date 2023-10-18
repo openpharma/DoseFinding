@@ -1,3 +1,10 @@
+2023-10-18 Bjoern Bornkamp (version 1.1-1)
+      * Big thanks to Marius Thomas for adding the bMCTtest function,
+	implementing a generalized version of the Bayesian MCP-Mod
+	methodology from Fleischer et al (2022) (https://doi.org/10.1002/pst.2193)
+      * Thanks to Sebastian Bossert for feedback on bMCTtest
+      * Function critVal is now exported
+
 2023-06-27 Bjoern Bornkamp (version 1.0-5)
       * Fixed bug in non-exported function powMCTBinCount, for situation
 	when user defined contrast matrix is handed over.

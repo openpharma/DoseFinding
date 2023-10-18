@@ -18,15 +18,14 @@
   Posteriors for dose-response and contrast vectors are then obtained assuming a known covariance matrix S
   
   The multiple contrast test decision is based on the maximum posterior probability of a contrast being 
-  greater (or smaller) than zero. Thresholds for the posterior probability can either be supplied or
+  greater than zero. Thresholds for the posterior probability can either be supplied or
   will be derived from frequentist critical values. In the latter case the Bayesian test will give approximately
   the same results as the frequentist multiple contrast test if uninformative priors are used.
 }
 \usage{
-bMCTtest <- function (dose, resp, data = NULL, models, S = NULL, type = c("normal", "general"), 
-                      prior, alpha = 0.025, alternative = c("greater", "less"), na.action = na.fail,
-                      mvtcontrol = mvtnorm.control(), contMat = NULL,
-                      critV = NULL)
+bMCTtest(dose, resp, data = NULL, models, S = NULL, type = c("normal", "general"), 
+         prior, alpha = 0.025, na.action = na.fail, mvtcontrol = mvtnorm.control(), 
+         contMat = NULL, critV = NULL)
 }
 \arguments{
     \item{dose, resp}{
@@ -54,16 +53,19 @@ bMCTtest <- function (dose, resp, data = NULL, models, S = NULL, type = c("norma
   }
   \item{prior}{
     List of length equal to the number of doses with the prior for each arm. 
-    Each element needs to be of class \samp{normMix} (See \samp{RBesT} package documentation).
+    Each element needs to be of class \samp{normMix} (See \samp{RBesT}
+    package documentation). It is assumed that the first entry in the
+    list is the prior for the placebo group, the second entry the prior
+    for the second lowest dose and so on.
+    Internally the priors across the different arms are
+    combined (densities multiplied) assuming independence. The resulting
+    multivariate normal mixture prior will have as many components as
+    the product of the number of components of the individual mixture priors.
   }
   \item{alpha}{
     Significance level for the frequentist multiple contrast test. 
     If no critical values are supplied via \samp{critV} this is used 
     to derive critical values for Bayesian decision rule.
-}
-  \item{alternative}{
-    Character determining the alternative for the multiple contrast
-    trend test. 
   }
   \item{na.action}{
     A function which indicates what should happen when
@@ -77,16 +79,18 @@ bMCTtest <- function (dose, resp, data = NULL, models, S = NULL, type = c("norma
   \item{contMat}{
     Contrast matrix to apply to the posterior dose-response estimates. The
     contrasts need to be in the columns of the matrix (i.e. the column
-    sums need to be 0).   
+    sums need to be 0). If not specified optimal contrasts are
+    calculated using \code{\link{optContr}}.
+    
   }
   \item{critV}{
     Supply a critical value for the maximum posterior probability of the contrasts 
-    being greater (or less) than zero that needs to be surpassed to establish a non-flat dose-response. If this argument is NULL, 
+    being greater than zero that needs to be surpassed to establish a non-flat dose-response. If this argument is NULL, 
     this will be derived from critical values for frequentist MCP-Mod using the provided \samp{alpha}.
   }
 }
 \details{
-  For the default calculation of optimal contrasts the prior information is ignored (i.e. contrasts are caulcated 
+  For the default calculation of optimal contrasts the prior information is ignored (i.e. contrasts are calculated 
   in the same way as in \code{\link{MCTtest}}). 
   Fleischer et al. (2022) discuss using contrasts that take the prior effective sample sizes into account, which can be
   slightly more favourable for the Bayesian MCT test. Such alternative contrasts can be directly handed over via
@@ -95,7 +99,6 @@ bMCTtest <- function (dose, resp, data = NULL, models, S = NULL, type = c("norma
   For analysis with covariate adjustment, covariate-adjusted \samp{resp} and \samp{S} can be supplied together
   with using \samp{type = "general"}. See the vignette
   "Design and analysis template MCP-Mod for binary data" for an example on how to obtain covariate adjusted estimates.
-  Adequate care nee
 }
 \value{
   An object of class bMCTtest, a list containing the output.
@@ -121,15 +124,17 @@ require(RBesT)
 
 data(biom)
 ## define shapes for which to calculate optimal contrasts
+doses <- c(0, 0.05, 0.2, 0.6, 1)
 modlist <- Mods(emax = 0.05, linear = NULL, logistic = c(0.5, 0.1),
-                linInt = c(0, 1, 1, 1), doses = c(0, 0.05, 0.2, 0.6, 1))
+                linInt = c(0, 1, 1, 1), doses = doses)
 ## specify an informative prior for placebo, weakly informative for other arms
 plc_prior <- mixnorm(inf = c(0.8, 0.4, 0.1), rob = c(0.2, 0.4, 10))
 vague_prior <- mixnorm(c(1, 0, 10))
-prior <- c(list(plc_prior), rep(list(vague_prior), length(unique(biom$dose)) - 1))
+## one component of the list corresponds to each dose
+prior <- list(plc_prior, vague_prior, vague_prior, vague_prior, vague_prior)
 
 m1 <- bMCTtest(dose, resp, biom, models=modlist, prior = prior)
-## now supply a critical value
+## now supply a critical value (= threshold for maxmimum posterior probability)
 m2 <- bMCTtest(dose, resp, biom, models=modlist, prior = prior, critV = 0.99)
 
 ####################################
@@ -157,7 +162,7 @@ dat <- data.frame(y = rbinom(N, 1, prob),
 ## specify an informative prior for placebo (on logit scale), weakly informative for other arms                  
 plc_prior <- mixnorm(inf = c(0.8, -2, 0.5), rob = c(0.2, -2, 10))
 vague_prior <- mixnorm(c(1, 0, 10))
-prior <- c(list(plc_prior), rep(list(vague_prior), length(unique(biom$dose)) - 1))
+prior <- list(plc_prior, vague_prior, vague_prior, vague_prior, vague_prior)
 
 ## candidate models
 mods <- Mods(emax = c(0.25, 1), sigEmax = rbind(c(1, 3), c(2.5, 4)), betaMod = c(1.1, 1.1),
@@ -173,9 +178,9 @@ covariate_adjusted_estimates <- function(mu_hat, S_hat, formula_rhs, doses, othe
   pdat <- cbind(oc_rep, dose = d_rep)
   X <- model.matrix(formula_rhs, pdat)
   ## average on probability scale then backtransform to logit scale
-  mu_star <- logit(tapply(inv_logit(X %*% mu_hat), pdat$dose, mean))
+  mu_star <- logit(tapply(inv_logit(X \%*\% mu_hat), pdat$dose, mean))
   ## estimate covariance matrix of mu_star
-  pred <- replicate(n_sim, logit(tapply(inv_logit(X %*% drop(rmvnorm(1, mu_hat, S_hat))),
+  pred <- replicate(n_sim, logit(tapply(inv_logit(X \%*\% drop(rmvnorm(1, mu_hat, S_hat))),
                                         pdat$dose, mean)))
   return(list(mu_star = as.numeric(mu_star), S_star = cov(t(pred))))
 }
@@ -190,13 +195,14 @@ bMCTtest(doses, ca$mu_star, S = ca$S_star, type = "general", models = mods, prio
 
 data(biom)
 ## define shapes for which to calculate optimal contrasts
-modlist <- Mods(emax = 0.05, linear = NULL, logistic = c(0.5, 0.1),
-                linInt = c(0, 1, 1, 1), doses = c(0, 0.05, 0.2, 0.6, 1))
+doses <- c(0, 0.05, 0.2, 0.6, 1)
+modlist <- Mods(emax = 0.05, linear = NULL, sigEmax = c(0.5, 5),
+                linInt = c(0, 1, 1, 1), doses = doses)
                 
 ## specify an informative prior for placebo, weakly informative for other arms
 plc_prior <- mixnorm(inf = c(0.8, 0.4, 0.1), rob = c(0.2, 0.4, 10), sigma = 0.7)
 vague_prior <- mixnorm(c(1, 0, 10), sigma = 0.7)
-prior <- c(list(plc_prior), rep(list(vague_prior), length(unique(biom$dose)) - 1))
+prior <- list(plc_prior, vague_prior, vague_prior, vague_prior, vague_prior)
 
 ## use prior effective sample sizes to calculate optimal contrasts
 prior_ess <- unlist(lapply(prior, ess))

@@ -54,13 +54,16 @@ bMCTtest(dose, resp, data = NULL, models, S = NULL, type = c("normal", "general"
   \item{prior}{
     List of length equal to the number of doses with the prior for each arm. 
     Each element needs to be of class \samp{normMix} (See \samp{RBesT}
-    package documentation). It is assumed that the first entry in the
-    list is the prior for the placebo group, the second entry the prior
-    for the second lowest dose and so on.
+    package documentation). It is assumed that the i-th component of the
+    prior list corresponds to the i-th largest dose. For example the first
+    entry in the list is the prior for the placebo group, the second
+    entry the prior for the second lowest dose and so on.
     Internally the priors across the different arms are
     combined (densities multiplied) assuming independence. The resulting
     multivariate normal mixture prior will have as many components as
-    the product of the number of components of the individual mixture priors.
+    the product of the number of components of the individual mixture
+    priors. The posterior mixture is part of the result object under
+    "posterior".
   }
   \item{alpha}{
     Significance level for the frequentist multiple contrast test. 
@@ -81,7 +84,6 @@ bMCTtest(dose, resp, data = NULL, models, S = NULL, type = c("normal", "general"
     contrasts need to be in the columns of the matrix (i.e. the column
     sums need to be 0). If not specified optimal contrasts are
     calculated using \code{\link{optContr}}.
-    
   }
   \item{critV}{
     Supply a critical value for the maximum posterior probability of the contrasts 
@@ -130,7 +132,8 @@ modlist <- Mods(emax = 0.05, linear = NULL, logistic = c(0.5, 0.1),
 ## specify an informative prior for placebo, weakly informative for other arms
 plc_prior <- mixnorm(inf = c(0.8, 0.4, 0.1), rob = c(0.2, 0.4, 10))
 vague_prior <- mixnorm(c(1, 0, 10))
-## one component of the list corresponds to each dose
+## i-th component of the prior list corresponds to the i-th largest dose
+## (e.g. 1st component -> placebo prior; last component prior for top dose)
 prior <- list(plc_prior, vague_prior, vague_prior, vague_prior, vague_prior)
 
 m1 <- bMCTtest(dose, resp, biom, models=modlist, prior = prior)

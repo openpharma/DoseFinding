@@ -174,7 +174,8 @@ mods <- Mods(emax = c(0.25, 1), sigEmax = rbind(c(1, 3), c(2.5, 4)), betaMod = c
 
 fit_cov <- glm(y~factor(dose) + 0 + x1 + x2, data = dat, family = binomial)
 
-covariate_adjusted_estimates <- function(mu_hat, S_hat, formula_rhs, doses, other_covariates, n_sim) {
+covariate_adjusted_estimates <- function(mu_hat, S_hat, formula_rhs,
+                                         doses, other_covariates, n_sim) {
   ## predict every patient under *every* dose
   oc_rep <- as.data.frame(lapply(other_covariates, function(col) rep(col, times = length(doses))))
   d_rep <- rep(doses, each = nrow(other_covariates))

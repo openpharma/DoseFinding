@@ -2,7 +2,7 @@ Package: DoseFinding
 Type: Package
 Title: Planning and Analyzing Dose Finding Experiments
 Version: 1.1-1
-Date: 2023-10-19
+Date: 2023-10-31
 Authors@R: c(
    person("Bjoern", "Bornkamp", email = "bjoern.bornkamp@novartis.com", comment = c(ORCID = "0000-0002-6294-8185"), role = c("aut", "cre")),
    person("Jose", "Pinheiro", role = "aut"),
@@ -11,7 +11,7 @@ Authors@R: c(
    person("Marius", "Thomas", role = "aut"))
 Depends: ggplot2, lattice, mvtnorm, R (>= 2.15.0)
 Suggests: numDeriv, Rsolnp, quadprog, parallel, multcomp, knitr, rmarkdown, MASS, testthat, RBesT
-Maintainer: Bjoern Bornkamp <bbnkmp@mail.de>
+Maintainer: Bjoern Bornkamp <bjoern.bornkamp@novartis.com>
 Description: The DoseFinding package provides functions for the design and analysis
 	     of dose-finding experiments (with focus on pharmaceutical Phase
 	     II clinical trials). It provides functions for: multiple contrast

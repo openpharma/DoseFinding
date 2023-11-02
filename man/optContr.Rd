@@ -54,16 +54,18 @@ plotContr(optContrObj, xlab = "Dose",
   contrasts. Exactly one of \samp{w} and \samp{S} has
   to be specified. Note that \samp{w} and \samp{S} only have to be
   specified up to proportionality \cr
-  \itemize{
+  \describe{
     \item{w}{
       Vector specifying weights for the different doses,
       in the formula for calculation of the optimal contrasts. Specifying a weights
       vector is equivalent to specifying S=diag(1/w)
       (e.g. in a homoscedastic case with unequal sample sizes,
-      \samp{w} should be proportional to the group sample sizes).}
-    \item{S}
-    {Directly specify a matrix proportional to the covariance
-    matrix to use.}
+      \samp{w} should be proportional to the group sample sizes).
+    }
+    \item{S}{
+      Directly specify a matrix proportional to the covariance
+      matrix to use.
+    }
   }
 }
 \item{placAdj}{

@@ -1,6 +1,112 @@
 ## here the multiple contrast test related functions
 
-## performs multiple contrast test (MCP part of MCPMod)
+#' Performs multiple contrast test
+#'
+#' This function performs a multiple contrast test. The contrasts are either directly specified in \samp{contMat} or
+#' optimal contrasts derived from the \samp{models} argument. The directionality of the data (i.e. whether an increase
+#' or decrease in the response variable is beneficial is inferred from the \samp{models} object, see
+#' \code{\link{Mods}}).
+#'
+#' For \samp{type = "normal"} an ANCOVA model based on a homoscedastic normality assumption (with additive covariates
+#' specified in \samp{addCovars}) is fitted.
+#'
+#' For \samp{type = "general"} it is assumed multivariate normally distributed estimates are specified in \samp{resp}
+#' with covariance given by \samp{S}, and the contrast test statistic is calculated based on this assumption. Degrees of
+#' freedom specified in \samp{df}.
+#'
+#' Integrals over the multivariate t and multivariate normal distribution are calculated using the \samp{mvtnorm}
+#' package.
+#'
+#' @param dose,resp Either vectors of equal length specifying dose and response values, or names of variables in the
+#'   data frame specified in \samp{data}.
+#' @param data Data frame containing the variables referenced in dose and resp if \samp{data} is not specified it is
+#'   assumed that \samp{dose} and \samp{resp} are variables referenced from data (and no vectors)
+#' @param models An object of class \samp{Mods}, see \code{\link{Mods}} for details
+#' @param S The covariance matrix of \samp{resp} when \samp{type = "general"}, see Description.
+#' @param type Determines whether inference is based on an ANCOVA model under a homoscedastic normality assumption (when
+#'   \samp{type = "normal"}), or estimates at the doses and their covariance matrix and degrees of freedom are specified
+#'   directly in \samp{resp}, \samp{S} and \samp{df}. See also \code{\link{fitMod}} and Pinheiro et al. (2014).
+#' @param addCovars Formula specifying additive linear covariates (for \samp{type = "normal"})
+#' @param placAdj Logical, if true, it is assumed that placebo-adjusted
+#'   estimates are specified in \samp{resp} (only possible for \samp{type =
+#'   "general"}).
+#' @param alpha Significance level for the multiple contrast test
+#' @param df Specify the degrees of freedom to use in case \samp{type = "general"}.  If this argument is missing
+#'   \samp{df = Inf} is used (which corresponds to the multivariate normal distribution).  For type = "normal" the
+#'   degrees of freedom deduced from the AN(C)OVA fit are used and this argument is ignored.
+#' @param critV Supply a pre-calculated critical value. If this argument is NULL, no critical value will be calculated
+#'   and the test decision is based on the p-values. If \samp{critV = TRUE} the critical value will be calculated.
+#' @param pVal Logical determining, whether p-values should be calculated.
+#' @param alternative Character determining the alternative for the multiple contrast trend test.
+#' @param na.action A function which indicates what should happen when the data contain NAs.
+#' @param mvtcontrol A list specifying additional control parameters for the \samp{qmvt} and \samp{pmvt} calls in the
+#'   code, see also \code{\link{mvtnorm.control}} for details.
+#' @param contMat Contrast matrix to apply to the ANCOVA dose-response estimates. The contrasts need to be in the
+#'   columns of the matrix (i.e. the column sums need to be 0).
+#' @return An object of class MCTtest, a list containing the output.
+#' @author Bjoern Bornkamp
+#' @seealso \code{\link{powMCT}}, \code{\link{optContr}}
+#' @references Hothorn, T., Bretz, F., and Westfall, P. (2008). Simultaneous Inference in General Parametric Models,
+#'   \emph{Biometrical Journal}, \bold{50}, 346--363
+#'
+#'   Pinheiro, J. C., Bornkamp, B., Glimm, E. and Bretz, F. (2014) Model-based dose finding under model uncertainty
+#'   using general parametric models, \emph{Statistics in Medicine}, \bold{33}, 1646--1661
+#' @examples
+#'
+#' ## example without covariates
+#' data(biom)
+#' ## define shapes for which to calculate optimal contrasts
+#' modlist <- Mods(emax = 0.05, linear = NULL, logistic = c(0.5, 0.1),
+#'                 linInt = c(0, 1, 1, 1), doses = c(0, 0.05, 0.2, 0.6, 1))
+#' m1 <- MCTtest(dose, resp, biom, models=modlist)
+#' ## now calculate critical value (but not p-values)
+#' m2 <- MCTtest(dose, resp, biom, models=modlist, critV = TRUE, pVal = FALSE)
+#' ## now hand over critical value
+#' m3 <- MCTtest(dose, resp, biom, models=modlist, critV = 2.24)
+#'
+#' ## example with covariates
+#' data(IBScovars)
+#' modlist <- Mods(emax = 0.05, linear = NULL, logistic = c(0.5, 0.1),
+#'                 linInt = c(0, 1, 1, 1), doses = c(0, 1, 2, 3, 4))
+#' MCTtest(dose, resp, IBScovars, models = modlist, addCovars = ~gender)
+#'
+#' ## example using general approach (fitted on placebo-adjusted scale)
+#' ancMod <- lm(resp~factor(dose)+gender, data=IBScovars)
+#' ## extract estimates and information to feed into MCTtest
+#' drEst <- coef(ancMod)[2:5]
+#' vc <- vcov(ancMod)[2:5, 2:5]
+#' doses <- 1:4
+#' MCTtest(doses, drEst, S = vc, models = modlist, placAdj = TRUE,
+#'         type = "general", df = Inf)
+#'
+#' ## example with general alternatives handed over
+#' data(biom)
+#' ## calculate contrast matrix for the step-contrasts
+#' ## represent them as linInt models
+#' models <- Mods(linInt=rbind(c(1,1,1,1),
+#'                             c(0,1,1,1),
+#'                             c(0,0,1,1),
+#'                             c(0,0,0,1)),
+#'                 doses=c(0,0.05,0.2,0.6,1))
+#' plot(models)
+#' ## now calculate optimal contrasts for these means
+#' ## use weights from actual sample sizes
+#' weights <- as.numeric(table(biom$dose))
+#' contMat <- optContr(models, w = weights)
+#' ## plot contrasts
+#' plot(contMat)
+#' ## perform multiple contrast test
+#' MCTtest(dose, resp, data=biom, contMat = contMat)
+#'
+#' ## example for using the Dunnett contrasts
+#' ## Dunnett contrasts
+#' doses <- sort(unique(biom$dose))
+#' contMat <- rbind(-1, diag(4))
+#' rownames(contMat) <- doses
+#' colnames(contMat) <- paste("D", doses[-1], sep="")
+#' MCTtest(dose, resp, data=biom, contMat = contMat)
+#'
+#' @export
 MCTtest <- function(dose, resp, data = NULL, models, S = NULL,
                     type = c("normal", "general"),
                     addCovars = ~1, placAdj = FALSE, 
@@ -77,6 +183,7 @@ MCTtest <- function(dose, resp, data = NULL, models, S = NULL,
   res
 }
 
+#' @export
 print.MCTtest <- function(x, digits = 3, eps = 1e-3, ...){
   cat("Multiple Contrast Test\n")
   cat("\n","Contrasts:","\n", sep="")
@@ -108,6 +215,29 @@ print.MCTtest <- function(x, digits = 3, eps = 1e-3, ...){
   }
 }
 
+
+
+#' Calculate critical value for multiple contrast test
+#'
+#' Calculation of the critical value for a maximum contrast test. This is based on the equicoordinate quantile function
+#' of the multivariate normal or t distribution as implemented in the \code{qmvt} function from the mvtnorm package.
+#'
+#' @inheritParams MCTtest
+#' @param corMat Correlation matrix of contrasts
+#' @param df Specify the degrees of freedom to use, if this argument is missing \samp{df = Inf} is used (which
+#'   corresponds to the multivariate normal distribution).
+#' @param control A list specifying additional control parameters for the \samp{qmvt} and \samp{pmvt} calls in the code,
+#'   see also \code{\link{mvtnorm.control}} for details.
+#' @author Bjoern Bornkamp
+#' @seealso \code{\link{powMCT}}, \code{\link{optContr}}, \code{\link{MCTtest}}
+#' @examples
+#'
+#' R <- matrix(c(1,0.5,0.5,1), nrow=2)
+#' critVal(R, alpha = 0.05, df = 1)
+#' critVal(R, alpha = 0.05, df = 20)
+#' critVal(R, alpha = 0.05, df = Inf)
+#'
+#' @export
 critVal <- function(corMat, alpha = 0.025, df = NULL,
                     alternative = c("one.sided", "two.sided"),
                     control = mvtnorm.control()){
@@ -134,73 +264,28 @@ critVal <- function(corMat, alpha = 0.025, df = NULL,
   do.call("qmvt", qmvtCall)$quantile
 }
 
-checkAnalyArgs <- function(dose, resp, data, S, type,
-                           addCovars, placAdj, na.action, cal){
-  if(!inherits(addCovars, "formula"))
-    stop("addCovars argument needs to be of class formula")
-  if(!inherits(placAdj, "logical"))
-    stop("placAdj argument needs to be of class logical")
-  if(placAdj){
-    if(type == "normal")
-      stop("\"placAdj == TRUE\" only allowed for type = \"general\"")
-  }
-  if(!is.null(data)){ # data handed over in data frame
-    if(!is.data.frame(data))
-      stop("data argument needs to be a data frame")
-    nams <- c(cal[2], cal[3], all.vars(addCovars))
-    ind <- match(nams, names(data))
-    if (any(is.na(ind)))
-      stop("variable(s): ", paste(nams[is.na(ind)], collapse= ", "), " not found in ", cal[4])
-    dd <- na.action(data[,nams])
-  } else { # data handed over via vectors
-    if(addCovars != ~1)
-      stop("need to hand over data and covariates in data frame")
-    if(!(is.numeric(resp) && is.null(dim(resp)))) {
-      warning(cal[3], " is not a numeric but a ", class(resp)[1],
-              ", converting with as.numeric()")
-      resp <- as.numeric(resp)
-    }
-    if(length(dose) != length(resp))
-      stop(cal[2], " and ", cal[3], " not of equal length")
-    dd <- na.action(data.frame(dose, resp))
-    cal[2:3] <- gsub("\\$", "", cal[2:3])
-    cal[2:3] <- gsub("\\[|\\]", "", cal[2:3])
-    colnames(dd) <- cal[2:3]
-  }
-  doseNam <- cal[2];respNam <- cal[3]
-  if(placAdj){
-    if(any(dd[[doseNam]] == 0))
-      stop("If placAdj == TRUE there should be no placebo group")
-  }
-  if(any(dd[[doseNam]] < -.Machine$double.eps))
-    stop("dose values need to be non-negative")
-  if(!is.numeric(dd[[doseNam]]))
-    stop("dose variable needs to be numeric")
-  if(!is.numeric(dd[[respNam]]))
-    stop("response variable needs to be numeric")
-  ## check type related arguments
-  if(type == "general" & is.null(S))
-    stop("S argument missing")
-  if(type == "normal" & !is.null(S))
-    message("Message: S argument ignored for type == \"normal\"\n")
-  if(type == "general" & addCovars != ~1)
-    message("Message: addCovars argument ignored for type == \"general\"")
-  if(!is.null(S)){
-    if(!is.matrix(S))
-      stop("S needs to be of class matrix")
-    nD <- length(dd[[doseNam]])
-    if(nrow(S) != nD | ncol(S) != nD)
-      stop("S and dose have non-conforming size")
-  }
-  ord <- order(dd[[doseNam]])
-  dd <- dd[ord, ]
-  Sout <- NULL
-  if(type == "general")
-    Sout <- S[ord, ord]
-  return(list(dd=dd, type = type, S = Sout, ord=ord,
-              doseNam=doseNam, respNam=respNam))
-}
-
+#' Calculate multiplicity adjusted p-values for multiple contrast test
+#'
+#' Calculate multiplicity adjusted p-values for a maximum contrast test corresponding to a set of contrasts and given a
+#' set of observed test statistics. This function is exported as it may be a useful building block and used in more
+#' complex testing situations that are not covered by \code{\link{MCTtest}}. Most users probably don't need to use this
+#' function.
+#'
+#' @inheritParams critVal
+#' @param contMat Contrast matrix to use. The individual contrasts should be saved in the columns of the matrix
+#' @param df Degrees of freedom to assume in case \samp{S} (a general covariance matrix) is specified. When \samp{n} and
+#'   \samp{sigma} are specified the ones from the corresponding ANOVA model are calculated.
+#' @param tStat Vector of contrast test statistics
+#' @return Numeric containing the calculated p-values.
+#' @author Bjoern Bornkamp
+#' @seealso \code{\link{MCTtest}}, \code{\link{optContr}}
+#' @references Pinheiro, J. C., Bornkamp, B., and Bretz, F. (2006). Design and analysis of dose finding studies
+#'   combining multiple comparisons and modeling procedures, \emph{Journal of Biopharmaceutical Statistics}, \bold{16},
+#'   639--656
+#' @examples
+#'
+#' ## need to add example
+#' @export
 MCTpval <- function(contMat, corMat, df, tStat,
                     alternative = c("one.sided", "two.sided"),
                     control = mvtnorm.control()){

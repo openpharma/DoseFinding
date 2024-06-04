@@ -1,0 +1,72 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# DoseFinding
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The DoseFinding package provides functions for the design and analysis of dose-finding experiments (for example pharmaceutical Phase II clinical trials). It provides functions for: multiple contrast tests, fitting non-linear dose-response models, a combination of testing and dose-response modelling and calculating optimal designs,
+both for normal and general response variable.
+
+## Installation
+
+You can install the development version of DoseFinding from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("bbnkmp/DoseFinding")
+```
+
+## Examples
+
+### Performing multiple contrast tests
+
+```{r example1}
+library(DoseFinding)
+data(IBScovars)
+
+## perform (model based) multiple contrast test
+## define candidate dose-response shapes
+models <- Mods(linear = NULL, emax = 0.2, quadratic = -0.17,
+               doses = c(0, 1, 2, 3, 4))
+## plot models
+plot(models)
+## perform multiple contrast test
+MCTtest(dose, resp, IBScovars, models=models,
+                addCovars = ~ gender)
+```
+
+### Fitting non-linear dose-response model
+```{r example2}
+## fit non-linear emax dose-response model
+fitemax <- fitMod(dose, resp, data=IBScovars, model="emax",
+                  bnds = c(0.01,5))
+## display fitted dose-effect curve
+plot(fitemax, CI=TRUE, plotData="meansCI")
+
+```
+
+### Optimal designs for dose estimation
+```{r example3}
+## Calculate optimal designs for target dose (TD) estimation
+doses <- c(0, 10, 25, 50, 100, 150)
+fmodels <- Mods(linear = NULL, emax = 25, exponential = 85,
+                logistic = c(50, 10.8811),
+                doses = doses, placEff=0, maxEff=0.4)
+plot(fmodels, plotTD = TRUE, Delta = 0.2)
+weights <- rep(1/4, 4)
+optDesign(fmodels, weights, Delta=0.2, designCrit="TD")
+```

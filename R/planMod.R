@@ -1,54 +1,99 @@
 ## various functions for assessing the operating characteristics of a design
 ## for model-based estimation of dose-response functions
 
-## calculates the variance of the estimated curve
-getPredVar <- function(model, cf, V,  pDose, off, scal){
-  gr <- gradCalc(model, cf, pDose, off, scal)
-  gr0 <- gradCalc(model, cf, 0, off, scal)
-  grd <- sweep(gr, 2, gr0)
-  out <- apply(grd, 1, function(x){
-    as.numeric(t(x)%*%V%*%x)
-  })
-  out
-}
-
-## calculates the variance of the EDp estimate
-getEDVar <- function(model, cf, V, scale = c("unrestricted", "logit"),
-                     p, maxD, off, scal, nodes){
-  grd <- calcEDgrad(model, cf, maxD, p, off, scal, nodes)
-  if(scale == "logit"){
-    tmp <- calcED(model, cf, p, maxD, "continuous",
-                                off=off, scal=scal, nodes=nodes)
-    grd <- grd*(-maxD/(tmp*(tmp-maxD)))
-  }
-  grd <- as.numeric(grd)
-  return(as.numeric(t(grd)%*%V%*%grd))
-}
-
-## calculates the variance of the TD estimate
-getTDVar <- function(model, cf, V, scale = c("unrestricted", "log"),
-                     Delta, direction = c("increasing", "decreasing"), off, scal, nodes){
-  tmp <- calcTD(model, cf, Delta, "continuous", 
-                              direction, off=off, scal=scal,
-                              nodes = nodes)
-  grd <- calcTDgrad(model, cf, Delta, direction, off, scal, nodes)
-  if(scale == "log")
-    grd <- grd/tmp
-  grd <- as.numeric(grd)
-  return(as.numeric(t(grd)%*%V%*%grd))
-}
-
-## calculates approximate covariance matrix for parameter estimates
-aprCov <- function(doses, model, cf, S, off, scal){
-  F <- gradCalc(model, cf, doses, off, scal)
-  V <- try(solve(t(F)%*%solve(S)%*%F))
-  if(inherits(V, "try-error")){
-    warning("Could not calculate covariance matrix; Fisher information singular.")
-    return(NA)
-  }
-  V
-}
-
+#' Evaluate performance metrics for fitting dose-response models
+#'
+#' This function evaluates, the performance metrics for fitting dose-response models (using asymptotic approximations or
+#' simulations). Note that some metrics are available via the print method and others only via the summary
+#' method applied to planMod objects. The implemented metrics are \itemize{
+#' \item Root of the mean-squared error to estimate the placebo-adjusted
+#' dose-response averaged over the used dose-levels, i.e. a rather discrete set
+#' (\code{dRMSE}). Available via the print method of planMod objects.  \item
+#' Root of the mean-squared error to estimate the placebo-adjusted
+#' dose-response (\code{cRMSE}) averaged over fine (almost continuous) grid at
+#' 101 equally spaced values between placebo and the maximum dose. NOTE:
+#' Available via the summary method applied to planMod objects.  \item Ratio of
+#' the placebo-adjusted mean-squared error (at the observed doses) of
+#' model-based vs ANOVA approach (\code{Eff-vs-ANOVA}). This can be interpreted
+#' on the sample size scale. NOTE: Available via the summary method applied to
+#' planMod objects.  \item Power that the (unadjusted) one-sided \samp{1-alpha}
+#' confidence interval comparing the dose with maximum effect vs placebo is
+#' larger than \samp{tau}. By default \samp{alpha = 0.025} and \samp{tau = 0}
+#' (\code{Pow(maxDose)}). Available via the print method of planMod objects.
+#' \item Probability that the EDp estimate is within the true [EDpLB, EDpUB]
+#' (by default \samp{p=0.5}, \samp{pLB=0.25} and \samp{pUB=0.75}). This metric
+#' gives an idea on the ability to characterize the increasing part of the
+#' dose-response curve (\code{P(EDp)}). Available via the print method of
+#' planMod objects.  \item Length of the quantile range for a target dose (TD
+#' or EDp). This is calculated by taking the difference of the dUB and dLB
+#' quantile of the empirical distribution of the dose estimates.
+#' (\code{lengthTDCI} and \code{lengthEDpCI}). It is NOT calculated by
+#' calculating confidence interval lengths in each simulated data-set and
+#' taking the mean. NOTE: Available via the summary method of planMod objects.
+#' }
+#'
+#' A plot method exists to summarize dose-response and dose estimations graphically.
+#'
+#'
+#' @aliases planMod plot.planMod summary.planMod
+#' @param model Character vector determining the dose-response model(s) to be used for fitting the data.  When more than
+#'   one dose-response model is provided the best fitting model is chosen using the AIC. Built-in models are "linlog",
+#'   "linear", "quadratic", "emax", "exponential", "sigEmax", "betaMod" and "logistic" (see \link{drmodels}).
+#' @param altModels An object of class \samp{Mods}, defining the true mean vectors under which operating characteristics
+#'   should be calculated.
+#' @param n,sigma,S Either a vector \samp{n} and \samp{sigma} or \samp{S} need to be specified.  When \samp{n} and
+#'   \samp{sigma} are specified it is assumed computations are made for a normal homoscedastic ANOVA model with group
+#'   sample sizes given by \samp{n} and residual standard deviation \samp{sigma}, i.e. the covariance matrix used for
+#'   the estimates is thus \code{sigma^2*diag(1/n)} and the degrees of freedom are calculated as
+#'   \code{sum(n)-nrow(contMat)}. When a single number is specified for \samp{n} it is assumed this is the sample size
+#'   per group and balanced allocations are used.\cr
+#'
+#'   When \samp{S} is specified this will be used as covariance matrix for the estimates.
+#' @param doses Doses to use
+#' @param asyApprox,simulation Logicals determining, whether asymptotic approximations or simulations should be
+#'   calculated. If multiple models are specified in \samp{model} asymptotic approximations are not available.
+#' @param alpha,tau Significance level for the one-sided confidence interval for model-based contrast of best dose vs
+#'   placebo. Tau is the threshold to compare the confidence interval limit to. CI(MaxDCont) gives the percentage that
+#'   the bound of the confidence interval was larger than tau.
+#' @param p,pLB,pUB p determines the type of EDp to estimate. pLB and pUB define the bounds for the EDp estimate. The
+#'   performance metric Pr(Id-ED) gives the percentage that the estimated EDp was within the true EDpLB and EDpUB.
+#' @param nSim Number of simulations
+#' @param cores Number of cores to use for simulations. By default 1 cores is used, note that cores > 1 will have no
+#'   effect Windows, as the mclapply function is used internally.
+#' @param showSimProgress In case of simulations show the progress using a progress-bar.
+#' @param bnds Bounds for non-linear parameters. This needs to be a list with list entries corresponding to the selected
+#'   bounds. The names of the list entries need to correspond to the model names. The \code{\link{defBnds}} function
+#'   provides the default selection.
+#' @param addArgs See the corresponding argument in function \code{\link{fitMod}}. This argument is directly passed to
+#'   fitMod.
+#' @author Bjoern Bornkamp
+#' @seealso \code{\link{fitMod}}
+#' @references TBD
+#' @examples
+#'
+#' \dontrun{
+#' doses <- c(0,10,25,50,100,150)
+#' fmodels <- Mods(linear = NULL, emax = 25,
+#'                 logistic = c(50, 10.88111), exponential= 85,
+#'                 betaMod=rbind(c(0.33,2.31),c(1.39,1.39)),
+#'                 doses = doses, addArgs=list(scal = 200),
+#'                 placEff = 0, maxEff = 0.4)
+#' sigma <- 1
+#' n <- rep(62, 6)*2
+#'
+#' model <- "quadratic"
+#' pObj <- planMod(model, fmodels, n, sigma, doses=doses,
+#'                simulation = TRUE,
+#'                alpha = 0.025, nSim = 200,
+#'                p = 0.5, pLB = 0.25, pUB = 0.75)
+#' print(pObj)
+#' ## to get additional metrics (e.g. Eff-vs-ANOVA, cRMSE, lengthTDCI, ...)
+#' summary(pObj, p = 0.5, Delta = 0.3)
+#' plot(pObj)
+#' plot(pObj, type = "TD", Delta=0.3)
+#' plot(pObj, type = "ED", p = 0.5)
+#' }
+#' @export
 planMod <- function(model, altModels, n, sigma, S, doses,
                     asyApprox = TRUE, simulation = FALSE,
                     alpha = 0.025, tau = 0,
@@ -259,17 +304,7 @@ planMod <- function(model, altModels, n, sigma, S, doses,
   out
 }
 
-tableMatch <- function(x, match){
-  ## like "table", but also returns categories with 0 counts
-  out <- numeric(length(match))
-  for(i in 1:length(match)){
-    out[i] <- sum(x == match[i], na.rm=TRUE)
-  }
-  names(out) <- match
-  out
-}
-
-
+#' @export
 print.planMod <- function(x, digits = 3,...){
   model <- attr(x, "model")
   multiMod <- length(model) > 1
@@ -299,6 +334,19 @@ print.planMod <- function(x, digits = 3,...){
   }
 }
 
+#' Summarize performance metrics for dose-response models
+#'
+#' @param object,digits object: A planMod object. digits: Digits in summary output
+#' @param len Number of equally spaced points to determine the mean-squared error on a grid (cRMSE).
+#' @param Delta Additional arguments determining what dose estimate to plot, when \samp{type = "ED"} or \samp{type =
+#'   "TD"}
+#' @param dLB,dUB Which quantiles to use for calculation of \code{lengthTDCI} and \code{lengthEDpCI}. By default dLB =
+#'   0.05 and dUB = 0.95, so that this corresponds to a 90\% interval.
+#' @param ...  Additional arguments (currently ignored)
+#'
+#' @rdname planMod
+#' @method summary planMod
+#' @export
 summary.planMod <- function(object, digits = 3, len = 101,
                             Delta=NULL, 
                             p=NULL, dLB = 0.05, dUB = 0.95, ...){
@@ -306,6 +354,7 @@ summary.planMod <- function(object, digits = 3, len = 101,
   print(object, digits, len, Delta, p, dLB, dUB, ...)
 }
 
+#' @export
 print.summary.planMod <- function(x, digits = 3, len = 101,
                                   Delta=NULL, 
                                   p=NULL, dLB = 0.05, dUB = 0.95, ...){
@@ -369,178 +418,19 @@ print.summary.planMod <- function(x, digits = 3, len = 101,
   print(signif(out, digits=digits))
 }
 
-## calculate the predictions for the fitted models
-getSimEst <- function(x, type = c("dose-response", "ED", "TD"),
-                      doseSeq, direction, p, Delta, placAdj = FALSE){
-  modelSel <- attr(x$sim, "modelSel") 
-  model <- attr(x, "model")
-  coefs <- attr(x$sim, "coefs")
-  off <- attr(x, "off")
-  scal <- attr(x, "scal")
-  nSim <- attr(x$sim, "nSim")
-  altModels <- attr(x, "altModels")
-  nAlt <- modCount(altModels, fullMod=TRUE)
-  doses <- attr(x, "doses")
-  maxD <- max(doses)
-  type <- match.arg(type)
-  if(type == "TD"){
-    if(missing(direction))
-      stop("need direction for TD calculation")
-    if(Delta <= 0)
-      stop("\"Delta\" needs to be > 0")
-  }
-  out <- vector("list", nAlt)
-  for(i in 1:nAlt){
-    ind <- matrix(ncol = length(model), nrow = nSim)
-    if(type == "dose-response"){
-      resMat <- matrix(nrow = nSim, ncol = length(doseSeq))
-      colnames(resMat) <- doseSeq
-      rownames(resMat) <- 1:nSim
-      for(j in 1:length(model)){
-        ind[,j] <- modelSel[,i] == model[j]
-        if(any(ind[,j])){
-          cf <- do.call("rbind", (coefs[[i]])[ind[,j]])
-          resMat[ind[,j]] <- predSamples(samples=cf, placAdjfullPars = TRUE,
-                                         doseSeq=doseSeq,
-                                         placAdj=placAdj, model=model[j],
-                                         scal=scal, off=off, nodes = NULL)
-        }
-        out[[i]] <- resMat
-      }
-    }
-    if(is.element(type, c("TD", "ED"))){
-      resVec <- numeric(nSim)
-      for(j in 1:length(model)){
-        ind[,j] <- modelSel[,i] == model[j]
-        if(any(ind[,j])){
-          cf <- do.call("rbind", (coefs[[i]])[ind[,j]])
-          if(type == "TD"){
-            resVec[ind[,j]] <- apply(cf, 1, function(z){
-              calcTD(model[j], z, Delta, "continuous", direction,
-                     off=off, scal=scal)
-            })
-          }
-          if(type == "ED"){
-            resVec[ind[,j]] <- apply(cf, 1, function(z){
-              calcED(model[j], z, p, maxD, "continuous", off=off, scal=scal)
-            })
-          }
-        } 
-      }
-      out[[i]] <- resVec
-    }
-  }
-  names(out) <- colnames(getResp(attr(x, "altModels"), doses=0)) ## horrible hack need to improve!
-  out
-}
-  
 
-plotDoseSims <- function(x, type = c("ED", "TD"), p, Delta, xlab){
-  altMods <- attr(x, "altModels")
-  direction <- attr(altMods, "direction")
-  if(type == "ED"){
-    out <- getSimEst(x, "ED", p=p)
-    trueDoses <- ED(altMods, p=p, EDtype="continuous")
-  } else {
-    out <- getSimEst(x, "TD", Delta=Delta, direction=direction)
-    trueDoses <- TD(altMods, Delta=Delta, TDtype="continuous",
-                    direction=direction)
-  }
-  ## write plotting data frame
-  nams <- names(out)
-  group <- factor(rep(1:length(nams), each=length(out[[1]])), labels=nams)
-  pdat <- data.frame(est = do.call("c", out),
-                     group = group)
-  ## determine limits for x-axis
-  rngQ <- tapply(pdat$est, pdat$group, function(x){
-    quantile(x, c(0.025, 0.975), na.rm=TRUE)
-  })
-  rngQ <- do.call("rbind", rngQ)
-  rng <- c(min(rngQ[,1], na.rm = TRUE), max(rngQ[,2], na.rm = TRUE))
-  delt <- diff(rng)*0.04
-  ## truncate x-axis to 2*maxdose
-  maxdose <- max(attr(x, "doses"))
-  xlimU <- min(2*maxdose, max(rng[2], maxdose)+delt)
-  xlimL <- max(-0.05*maxdose, min(0, rng[1])-delt)
-  xlim <- c(xlimL, xlimU)
-  parVal <- ifelse(type == "ED", paste("p=", p, sep=""), paste("Delta=", Delta, sep=""))
-  maintxt <- paste("95%, 80%, 50% intervals and median of simulated ", type,
-                   " estimates (", parVal, ")", sep = "")
-  key <- list(text = list(maintxt, cex = 0.9))
-  bwplot(~est|group, data=pdat, xlab = xlab, trueDoses=trueDoses,
-         xlim = xlim,
-         panel = function(...){
-           z <- panel.number()
-           panel.grid(v=-1, h=0, lty=2, col = "lightgrey")
-           panel.abline(v=trueDoses[z], col = "red", lwd=2)
-           panel.abline(v=c(0, max(attr(x, "doses"))), col = "grey", lwd=2)
-           probs <- c(0.025, 0.1, 0.25, 0.5, 0.75, 0.9, 0.975)
-           simDoseEst <- list(...)$x
-           quants <- quantile(simDoseEst, probs, na.rm = TRUE)
-           llines(c(quants[1], quants[7]), c(1,1), lwd=2, col=1)
-           llines(c(quants[2], quants[6]), c(1,1), lwd=5, col=1)
-           llines(c(quants[3], quants[5]), c(1,1), lwd=10, col=1)
-           lpoints(quants[4], 1, cex=2, pch="|", col=1)
-           if(type == "TD")
-             ltext(xlim[2], 1.5, pos = 2, cex = 0.75,
-                   labels = paste("% No TD:", mean(is.na(simDoseEst))*100, "%"))
-         }, layout = c(1,length(out)), as.table = TRUE, key = key)
-}
-
-plotDRSims <- function(x, placAdj = FALSE, xlab, ylab){
-  altMods <- attr(x, "altModels")
-  rng <- range(attr(x, "doses"))
-  doseSeq <- seq(rng[1], rng[2], length = 51)
-  out <- getSimEst(x, type = "dose-response", doseSeq=doseSeq, placAdj = placAdj)
-  trueMn <- getResp(altMods, doses=doseSeq)
-  if(placAdj){
-    trueMn <- trueMn-trueMn[1,]
-  }
-  nM <- length(out)
-  resp <- vector("list", length=nM)
-  for(i in 1:nM){
-    qMat <-apply(out[[i]], 2, function(y){
-      quantile(y, c(0.025, 0.25, 0.5, 0.75, 0.975))
-    })
-    resp[[i]] <- c(t(qMat))
-  }
-  
-  resp <- do.call("c", resp)
-  quant <- rep(rep(c(0.025, 0.25, 0.5, 0.75, 0.975), each = 51), nM)
-  dose <- rep(doseSeq, nM*5)
-  model <- factor(rep(1:nM, each = 5*51), labels = names(out))
-  key <- list(text =
-              list("Pointwise 95%, 50% intervals and median of simulated dose-response estimates", cex = 0.9))
-
-  xyplot(resp~dose|model, groups = quant, xlab=xlab, ylab = ylab,
-         panel = function(...){
-           ## plot grid
-           panel.grid(v=-1, h=-1, col = "lightgrey", lty=2)
-           ## plot estimates
-           panel.dat <- list(...)
-           ind <- panel.dat$subscripts
-           LB95.x <- panel.dat$x[panel.dat$groups[ind] == 0.025]
-           LB95 <- panel.dat$y[panel.dat$groups[ind] == 0.025]
-           UB95.x <- panel.dat$x[panel.dat$groups[ind] == 0.975]
-           UB95 <- panel.dat$y[panel.dat$groups[ind] == 0.975]
-           lpolygon(c(LB95.x, rev(UB95.x)), c(LB95, rev(UB95)),
-                    col = "lightgrey", border = "lightgrey")
-           LB50.x <- panel.dat$x[panel.dat$groups[ind] == 0.25]
-           LB50 <- panel.dat$y[panel.dat$groups[ind] == 0.25]
-           UB50.x <- panel.dat$x[panel.dat$groups[ind] == 0.75]
-           UB50 <- panel.dat$y[panel.dat$groups[ind] == 0.75]
-           lpolygon(c(LB50.x, rev(UB50.x)), c(LB50, rev(UB50)),
-             col = "darkgrey", border = "darkgrey")
-           MED.x <- panel.dat$x[panel.dat$groups[ind] == 0.5]
-           MED <- panel.dat$y[panel.dat$groups[ind] == 0.5]
-           llines(MED.x, MED, col = 1,lwd = 1.5)
-           ## plot true curve
-           z <- panel.number()
-           llines(doseSeq, trueMn[,z], col=2, lwd=1.5)
-         }, as.table = TRUE, key=key)
-}
-
-
+#' Plot to summarize dose-response and dose estimations
+#'
+#' @inheritParams plot.planMod
+#' @param x An object of class planMod
+#' @param type Type of plot to produce
+#' @param placAdj When \samp{type = "dose-response"}, this determines whether dose-response estimates are shown on
+#'   placebo-adjusted or original scale
+#' @param xlab,ylab Labels for the plot (ylab only applies for \samp{type = "dose-response"})
+#'
+#' @rdname planMod
+#' @method plot planMod
+#' @export
 plot.planMod <- function(x, type = c("dose-response", "ED", "TD"),
                          p, Delta, placAdj = FALSE,
                          xlab = "Dose", ylab = "", ...){

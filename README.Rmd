@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 # DoseFinding
 
 <!-- badges: start -->
+[![CRAN status](https://www.r-pkg.org/badges/version/DoseFinding)](https://CRAN.R-project.org/package=DoseFinding)
 <!-- badges: end -->
 
 The DoseFinding package provides functions for the design and analysis of dose-finding experiments (for example pharmaceutical Phase II clinical trials). It provides functions for: multiple contrast tests, fitting non-linear dose-response models, a combination of testing and dose-response modelling and calculating optimal designs,
@@ -34,7 +35,7 @@ devtools::install_github("bbnkmp/DoseFinding")
 
 ### Performing multiple contrast tests
 
-```{r example1}
+```{r example1, warning = FALSE, message=FALSE}
 library(DoseFinding)
 data(IBScovars)
 

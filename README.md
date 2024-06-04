@@ -4,6 +4,9 @@
 # DoseFinding
 
 <!-- badges: start -->
+
+[![CRAN
+status](https://www.r-pkg.org/badges/version/DoseFinding)](https://CRAN.R-project.org/package=DoseFinding)
 <!-- badges: end -->
 
 The DoseFinding package provides functions for the design and analysis
@@ -29,12 +32,6 @@ devtools::install_github("bbnkmp/DoseFinding")
 
 ``` r
 library(DoseFinding)
-#> Lade nötiges Paket: ggplot2
-#> Warning: Paket 'ggplot2' wurde unter R Version 4.3.3 erstellt
-#> Lade nötiges Paket: lattice
-#> Warning: Paket 'lattice' wurde unter R Version 4.3.3 erstellt
-#> Lade nötiges Paket: mvtnorm
-#> Warning: Paket 'mvtnorm' wurde unter R Version 4.3.3 erstellt
 data(IBScovars)
 
 ## perform (model based) multiple contrast test
@@ -69,9 +66,9 @@ MCTtest(dose, resp, IBScovars, models=models,
 #> 
 #> Multiple Contrast Test:
 #>           t-Stat   adj-p
-#> emax       3.208 0.00146
-#> quadratic  3.083 0.00230
-#> linear     2.640 0.00797
+#> emax       3.208 0.00150
+#> quadratic  3.083 0.00189
+#> linear     2.640 0.00849
 ```
 
 ### Fitting non-linear dose-response model

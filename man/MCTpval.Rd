@@ -18,8 +18,7 @@ MCTpval(
 
 \item{corMat}{Correlation matrix of contrasts}
 
-\item{df}{Degrees of freedom to assume in case \samp{S} (a general covariance matrix) is specified. When \samp{n} and
-\samp{sigma} are specified the ones from the corresponding ANOVA model are calculated.}
+\item{df}{Degrees of freedom to use for calculation.}
 
 \item{tStat}{Vector of contrast test statistics}
 
@@ -38,8 +37,24 @@ complex testing situations that are not covered by \code{\link{MCTtest}}. Most u
 function.
 }
 \examples{
-
-## need to add example
+data(biom)
+## define shapes for which to calculate optimal contrasts
+modlist <- Mods(emax = 0.05, linear = NULL, logistic = c(0.5, 0.1),
+                linInt = c(0, 1, 1, 1), doses = c(0, 0.05, 0.2, 0.6, 1))
+contMat <- optContr(modlist, w=1)$contMat
+## calculate inputs needed for MCTpval
+fit <- lm(resp~factor(dose)-1, data=biom)
+est <- coef(fit)
+vc <- vcov(fit)
+ct <- as.vector(est \%*\% contMat)
+covMat <- t(contMat) \%*\% vc \%*\% contMat
+den <- sqrt(diag(covMat))
+tStat <- ct/den
+corMat <- cov2cor(t(contMat) \%*\% vc \%*\% contMat)
+MCTpval(contMat, corMat, df=100-5, tStat)
+## compare to
+test <- MCTtest(dose, resp, biom, models=modlist)
+attr(test$tStat, "pVal")
 }
 \references{
 Pinheiro, J. C., Bornkamp, B., and Bretz, F. (2006). Design and analysis of dose finding studies

@@ -91,8 +91,8 @@ on how to obtain covariate adjusted estimates.
 \examples{
 
 
-require(RBesT)
-
+library(RBesT)
+library(mvtnorm)
 ###############################
 ## Normal outcome
 ###############################

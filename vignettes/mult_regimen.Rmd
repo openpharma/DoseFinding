@@ -69,6 +69,7 @@ Also as discussed above everything is modeled on the total daily dose scale.
 
 ```{r, data}
 library(DoseFinding)
+library(mvtnorm)
 library(ggplot2)
 ## collect estimates and dosage information in one place
 example_estimates <- function() {

@@ -50,8 +50,8 @@
 #' @examples
 #'
 #'
-#' require(RBesT)
-#'
+#' library(RBesT)
+#' library(mvtnorm)
 #' ###############################
 #' ## Normal outcome
 #' ###############################

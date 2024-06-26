@@ -1,8 +1,8 @@
 Package: DoseFinding
 Type: Package
 Title: Planning and Analyzing Dose Finding Experiments
-Version: 1.1-1
-Date: 2023-11-02
+Version: 1.2-1
+Date: 2024-06-26
 Authors@R: c(
    person("Bjoern", "Bornkamp", email = "bjoern.bornkamp@novartis.com", comment = c(ORCID = "0000-0002-6294-8185"), role = c("aut")),
    person("Jose", "Pinheiro", role = "aut"),
@@ -10,7 +10,7 @@ Authors@R: c(
    person("Ludger", "Sandig", role = "aut"),
    person("Marius", "Thomas", role = c("aut", "cre"), email = "marius.thomas@novartis.com"),
    person(given = "Novartis Pharma AG", role = c("cph", "fnd")))
-Depends: ggplot2, lattice, mvtnorm, R (>= 2.15.0)
+Imports: ggplot2, lattice, mvtnorm
 Suggests: numDeriv, Rsolnp, quadprog, parallel, multcomp, knitr, rmarkdown, MASS, testthat, RBesT
 Maintainer: Marius Thomas <marius.thomas@novartis.com>
 Description: The DoseFinding package provides functions for the design and analysis

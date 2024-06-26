@@ -273,8 +273,7 @@ critVal <- function(corMat, alpha = 0.025, df = NULL,
 #'
 #' @inheritParams critVal
 #' @param contMat Contrast matrix to use. The individual contrasts should be saved in the columns of the matrix
-#' @param df Degrees of freedom to assume in case \samp{S} (a general covariance matrix) is specified. When \samp{n} and
-#'   \samp{sigma} are specified the ones from the corresponding ANOVA model are calculated.
+#' @param df Degrees of freedom to use for calculation.
 #' @param tStat Vector of contrast test statistics
 #' @return Numeric containing the calculated p-values.
 #' @author Bjoern Bornkamp
@@ -283,8 +282,24 @@ critVal <- function(corMat, alpha = 0.025, df = NULL,
 #'   combining multiple comparisons and modeling procedures, \emph{Journal of Biopharmaceutical Statistics}, \bold{16},
 #'   639--656
 #' @examples
-#'
-#' ## need to add example
+#' data(biom)
+#' ## define shapes for which to calculate optimal contrasts
+#' modlist <- Mods(emax = 0.05, linear = NULL, logistic = c(0.5, 0.1),
+#'                 linInt = c(0, 1, 1, 1), doses = c(0, 0.05, 0.2, 0.6, 1))
+#' contMat <- optContr(modlist, w=1)$contMat
+#' ## calculate inputs needed for MCTpval
+#' fit <- lm(resp~factor(dose)-1, data=biom)
+#' est <- coef(fit)
+#' vc <- vcov(fit)
+#' ct <- as.vector(est %*% contMat)
+#' covMat <- t(contMat) %*% vc %*% contMat
+#' den <- sqrt(diag(covMat))
+#' tStat <- ct/den
+#' corMat <- cov2cor(t(contMat) %*% vc %*% contMat)
+#' MCTpval(contMat, corMat, df=100-5, tStat)
+#' ## compare to
+#' test <- MCTtest(dose, resp, biom, models=modlist)
+#' attr(test$tStat, "pVal")
 #' @export
 MCTpval <- function(contMat, corMat, df, tStat,
                     alternative = c("one.sided", "two.sided"),

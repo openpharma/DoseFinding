@@ -38,6 +38,7 @@ and the asymptotic effect of 25 percentage points above placebo becomes `logit(0
 
 ```{r, example_data}
 library(DoseFinding)
+library(mvtnorm)
 library(ggplot2)
 
 logit <- function(p) log(p / (1 - p))

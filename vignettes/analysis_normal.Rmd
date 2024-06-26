@@ -44,6 +44,7 @@ while `n` denotes the number of participants.
 
 ```{r, load_data}
 library(DoseFinding)
+library(mvtnorm)
 data(glycobrom)
 print(glycobrom)
 ```

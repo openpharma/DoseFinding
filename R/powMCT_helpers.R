@@ -22,7 +22,7 @@ powCalc <- function(alternative, critV, df, corMat, deltaMat, control){
   for(i in 1:nScen){
     pmvtCall <- c(list(lower, upper, df = df, corr = corMat, delta = deltaMat[,i],
                        algorithm = ctrl))
-    res[i] <- as.vector(1 - do.call("pmvt", pmvtCall))
+    res[i] <- as.vector(1 - do.call(mvtnorm::pmvt, pmvtCall))
   }
   names(res) <- colnames(deltaMat)
   res
@@ -151,7 +151,7 @@ powMCTBinCount <- function(n, doses, candModList = NULL, respModList,
       ## calculate critical value (df=0 corresponds to infinite degrees of freedom -> MVN distribution)
       qmvtCall <- c(list(1 - alpha, tail = "lower.tail", df = 0, corr = corMat_null,
                          algorithm = control, interval = control$interval))
-      critV <- do.call("qmvt", qmvtCall)$quantile
+      critV <- do.call(mvtnorm::qmvt, qmvtCall)$quantile
     }
     ## calculate power
     lower <- rep(-Inf, ncol(corMat))
@@ -159,7 +159,7 @@ powMCTBinCount <- function(n, doses, candModList = NULL, respModList,
     control$interval <- NULL
     pmvtCall <- c(list(lower, upper, df = 0, corr = corMat,
                        delta = as.vector(delta), algorithm = control))
-    pow[i] <- as.vector(1 - do.call("pmvt", pmvtCall))
+    pow[i] <- as.vector(1 - do.call(mvtnorm::pmvt, pmvtCall))
   }
   names(pow) <- colnames(resp)
   pow

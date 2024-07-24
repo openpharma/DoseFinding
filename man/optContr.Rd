@@ -116,9 +116,11 @@ aux <- rbind(-colSums(contMat0$contMat), contMat0$contMat)
 t(t(aux)/sqrt(colSums(aux^2))) ## compare to contMat$contMat
 
 ## now calculate constrained contrasts 
+if(requireNamespace("quadprog", quietly = TRUE)){
 optContr(models, w = rep(50,6), type = "constrained")
 optContr(models, doses=dosPlac, S = S, placAdj = TRUE,
          type = "constrained")
+}
 }
 \references{
 Bretz, F., Pinheiro, J. C., and Branson, M. (2005), Combining

@@ -50,8 +50,8 @@
 #' @examples
 #'
 #'
-#' library(RBesT)
-#' library(mvtnorm)
+#' if (require("RBesT")) {
+#' 
 #' ###############################
 #' ## Normal outcome
 #' ###############################
@@ -116,7 +116,7 @@
 #'   ## average on probability scale then backtransform to logit scale
 #'   mu_star <- logit(tapply(inv_logit(X %*% mu_hat), pdat$dose, mean))
 #'   ## estimate covariance matrix of mu_star
-#'   pred <- replicate(n_sim, logit(tapply(inv_logit(X %*% drop(rmvnorm(1, mu_hat, S_hat))),
+#'   pred <- replicate(n_sim, logit(tapply(inv_logit(X %*% drop(mvtnorm::rmvnorm(1, mu_hat, S_hat))),
 #'                                         pdat$dose, mean)))
 #'   return(list(mu_star = as.numeric(mu_star), S_star = cov(t(pred))))
 #' }
@@ -147,6 +147,7 @@
 #' cmat <- optContr(modlist, w = weights)
 #'
 #' bMCTtest(dose, resp, biom, models=modlist, prior = prior, contMat = cmat)
+#' }
 #' 
 bMCTtest <- function (dose, resp, data = NULL, models, S = NULL, type = c("normal", "general"), 
                       prior, alpha = 0.025, na.action = na.fail, mvtcontrol = mvtnorm.control(),

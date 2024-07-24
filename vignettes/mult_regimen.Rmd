@@ -69,7 +69,6 @@ Also as discussed above everything is modeled on the total daily dose scale.
 
 ```{r, data}
 library(DoseFinding)
-library(mvtnorm)
 library(ggplot2)
 ## collect estimates and dosage information in one place
 example_estimates <- function() {
@@ -254,7 +253,7 @@ that is detailed in the [vignette for analysis of continuous data](analysis_norm
 ## predict population response in each regimen for dose_seq_*
 ## note: both dose_seq_* vectors should contain a 0 if response at placebo is of interest
 one_bootstrap_sample <- function(est, dose_seq_od, dose_seq_bid) {
-  mu_new <- drop(rmvnorm(1, est$mu_hat, est$S_hat))
+  mu_new <- drop(mvtnorm::rmvnorm(1, est$mu_hat, est$S_hat))
   mod_info <- list(list(name = "emax", bounds = rbind(c(0.15, 225)),
                         i_par = list(od = 2:3, bid = 4:5), n_par_gaic = 5),
                    list(name = "sigEmax", bounds = rbind(c(0.15, 225), c(0.5, 5)),

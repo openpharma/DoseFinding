@@ -158,24 +158,24 @@ plotDoseSims <- function(x, type = c("ED", "TD"), p, Delta, xlab){
   maintxt <- paste("95%, 80%, 50% intervals and median of simulated ", type,
                    " estimates (", parVal, ")", sep = "")
   key <- list(text = list(maintxt, cex = 0.9))
-  bwplot(~est|group, data=pdat, xlab = xlab, trueDoses=trueDoses,
-         xlim = xlim,
-         panel = function(...){
-           z <- panel.number()
-           panel.grid(v=-1, h=0, lty=2, col = "lightgrey")
-           panel.abline(v=trueDoses[z], col = "red", lwd=2)
-           panel.abline(v=c(0, max(attr(x, "doses"))), col = "grey", lwd=2)
-           probs <- c(0.025, 0.1, 0.25, 0.5, 0.75, 0.9, 0.975)
-           simDoseEst <- list(...)$x
-           quants <- quantile(simDoseEst, probs, na.rm = TRUE)
-           llines(c(quants[1], quants[7]), c(1,1), lwd=2, col=1)
-           llines(c(quants[2], quants[6]), c(1,1), lwd=5, col=1)
-           llines(c(quants[3], quants[5]), c(1,1), lwd=10, col=1)
-           lpoints(quants[4], 1, cex=2, pch="|", col=1)
-           if(type == "TD")
-             ltext(xlim[2], 1.5, pos = 2, cex = 0.75,
-                   labels = paste("% No TD:", mean(is.na(simDoseEst))*100, "%"))
-         }, layout = c(1,length(out)), as.table = TRUE, key = key)
+  lattice::bwplot(~est|group, data=pdat, xlab = xlab, trueDoses=trueDoses,
+                  xlim = xlim,
+                  panel = function(...){
+                    z <- panel.number()
+                    lattice::panel.grid(v=-1, h=0, lty=2, col = "lightgrey")
+                    lattice::panel.abline(v=trueDoses[z], col = "red", lwd=2)
+                    lattice::panel.abline(v=c(0, max(attr(x, "doses"))), col = "grey", lwd=2)
+                    probs <- c(0.025, 0.1, 0.25, 0.5, 0.75, 0.9, 0.975)
+                    simDoseEst <- list(...)$x
+                    quants <- quantile(simDoseEst, probs, na.rm = TRUE)
+                    lattice::llines(c(quants[1], quants[7]), c(1,1), lwd=2, col=1)
+                    lattice::llines(c(quants[2], quants[6]), c(1,1), lwd=5, col=1)
+                    lattice::llines(c(quants[3], quants[5]), c(1,1), lwd=10, col=1)
+                    lattice::lpoints(quants[4], 1, cex=2, pch="|", col=1)
+                    if(type == "TD")
+                      lattice::ltext(xlim[2], 1.5, pos = 2, cex = 0.75,
+                                     labels = paste("% No TD:", mean(is.na(simDoseEst))*100, "%"))
+                  }, layout = c(1,length(out)), as.table = TRUE, key = key)
 }
 
 plotDRSims <- function(x, placAdj = FALSE, xlab, ylab){
@@ -201,32 +201,32 @@ plotDRSims <- function(x, placAdj = FALSE, xlab, ylab){
   dose <- rep(doseSeq, nM*5)
   model <- factor(rep(1:nM, each = 5*51), labels = names(out))
   key <- list(text =
-              list("Pointwise 95%, 50% intervals and median of simulated dose-response estimates", cex = 0.9))
-
-  xyplot(resp~dose|model, groups = quant, xlab=xlab, ylab = ylab,
-         panel = function(...){
-           ## plot grid
-           panel.grid(v=-1, h=-1, col = "lightgrey", lty=2)
-           ## plot estimates
-           panel.dat <- list(...)
-           ind <- panel.dat$subscripts
-           LB95.x <- panel.dat$x[panel.dat$groups[ind] == 0.025]
-           LB95 <- panel.dat$y[panel.dat$groups[ind] == 0.025]
-           UB95.x <- panel.dat$x[panel.dat$groups[ind] == 0.975]
-           UB95 <- panel.dat$y[panel.dat$groups[ind] == 0.975]
-           lpolygon(c(LB95.x, rev(UB95.x)), c(LB95, rev(UB95)),
-                    col = "lightgrey", border = "lightgrey")
-           LB50.x <- panel.dat$x[panel.dat$groups[ind] == 0.25]
-           LB50 <- panel.dat$y[panel.dat$groups[ind] == 0.25]
-           UB50.x <- panel.dat$x[panel.dat$groups[ind] == 0.75]
-           UB50 <- panel.dat$y[panel.dat$groups[ind] == 0.75]
-           lpolygon(c(LB50.x, rev(UB50.x)), c(LB50, rev(UB50)),
-             col = "darkgrey", border = "darkgrey")
-           MED.x <- panel.dat$x[panel.dat$groups[ind] == 0.5]
-           MED <- panel.dat$y[panel.dat$groups[ind] == 0.5]
-           llines(MED.x, MED, col = 1,lwd = 1.5)
-           ## plot true curve
-           z <- panel.number()
-           llines(doseSeq, trueMn[,z], col=2, lwd=1.5)
-         }, as.table = TRUE, key=key)
+                list("Pointwise 95%, 50% intervals and median of simulated dose-response estimates", cex = 0.9))
+  
+  lattice::xyplot(resp~dose|model, groups = quant, xlab=xlab, ylab = ylab,
+                  panel = function(...){
+                    ## plot grid
+                    lattice::panel.grid(v=-1, h=-1, col = "lightgrey", lty=2)
+                    ## plot estimates
+                    panel.dat <- list(...)
+                    ind <- panel.dat$subscripts
+                    LB95.x <- panel.dat$x[panel.dat$groups[ind] == 0.025]
+                    LB95 <- panel.dat$y[panel.dat$groups[ind] == 0.025]
+                    UB95.x <- panel.dat$x[panel.dat$groups[ind] == 0.975]
+                    UB95 <- panel.dat$y[panel.dat$groups[ind] == 0.975]
+                    lattice::lpolygon(c(LB95.x, rev(UB95.x)), c(LB95, rev(UB95)),
+                             col = "lightgrey", border = "lightgrey")
+                    LB50.x <- panel.dat$x[panel.dat$groups[ind] == 0.25]
+                    LB50 <- panel.dat$y[panel.dat$groups[ind] == 0.25]
+                    UB50.x <- panel.dat$x[panel.dat$groups[ind] == 0.75]
+                    UB50 <- panel.dat$y[panel.dat$groups[ind] == 0.75]
+                    lattice::lpolygon(c(LB50.x, rev(UB50.x)), c(LB50, rev(UB50)),
+                                      col = "darkgrey", border = "darkgrey")
+                    MED.x <- panel.dat$x[panel.dat$groups[ind] == 0.5]
+                    MED <- panel.dat$y[panel.dat$groups[ind] == 0.5]
+                    lattice::llines(MED.x, MED, col = 1,lwd = 1.5)
+                    ## plot true curve
+                    z <- panel.number()
+                    lattice::llines(doseSeq, trueMn[,z], col=2, lwd=1.5)
+                  }, as.table = TRUE, key=key)
 }

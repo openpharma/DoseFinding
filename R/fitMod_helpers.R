@@ -551,26 +551,26 @@ plotFunc <- function(x, CI = FALSE, level = 0.95,
   ## produce plot
   form <- as.formula(paste(respNam, "~", doseNam, "|model", sep=""))
   print(
-    xyplot(form, groups = plotdf$group, data = plotdf, pList=pList, ...,
+    lattice::xyplot(form, groups = plotdf$group, data = plotdf, pList=pList, ...,
            ylim = ylim, panel = function(x, y, ..., pList){
              if(plotGrid)
-               panel.grid(h = -1, v = -1, col = "lightgrey", lty = 2)
+               lattice::panel.grid(h = -1, v = -1, col = "lightgrey", lty = 2)
              if(plotData != "none"){
                if(type == "normal" & plotData == "raw"){
-                 lpoints(data[[doseNam]], data[[respNam]], col = "grey45", pch=19)
+                 lattice::lpoints(data[[doseNam]], data[[respNam]], col = "grey45", pch=19)
                } else {
-                 lpoints(pList$dos, pList$mns, pch=19, col = colMn)
+                 lattice::lpoints(pList$dos, pList$mns, pch=19, col = colMn)
                  if(plotData == "meansCI"){
                    quant <- qnorm(1 - (1 - level)/2)
                    for(i in 1:length(pList$dos)){
-                     llines(rep(pList$dos[i], 2),
+                     lattice::llines(rep(pList$dos[i], 2),
                             c(pList$lbndm[i], pList$ubndm[i]),
                             lty=2, col = colMn, ...)
                    }
                  }
                }
              }
-             panel.xyplot(x, y, col=colFit, type="l", ...)
+             lattice::panel.xyplot(x, y, col=colFit, type="l", ...)
            }))
 }
 

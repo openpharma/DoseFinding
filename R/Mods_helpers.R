@@ -192,7 +192,7 @@ plotModels <- function(models, nPoints = 200, superpose = FALSE,
   if(!inherits(models, "Mods"))
     stop("\"models\" needs to be of class Mods")
   nM <- modCount(models, fullMod = TRUE)
-
+  
   if(nM > 50)
     stop("too many models in Mods object to plot (> 50 models).")
   
@@ -227,7 +227,7 @@ plotModels <- function(models, nPoints = 200, superpose = FALSE,
     respdata <- data.frame(response = c(resp),
                            dose = rep(doseSeq, ncol(resp)),
                            model = modelfact)
-    spL <- trellis.par.get("superpose.line")
+    spL <- lattice::trellis.par.get("superpose.line")
     spL$lty <- rep(spL$lty, nM%/%length(spL$lty) + 1)[1:nM]
     spL$lwd <- rep(spL$lwd, nM%/%length(spL$lwd) + 1)[1:nM]
     spL$col <- rep(spL$col, nM%/%length(spL$col) + 1)[1:nM]
@@ -236,55 +236,55 @@ plotModels <- function(models, nPoints = 200, superpose = FALSE,
     ## number of columns
     nCol <- ifelse(nM < 5, nM, min(4,ceiling(nM/min(ceiling(nM/4),3))))
     key <- list(lines = spL, transparent = TRUE,
-                          text = list(nams, cex = 0.9),
-                          columns = nCol)
-    ltplot <- xyplot(response ~ dose, data = respdata, subscripts = TRUE, 
-                     groups = respdata$model, panel.data = panDat, xlab = xlab,
-                     ylab = ylab,
-                     panel = function(x, y, subscripts, groups, ..., panel.data) {
-                       panel.grid(h=-1, v=-1, col = "lightgrey", lty=2)
-                       panel.abline(h = c(panel.data$placEff, panel.data$placEff + 
-                                      panel.data$maxEff), lty = 2)
-                       panel.superpose(x, y, subscripts, groups, type = "l", ...)
-                       ind <- !is.na(match(x, panel.data$doses))
-                       panel.superpose(x[ind], y[ind], subscripts[ind], 
-                                       groups, ...)
-                       if(plotTD){
-                         for(z in 1:length(pdos)){
-                           panel.lines(c(0, pdos[z]), c(yax[z], yax[z]),lty=2, col=2)
-                           panel.lines(c(pdos[z], pdos[z]), c(0, yax[z]),lty=2, col=2)
-                         }
-                       }}, key = key, ...)
+                text = list(nams, cex = 0.9),
+                columns = nCol)
+    ltplot <- lattice::xyplot(response ~ dose, data = respdata, subscripts = TRUE, 
+                              groups = respdata$model, panel.data = panDat, xlab = xlab,
+                              ylab = ylab,
+                              panel = function(x, y, subscripts, groups, ..., panel.data) {
+                                lattice::panel.grid(h=-1, v=-1, col = "lightgrey", lty=2)
+                                lattice::panel.abline(h = c(panel.data$placEff, panel.data$placEff + 
+                                                              panel.data$maxEff), lty = 2)
+                                lattice::panel.superpose(x, y, subscripts, groups, type = "l", ...)
+                                ind <- !is.na(match(x, panel.data$doses))
+                                lattice::panel.superpose(x[ind], y[ind], subscripts[ind], 
+                                                         groups, ...)
+                                if(plotTD){
+                                  for(z in 1:length(pdos)){
+                                    lattice::panel.lines(c(0, pdos[z]), c(yax[z], yax[z]),lty=2, col=2)
+                                    lattice::panel.lines(c(pdos[z], pdos[z]), c(0, yax[z]),lty=2, col=2)
+                                  }
+                                }}, key = key, ...)
   } else {
     respdata <- data.frame(response = c(resp), 
                            dose = rep(doseSeq, ncol(resp)), model = modelfact)
     panDat <- list(placEff = placEff, maxEff = maxEff, doses = doses, pdos=pdos)
-    ltplot <- xyplot(response ~ dose | model, data = respdata,
-                     panel.data = panDat, xlab = xlab, ylab = ylab, 
-                     panel = function(x, y, ..., panel.data){
-                       panel.grid(h=-1, v=-1, col = "lightgrey", lty=2)
-                       z <- panel.number()
-                       panel.abline(h = c(panel.data$placEff[z],
-                                      panel.data$placEff[z] + 
-                                      panel.data$maxEff[z]), lty = 2)
-                       panel.xyplot(x, y, type = "l", ...)
-                       ind <- match(panel.data$doses, x)
-                       panel.xyplot(x[ind], y[ind], ...)
-                       if(plotTD){
-                         if(direction == "increasing"){
-                           delt <- Delta
-                           base <- panel.data$placEff[z]
-                           delt <- panel.data$placEff[z]+Delta
-                         } else {
-                           delt <- -Delta
-                           base <- panel.data$placEff[z]+panel.data$maxEff[z]
-                           delt <- panel.data$placEff[z]-Delta
-                         }
-                         panel.lines(c(0, pdos[z]), c(delt, delt), lty=2, col=2)
-                         panel.lines(c(pdos[z], pdos[z]), c(base, delt),lty=2, col=2)
-                       }
-                     }, strip = function(...) strip.default(..., style = 1), 
-                     as.table = TRUE,...)
+    ltplot <- lattice::xyplot(response ~ dose | model, data = respdata,
+                              panel.data = panDat, xlab = xlab, ylab = ylab, 
+                              panel = function(x, y, ..., panel.data){
+                                lattice::panel.grid(h=-1, v=-1, col = "lightgrey", lty=2)
+                                z <- panel.number()
+                                lattice::panel.abline(h = c(panel.data$placEff[z],
+                                                            panel.data$placEff[z] + 
+                                                              panel.data$maxEff[z]), lty = 2)
+                                lattice::panel.xyplot(x, y, type = "l", ...)
+                                ind <- match(panel.data$doses, x)
+                                lattice::panel.xyplot(x[ind], y[ind], ...)
+                                if(plotTD){
+                                  if(direction == "increasing"){
+                                    delt <- Delta
+                                    base <- panel.data$placEff[z]
+                                    delt <- panel.data$placEff[z]+Delta
+                                  } else {
+                                    delt <- -Delta
+                                    base <- panel.data$placEff[z]+panel.data$maxEff[z]
+                                    delt <- panel.data$placEff[z]-Delta
+                                  }
+                                  lattice::panel.lines(c(0, pdos[z]), c(delt, delt), lty=2, col=2)
+                                  lattice::panel.lines(c(pdos[z], pdos[z]), c(base, delt),lty=2, col=2)
+                                }
+                              }, strip = function(...) strip.default(..., style = 1), 
+                              as.table = TRUE,...)
   }
   print(ltplot)
 }

@@ -213,7 +213,7 @@ planMod <- function(model, altModels, n, sigma, S, doses,
           cat(sprintf("Scenario %d/%d started\n", i, ncol(muMat)))
         }
       }
-      dat <- rmvnorm(nSim, mean = muMat[,i], sigma = S)
+      dat <- mvtnorm::rmvnorm(nSim, mean = muMat[,i], sigma = S)
       sims <- numeric(3)
       mse <- LBmn <- edpred <- resp <- numeric(nSim)
       coefs <- vector("list", length = nSim)

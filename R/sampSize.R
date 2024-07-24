@@ -402,31 +402,31 @@ plot.targN <- function(x, superpose = TRUE, line.at = NULL,
                        type = factor(rep(nams, each = length(nSeq)), levels = nams))
   if(superpose){
     panelFunc1 <- function(x, y, subscripts, groups, lineAt, ...) {
-      panel.grid(h = -1, v = -1, col = "lightgrey", lty = 2)
+      lattice::panel.grid(h = -1, v = -1, col = "lightgrey", lty = 2)
       if(!is.null(line.at))
-        panel.abline(h = lineAt, lty = 3, ..., col = "red")
-      panel.superpose(x, y, subscripts, groups, ...)
+        lattice::panel.abline(h = lineAt, lty = 3, ..., col = "red")
+      lattice::panel.superpose(x, y, subscripts, groups, ...)
     }
-    trLn <- trellis.par.get("superpose.line")[c("col", "lwd", "lty")]
+    trLn <- lattice::trellis.par.get("superpose.line")[c("col", "lwd", "lty")]
     for(i in seq(along = trLn)) {
       if(length(trLn[[i]]) > nC) trLn[[i]] <- trLn[[i]][1:nC]
     }
-    ltplot <- xyplot(targ ~ n, pMatTr, groups = pMatTr$type, subscripts = TRUE,
-                     panel = panelFunc1, type = "l", lineAt = line.at,
-                     xlab = xlab, ylab = ylab,
-                     key = list(lines = trLn, text = list(lab = nams), transparent = TRUE, 
-                       columns = ifelse(nC < 5, nC, min(4,ceiling(nC/min(ceiling(nC/4),3))))), ...)
+    ltplot <- lattice::xyplot(targ ~ n, pMatTr, groups = pMatTr$type, subscripts = TRUE,
+                              panel = panelFunc1, type = "l", lineAt = line.at,
+                              xlab = xlab, ylab = ylab,
+                              key = list(lines = trLn, text = list(lab = nams), transparent = TRUE, 
+                                         columns = ifelse(nC < 5, nC, min(4,ceiling(nC/min(ceiling(nC/4),3))))), ...)
   } else {                              # models in different panels
     panelFunc2 <- function(x, y, lineAt, ...) {
-      panel.grid(h = -1, v = -1, col = "lightgrey", lty = 2)
+      lattice::panel.grid(h = -1, v = -1, col = "lightgrey", lty = 2)
       if(!is.null(line.at))
-        panel.abline(h = lineAt, lty = 3, ..., col = "red") ## used 2 for consistency with above
-      panel.xyplot(x, y, ...)
+        lattice::panel.abline(h = lineAt, lty = 3, ..., col = "red") ## used 2 for consistency with above
+      lattice::panel.xyplot(x, y, ...)
     }
-    ltplot <- xyplot(targ ~ n | type, pMatTr, panel = panelFunc2,
-                     type = "l", lineAt = line.at,
-                     xlab = xlab, ylab = ylab, 
-                     strip = function(...) strip.default(..., style = 1), ...)
+    ltplot <- lattice::xyplot(targ ~ n | type, pMatTr, panel = panelFunc2,
+                              type = "l", lineAt = line.at,
+                              xlab = xlab, ylab = ylab, 
+                              strip = function(...) strip.default(..., style = 1), ...)
   }
   print(ltplot)
 }

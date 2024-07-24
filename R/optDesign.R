@@ -550,7 +550,7 @@ plot.DRdesign <- function(x, models, lwdDes = 10, colDes = rgb(0,0,0,0.3), ...){
   if(missing(models))
     stop("need object of class Mods to produce plot")
   plot(models, ...)
-  layoutmat <- trellis.currentLayout()
+  layoutmat <- lattice::trellis.currentLayout()
   nc <- ncol(layoutmat)
   nr <- nrow(layoutmat)
   total <- sum(layoutmat > 0)
@@ -559,18 +559,18 @@ plot.DRdesign <- function(x, models, lwdDes = 10, colDes = rgb(0,0,0,0.3), ...){
     for(j in 1:nr){
       if(z > total)
         break
-      trellis.focus("panel", i, j)
-      args <- trellis.panelArgs()
+      lattice::trellis.focus("panel", i, j)
+      args <- lattice::trellis.panelArgs()
       miny <- min(args$y)
       maxy <- max(args$y)
       dy <- maxy-miny
       for(k in 1:length(x$doses)){
         yy <- c(0,(x$design*dy)[k])+miny
         xx <- rep(x$doses[k],2)
-        panel.xyplot(xx, yy, type="l", col = colDes, lwd = lwdDes)
+        lattice::panel.xyplot(xx, yy, type="l", col = colDes, lwd = lwdDes)
       }
       z <- z+1
-      trellis.unfocus()
+      lattice::trellis.unfocus()
     }
   }
 }

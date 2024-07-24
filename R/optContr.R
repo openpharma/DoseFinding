@@ -84,9 +84,11 @@
 #' t(t(aux)/sqrt(colSums(aux^2))) ## compare to contMat$contMat
 #' 
 #' ## now calculate constrained contrasts 
+#' if(requireNamespace("quadprog", quietly = TRUE)){
 #' optContr(models, w = rep(50,6), type = "constrained")
 #' optContr(models, doses=dosPlac, S = S, placAdj = TRUE,
 #'          type = "constrained")
+#' }
 #' @export
 optContr <-  function(models, doses, w, S, placAdj = FALSE,
                       type = c("unconstrained", "constrained")){
@@ -193,9 +195,9 @@ plot.optContr <- function (x, superpose = TRUE, xlab = "Dose",
   cMtr <- data.frame(resp = as.vector(cM),
                      dose = rep(as.numeric(dimnames(cM)[[1]]), nM),
                      model = factor(rep(dimnames(cM)[[2]], each = nD),
-                     levels = dimnames(cM)[[2]]))
+                                    levels = dimnames(cM)[[2]]))
   if(superpose){
-    spL <- trellis.par.get("superpose.line")
+    spL <- lattice::trellis.par.get("superpose.line")
     spL$lty <- rep(spL$lty, nM%/%length(spL$lty) + 1)[1:nM]
     spL$lwd <- rep(spL$lwd, nM%/%length(spL$lwd) + 1)[1:nM]
     spL$col <- rep(spL$col, nM%/%length(spL$col) + 1)[1:nM]
@@ -204,16 +206,16 @@ plot.optContr <- function (x, superpose = TRUE, xlab = "Dose",
     key <- list(lines = spL, transparent = TRUE, 
                 text = list(levels(cMtr$model), cex = 0.9),
                 columns = nCol)
-    ltplot <- xyplot(resp ~ dose, data = cMtr, subscripts = TRUE,
-                     groups = cMtr$model, panel = panel.superpose,
-                     type = "o", xlab = xlab, ylab = ylab,
-                     key = key, ...)
+    ltplot <- lattice::xyplot(resp ~ dose, data = cMtr, subscripts = TRUE,
+                              groups = cMtr$model, panel = panel.superpose,
+                              type = "o", xlab = xlab, ylab = ylab,
+                              key = key, ...)
   } else {
-    ltplot <- xyplot(resp ~ dose | model, data = cMtr, type = "o", 
-                     xlab = xlab, ylab = ylab,
-                     strip = function(...){
-                       strip.default(..., style = 1)
-                     }, ...)
+    ltplot <- lattice::xyplot(resp ~ dose | model, data = cMtr, type = "o", 
+                              xlab = xlab, ylab = ylab,
+                              strip = function(...){
+                                strip.default(..., style = 1)
+                              }, ...)
   }
   print(ltplot)
 }
@@ -239,11 +241,11 @@ plotContr <- function(optContrObj, xlab = "Dose", ylab = "Contrast coefficients"
                      dose = rep(as.numeric(dimnames(cM)[[1]]), nM),
                      model = factor(rep(mod_nams, each = nD), levels=mod_nams),
                      levels = dimnames(cM)[[2]])
-  ggplot(cMtr, aes_string("dose", "resp", col="model"))+
-    geom_line(size=1.2)+
-    geom_point()+
-    theme_bw()+
-    geom_point(size=1.8)+
-    xlab(xlab)+ylab(ylab)+
-    theme(legend.position = "top", legend.title = element_blank())
+  ggplot2::ggplot(cMtr, ggplot2::aes_string("dose", "resp", col="model"))+
+    ggplot2::geom_line(size=1.2)+
+    ggplot2::geom_point()+
+    ggplot2::theme_bw()+
+    ggplot2::geom_point(size=1.8)+
+    ggplot2::xlab(xlab)+ggplot2::ylab(ylab)+
+    ggplot2::theme(legend.position = "top", legend.title = element_blank())
 }

@@ -173,7 +173,7 @@ bFitMod.bootstrap <- function(dose, resp, S, model, placAdj,
   }
 
   ## same arguments as in gFitDRModel function
-  sims <- rmvnorm(nSim, resp, S)
+  sims <- mvtnorm::rmvnorm(nSim, resp, S)
   func <- function(x){
     fit <- fitMod.raw(dose, x, S=S, model=model, type="general",
                       placAdj=placAdj, bnds=bnds, control=control,

@@ -261,7 +261,7 @@ critVal <- function(corMat, alpha = 0.025, df = NULL,
     df <- 0
   qmvtCall <- c(list(1-alpha, tail = tail, df = df, corr = corMat,
                 algorithm = ctrl, interval = ctrl$interval))
-  do.call("qmvt", qmvtCall)$quantile
+  do.call(mvtnorm::qmvt, qmvtCall)$quantile
 }
 
 #' Calculate multiplicity adjusted p-values for multiple contrast test
@@ -329,7 +329,7 @@ MCTpval <- function(contMat, corMat, df, tStat,
                   two.sided = matrix(rep(tStat, each = nMod), nrow = nMod))
   pVals <- numeric(nMod)
   for(i in 1:nMod){
-    tmp <- 1 - pmvt(lower[,i], upper[,i], df = df,
+    tmp <- 1 - mvtnorm::pmvt(lower[,i], upper[,i], df = df,
                     corr = corMat, algorithm = ctrl)
     pVals[i] <- tmp
     if(attr(tmp,"msg") != "Normal Completion"){

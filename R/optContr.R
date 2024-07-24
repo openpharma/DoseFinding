@@ -214,7 +214,7 @@ plot.optContr <- function (x, superpose = TRUE, xlab = "Dose",
     ltplot <- lattice::xyplot(resp ~ dose | model, data = cMtr, type = "o", 
                               xlab = xlab, ylab = ylab,
                               strip = function(...){
-                                strip.default(..., style = 1)
+                                lattice::strip.default(..., style = 1)
                               }, ...)
   }
   print(ltplot)
@@ -247,5 +247,5 @@ plotContr <- function(optContrObj, xlab = "Dose", ylab = "Contrast coefficients"
     ggplot2::theme_bw()+
     ggplot2::geom_point(size=1.8)+
     ggplot2::xlab(xlab)+ggplot2::ylab(ylab)+
-    ggplot2::theme(legend.position = "top", legend.title = element_blank())
+    ggplot2::theme(legend.position = "top", legend.title = ggplot2::element_blank())
 }

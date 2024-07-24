@@ -426,7 +426,7 @@ plot.targN <- function(x, superpose = TRUE, line.at = NULL,
     ltplot <- lattice::xyplot(targ ~ n | type, pMatTr, panel = panelFunc2,
                               type = "l", lineAt = line.at,
                               xlab = xlab, ylab = ylab, 
-                              strip = function(...) strip.default(..., style = 1), ...)
+                              strip = function(...) lattice::strip.default(..., style = 1), ...)
   }
   print(ltplot)
 }

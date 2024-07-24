@@ -161,7 +161,7 @@ plotDoseSims <- function(x, type = c("ED", "TD"), p, Delta, xlab){
   lattice::bwplot(~est|group, data=pdat, xlab = xlab, trueDoses=trueDoses,
                   xlim = xlim,
                   panel = function(...){
-                    z <- panel.number()
+                    z <- lattice::panel.number()
                     lattice::panel.grid(v=-1, h=0, lty=2, col = "lightgrey")
                     lattice::panel.abline(v=trueDoses[z], col = "red", lwd=2)
                     lattice::panel.abline(v=c(0, max(attr(x, "doses"))), col = "grey", lwd=2)
@@ -226,7 +226,7 @@ plotDRSims <- function(x, placAdj = FALSE, xlab, ylab){
                     MED <- panel.dat$y[panel.dat$groups[ind] == 0.5]
                     lattice::llines(MED.x, MED, col = 1,lwd = 1.5)
                     ## plot true curve
-                    z <- panel.number()
+                    z <- lattice::panel.number()
                     lattice::llines(doseSeq, trueMn[,z], col=2, lwd=1.5)
                   }, as.table = TRUE, key=key)
 }

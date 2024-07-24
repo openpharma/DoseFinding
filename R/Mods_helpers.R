@@ -263,7 +263,7 @@ plotModels <- function(models, nPoints = 200, superpose = FALSE,
                               panel.data = panDat, xlab = xlab, ylab = ylab, 
                               panel = function(x, y, ..., panel.data){
                                 lattice::panel.grid(h=-1, v=-1, col = "lightgrey", lty=2)
-                                z <- panel.number()
+                                z <- lattice::panel.number()
                                 lattice::panel.abline(h = c(panel.data$placEff[z],
                                                             panel.data$placEff[z] + 
                                                               panel.data$maxEff[z]), lty = 2)
@@ -283,7 +283,7 @@ plotModels <- function(models, nPoints = 200, superpose = FALSE,
                                   lattice::panel.lines(c(0, pdos[z]), c(delt, delt), lty=2, col=2)
                                   lattice::panel.lines(c(pdos[z], pdos[z]), c(base, delt),lty=2, col=2)
                                 }
-                              }, strip = function(...) strip.default(..., style = 1), 
+                              }, strip = function(...) lattice::strip.default(..., style = 1), 
                               as.table = TRUE,...)
   }
   print(ltplot)

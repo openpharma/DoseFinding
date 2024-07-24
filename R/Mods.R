@@ -272,7 +272,7 @@ plotMods <- function(ModsObj, nPoints = 200, superpose = FALSE,
     pp <- ggplot2::ggplot(respdata, ggplot2::aes_string(x="dose", y="response", col="model"))+
       ggplot2::geom_line(size=1.2)+
       ggplot2::theme_bw()+
-      ggplot2::theme(legend.position = "top", legend.title = element_blank())
+      ggplot2::theme(legend.position = "top", legend.title = ggplot2::element_blank())
   } else {
     pp <- ggplot2::ggplot(respdata, ggplot2::aes_string(x="dose", y="response"))+
       ggplot2::geom_line(size=1.2)+

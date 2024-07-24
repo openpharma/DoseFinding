@@ -306,7 +306,7 @@ mvpostmix <- function(priormix, mu_hat, S_hat)
   ## and covariance matrices which are the sum of the prior components' covariance matrices and the "known" covariance 
   ## matrix of the data (for which S_hat is plugged in here)
   for(i in 1:length(lw)){
-    lw[i] <- log(priormix[[1]][[i]]) + dmvnorm(mu_hat, priormix[[2]][[i]], SigmaPred[[i]], log = TRUE)
+    lw[i] <- log(priormix[[1]][[i]]) + mvtnorm::dmvnorm(mu_hat, priormix[[2]][[i]], SigmaPred[[i]], log = TRUE)
     postmix[[2]][[i]] <- solve(priorPrec[[i]] + dataPrec) %*% (priorPrec[[i]] %*% priormix[[2]][[i]] + dataPrec %*% mu_hat)
     postmix[[3]][[i]] <- solve(priorPrec[[i]] + dataPrec)
   }

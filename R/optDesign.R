@@ -1,126 +1,200 @@
 ## optimal designs for model-fitting
 
-## calculate gradient of model and gradient of TD
-calcGrads <- function(fmodels, doses, weights,
-                      Delta, off, scal, direction,
-                      designCrit){
-  modgrad <- TDgrad <- nPar <- vector("list", modCount(fmodels, fullMod=TRUE))
-  z <- 1
-  for(nam in names(fmodels)){
-    pars <- fmodels[[nam]]
-    if(is.matrix(pars)){
-      for(i in 1:nrow(pars)){
-        modgrad[[z]] <- t(gradCalc(nam, pars[i,], doses, off=off, scal=scal)*sqrt(weights))
-        if(designCrit != "Dopt")
-          TDgrad[[z]] <- calcTDgrad(nam, pars[i,], Delta, direction, off, scal)
-        nPar[[z]] <- nPars(nam)
-        z <- z+1
-      }
-    } else {
-      modgrad[[z]] <- t(gradCalc(nam, pars, doses, off=off, scal=scal)*sqrt(weights))
-      if(designCrit != "Dopt")
-        TDgrad[[z]] <- calcTDgrad(nam, pars, Delta, direction, off, scal)
-      nPar[[z]] <- nPars(nam)
-      z <- z+1        
-    }
-  }
-  modgrads <- do.call("c", modgrad)
-  TDgrad <- do.call("c", TDgrad)
-  nPar <- do.call("c", nPar)
-
-  list(modgrads=modgrads, TDgrad=TDgrad, nPar=nPar)
-}
-
-
-## returns the number of parameters (needed for C call)
-nPars <- function(mods){
-  builtIn <- c("linlog", "linear", "quadratic", 
-               "emax", "exponential", "logistic", 
-               "betaMod", "sigEmax")
-  ind <- match(mods, builtIn)
-  if(any(is.na(ind))){
-    stop(mods[which(is.na(ind))], " model not allowed in optDesign")
-  }
-  c(2,2,3,3,3,4,4,4)[ind]
-}
-
-## function which calls different optimizers
-callOptim <- function(func, method, nD, control, lowbnd, uppbnd){
-  ## actual optimizer
-  if(method == "nlminb"){ # nlminb and optim run on transformed values
-    res <- nlminb(getStart(nD), objective=func, control = control,
-                  lower=rep(0, nD), upper=rep(pi, nD))
-  } else if(method == "Nelder-Mead"){
-    res <- optim(getStart(nD), fn=func, control = control)
-  } else if(method == "solnp"){ # no need for transformed values for solnp
-    avail <- requireNamespace("Rsolnp", quietly = TRUE)
-    if(!avail)
-      stop("Need suggested package Rsolnp for this calculation to use solnp optimizer")
-    ## get starting value (need feasible starting value for solnp)
-    ## try whether equal allocation is feasible
-    eq <- rep(1/nD, nD)
-    if(all(eq > lowbnd+0.001) & all(eq < uppbnd-0.001)){
-      strt <- eq
-    } else {
-      slb <- sum(lowbnd)
-      sub <- sum(uppbnd)
-      gam <- (1-slb)/(sub-slb)
-      strt <- lowbnd+gam*(uppbnd-lowbnd)
-    }
-    eqfun <- function(x, ...){
-      sum(x)
-    }
-    con <- list(trace = 0)
-    con[(namc <- names(control))] <- control
-    res <- Rsolnp::solnp(strt, fun=func, eqfun=eqfun, eqB=1,
-                         control = con, LB = lowbnd, UB = uppbnd)
-  } 
-  res
-}
-
-## transforms from unconstrained values R^k into constrained
-## values in S^k = {w|sum_i w_i=1 and w_i >= 0}
-transTrig <- function(y, k){
-  a <- numeric(k)  
-  if(k == 2){
-    a[1] <- sin(y[1])^2
-  } else {
-    a[1:(k-1)] <- sin(y)^2
-    a[2:(k-1)] <- a[2:(k-1)]*cumprod(cos(y[1:(k-2)])^2)
-  }
-  a[k] <- prod(cos(y[1:(k-1)])^2)
-  a
-}
-
-## identity function
-idtrans <- function(y, k){
-  y
-}
-
-## calculate uniform design but on R^k scale
-## (inverse of transTrig at uniform design)
-getStart <- function(k){
-  y <- numeric(k-1)
-  eq <- 1/k
-  y[1] <- asin(sqrt(eq))
-  for(j in 2:(k-1)){
-    y[j] <- asin(sqrt(eq/prod(cos(y[(1:j)-1])^2)))
-  }
-  y
-}
-
-## function called in the optimization (design criterion is
-## implemented in C and called "critfunc")
-optFunc <- function(x, xvec, pvec, nD, probs, M, n, nold, bvec, designCrit,
-                    trans, standInt){
-  xtrans <- do.call("trans", list(x, nD))
-  res <- .C("critfunc", xvec, pvec, nD, probs, M, xtrans, n,
-            nold, double(16), as.double(1e-15), bvec, designCrit, standInt,
-            double(1), PACKAGE = "DoseFinding")
-  res[[14]]
-}
-
-## user visible function calling all others
+#' Function to calculate optimal designs
+#'
+#' Given a set of models (with full parameter values and model probabilities) the \samp{optDesign} function calculates
+#' the optimal design for estimating the dose-response model parameters (D-optimal) or the design for estimating the
+#' target dose (TD-optimal design) (see Dette, Bretz, Pepelyshev and Pinheiro (2008)), or a mixture of these two
+#' criteria. The design can be plotted (together with the candidate models) using \samp{plot.design}. \samp{calcCrit}
+#' calculates the design criterion for a discrete set of design(s). \samp{rndDesign} provides efficient rounding for the
+#' calculated continous design to a finite sample size.
+#'
+#' Let \eqn{M_m}{M_m} denote the Fisher information matrix under model m (up to
+#' proportionality). \eqn{M_m}{M_m} is given by \eqn{\sum a_i w_i }{\sum a_i
+#' w_i g_i^Tg_i}\eqn{ g_i^Tg_i}{\sum a_i w_i g_i^Tg_i}, where \eqn{a_i}{a_i} is
+#' the allocation weight to dose i, \eqn{w_i}{w_i} the weight for dose i specified via \samp{weights} and \eqn{g_i}{g_i}
+#' the gradient vector of model m evaluated at dose i.
+#'
+#' For \samp{designCrit = "Dopt"} the code minimizes the design criterion
+#'
+#' \deqn{-\sum_{m}p_m/k_m \log(\det(M_m))}{-sum_m p_m/k_m log(det(M_m))} where \eqn{p_m}{p_m} is the probability for
+#' model m and \eqn{k_m}{k_m} is the number of parameters for model m. When \samp{standDopt = FALSE} the \eqn{k_m}{k_m}
+#' are all assumed to be equal to one.
+#'
+#' For \samp{designCrit = "TD"} the code minimizes the design criterion
+#'
+#' \deqn{\sum_{m}p_m \log(v_m)}{sum_m p_m log(v_m)} where \eqn{p_m}{p_m} is the probability for model m and
+#' \eqn{v_m}{v_m} is proportional to the asymptotic
+#' variance of the TD estimate and given by \eqn{b_m'M_m^{-}b_m}{b_m'Minv_m
+#' b_m} (see Dette et al. (2008), p. 1227 for details).
+#'
+#' For \samp{designCrit = "Dopt&TD"} the code minimizes the design criterion
+#' \deqn{\sum_{m}p_m(-0.5\log(\det(M_m))/k_m+0.5\log(v_m))}{sum_m
+#' p_m(-0.5log(det(M_m))/k_m+0.5log(v_m))}
+#'
+#' Again, for \samp{standDopt = FALSE} the \eqn{k_m}{k_m} are all assumed to be equal to one.
+#'
+#' For details on the \samp{rndDesign} function, see Pukelsheim (1993), Chapter 12.
+#'
+#' @aliases optDesign plot.DRdesign calcCrit rndDesign
+#' @param models An object of class \samp{c(Mods, fullMod)}, see the \code{\link{Mods}} function for details. When an TD
+#'   optimal design should be calculated, the TD needs to exist for all models. If a D-optimal design should be
+#'   calculated, you need at least as many doses as there are parameters in the specified models.
+#' @param probs Vector of model probabilities for the models specified in \samp{models}, assumed in the same order as
+#'   specified in models
+#' @param doses Optional argument. If this argument is missing the doses attribute in the \samp{c(Mods, fullMod)} object
+#'   specified in \samp{models} is used.
+#' @param designCrit Determines which type of design to calculate. "TD&Dopt" uses both optimality criteria with equal
+#'   weight.
+#' @param Delta Target effect needed for calculating "TD" and "TD&Dopt" type designs.
+#' @param standDopt Logical determining, whether the D-optimality criterion (specifically the log-determinant) should be
+#'   standardized by the number of parameters in the model or not (only of interest if type = "Dopt" or type =
+#'   "TD&Dopt"). This is of interest, when there is more than one model class in the candidate model set (traditionally
+#'   standardization this is done in the optimal design literature).
+#' @param weights Vector of weights associated with the response at the doses. Needs to be of the same length as the
+#'   \samp{doses}.  This can be used to calculate designs for heteroscedastic or for generalized linear model
+#'   situations.
+#' @param nold,n When calculating an optimal design at an interim analysis, \samp{nold} specifies the vector of sample
+#'   sizes already allocated to the different doses, and \samp{n} gives sample size for the next cohort.
+#'
+#'   For \samp{optimizer = "exact"} one always needs to specify the total sample size via \samp{n}.
+#' @param control List containing control parameters passed down to numerical optimization algorithms
+#'   (\code{\link{optim}}, \code{\link{nlminb}} or solnp function).\cr
+#'
+#'   For \samp{type = "exact"} this should be a list with possible entries \samp{maxvls1} and \samp{maxvls2},
+#'   determining the maximum number of designs allowed for passing to the criterion function (default
+#'   \samp{maxvls2=1e5}) and for creating the initial unrestricted matrix of designs (default \samp{maxvls1=1e6}). In
+#'   addition there can be an entry \samp{groupSize} in case the patients are allocated a minimum group size is
+#'   required.
+#' @param optimizer Algorithm used for calculating the optimal design. Options "Nelder-Mead" and "nlminb" use the
+#'   \code{\link{optim}} and \code{\link{nlminb}} function and use a trigonometric transformation to turn the
+#'   constrained optimization problem into an unconstrained one (see Atkinson, Donev and Tobias, 2007, pages 130,131).
+#'
+#'   Option "solnp" uses the solnp function from the Rsolnp package, which implements an optimizer for non-linear
+#'   optimization under general constraints.
+#'
+#'   Option "exact" tries all given combinations of \samp{n} patients to the given dose groups (subject to the bounds
+#'   specified via \samp{lowbnd} and \samp{uppbnd}) and reports the best design. When patients are only allowed to be
+#'   allocated in groups of a certain \samp{groupSize}, this can be adjusted via the control argument.
+#'   \samp{n/groupSize} and \samp{length(doses)} should be rather small for this approach to be feasible.
+#'
+#'   When the number of doses is small (<8) usually \samp{"Nelder-Mead"} and \samp{"nlminb"} are best suited
+#'   (\samp{"nlminb"} is usually a bit faster but less stable than \samp{"Nelder-Mead"}). For a larger number of doses
+#'   \samp{"solnp"} is the most reliable option (but also slowest) (\samp{"Nelder-Mead"} and \samp{"nlminb"} often
+#'   fail). When the sample size is small \samp{"exact"} provides the optimal solution rather quickly.
+#' @param lowbnd,uppbnd Vectors of the same length as dose vector specifying upper and lower limits for the allocation
+#'   weights. This option is only available when using the "solnp" and "exact" optimizers.
+#' @param userCrit User defined design criterion, should be a function that given a vector of allocation weights and the
+#'   doses returns the criterion function. When specified \samp{models} does not need to be handed over.
+#'
+#'   The first argument of \samp{userCrit} should be the vector of design weights, while the second argument should be
+#'   the \samp{doses} argument (see example below). Additional arguments to \samp{userCrit} can be passed via ...
+#' @param ...  For function \samp{optDesign} these are additional arguments passed to \samp{userCrit}.\cr \cr For
+#'   function \samp{plot.design} these are additional parameters passed to \code{\link{plot.Mods}}.\cr
+#' @note In some cases (particularly when the number of doses is large, e.g. 7 or larger) it might be necessary to allow
+#'   a larger number of iterations in the algorithm (via the argument \samp{control}), particularly for the Nelder-Mead
+#'   algorithm. Alternatively one can use the solnp optimizer that is usually the most reliable, but not fastest option.
+#' @author Bjoern Bornkamp
+#' @seealso \code{\link{Mods}}, \code{\link{drmodels}}
+#' @references Atkinson, A.C., Donev, A.N. and Tobias, R.D. (2007). Optimum Experimental Designs, with SAS, Oxford
+#'   University Press
+#'
+#'   Dette, H., Bretz, F., Pepelyshev, A. and Pinheiro, J. C. (2008). Optimal
+#' Designs for Dose Finding Studies, \emph{Journal of the American Statisical
+#' Association}, \bold{103}, 1225--1237
+#'
+#'   Pinheiro, J.C., Bornkamp, B. (2017) Designing Phase II Dose-Finding Studies: Sample Size, Doses and Dose Allocation
+#'   Weights, in O'Quigley, J., Iasonos, A. and Bornkamp, B. (eds) Handbook of methods for designing, monitoring, and
+#'   analyzing dose-finding trials, CRC press
+#'
+#'   Pukelsheim, F. (1993). Optimal Design of Experiments, Wiley
+#' @examples
+#'
+#' ## calculate designs for Emax model
+#' doses <- c(0, 10, 100)
+#' emodel <- Mods(emax = 15, doses=doses, placEff = 0, maxEff = 1)
+#' optDesign(emodel, probs = 1)
+#' ## TD-optimal design
+#' optDesign(emodel, probs = 1, designCrit = "TD", Delta=0.5)
+#' ## 50-50 mixture of Dopt and TD
+#' optDesign(emodel, probs = 1, designCrit = "Dopt&TD", Delta=0.5)
+#' ## use dose levels different from the ones specified in emodel object
+#' des <- optDesign(emodel, probs = 1, doses = c(0, 5, 20, 100))
+#' ## plot models overlaid by design
+#' plot(des, emodel)
+#' ## round des to a sample size of exactly 90 patients
+#' rndDesign(des, n=90) ## using the round function would lead to 91 patients
+#'
+#' ## illustrating different optimizers (see Note above for more comparison)
+#' optDesign(emodel, probs=1, optimizer="Nelder-Mead")
+#' optDesign(emodel, probs=1, optimizer="nlminb")
+#' ## optimizer solnp (the default) can deal with lower and upper bounds:
+#' optDesign(emodel, probs=1, designCrit = "TD", Delta=0.5,
+#'           optimizer="solnp", lowbnd = rep(0.2,3))
+#' ## exact design using enumeration of all possibilites
+#' optDesign(emodel, probs=1, optimizer="exact", n = 30)
+#' ## also allows to fix minimum groupSize
+#' optDesign(emodel, probs=1, designCrit = "TD", Delta=0.5,
+#'           optimizer="exact", n = 30,  control = list(groupSize=5))
+#'
+#'
+#' ## optimal design at interim analysis
+#' ## assume there are already 10 patients on each dose and there are 30
+#' ## left to randomize, this calculates the optimal increment design
+#' optDesign(emodel, 1, designCrit = "TD", Delta=0.5,
+#'           nold = c(10, 10, 10), n=30)
+#'
+#' ## use a larger candidate model set
+#' doses <- c(0, 10, 25, 50, 100, 150)
+#' fmods <- Mods(linear = NULL, emax = 25, exponential = 85,
+#'              linlog = NULL, logistic = c(50, 10.8811),
+#'              doses = doses, addArgs=list(off=1),
+#'              placEff=0, maxEff=0.4)
+#' probs <- rep(1/5, 5) # assume uniform prior
+#' desDopt <- optDesign(fmods, probs, optimizer = "nlminb")
+#' desTD <- optDesign(fmods, probs, designCrit = "TD", Delta = 0.2,
+#'                    optimizer = "nlminb")
+#' desMix <- optDesign(fmods, probs, designCrit = "Dopt&TD", Delta = 0.2)
+#' ## plot design and truth
+#' plot(desMix, fmods)
+#'
+#' ## illustrate calcCrit function
+#' ## calculate optimal design for beta model
+#' doses <- c(0, 0.49, 25.2, 108.07, 150)
+#' models <- Mods(betaMod = c(0.33, 2.31), doses=doses,
+#'                 addArgs=list(scal=200),
+#'                 placEff=0, maxEff=0.4)
+#' probs <- 1
+#' deswgts <- optDesign(models, probs, designCrit = "Dopt",
+#'                      control=list(maxit=1000))
+#' ## now compare this design to equal allocations on
+#' ## 0, 10, 25, 50, 100, 150
+#' doses2 <- c(0, 10, 25, 50, 100, 150)
+#' design2 <- c(1/6, 1/6, 1/6, 1/6, 1/6, 1/6)
+#' crit2 <- calcCrit(design2, models, probs, doses2, designCrit = "Dopt")
+#' ## ratio of determinants (returned criterion value is on log scale)
+#' exp(deswgts$crit-crit2)
+#'
+#' ## example for calculating an optimal design for logistic regression
+#' doses <- c(0, 0.35, 0.5, 0.65, 1)
+#' fMod <- Mods(linear = NULL, doses=doses, placEff=-5, maxEff = 10)
+#' ## now calculate weights to use in the covariance matrix
+#' mu <- as.numeric(getResp(fMod, doses=doses))
+#' mu <- 1/(1+exp(-mu))
+#' weights <- mu*(1-mu)
+#' des <- optDesign(fMod, 1, doses, weights = weights)
+#'
+#' ## one can also specify a user defined criterion function
+#' ## here D-optimality for cubic polynomial
+#' CubeCrit <- function(w, doses){
+#'   X <- cbind(1, doses, doses^2, doses^3)
+#'   CVinv <- crossprod(X*w)
+#'   -log(det(CVinv))
+#' }
+#' optDesign(doses = c(0,0.05,0.2,0.6,1),
+#'           designCrit = "userCrit", userCrit = CubeCrit,
+#'           optimizer = "nlminb")
+#' @export
 optDesign <- function(models, probs, doses,
                       designCrit = c("Dopt", "TD", "Dopt&TD", "userCrit"),
                       Delta, standDopt = TRUE, weights,
@@ -297,6 +371,16 @@ optDesign <- function(models, probs, doses,
   out
 }
 
+#' Calculate design criteria for set of designs
+#'
+#' @inheritParams optDesign
+#' @param design Argument for \samp{rndDesign} and \samp{calcCrit} functions: Numeric vector (or matrix) of allocation
+#'   weights for the different doses. The rows of the matrices need to sum to 1. Alternatively also an object of class
+#'   "DRdesign" can be used for \samp{rndDesign}. Note that there should be at least as many design points available as
+#'   there are parameters in the dose-response models selected in \code{models} (otherwise the code returns an NA).
+#'
+#' @rdname optDesign
+#' @export
 calcCrit <- function(design, models, probs, doses, 
                      designCrit = c("Dopt", "TD", "Dopt&TD"),
                      Delta, standDopt = TRUE, weights,
@@ -396,7 +480,7 @@ calcCrit <- function(design, models, probs, doses,
   res
 }
 
-## print designs
+#' @export
 print.DRdesign <- function(x, digits = 5, eps = 0.001, ...){
   nam <- switch(x$designCrit,
                 "TD" = "TD",
@@ -410,15 +494,13 @@ print.DRdesign <- function(x, digits = 5, eps = 0.001, ...){
   print(round(vec, digits = digits))
 }
 
-## auxiliary function for efficient rounding
-which.is.max <- function (x){
-    y <- seq_along(x)[x == max(x)]
-    if (length(y) > 1L) 
-        sample(y, 1L)
-    else y
-}
 
-## efficient rounding (see Pukelsheim (1993), Ch. 12)
+#' Efficiently round calculated design to a finite sample size
+#'
+#' @inheritParams calcCrit
+#' @param eps Argument for \samp{rndDesign} function: Value under which elements of w will be regarded as 0.
+#' @rdname optDesign
+#' @export
 rndDesign <- function(design, n, eps = 0.0001){
 
   if(missing(n))
@@ -455,53 +537,20 @@ rndDesign <- function(design, n, eps = 0.0001){
 }
 
 
-getCompositions <- function(N, M){
-  nC <- choose(N+M-1, M-1)
-  lst <- .C("getcomp", comp=integer(nC*M), integer(M-1),
-            as.integer(N), as.integer(M-1), as.integer(nC),
-            PACKAGE = "DoseFinding")
-  matrix(lst$comp, byrow = TRUE, nrow = nC)
-}
-
-
-## calculate all possible compositions of n patients to nDoses groups
-## (assuming a certain block-size) upper and lower bounds on the
-## allocations can also be specified
-getDesMat <- function(n, nDoses, lowbnd = rep(0, nDoses), 
-                      uppbnd = rep(1, nDoses), groupSize,
-                      maxvls1, maxvls2){
-  if(n %% groupSize)
-    stop("n needs to be divisible by groupSize")
-  nG <- n/groupSize
-  combn <- choose(nG+nDoses-1,nDoses-1)
-  if(combn > maxvls1)
-    stop(combn, " (unrestricted) combinations, increase maxvls1 in control 
-         argument if this calculation should be performed")
-
-  desmat <- getCompositions(nG, nDoses)/nG
- 
-  if(any(lowbnd > 0) | any(uppbnd < 1)){
-    comp <- matrix(lowbnd, byrow = TRUE, ncol = nDoses, nrow=nrow(desmat))
-    LindMat <- desmat >= comp
-    comp <- matrix(uppbnd, byrow=TRUE, ncol = nDoses, nrow=nrow(desmat))
-    UindMat <- desmat <= comp
-    ind <- rowSums(LindMat*UindMat) == nDoses
-    desmat <- desmat[ind,]
-    if(nrow(desmat) == 0)
-      stop("no design is compatible with bounds specified in lowbnd and uppbnd")
-  }
-  if(nrow(desmat) > maxvls2)
-    stop(nrow(desmat), " combinations, increase maxvls2 in control argument if
-         this calculation should be performed")
-  desmat
-}
-
-## plot method for design objects
+#' Plot optimal designs
+#'
+#' @inheritParams optDesign
+#' @param x Object of class \samp{DRdesign} (for \samp{plot.design})
+#' @param lwdDes,colDes Line width and color of the lines plotted for the design (in \samp{plot.design})
+#'
+#' @rdname optDesign
+#' @method plot DRdesign
+#' @export
 plot.DRdesign <- function(x, models, lwdDes = 10, colDes = rgb(0,0,0,0.3), ...){
   if(missing(models))
     stop("need object of class Mods to produce plot")
   plot(models, ...)
-  layoutmat <- trellis.currentLayout()
+  layoutmat <- lattice::trellis.currentLayout()
   nc <- ncol(layoutmat)
   nr <- nrow(layoutmat)
   total <- sum(layoutmat > 0)
@@ -510,18 +559,18 @@ plot.DRdesign <- function(x, models, lwdDes = 10, colDes = rgb(0,0,0,0.3), ...){
     for(j in 1:nr){
       if(z > total)
         break
-      trellis.focus("panel", i, j)
-      args <- trellis.panelArgs()
+      lattice::trellis.focus("panel", i, j)
+      args <- lattice::trellis.panelArgs()
       miny <- min(args$y)
       maxy <- max(args$y)
       dy <- maxy-miny
       for(k in 1:length(x$doses)){
         yy <- c(0,(x$design*dy)[k])+miny
         xx <- rep(x$doses[k],2)
-        panel.xyplot(xx, yy, type="l", col = colDes, lwd = lwdDes)
+        lattice::panel.xyplot(xx, yy, type="l", col = colDes, lwd = lwdDes)
       }
       z <- z+1
-      trellis.unfocus()
+      lattice::trellis.unfocus()
     }
   }
 }

@@ -1,4 +1,27 @@
 ## functions related to fitting dose-response models using ML or generalized approach
+
+
+#' Calculates default bounds for non-linear parameters in dose-response models
+#'
+#' Calculates reasonable bounds for non-linear parameters for the built-in non-linear regression model based on the dose
+#' range under investigation.
+#'
+#' For the logistic model the first row corresponds to the ED50 parameter and the second row to the delta parameter. For
+#' the sigmoid Emax model the first row corresponds to the ED50 parameter and the second row to the h parameter, while
+#' for the beta model first and second row correspond to the delta1 and delta2 parameters. See \code{\link{logistic}},
+#' \code{\link{sigEmax}} and \code{\link{betaMod}} for details.
+#'
+#'
+#' @param mD Maximum dose in the study.
+#' @param emax,exponential,logistic,sigEmax,betaMod values for the nonlinear parameters for these model-functions
+#' @return List containing bounds for the model parameters.
+#' @author Bjoern Bornkamp
+#' @seealso \code{\link{fitMod}}
+#' @examples
+#'
+#'   defBnds(mD = 1)
+#'   defBnds(mD = 200)
+#' @export
 defBnds <- function(mD, emax = c(0.001, 1.5)*mD,
                     exponential = c(0.1, 2)*mD, 
                     logistic = matrix(c(0.001, 0.01, 1.5, 1/2)*mD, 2),
@@ -8,61 +31,162 @@ defBnds <- function(mD, emax = c(0.001, 1.5)*mD,
        exponential = exponential, betaMod = betaMod)
 }
 
-fit.control <- function(control){
-  ## get control parameters for nonlinear fitting
-  ## default parameters
-  res <- list(nlminbcontrol = list(),
-              optimizetol = .Machine$double.eps^0.5,
-              gridSize = list(dim1 = 30, dim2 = 144))
-  if(!is.null(control)){
-    ## check arguments first
-    if(!is.null(control$nlminbcontrol)){
-      if(!is.list(control$nlminbcontrol))
-        stop("nlminbcontrol element of fitControl must be a list")
-    }
-    if(!is.null(control$gridSize)){
-      if(!is.list(control$gridSize))
-        stop("gridSize element of fitControl must be a list")
-      nams <- names(control$gridSize)
-      ind <- any(is.na(match(nams,c("dim1", "dim2"))))
-      if(ind){
-        stop("gridSize list needs to have names dim1 and dim2")
-      } else {
-        if(!is.numeric(control$gridSize$dim1) | !is.numeric(control$gridSize$dim1))
-          stop("gridSize$dim1 and gridSize$dim2 need to be numeric")
-      }
-    }
-    nams <- names(control)
-    res[nams] <- control
-    if(!all(nams %in% c("nlminbcontrol","optimizetol","gridSize")))
-      warning("control needs to have entries called \"nlminbcontrol\",\"optimizetol\",\"gridSize\"")
-    res[nams] <- control
-  }
-  res
-}
-
-getGrid <- function(Ngrd, bnds, dim){
-  if(dim == 1){
-    grdnods <- (2*(1:Ngrd)-1)/(2*Ngrd)
-    mat <- matrix(grdnods*(bnds[2]-bnds[1])+bnds[1], ncol = 1)
-  } else { # use generalized lattice point set (glp) set (maximum size 75025)
-    glp <- c(3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 
-             610, 987, 1597, 2584, 4181, 6765, 10946, 
-             17711, 28657, 46368, 75025)
-    if(Ngrd > 75025)
-      Ngrd <- 75025
-    if(Ngrd < 5)
-      Ngrd <- 5
-    ind <- min((1:22)[glp >= Ngrd])
-    N <- glp[ind]
-    k <- 1:N
-    mat <- cbind((k-0.5)/N, ((glp[ind-1]*k-0.5)/N)%%1)
-    mat[,1] <- mat[,1]*(bnds[1,2]-bnds[1,1])+bnds[1,1]
-    mat[,2] <- mat[,2]*(bnds[2,2]-bnds[2,1])+bnds[2,1]
-  }
-  mat
-}
-
+#' Fit non-linear dose-response model
+#'
+#' Fits a dose-response model. Built-in dose-response models are "linlog", "linear", "quadratic", "emax", "exponential",
+#' "sigEmax", "betaMod" and "logistic" (see \code{\link{drmodels}}).
+#'
+#' When \samp{type = "normal"} ordinary least squares is used and additional additive covariates can be specified in
+#' \samp{addCovars}. The underlying assumption is hence normally distributed data and homoscedastic variance.
+#'
+#' For \samp{type = "general"} a generalized least squares criterion is used
+#' \deqn{ }{(f(dose,theta)-resp)'S^{-1}(f(dose,theta)-resp)}\deqn{
+#' (f(dose,\theta)-resp)'S^{-1}(f(dose,\theta)-resp)}{(f(dose,theta)-resp)'S^{-1}(f(dose,theta)-resp)}
+#' and an inverse weighting matrix is specified in \samp{S}, \samp{type =
+#' "general"} is primarily of interest, when fitting a model to AN(C)OVA type
+#' estimates obtained in a first stage fit, then \samp{resp} contains the estimates and \samp{S} is the estimated
+#' covariance matrix for the estimates in \samp{resp}. Statistical inference (e.g. confidence intervals) rely on
+#' asymptotic normality of the first stage estimates, which makes this method of interest only for sufficiently large
+#' sample size for the first stage fit. A modified model-selection criterion can be applied to these model fits (see
+#' also Pinheiro et al. 2014 for details).
+#'
+#' For details on the implemented numerical optimizer see the Details section below.
+#'
+#' Details on numerical optimizer for model-fitting:\cr For linear models fitting is done using numerical linear algebra
+#' based on the QR decomposition.  For nonlinear models numerical optimization is performed only in the nonlinear
+#' parameters in the model and optimizing over the linear parameters in each iteration (similar as the Golub-Pereyra
+#' implemented in \code{\link{nls}}). For models with 1 nonlinear parameter the \code{\link{optimize}} function is used
+#' for 2 nonlinear parameters the \code{\link{nlminb}} function is used. The starting value is generated using a
+#' grid-search (with the grid size specified via \samp{control$gridSize}), or can directly be handed over via
+#' \samp{start}.
+#'
+#' For details on the asymptotic approximation used for \samp{type = "normal"}, see Seber and Wild (2003, chapter 5).
+#' For details on the asymptotic approximation used for \samp{type = "general"}, and the gAIC, see Pinheiro et al.
+#' (2014).
+#'
+#' @aliases fitMod coef.DRMod vcov.DRMod predict.DRMod plot.DRMod logLik.DRMod AIC.DRMod gAIC gAIC.DRMod
+#' @param dose,resp Either vectors of equal length specifying dose and response values, or names of variables in the
+#'   data frame specified in \samp{data}.
+#' @param data Data frame containing the variables referenced in dose and resp if \samp{data} is not specified it is
+#'   assumed that \samp{dose} and \samp{resp} are variables referenced from data (and no vectors)
+#' @param model The dose-response model to be used for fitting the data. Built-in models are "linlog", "linear",
+#'   "quadratic", "emax", "exponential", "sigEmax", "betaMod" and "logistic" (see \link{drmodels}).
+#' @param S The inverse weighting matrix used in case, when \samp{type = "general"}, see Description. For later
+#'   inference statements (vcov or predict methods) it is assumed this is the estimated covariance of the estimates in
+#'   the first stage fit.
+#' @param type Determines whether inference is based on an ANCOVA model under a homoscedastic normality assumption (when
+#'   \samp{type = "normal"}), or estimates at the doses and their covariance matrix and degrees of freedom are specified
+#'   directly in \samp{resp}, \samp{S} and \samp{df}. See also the Description above and Pinheiro et al. (2014).
+#' @param addCovars Formula specifying additional additive linear covariates (only for \samp{type = "normal"})
+#' @param placAdj Logical, if true, it is assumed that placebo-adjusted
+#'   estimates are specified in \samp{resp} (only possible for \samp{type =
+#'   "general"}).
+#' @param bnds Bounds for non-linear parameters. If missing the the default bounds from \code{\link{defBnds}} is used.
+#'
+#'   When the dose-response model has only one non-linear parameter (for example Emax or exponential model), \samp{bnds}
+#'   needs to be a vector containing upper and lower bound. For models with two non-linear parameters \samp{bnds} needs
+#'   to be a matrix containing the bounds in the rows, see the Description section of \code{\link{defBnds}} for details
+#'   on the formatting of the bounds for the individual models.
+#' @param df Degrees of freedom to use in case of \samp{type = "general"}. If this argument is missing \samp{df = Inf}
+#'   is used. For \samp{type = "normal"} this argument is ignored as the exact degrees of freedom can be deduced from
+#'   the model.
+#' @param start Vector of starting values for the nonlinear parameters (ignored for linear models). When equal to NULL,
+#'   a grid optimization is performed and the best value is used as starting value for the local optimizer.
+#' @param na.action A function which indicates what should happen when the data contain NAs.
+#' @param control A list with entries: "nlminbcontrol", "optimizetol" and "gridSize".
+#'
+#'   The entry nlminbcontrol needs to be a list and it is passed directly to control argument in the nlminb function,
+#'   that is used internally for models with 2 nonlinear parameters.
+#'
+#'   The entry optimizetol is passed directly to the tol argument of the optimize function, which is used for models
+#'   with 1 nonlinear parameters.
+#'
+#'   The entry gridSize needs to be a list with entries dim1 and dim2 giving the size of the grid for the gridsearch in
+#'   1d or 2d models.
+#' @param addArgs List containing two entries named "scal" and "off" for the "betaMod" and "linlog" model. When addArgs
+#'   is NULL the following defaults is used \samp{list(scal = 1.2*max(doses), off = 0.01*max(doses))}.
+#' @return An object of class DRMod. Essentially a list containing information about the fitted model coefficients, the
+#'   residual sum of squares (or generalized residual sum of squares),
+#' @author Bjoern Bornkamp
+#' @seealso \code{\link{defBnds}}, \code{\link{drmodels}}
+#' @references Pinheiro, J. C., Bornkamp, B., Glimm, E. and Bretz, F. (2014) Model-based dose finding under model
+#'   uncertainty using general parametric models, \emph{Statistics in Medicine}, \bold{33}, 1646--1661
+#'
+#'   Seber, G.A.F. and Wild, C.J. (2003). Nonlinear Regression, Wiley.
+#' @examples
+#'
+#' ## Fit the emax model to the IBScovars data set
+#' data(IBScovars)
+#' fitemax <- fitMod(dose, resp, data=IBScovars, model="emax",
+#'                   bnds = c(0.01, 4))
+#'
+#' ## methods for DRMod objects
+#' summary(fitemax)
+#' ## extracting coefficients
+#' coef(fitemax)
+#' ## (asymptotic) covariance matrix of estimates
+#' vcov(fitemax)
+#' ## predicting
+#' newdat <- data.frame(dose = c(0,0.5,1), gender=factor(1))
+#' predict(fitemax, newdata=newdat, predType = "full-model", se.fit = TRUE)
+#' ## plotting
+#' plot(fitemax, plotData = "meansCI", CI=TRUE)
+#'
+#' ## now include (additive) covariate gender
+#' fitemax2 <- fitMod(dose, resp, data=IBScovars, model="emax",
+#'                    addCovars = ~gender, bnds = c(0.01, 4))
+#' vcov(fitemax2)
+#' plot(fitemax2)
+#' ## fitted log-likelihood
+#' logLik(fitemax2)
+#' ## extracting AIC (or BIC)
+#' AIC(fitemax2)
+#'
+#' ## Illustrating the "general" approach for a binary regression
+#' ## produce first stage fit (using dose as factor)
+#' data(migraine)
+#' PFrate <- migraine$painfree/migraine$ntrt
+#' doseVec <- migraine$dose
+#' doseVecFac <- as.factor(migraine$dose)
+#' ## fit logistic regression with dose as factor
+#' fitBin <- glm(PFrate~doseVecFac-1, family = binomial,
+#'               weights = migraine$ntrt)
+#' drEst <- coef(fitBin)
+#' vCov <- vcov(fitBin)
+#' ## now fit an Emax model (on logit scale)
+#' gfit <- fitMod(doseVec, drEst, S=vCov, model = "emax", bnds = c(0,100),
+#'                 type = "general")
+#' ## model fit on logit scale
+#' plot(gfit, plotData = "meansCI", CI = TRUE)
+#' ## model on probability scale
+#' logitPred <- predict(gfit, predType ="ls-means", doseSeq = 0:200,
+#'                      se.fit=TRUE)
+#' plot(0:200, 1/(1+exp(-logitPred$fit)), type = "l", ylim = c(0, 0.5),
+#'      ylab = "Probability of being painfree", xlab = "Dose")
+#' LB <- logitPred$fit-qnorm(0.975)*logitPred$se.fit
+#' UB <- logitPred$fit+qnorm(0.975)*logitPred$se.fit
+#' lines(0:200, 1/(1+exp(-LB)))
+#' lines(0:200, 1/(1+exp(-UB)))
+#'
+#'
+#' ## now illustrate "general" approach for placebo-adjusted data (on
+#' ## IBScovars) note that the estimates are identical to fitemax2 above)
+#' anovaMod <- lm(resp~factor(dose)+gender, data=IBScovars)
+#' drFit <- coef(anovaMod)[2:5] # placebo adjusted estimates at doses
+#' vCov <- vcov(anovaMod)[2:5,2:5]
+#' dose <- sort(unique(IBScovars$dose))[-1]
+#' ## now fit an emax model to these estimates
+#' gfit2 <- fitMod(dose, drFit, S=vCov, model = "emax", type = "general",
+#'                placAdj = TRUE, bnds = c(0.01, 2))
+#' ## some outputs
+#' summary(gfit2)
+#' coef(gfit2)
+#' vcov(gfit2)
+#' predict(gfit2, se.fit = TRUE, doseSeq = c(1,2,3,4), predType = "effect-curve")
+#' plot(gfit2, CI=TRUE, plotData = "meansCI")
+#' gAIC(gfit2)
+#'
+#' @export
 fitMod <- function(dose, resp, data = NULL, model = NULL, S = NULL,
                    type = c("normal", "general"),
                    addCovars = ~1, placAdj = FALSE, bnds, df = NULL,
@@ -147,353 +271,7 @@ fitMod <- function(dose, resp, data = NULL, model = NULL, S = NULL,
   out
 }
 
-fitMod.raw <- function(dose, resp, data, model, S, type,
-                       addCovars = ~1, placAdj = FALSE, bnds, df, start = NULL,
-                       na.action = na.fail, control, doseNam, respNam,
-                       off, scal, nodes, covarsUsed){
-  ## fit model but do not check for arguments (for use in MCPMod function)!
-  ## differences to fitMod:
-  ## - dose, resp need to be vectors containing the data
-  ## - additional args: doseNam, respNam, off, scal
-  builtIn <- c("linlog", "linear", "quadratic", "linInt", "emax",
-               "exponential", "logistic", "betaMod", "sigEmax")
-  modelNum <- match(model, builtIn)
-
-  weights <- NULL;clinS <- NULL
-  ## package data for model-fitting
-  if(type == "general"){ # general approach
-    dataFit <- data.frame(dose = dose, resp = resp)
-    ## pre-calculate some necessary information
-    clinS <- chol(solve(S))
-  } else { # normal data
-    if(covarsUsed){ 
-      dataFit <- data
-      ind1 <- which(names(dataFit) == doseNam)
-      ind2 <- which(names(dataFit) == respNam)
-      names(dataFit)[c(ind1, ind2)] <- c("dose", "resp")
-      ord <- order(dataFit$dose)
-      dataFit <- dataFit[ord,] ## sorting by increasing dose is needed for optGrid (specifically getZmat)
-    } else { ## for efficiency fit on means in case of no covariates
-      dataFit <- data.frame(dose = sort(unique(dose)), 
-                            resp = as.numeric(tapply(resp, dose, mean)))
-      ## calculate within group variance to recover full RSS later
-      n <- as.vector(table(dose))
-      vars <- tapply(resp, dose, var)
-      vars[n == 1] <- 0
-      S2 <- sum((n - 1) * vars)
-      weights <- n
-    }
-  } 
-  ## call actual fitting algorithms
-  if(is.element(modelNum, 1:4)){ # linear model
-    fit <- fitModel.lin(dataFit, model, addCovars, off, type,
-                        weights, placAdj, clinS)
-  } else { # non-linear model
-    fit <- fitModel.bndnls(dataFit, model, addCovars, type, bnds, control,
-                           start, scal, weights, placAdj, clinS)
-  }
-  ## now need to post-process
-  resid <- fit$resid
-  if(type == "normal" & !covarsUsed) # fitted on means, need to recover full RSS
-    resid <- fit$resid + S2
-  ## extract levels for factor covariates
-  if(covarsUsed){
-    usedVars <- all.vars(addCovars) # variables used for fitting
-    ind <- sapply(data, function(x) is.factor(x)) # determine factors in data
-    ind <- is.element(names(data), usedVars) & ind # has the factor been used in fitting?
-    xlev <- lapply(data[ind], levels) # extract levels
-  } else {
-    xlev <- NULL
-  }
-  df <- ifelse(is.null(fit$df), df, fit$df)
-  res <- list(coefs = fit$coefs, resid, df=df,
-              addCovars = addCovars)
-  names(res)[2] <- ifelse(type == "normal", "RSS", "gRSS")
-  attr(res, "model") <- model
-  attr(res, "type") <- type
-  attr(res, "placAdj") <- placAdj
-  attr(res, "addCovars") <- addCovars
-  attr(res, "xlev") <- xlev
-  attr(res, "doseRespNam") <- c(doseNam, respNam)
-  attr(res, "off") <- off
-  attr(res, "scal") <- scal
-  attr(res, "nodes") <- nodes
-  class(res) <- "DRMod"
-  res
-}
-    
-fitModel.lin <- function(dataFit, model, addCovars, off, type,
-                         weights, placAdj, clinS){
-  dose <- dataFit$dose
-  resp <- dataFit$resp
-  ## build model matrices and fit model using QR decompositions
-  X <- switch(model,
-              linear = cbind(1, dose),
-              linlog = cbind(1, log(dose + off)),
-              quadratic = cbind(1, dose, dose^2),
-              linInt = model.matrix(~as.factor(dose)-1, data=dataFit))
-                
-  if(model == "quadratic"){
-    nam <- c("e0", "b1", "b2")
-  } else {
-    if(model == "linInt"){
-      nam <- paste("d", sort(unique(dose)), sep="")
-    } else {
-      nam <- c("e0", "delta")
-    }
-  }
-  if(placAdj){ # no intercept
-    if(model != "linInt"){ # only need to remove intercept for non-linInt mods
-      X <- X[,-1, drop = FALSE]
-      nam <- nam[-1]
-    }
-  }
-  covarsUsed <- addCovars != ~1
-  if(type == "normal" & covarsUsed){ # normal with covariates
-    form <- paste("resp ~", addCovars[2], sep="")
-    m <- model.matrix(as.formula(form), data = dataFit)
-    X <- cbind(X, m[,-1])
-    nam <- c(nam, colnames(m)[-1])
-    par <- as.numeric(qr.coef(qr(X),resp))
-    df <- nrow(X)-ncol(X)
-  } else { # general or normal without covariates
-    if(type == "normal"){
-      clinS <- diag(sqrt(weights))
-      df <- sum(weights) - length(nam)
-    } else {
-      df <- NULL
-    }
-    par <- as.numeric(qr.coef(qr(clinS%*%X),clinS%*%resp))
-  }
-  pred <- as.numeric(X%*%par)
-  names(par) <- nam
-  if(covarsUsed){
-    out <- list(coefs=par, sum((resp-pred)^2), df = df)    
-  } else {
-    out <- list(coefs=par, as.numeric(crossprod(clinS%*%(resp-pred))), df = df)
-  }
-  names(out)[2] <- "resid"
-  out
-}
-
-
-fitModel.bndnls <- function(dataFit, model, addCovars, type, bnds, control, 
-                            start, scal, weights, placAdj, clinS){
-
-  ctrl <- fit.control(control)
-  if(model == "emax"|model == "exponential"){
-    dim <- 1
-    if(!is.matrix(bnds))
-      bnds <- matrix(bnds, nrow = 1)
-  } else {
-    dim <- 2
-  }
-  dose <- dataFit$dose
-  resp <- dataFit$resp
-  ## preliminary calculations (need resXY, clinS and qrX)
-  covarsUsed <- addCovars != ~1
-  covarNams <- NULL
-  if(type == "general"){ # general approach
-    if(placAdj){ # no intercept
-      resXY <- as.numeric(clinS%*%resp)
-    } else {
-      X2 <- clinS%*%matrix(1, nrow = length(dose))
-      resp2 <- clinS%*%resp
-      qrX <- qr(X2)
-      resXY <- as.numeric(qr.resid(qrX, resp2))
-    }
-  } else { # normal data
-    form <- paste("resp ~", addCovars[2], sep="")
-    m <- model.matrix(as.formula(form), dataFit)
-    if(covarsUsed){ # covariates present
-      covarNams <- colnames(m)[2:ncol(m)]
-      qrX <- qr(m)
-      resXY <- as.numeric(qr.resid(qrX, resp))
-    } else { # no covariates: fit on means
-      clinS <- diag(sqrt(weights))
-      qrX <- qr(clinS%*%m)
-      resXY <- as.numeric(qr.resid(qrX, sqrt(weights)*resp))
-    }
-  }
-
-  ## if no starting values provided use grid-search
-  if(is.null(start)){
-    opt <- optGrid(model, dim, bnds, ctrl$gridSize, dose, type,
-                   qrX, resXY, clinS, placAdj, scal)
-    strt <- opt$coefs;resid <- opt$resid
-    if(dim == 1){ ## refine bounds
-      N <- ctrl$gridSize$dim1
-      dif <- (bnds[2]-bnds[1])/N # distance between grid points
-      bnds[1] <- max(c(strt-1.1*dif), bnds[1])
-      bnds[2] <- min(c(strt+1.1*dif), bnds[2])
-    }
-  } else {
-    strt <- start;resid <- Inf
-  }
-  ## start local optimizer at starting value
-  opt2 <- optLoc(model, dim, bnds, dose, qrX, resXY, strt, scal,
-                 placAdj, type, ctrl$optimizetol, ctrl$nlminbcontrol,
-                 clinS)
-  ## recover names
-  nam1 <- switch(model, emax = c("eMax", "ed50"),
-                 sigEmax = c("eMax", "ed50", "h"),
-                 logistic = c("eMax", "ed50", "delta"),
-                 exponential = c("e1", "delta"),
-                 betaMod = c("eMax", "delta1", "delta2"))
-  ## recover all parameters from nonlin parameter and return results
-  f0 <- getStandDR(model, dose, opt2$coefs, scal)
-  if(type == "general"){ # return "generalized" sum of squares
-    if(placAdj){ # no intercept
-      par0 <- sum((clinS %*% f0) * (clinS%*%resp))/sum((clinS %*% f0)^2)
-      pred <- f0*par0
-      par <- c(par0, opt2$coefs)
-      names(par) <- nam1      
-    } else { # with intercept
-      F <- cbind(1, f0)
-      par0 <- qr.coef(qr(clinS %*% F), clinS %*% resp)
-      pred <- F%*%par0
-      par <- c(par0, opt2$coefs)
-      names(par) <- c("e0", nam1)
-    }
-    return(list(coefs=par, resid = opt2$resid))
-  } else { ## type == normal
-    X <- cbind(1,f0,m[,-1])
-    if(covarsUsed){
-      par0 <- as.numeric(qr.coef(qr(X),resp))
-      pred <- as.numeric(X%*%par0)
-      par <- c(par0[1:2], opt2$coefs, par0[3:length(par0)])
-      df <- nrow(X) - length(par)
-    } else { # no covariates; was fitted on means
-      par0 <- qr.coef(qr(clinS %*% X), clinS %*% resp)
-      pred <- X%*%par0
-      par <- c(par0, opt2$coefs)
-      df <- sum(weights) - length(par)
-    }
-    names(par) <- c("e0", nam1, covarNams)
-    return(list(coefs=par, resid = opt2$resid, df = df))
-  }
-}
-
-optGrid <- function(model, dim, bnds, gridSize, dose, type,
-                    qrX, resXY, wMat, placAdj, scal){
-  ## grid optimizer for non-linear case
-  N <- ifelse(dim==1, gridSize$dim1, gridSize$dim2)
-  if(N < 1)
-    stop("need N >= 1")
-  nodes <- getGrid(N, bnds, dim)
-  ## calculate residuals
-  if(type == "normal" & is.null(wMat)){ # normal with covariates
-    Zmat <- getZmat(dose, nodes, model, dim, scal)
-    resZmat <- qr.resid(qrX, Zmat)
-  } else { # normal without covariates or general
-    Zmat <- getZmat.weighted(dose, nodes, model, dim, scal)
-    Zmat <- wMat%*%Zmat
-    if(placAdj & type == "general") # general without intercept
-      resZmat <- Zmat
-    else
-      resZmat <- qr.resid(qrX, Zmat)
-  }
-
-  colsms1 <- colSums(resZmat * resXY)
-  colsms2 <- colSums(resZmat * resZmat)
-  RSSvec <- sum(resXY*resXY) - (colsms1*colsms1)/colsms2
-  indMin <- which.min(RSSvec)
-  coefs <- nodes[indMin,]
-  list(coefs=coefs, resid = RSSvec[indMin])  
-}
-
-getZmat <- function(x, nodes, model, dim, scal=NULL){
-  getPred <- function(vec, x, model, scal)
-    getStandDR(model, x, vec, scal)
-  xU <- sort(unique(x))
-  n <- as.numeric(table(x))
-  args <- nodes
-  res0 <- apply(args, 1, getPred, x=xU, model=model, scal=scal)
-  Zmat <- apply(res0, 2, function(x,n) rep(x,n), n=n)
-  Zmat
-}
-
-getZmat.weighted <- function(x, nodes, model, dim, scal){
-  # does not exploit repeated observations
-  getPred <- function(vec, x, model, scal)
-    getStandDR(model, x, vec, scal)
-  args <- nodes
-  Zmat <- apply(args, 1, getPred, x=x, model=model, scal=scal)
-  Zmat
-}
-
-getStandDR <- function(model, x, nl, scal){
-  ## calculate standardized response for nonlinear models
-  switch(model,
-         emax = emax(x, 0, 1, nl),
-         sigEmax = sigEmax(x, 0, 1, nl[1], nl[2]),
-         exponential = exponential(x, 0, 1, nl),
-         logistic = logistic(x, 0, 1, nl[1], nl[2]),
-         betaMod = betaMod(x, 0, 1, nl[1], nl[2], scal))
-}
-
-optLoc <- function(model, dim, bnds, dose, qrX, resXY, start, scal,
-                   placAdj, type, tol, nlminbcontrol, clinS){
-  ## function to calculate ls residuals (to be optimized)
-  optFunc <- function(nl, x, qrX, resXY, model, scal, clinS){
-    Z <- getStandDR(model, x, nl, scal)
-    if(!is.null(clinS)){
-      Z <- clinS%*%Z
-    }
-    if(placAdj & type == "general"){
-      resXZ <- Z
-    } else {
-      resXZ <- try(qr.resid(qrX, Z)) # might be NaN if function is called on strange parameters
-      if(inherits(resXZ, "try-error"))
-        return(NA)
-    }
-    sumrsXYrsXZ <- sum(resXY*resXZ)
-    sum(resXY*resXY) - sumrsXYrsXZ*sumrsXYrsXZ/sum(resXZ*resXZ)
-  }
-
-  if(dim == 1){ # one-dimensional models
-    optobj <- optimize(optFunc, c(bnds[1], bnds[2]), x=dose, qrX=qrX, resXY=resXY,
-                       model = model, tol=tol, clinS=clinS, scal = scal)
-    coefs <- optobj$minimum
-    RSS <- optobj$objective
-  } else {
-    optobj <- try(nlminb(start, optFunc, x=dose, qrX=qrX, resXY=resXY,
-                         model = model, scal = scal,
-                         lower = bnds[,1], upper = bnds[,2],
-                         control = nlminbcontrol, clinS=clinS))
-    if(inherits(optobj, "try-error")){
-      coefs <- RSS <- NA
-    } else {
-      coefs <- optobj$par
-      RSS <- optobj$objective
-    }
-  }
-  list(coefs=coefs, resid=RSS)
-}
-
-sepCoef <- function(object){
-  model <- attr(object, "model")
-  if(attr(object, "type") == "general")
-    return(list(DRpars=object$coefs, covarPars = numeric(0)))
-  if(attr(object, "type") == "normal" & object$addCovars == ~1)
-    return(list(DRpars=object$coefs, covarPars = numeric(0)))
-  ## determine the number of parameters (not counting e0 and eMax)
-  if(model %in% c("linear","linlog"))
-    dim <- 2
-  if(model %in% c("quadratic", "exponential", "emax"))
-    dim <- 3
-  if(model %in% c("sigEmax", "logistic", "betaMod"))
-    dim <- 4
-  if(model == "linInt")
-    dim <- length(attr(object, "nodes"))
-  cf <- object$coefs
-  p <- length(cf)
-  ## extract coefficients
-  DRpars <- cf[1:dim] # coefs of DR model
-  covarPars <- cf[(dim+1):p]
-  return(list(DRpars=DRpars, covarPars=covarPars))
-}
-
+#' @export
 print.DRMod <- function(x, digits = 4, ...){
   if (length(x) == 1) {
     cat("NA\n")
@@ -525,11 +303,13 @@ print.DRMod <- function(x, digits = 4, ...){
   }
 }
 
+#' @export
 summary.DRMod <- function(object, digits = 3, ...){
   class(object) <- "summary.DRMod"
   print(object, digits = digits)
 }
 
+#' @export
 print.summary.DRMod <- function(x, digits = 3, data, ...){
   if(length(x) == 1){
     cat("NA\n")
@@ -577,7 +357,17 @@ print.summary.DRMod <- function(x, digits = 3, data, ...){
   }
 }
 
-## extract coefficients
+#' Extract dose-response model coefficients
+#'
+#' @param object,x DRMod object
+#' @param sep Logical determining whether all coefficients should be returned in one numeric or separated in a list.
+#' @param ... Additional arguments for plotting for the plot method. For all other cases additional arguments are
+#'   ignored.
+#'
+#' @rdname fitMod
+#' @method coef DRMod
+#' @export
+#' 
 coef.DRMod <- function(object, sep = FALSE, ...){
   if(length(object) == 1){ # object does not contain a converged fit
     warning("DRMod object does not contain a converged fit")
@@ -589,6 +379,13 @@ coef.DRMod <- function(object, sep = FALSE, ...){
   object$coefs
 }
 
+#' Extract dose-response vcov matrix
+#'
+#' @inheritParams coef.DRMod
+#'
+#' @rdname fitMod
+#' @method vcov DRMod
+#' @export
 vcov.DRMod <- function(object, ...){
   ## object - DRMod object
   ## uGrad - function returning gradient for userModel
@@ -652,30 +449,23 @@ vcov.DRMod <- function(object, ...){
   covMat
 }
 
-gradCalc <- function(model, cf, dose, off, scal, nodes){
-  ## wrapper function to calculate gradient
-  switch(model,
-         linear = {
-           linearGrad(dose)
-         }, linlog = {
-           linlogGrad(dose, off=off)
-         }, quadratic = {
-           quadraticGrad(dose)
-         }, emax = {
-           emaxGrad(dose, eMax = cf[2], ed50 = cf[3])
-         }, logistic = {
-           logisticGrad(dose, eMax = cf[2], ed50 = cf[3], delta = cf[4])
-         }, sigEmax = {
-           sigEmaxGrad(dose, eMax = cf[2], ed50 = cf[3], h = cf[4])
-         }, betaMod = {
-           betaModGrad(dose, eMax = cf[2], delta1 = cf[3], delta2 = cf[4], scal = scal)
-         }, exponential = {
-           exponentialGrad(dose, e1 = cf[2], delta = cf[3])
-         }, linInt = {
-           linIntGrad(dose, resp=cf, nodes=nodes)
-         })
-}
-
+#'Make predictions from dose-response model
+#'
+#'@inheritParams coef.DRMod
+#'@param predType,newdata,doseSeq,se.fit predType determines whether predictions are returned for the full model
+#'  (including potential covariates), the ls-means (SAS type) or the effect curve (difference to placebo).
+#'
+#'  newdata gives the covariates to use in producing the predictions (for predType = "full-model"), if missing the
+#'  covariates used for fitting are used.
+#'
+#'  doseSeq dose-sequence on where to produce predictions (for predType = "effect-curve" and predType = "ls-means"). If
+#'  missing the doses used for fitting are used.
+#'
+#'  se.fit: logical determining, whether the standard error should be calculated.
+#'
+#'@rdname fitMod
+#'@method predict DRMod
+#'@export
 predict.DRMod <- function(object, predType = c("full-model", "ls-means", "effect-curve"),
                           newdata = NULL, doseSeq = NULL, se.fit = FALSE, ...){
   ## Extract relevant information from object
@@ -986,159 +776,33 @@ predict.DRMod <- function(object, predType = c("full-model", "ls-means", "effect
 ##   lines(doseSeq, lbnd, lwd=1.5)
 ## }
 
+
+#'Plot fitted dose-response model
+#'
+#'@inheritParams coef.DRMod
+#'@param CI,level,plotData,plotGrid,colMn,colFit Arguments for plot method: \samp{CI} determines whether confidence
+#'  intervals should be plotted. \samp{level} determines the level of the confidence intervals. \samp{plotData}
+#'  determines how the data are plotted: Either as means or as means with CI, raw data or none. In case of \samp{type =
+#'  "normal"} and covariates the ls-means are displayed, when \samp{type = "general"} the option "raw" is not available.
+#'  \samp{colMn} and \samp{colFit} determine the colors of fitted model and the raw means.
+#'
+#'@rdname fitMod
+#'@method plot DRMod
+#'@export
 plot.DRMod <- function(x, CI = FALSE, level = 0.95,
                        plotData = c("means", "meansCI", "raw", "none"),
                        plotGrid = TRUE, colMn = 1, colFit = 1, ...){
   plotFunc(x, CI, level, plotData, plotGrid, colMn, colFit, ...)
 }
 
-plotFunc <- function(x, CI = FALSE, level = 0.95,
-                     plotData = c("means", "meansCI", "raw", "none"),
-                     plotGrid = TRUE, colMn = 1, colFit = 1, ...){
-  ## Extract relevant information from object
-  if(inherits(x, "DRMod"))
-    obj <- x
-  if(inherits(x, "MCPMod"))
-    obj <- x$mods[[1]]
-  addCovars <- attr(obj, "addCovars")
-  covarsUsed <- addCovars != ~1
-  xlev <- attr(obj, "xlev")
-  doseNam <- attr(obj, "doseRespNam")[1]
-  respNam <- attr(obj, "doseRespNam")[2]
-  data <- attr(obj, "data")
-  type <- attr(obj, "type")
-  placAdj <- attr(obj, "placAdj")
-  plotData <- match.arg(plotData)
-  if(type == "general" & plotData == "raw")
-    stop("plotData =\"raw\" only allowed if fitted DRmod object is of type = \"normal\"")
 
-  ## save anova info in pList list
-  pList <- as.list(data)
-  if(type == "normal"){
-    if(plotData %in% c("means", "meansCI")){
-      ## produce estimates for ANOVA type model
-      data$doseFac <- as.factor(data[[doseNam]])
-      form <- as.formula(paste(respNam, "~ doseFac +", addCovars[2]))
-      fit <- lm(form, data=data)
-      ## build design matrix for prediction
-      dose <- sort(unique(data[[doseNam]]))
-      preddat <- data.frame(doseFac=factor(dose))
-      m <- model.matrix(~doseFac, data=preddat)
-      if(covarsUsed){
-        ## get sas type ls-means
-        nams <- all.vars(addCovars)
-        out <- list()
-        z <- 1
-        for(covar in nams){
-          varb <- data[,covar]
-          if(is.numeric(varb)){
-            out[[z]] <- mean(varb)
-          } else if(is.factor(varb)){
-            k <- nlevels(varb)
-            out[[z]] <- rep(1/k, k-1)
-          }
-          z <- z+1
-        }
-        out <- do.call("c", out)
-        m0 <- matrix(rep(out, length(dose)), byrow=TRUE, nrow = length(dose))
-        m <- cbind(m, m0)
-      }
-      pList$dos <- sort(unique(data[[doseNam]]))
-      pList$mns <- as.numeric(m%*%coef(fit))
-      if(plotData == "meansCI"){
-        sdv <- sqrt(diag(m%*%vcov(fit)%*%t(m)))
-        quant <- qt(1 - (1 - level)/2, df=fit$df)
-        pList$lbndm <- pList$mns-quant*sdv
-        pList$ubndm <- pList$mns+quant*sdv
-      }
-    }
-  }
-  if(type == "general"){
-    ## extract ANOVA estimates
-    if(plotData %in% c("means", "meansCI")){
-      pList$dos <- data[[doseNam]]
-      pList$mns <- data[[respNam]]
-      sdv <- sqrt(diag(data$S))
-      if(plotData == "meansCI"){
-        quant <- qnorm(1 - (1 - level)/2)
-        pList$lbndm <- pList$mns-quant*sdv
-        pList$ubndm <- pList$mns+quant*sdv
-      }
-    }
-  }
-  
-  doseSeq <- seq(0, max(data[[doseNam]]), length=201)
-  ## create data frame for plotting dr-functions
-  predtype <- ifelse(placAdj, "effect-curve", "ls-means")
-  if(inherits(x, "MCPMod")){
-    nmods <- length(x$mods)
-    lst <- vector(mode = "list", nmods)
-    for(i in 1:nmods){
-      pred <- predict(x$mods[[i]], predType = predtype, doseSeq = doseSeq, se.fit = CI)
-      lbnd <- ubnd <- rep(NA, length(doseSeq))
-      if(CI){
-        quant <- qt(1 - (1 - level)/2, df=x$mods[[i]]$df)
-        lbnd <- pred$fit-quant*pred$se.fit
-        ubnd <- pred$fit+quant*pred$se.fit
-        pred <- pred$fit
-      }
-      lst[[i]] <- data.frame(rep(doseSeq, 3), c(pred, lbnd, ubnd),
-                             rep(c("pred", "LB", "UB"), each=length(doseSeq)),
-                             attr(x$mods[[i]], "model"))
-    }
-    plotdf <- do.call("rbind", lst)
-  }
-  if(inherits(x, "DRMod")){
-    pred <- predict(x, predType = predtype, doseSeq = doseSeq, se.fit = CI)
-    lbnd <- ubnd <- rep(NA, length(doseSeq))
-    if(CI){
-      quant <- qt(1 - (1 - level)/2, df=x$df)
-      lbnd <- pred$fit-quant*pred$se.fit
-      ubnd <- pred$fit+quant*pred$se.fit
-      pred <- pred$fit
-    }
-    plotdf <- data.frame(rep(doseSeq, 3), c(pred, lbnd, ubnd),
-                         rep(c("pred", "LB", "UB"), each=length(doseSeq)),
-                         attr(x, "model"))
-  }
-  names(plotdf) <- c(doseNam, respNam, "group", "model")
-  
-  ## calculate plotting range
-  rng <- switch(plotData,
-                raw = range(data[[respNam]]),
-                none = range(plotdf[[respNam]], na.rm=TRUE),
-                range(plotdf[[respNam]], pList$mns, pList$lbndm, pList$ubndm,
-                      na.rm=TRUE))
-  dff <- diff(rng)
-  ylim <- c(rng[1] - 0.05 * dff, rng[2] + 0.05 * dff)
-  
-  ## produce plot
-  form <- as.formula(paste(respNam, "~", doseNam, "|model", sep=""))
-  print(
-    xyplot(form, groups = plotdf$group, data = plotdf, pList=pList, ...,
-           ylim = ylim, panel = function(x, y, ..., pList){
-             if(plotGrid)
-               panel.grid(h = -1, v = -1, col = "lightgrey", lty = 2)
-             if(plotData != "none"){
-               if(type == "normal" & plotData == "raw"){
-                 lpoints(data[[doseNam]], data[[respNam]], col = "grey45", pch=19)
-               } else {
-                 lpoints(pList$dos, pList$mns, pch=19, col = colMn)
-                 if(plotData == "meansCI"){
-                   quant <- qnorm(1 - (1 - level)/2)
-                   for(i in 1:length(pList$dos)){
-                     llines(rep(pList$dos[i], 2),
-                            c(pList$lbndm[i], pList$ubndm[i]),
-                            lty=2, col = colMn, ...)
-                   }
-                 }
-               }
-             }
-             panel.xyplot(x, y, col=colFit, type="l", ...)
-           }))
-}
-
-
+#' Extract log-likelihood of dose-response model
+#'
+#' @inheritParams coef.DRMod
+#'
+#' @rdname fitMod
+#' @method logLik DRMod
+#' @export
 logLik.DRMod <- function(object, ...){
 
   type <- attr(object, "type")
@@ -1156,6 +820,14 @@ logLik.DRMod <- function(object, ...){
     stop("method glogLik only available for type == \"normal\"")
 }
 
+#' Extract AIC of dose-response model
+#'
+#' @inheritParams coef.DRMod
+#' @param k Penalty to use for model-selection criterion (AIC uses 2, BIC uses log(n)).
+#'
+#' @rdname fitMod
+#' @method AIC DRMod
+#' @export
 AIC.DRMod <- function(object, ..., k = 2){
   type <- attr(object, "type")
   if(type == "general")
@@ -1164,9 +836,14 @@ AIC.DRMod <- function(object, ..., k = 2){
   -2*as.vector(logL) + k*(attr(logL, "df")) 
 }
 
-gAIC <- function (object, ..., k = 2) 
-  UseMethod("gAIC")
 
+#' Extract gAIC of dose-response model
+#'
+#' @inheritParams AIC.DRMod
+#'
+#' @rdname fitMod
+#' @method gAIC DRMod
+#' @export
 gAIC.DRMod <- function(object, ..., k = 2){
   type <- attr(object, "type")
   if(type == "normal")

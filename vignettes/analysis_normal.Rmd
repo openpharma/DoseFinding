@@ -242,7 +242,7 @@ as they are used neither for fitting nor prediction.
 
 ```{r, bootstrap_draw}
 one_bootstrap_prediction <- function(mu_hat, S_hat, doses, bounds, dose_seq) {
-  sim <- drop(rmvnorm(1, mu_hat, S_hat))
+  sim <- drop(mvtnorm::rmvnorm(1, mu_hat, S_hat))
   fit <- lapply(c("emax", "sigEmax", "quadratic"), function(mod)
     fitMod(doses, sim, model = mod, S = S_hat, type = "general", bnds = bounds[[mod]]))
   index <- which.min(sapply(fit, gAIC))

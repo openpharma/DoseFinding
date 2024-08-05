@@ -7,6 +7,7 @@
 
 [![CRAN
 status](https://www.r-pkg.org/badges/version/DoseFinding)](https://CRAN.R-project.org/package=DoseFinding)
+[![R-CMD-check](https://github.com/openpharma/DoseFinding/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/openpharma/DoseFinding/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The DoseFinding package provides functions for the design and analysis
@@ -66,9 +67,9 @@ MCTtest(dose, resp, IBScovars, models=models,
 #> 
 #> Multiple Contrast Test:
 #>           t-Stat   adj-p
-#> emax       3.208 0.00150
-#> quadratic  3.083 0.00189
-#> linear     2.640 0.00849
+#> emax       3.208 0.00167
+#> quadratic  3.083 0.00250
+#> linear     2.640 0.00827
 ```
 
 ### Fitting non-linear dose-response model

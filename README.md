@@ -34,6 +34,9 @@ devtools::install_github("bbnkmp/DoseFinding")
 library(DoseFinding)
 data(IBScovars)
 
+## set random seed to ensure reproducible adj. p-values for multiple contrast test
+set.seed(12)
+
 ## perform (model based) multiple contrast test
 ## define candidate dose-response shapes
 models <- Mods(linear = NULL, emax = 0.2, quadratic = -0.17,
@@ -66,9 +69,9 @@ MCTtest(dose, resp, IBScovars, models=models,
 #> 
 #> Multiple Contrast Test:
 #>           t-Stat   adj-p
-#> emax       3.208 0.00150
-#> quadratic  3.083 0.00189
-#> linear     2.640 0.00849
+#> emax       3.208 0.00128
+#> quadratic  3.083 0.00228
+#> linear     2.640 0.00848
 ```
 
 ### Fitting non-linear dose-response model

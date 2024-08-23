@@ -152,7 +152,7 @@ When \samp{type = "normal"} ordinary least squares is used and additional additi
 \samp{addCovars}. The underlying assumption is hence normally distributed data and homoscedastic variance.
 
 For \samp{type = "general"} a generalized least squares criterion is used
-\deqn{ }{(f(dose,theta)-resp)'S^{-1}(f(dose,theta)-resp)}\deqn{
+\deqn{}{(f(dose,theta)-resp)'S^{-1}(f(dose,theta)-resp)}\deqn{
 (f(dose,\theta)-resp)'S^{-1}(f(dose,\theta)-resp)}{(f(dose,theta)-resp)'S^{-1}(f(dose,theta)-resp)}
 and an inverse weighting matrix is specified in \samp{S}, \samp{type =
 "general"} is primarily of interest, when fitting a model to AN(C)OVA type

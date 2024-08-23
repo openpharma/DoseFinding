@@ -2,7 +2,7 @@ Package: DoseFinding
 Type: Package
 Title: Planning and Analyzing Dose Finding Experiments
 Version: 1.2-1
-Date: 2024-07-25
+Date: 2024-08-23
 Authors@R: c(
    person("Bjoern", "Bornkamp", email = "bjoern.bornkamp@novartis.com", comment = c(ORCID = "0000-0002-6294-8185"), role = c("aut")),
    person("Jose", "Pinheiro", role = "aut"),
@@ -26,3 +26,4 @@ LazyLoad: yes
 RoxygenNote: 7.3.1
 Encoding: UTF-8
 URL: https://github.com/openpharma/DoseFinding
+BugReports: https://github.com/openpharma/DoseFinding/issues

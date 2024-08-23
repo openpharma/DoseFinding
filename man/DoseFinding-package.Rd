@@ -80,6 +80,14 @@ dose finding under model uncertainty using general parametric models,
 
 Seber, G.A.F. and Wild, C.J. (2003). Nonlinear Regression, Wiley
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/openpharma/DoseFinding}
+  \item Report bugs at \url{https://github.com/openpharma/DoseFinding/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Marius Thomas \email{marius.thomas@novartis.com}
 

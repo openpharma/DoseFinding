@@ -1,3 +1,12 @@
+# DoseFinding 1.2-1
+* Documentation revised and updated, documentation now uses roxygen,
+README and NEWS (replacing old changelog) added
+* Former "Depends" packages changed to "Imports"
+* nlme added as suggested package
+* Marius Thomas is the new maintainer of the package, 
+Novartis Pharma AG added as copyright holder and funder
+* Package is now hosted on https://github.com/openpharma/DoseFinding
+
 # DoseFinding 1.1-1
 * Big thanks to Marius Thomas for adding the bMCTtest function,
 implementing a generalized version of the Bayesian MCP-Mod

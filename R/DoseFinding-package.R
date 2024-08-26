@@ -82,33 +82,33 @@
 #' 
 #' Below are the definitions of the model functions:
 #' 
-#' \bold{Emax model} \deqn{ }{f(d,theta)=E0+Emax d/(ED50 + d).}\deqn{
+#' \bold{Emax model} \deqn{}{f(d,theta)=E0+Emax d/(ED50 + d).}\deqn{
 #' f(d,\theta)=E_0+E_{max}\frac{d}{ED_{50}+d}}{f(d,theta)=E0+Emax d/(ED50 +
 #' d).}
 #' 
-#' \bold{Sigmoid Emax Model} \deqn{ }{f(d,theta)=E0+Emax d^h/(ED50^h +
+#' \bold{Sigmoid Emax Model} \deqn{}{f(d,theta)=E0+Emax d^h/(ED50^h +
 #' d^h).}\deqn{
 #' f(d,\theta)=E_0+E_{max}\frac{d^h}{ED^h_{50}+d^h}}{f(d,theta)=E0+Emax
 #' d^h/(ED50^h + d^h).}
 #' 
-#' \bold{Exponential Model} \deqn{ }{f(d,theta)=E0+E1 (exp(d/delta)-1).}\deqn{
+#' \bold{Exponential Model} \deqn{}{f(d,theta)=E0+E1 (exp(d/delta)-1).}\deqn{
 #' f(d,\theta)=E_0+E_1(\exp(d/\delta)-1)}{f(d,theta)=E0+E1 (exp(d/delta)-1).}
 #' 
-#' \bold{Beta model} \deqn{ }{f(d,theta)=E0+Emax
+#' \bold{Beta model} \deqn{}{f(d,theta)=E0+Emax
 #' B(delta1,delta2)(d/scal)^delta1(1-d/scal)^delta2}\deqn{
 #' f(d,\theta)=E_0+E_{max}B(\delta_1,\delta_2)(d/scal)^{\delta_1}(1-d/scal)^{\delta_2}
-#' }{f(d,theta)=E0+Emax B(delta1,delta2)(d/scal)^delta1(1-d/scal)^delta2}\deqn{
-#' }{f(d,theta)=E0+Emax B(delta1,delta2)(d/scal)^delta1(1-d/scal)^delta2} here
+#' }{f(d,theta)=E0+Emax B(delta1,delta2)(d/scal)^delta1(1-d/scal)^delta2}
+#' \deqn{}{f(d,theta)=E0+Emax B(delta1,delta2)(d/scal)^delta1(1-d/scal)^delta2} here
 #' \deqn{B(\delta_1,\delta_2)=(\delta_1+\delta_2)^{\delta_1+\delta_2}/(\delta_1^{\delta_1}
 #' }{B(delta1,delta2)=(delta1+delta2)^(delta1+delta2)/(delta1^delta1
 #' delta2^delta2).}\deqn{
 #' \delta_2^{\delta_2})}{B(delta1,delta2)=(delta1+delta2)^(delta1+delta2)/(delta1^delta1
 #' delta2^delta2).} and \eqn{scal}{scal} is a fixed dose scaling parameter.
 #' 
-#' \bold{Linear Model} \deqn{ }{f(d,theta)=E0+delta d.}\deqn{
+#' \bold{Linear Model} \deqn{}{f(d,theta)=E0+delta d.}\deqn{
 #' f(d,\theta)=E_0+\delta d}{f(d,theta)=E0+delta d.}
 #' 
-#' \bold{Linear in log Model} \deqn{ }{f(d,theta)=E0+delta log(d + off),}\deqn{
+#' \bold{Linear in log Model} \deqn{}{f(d,theta)=E0+delta log(d + off),}\deqn{
 #' f(d,\theta)=E_0+\delta \log(d + off)}{f(d,theta)=E0+delta log(d + off),}
 #' here \eqn{off}{off} is a fixed offset parameter.
 #' 
@@ -116,7 +116,7 @@
 #' f(d, \theta) = E_0 + E_{\max}/\left\{1 + \exp\left[ \left(ED_{50} - d
 #' \right)/\delta \right] \right\}}{f(d,theta)=E0+Emax/(1 + exp((ED50-d)/delta)).}
 #' 
-#' \bold{Quadratic Model} \deqn{ }{f(d,theta)=E0+beta1 d+beta2 d^2.}\deqn{
+#' \bold{Quadratic Model} \deqn{}{f(d,theta)=E0+beta1 d+beta2 d^2.}\deqn{
 #' f(d,\theta)=E_0+\beta_1d+\beta_2d^2}{f(d,theta)=E0+beta1 d+beta2 d^2.} The
 #' standardized model equation for the quadratic model is \eqn{d+\delta
 #' d^2}{d+delta d^2}, with \eqn{\delta=\beta_2/\beta_1}{delta=beta2/beta1}.
@@ -181,32 +181,33 @@
 #' @aliases drmodels betaMod emax sigEmax exponential logistic linear linlog
 #' quadratic linInt betaModGrad emaxGrad sigEmaxGrad exponentialGrad
 #' logisticGrad linearGrad linlogGrad quadraticGrad linIntGrad
-#' @param dose Dose variable
-#' @param e0 For most models placebo effect. For logistic model left-asymptote
-#' parameter, corresponding to a basal effect level (not the placebo effect)
-#' @param eMax Beta Model: Maximum effect within dose-range\cr Emax, sigmoid
-#' Emax, logistic Model: Asymptotic maximum effect
-#' @param ed50 Dose giving half of the asymptotic maximum effect
-#' @param h Hill parameter, determining the steepness of the model at the ED50
-#' @param e1 Slope parameter for exponential model
-#' @param delta Exponential model: Parameter, controlling the convexity of the
-#' model.\cr Linear and linlog model: Slope parameter\cr Logistic model:
-#' Parameter controlling determining the steepness of the curve
-#' @param delta1 delta1 parameter for beta model
-#' @param delta2 delta2 parameter for beta model
-#' @param b1 first parameter of quadratic model
-#' @param b2 second parameter of quadratic model (controls, whether model is
-#' convex or concave)
-#' @param resp Response values at the nodes for the linInt model
-#' @param off Offset value to avoid problems with dose=0 (treated as a fixed
-#' value, not estimated)
-#' @param scal Scale parameter (treated as a fixed value, not estimated)
-#' @param nodes Interpolation nodes for the linear interpolation for the linInt
-#' model (treated as a fixed value, not estimated)
-#' @param ...  Just included for convenience in the gradient functions, so that
-#' for example \code{quadratic(dose, e0=0, b1=1, b2=3)} will not throw an error
-#' (although the gradient of the quadratic model is independent of e0, b1 and
-#' b2).
+#' @usage
+#' emax(dose, e0, eMax, ed50)
+#' emaxGrad(dose, eMax, ed50, ...)
+#' 
+#' sigEmax(dose, e0, eMax, ed50, h)
+#' sigEmaxGrad(dose, eMax, ed50, h, ...)
+#' 
+#' exponential(dose, e0, e1, delta)
+#' exponentialGrad(dose, e1, delta, ...)
+#' 
+#' quadratic(dose, e0, b1, b2)
+#' quadraticGrad(dose, ...)
+#' 
+#' betaMod(dose, e0, eMax, delta1, delta2, scal)
+#' betaModGrad(dose, eMax, delta1, delta2, scal, ...)
+#' 
+#' linear(dose, e0, delta)
+#' linearGrad(dose, ...)
+#' 
+#' linlog(dose, e0, delta, off = 1)
+#' linlogGrad(dose, off, ...)
+#' 
+#' logistic(dose, e0, eMax, ed50, delta)
+#' logisticGrad(dose, eMax, ed50, delta, ...)
+#' 
+#' linInt(dose, resp, nodes)
+#' linIntGrad(dose, resp, nodes, ...)
 #' @return Response value for model functions or matrix containing the gradient
 #' evaluations.
 #' @seealso \code{\link{fitMod}}

@@ -75,7 +75,7 @@
 #' ####################################
 #' ## Binary outcome with covariates
 #' ####################################
-#'
+#'\dontrun{
 #' ## generate data
 #' logit <- function(p) log(p / (1 - p))
 #' inv_logit <- function(y) 1 / (1 + exp(-y))
@@ -124,7 +124,7 @@
 #' ca <- covariate_adjusted_estimates(coef(fit_cov), vcov(fit_cov), ~factor(dose)+0+x1+x2,
 #'                                    doses, dat[, c("x1", "x2")], 1000)
 #' bMCTtest(doses, ca$mu_star, S = ca$S_star, type = "general", models = mods, prior = prior)
-#'
+#'}
 #' ################################################
 #' ## example with contrasts handed over
 #' ################################################

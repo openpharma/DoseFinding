@@ -39,6 +39,9 @@ devtools::install_github("bbnkmp/DoseFinding")
 library(DoseFinding)
 data(IBScovars)
 
+## set random seed to ensure reproducible adj. p-values for multiple contrast test
+set.seed(12)
+
 ## perform (model based) multiple contrast test
 ## define candidate dose-response shapes
 models <- Mods(linear = NULL, emax = 0.2, quadratic = -0.17,

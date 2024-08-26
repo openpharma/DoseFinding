@@ -1,3 +1,5 @@
+# DoseFinding (development version)
+
 # DoseFinding 1.2-1
 * Documentation revised and updated, documentation now uses roxygen,
 README and NEWS (replacing old changelog) added

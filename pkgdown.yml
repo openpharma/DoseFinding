@@ -1,0 +1,14 @@
+pandoc: 3.1.11
+pkgdown: 2.1.0
+pkgdown_sha: ~
+articles:
+  analysis_normal: analysis_normal.html
+  binary_data: binary_data.html
+  faq: faq.html
+  mult_regimen: mult_regimen.html
+  overview: overview.html
+  sample_size: sample_size.html
+last_built: 2024-08-29T16:13Z
+urls:
+  reference: https://openpharma.github.io/DoseFinding/reference
+  article: https://openpharma.github.io/DoseFinding/articles

@@ -84,6 +84,7 @@ Seber, G.A.F. and Wild, C.J. (2003). Nonlinear Regression, Wiley
 Useful links:
 \itemize{
   \item \url{https://github.com/openpharma/DoseFinding}
+  \item \url{https://openpharma.github.io/DoseFinding/}
   \item Report bugs at \url{https://github.com/openpharma/DoseFinding/issues}
 }
 

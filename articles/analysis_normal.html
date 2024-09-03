@@ -10,7 +10,7 @@
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Continuous data MCP-Mod">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><script src="../deps/MathJax-3.2.2/tex-chtml.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Continuous data MCP-Mod">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -140,10 +140,9 @@ there to accommodate a potentially decreasing effect at high doses.</p>
 <ul>
 <li>ED50 for an Emax model</li>
 <li>ED50 and the Hill parameter h for a sigmoid emax model</li>
-<li>coefficient ratio
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>δ</mi><mo>=</mo><msub><mi>β</mi><mn>2</mn></msub><mi>/</mi><mo stretchy="false" form="prefix">|</mo><msub><mi>β</mi><mn>1</mn></msub><mo stretchy="false" form="postfix">|</mo></mrow><annotation encoding="application/x-tex">\delta = \beta_2/\lvert\beta_1\rvert</annotation></semantics></math>
-in the quadratic model
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>E</mi><mn>0</mn></msub><mo>+</mo><msub><mi>β</mi><mn>1</mn></msub><mi>d</mi><mo>+</mo><msub><mi>β</mi><mn>2</mn></msub><msup><mi>d</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">f(d, \theta) = E_0 + \beta_1 d + \beta_2 d^2</annotation></semantics></math>
+<li>coefficient ratio <span class="math inline">\(\delta =
+\beta_2/\lvert\beta_1\rvert\)</span> in the quadratic model <span class="math inline">\(f(d, \theta) = E_0 + \beta_1 d + \beta_2
+d^2\)</span>
 </li>
 </ul>
 <p>The following choices cover a range of plausible relationships:</p>
@@ -192,26 +191,21 @@ value.</p>
 <p>It can be seen that in the balanced sample size case and equal
 variance assumed for each dose group, the optimal contrasts reflect the
 underlying assumed mean dose-response shape. This is no surprise, given
-that the optimal contrasts are given by
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>c</mi><mtext mathvariant="normal">opt</mtext></msup><mo>∝</mo><msup><mi>S</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo minsize="2.4" maxsize="2.4" stretchy="false" form="prefix">(</mo><msubsup><mi>μ</mi><mi>m</mi><mn>0</mn></msubsup><mo>−</mo><mfrac><mrow><msup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>μ</mi><mi>m</mi><mn>0</mn></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mi>T</mi></msup><msup><mi>S</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><msub><mn>1</mn><mi>K</mi></msub></mrow><mrow><msubsup><mn>1</mn><mi>K</mi><mi>T</mi></msubsup><msup><mi>S</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><msub><mn>1</mn><mi>K</mi></msub></mrow></mfrac><mo minsize="2.4" maxsize="2.4" stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">
+that the optimal contrasts are given by <span class="math display">\[
 c^{\textrm{opt}} \propto
-S^{-1}\biggl(\mu^0_m - \frac{(\mu^0_m)^T S^{-1}1_K}{1_K^T S^{-1} 1_K}\biggr)
-</annotation></semantics></math> where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>μ</mi><mi>m</mi><mn>0</mn></msubsup><annotation encoding="application/x-tex">\mu^0_m</annotation></semantics></math>
-is the standardized mean response,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>
-is the number doses, and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mn>1</mn><mi>K</mi></msub><annotation encoding="application/x-tex">1_K</annotation></semantics></math>
-is an all-ones vector of length
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>
-is the covariance matrix of the estimates at the doses <span class="citation">(see <a href="#ref-pinheiro2014">Pinheiro et al.
-2014</a> for a detailed account)</span>. As we have equal variance in
-all dose groups in our case and no correlation, the optimal contrasts
-are all proportional to the shapes of the candidate model mean vectors.
-As the standardized model is used in the formula, the values of the
-linear parameters of the models do not impact the optimal contrasts.</p>
+S^{-1}\biggl(\mu^0_m - \frac{(\mu^0_m)^T S^{-1}1_K}{1_K^T S^{-1}
+1_K}\biggr)
+\]</span> where <span class="math inline">\(\mu^0_m\)</span> is the
+standardized mean response, <span class="math inline">\(K\)</span> is
+the number doses, and <span class="math inline">\(1_K\)</span> is an
+all-ones vector of length <span class="math inline">\(K\)</span> and
+<span class="math inline">\(S\)</span> is the covariance matrix of the
+estimates at the doses <span class="citation">(see <a href="#ref-pinheiro2014">Pinheiro et al. 2014</a> for a detailed
+account)</span>. As we have equal variance in all dose groups in our
+case and no correlation, the optimal contrasts are all proportional to
+the shapes of the candidate model mean vectors. As the standardized
+model is used in the formula, the values of the linear parameters of the
+models do not impact the optimal contrasts.</p>
 </div>
 <div class="section level2">
 <h2 id="analysis-stage">Analysis stage<a class="anchor" aria-label="anchor" href="#analysis-stage"></a>

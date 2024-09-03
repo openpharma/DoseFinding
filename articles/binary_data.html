@@ -10,7 +10,7 @@
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Binary Data MCP-Mod">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><script src="../deps/MathJax-3.2.2/tex-chtml.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Binary Data MCP-Mod">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -131,27 +131,18 @@ response on the logit scale:</p>
 <h2 id="analysis-without-covariates">Analysis without covariates<a class="anchor" aria-label="anchor" href="#analysis-without-covariates"></a>
 </h2>
 <p>First assume covariates had not been used in the analysis (not
-recommended in practice). Let
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>μ</mi><mi>k</mi></msub><annotation encoding="application/x-tex">\mu_k</annotation></semantics></math>
-denote the logit response probability at dose
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>,
-so that for patient
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>
-in group
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
-we have</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>Y</mi><mrow><mi>k</mi><mi>j</mi></mrow></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>∼</mo><mrow><mi mathvariant="normal">B</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">u</mi><mi mathvariant="normal">l</mi><mi mathvariant="normal">l</mi><mi mathvariant="normal">i</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>p</mi><mrow><mi>k</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mrow><mi mathvariant="normal">l</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">g</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">t</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>p</mi><mrow><mi>k</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mi>μ</mi><mi>k</mi></msub></mtd></mtr></mtable><annotation encoding="application/x-tex">
+recommended in practice). Let <span class="math inline">\(\mu_k\)</span>
+denote the logit response probability at dose <span class="math inline">\(k\)</span>, so that for patient <span class="math inline">\(j\)</span> in group <span class="math inline">\(k\)</span> we have</p>
+<p><span class="math display">\[
 \begin{aligned}
   Y_{kj} &amp;\sim \mathrm{Bernoulli}(p_{kj}) \\
   \mathrm{logit}(p_{kj}) &amp;= \mu_{k}
 \end{aligned}
-</annotation></semantics></math></p>
-<p>We perform the MCP-Mod test on the logit scale estimates
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>μ</mi><mo accent="true">̂</mo></mover><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mover><mi>μ</mi><mo accent="true">̂</mo></mover><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mover><mi>μ</mi><mo accent="true">̂</mo></mover><mi>K</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\hat\mu=(\hat\mu_1,\dots,\hat\mu_K)</annotation></semantics></math>
-and their estimated covariance matrix
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>S</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat S</annotation></semantics></math>.
-We can extract both from the object returned by the <code><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm()</a></code>
-call.</p>
+\]</span></p>
+<p>We perform the MCP-Mod test on the logit scale estimates <span class="math inline">\(\hat\mu=(\hat\mu_1,\dots,\hat\mu_K)\)</span> and
+their estimated covariance matrix <span class="math inline">\(\hat
+S\)</span>. We can extract both from the object returned by the
+<code><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm()</a></code> call.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit_nocov</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">y</span><span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">dose</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0</span>, data <span class="op">=</span> <span class="va">dat</span>, family <span class="op">=</span> <span class="va">binomial</span><span class="op">)</span></span>
 <span><span class="va">mu_hat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">fit_nocov</span><span class="op">)</span></span>
@@ -236,54 +227,34 @@ data</a>.</p>
 </h2>
 <p>In many situations there are important prognostic covariates (main
 effects) to adjust for in the analysis. Denote the vector of these
-additional covariates for patient
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>
-with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>x</mi><mrow><mi>k</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">x_{kj}</annotation></semantics></math>.</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>Y</mi><mrow><mi>k</mi><mi>j</mi></mrow></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>∼</mo><mrow><mi mathvariant="normal">B</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">u</mi><mi mathvariant="normal">l</mi><mi mathvariant="normal">l</mi><mi mathvariant="normal">i</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>p</mi><mrow><mi>k</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mrow><mi mathvariant="normal">l</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">g</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">t</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>p</mi><mrow><mi>k</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msubsup><mi>μ</mi><mi>k</mi><mi>d</mi></msubsup><mo>+</mo><msubsup><mi>x</mi><mrow><mi>k</mi><mi>j</mi></mrow><mi>T</mi></msubsup><mi>β</mi></mtd></mtr></mtable><annotation encoding="application/x-tex">
+additional covariates for patient <span class="math inline">\(j\)</span>
+with <span class="math inline">\(x_{kj}\)</span>.</p>
+<p><span class="math display">\[
 \begin{aligned}
   Y_{kj} &amp;\sim \mathrm{Bernoulli}(p_{kj}) \\
   \mathrm{logit}(p_{kj}) &amp;= \mu_k^d + x_{kj}^T\beta
 \end{aligned}
-</annotation></semantics></math></p>
-<p>Fitting this model gives us estimated coefficients
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>μ</mi><mo accent="true">̂</mo></mover><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><msup><mover><mi>μ</mi><mo accent="true">̂</mo></mover><mi>d</mi></msup><mo>,</mo><mover><mi>β</mi><mo accent="true">̂</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\hat\mu=(\hat\mu^d, \hat\beta)</annotation></semantics></math>
-and an estimate
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>S</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat S</annotation></semantics></math>
-of the covariance matrix of the estimator
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>μ</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat\mu</annotation></semantics></math>.</p>
-<p>In principle we could perform testing and estimation based on
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mover><mi>μ</mi><mo accent="true">̂</mo></mover><mi>d</mi></msup><annotation encoding="application/x-tex">\hat\mu^d</annotation></semantics></math>
-and the corresponding sub-matrix of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>S</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat S</annotation></semantics></math>,
-but this would produce estimates for a patient with covariate vector
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>β</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\beta=0</annotation></semantics></math>,
-and not reflect the overall population.</p>
+\]</span></p>
+<p>Fitting this model gives us estimated coefficients <span class="math inline">\(\hat\mu=(\hat\mu^d, \hat\beta)\)</span> and an
+estimate <span class="math inline">\(\hat S\)</span> of the covariance
+matrix of the estimator <span class="math inline">\(\hat\mu\)</span>.</p>
+<p>In principle we could perform testing and estimation based on <span class="math inline">\(\hat\mu^d\)</span> and the corresponding
+sub-matrix of <span class="math inline">\(\hat S\)</span>, but this
+would produce estimates for a patient with covariate vector <span class="math inline">\(\beta=0\)</span>, and not reflect the overall
+population.</p>
 <p>To produce adjusted estimates per dose and to accommodate potential
 systematic differences in the covariates we predict the mean response
 probability at dose k for all observed values of the covariates and
 transform back to logit scale:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>μ</mi><mi>k</mi><mo>*</mo></msubsup><mo>:=</mo><mrow><mi mathvariant="normal">l</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">g</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">t</mi></mrow><mo minsize="2.4" maxsize="2.4" stretchy="false" form="prefix">(</mo><mfrac><mn>1</mn><mi>n</mi></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msup><mrow><mi mathvariant="normal">l</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">g</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">t</mi></mrow><mrow><mo>−</mo><mn>1</mn></mrow></msup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mover><mi>μ</mi><mo accent="true">̂</mo></mover><mi>k</mi><mi>d</mi></msubsup><mo>+</mo><msubsup><mi>x</mi><mi>i</mi><mi>T</mi></msubsup><mover><mi>β</mi><mo accent="true">̂</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow><mo minsize="2.4" maxsize="2.4" stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex"> \mu^*_k := \mathrm{logit}\biggl(\frac{1}{n} \sum_{i=1}^n
-\mathrm{logit}^{-1}(\hat\mu^d_k + x_{i}^T\hat\beta)\biggr) </annotation></semantics></math></p>
-<p>Note here we index
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>
-with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
-that runs from 1 to
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
-(all patients randomized in the study).</p>
-<p>To obtain a variance estimate for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>μ</mi><mo>*</mo></msup><annotation encoding="application/x-tex">\mu^*</annotation></semantics></math>
-we repeat this with draws from
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">M</mi><mi mathvariant="normal">u</mi><mi mathvariant="normal">l</mi><mi mathvariant="normal">t</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">v</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">t</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">N</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">l</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mover><mi>μ</mi><mo accent="true">̂</mo></mover><mo>,</mo><mover><mi>S</mi><mo accent="true">̂</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mathrm{MultivariateNormal}(\hat\mu, \hat S)</annotation></semantics></math>
-and calculate the empirical covariance matrix
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>S</mi><mo>*</mo></msup><annotation encoding="application/x-tex">S^*</annotation></semantics></math>
-of theses draws.</p>
-<p>Then we use
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>μ</mi><mo>*</mo></msup><annotation encoding="application/x-tex">\mu^*</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>S</mi><mo>*</mo></msup><annotation encoding="application/x-tex">S^*</annotation></semantics></math>
-in <code><a href="../reference/MCTtest.html">MCTtest()</a></code>.</p>
+<p><span class="math display">\[ \mu^*_k :=
+\mathrm{logit}\biggl(\frac{1}{n} \sum_{i=1}^n
+\mathrm{logit}^{-1}(\hat\mu^d_k + x_{i}^T\hat\beta)\biggr) \]</span></p>
+<p>Note here we index <span class="math inline">\(x\)</span> with <span class="math inline">\(i\)</span> that runs from 1 to <span class="math inline">\(n\)</span> (all patients randomized in the
+study).</p>
+<p>To obtain a variance estimate for <span class="math inline">\(\mu^*\)</span> we repeat this with draws from
+<span class="math inline">\(\mathrm{MultivariateNormal}(\hat\mu, \hat
+S)\)</span> and calculate the empirical covariance matrix <span class="math inline">\(S^*\)</span> of theses draws.</p>
+<p>Then we use <span class="math inline">\(\mu^*\)</span> and <span class="math inline">\(S^*\)</span> in <code><a href="../reference/MCTtest.html">MCTtest()</a></code>.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit_cov</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">y</span><span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">dose</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">x1</span> <span class="op">+</span> <span class="va">x2</span>, data <span class="op">=</span> <span class="va">dat</span>, family <span class="op">=</span> <span class="va">binomial</span><span class="op">)</span></span>
 <span></span>
@@ -366,50 +337,38 @@ separation).</p>
 <h2 id="considerations-around-optimal-contrasts-at-design-stage-and-analysis-stage">Considerations around optimal contrasts at design stage and analysis
 stage<a class="anchor" aria-label="anchor" href="#considerations-around-optimal-contrasts-at-design-stage-and-analysis-stage"></a>
 </h2>
-<p>The formula for the optimal contrasts is given by
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>c</mi><mtext mathvariant="normal">opt</mtext></msup><mo>∝</mo><msup><mi>S</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo minsize="2.4" maxsize="2.4" stretchy="false" form="prefix">(</mo><msubsup><mi>μ</mi><mi>m</mi><mn>0</mn></msubsup><mo>−</mo><mfrac><mrow><msup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>μ</mi><mi>m</mi><mn>0</mn></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mi>T</mi></msup><msup><mi>S</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><msub><mn>1</mn><mi>K</mi></msub></mrow><mrow><msubsup><mn>1</mn><mi>K</mi><mi>T</mi></msubsup><msup><mi>S</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><msub><mn>1</mn><mi>K</mi></msub></mrow></mfrac><mo minsize="2.4" maxsize="2.4" stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">
+<p>The formula for the optimal contrasts is given by <span class="math display">\[
 c^{\textrm{opt}} \propto
-S^{-1}\biggl(\mu^0_m - \frac{(\mu^0_m)^T S^{-1}1_K}{1_K^T S^{-1} 1_K}\biggr)
-</annotation></semantics></math> where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>μ</mi><mi>m</mi><mn>0</mn></msubsup><annotation encoding="application/x-tex">\mu^0_m</annotation></semantics></math>
-is the standardized mean response,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>
-is the number doses, and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mn>1</mn><mi>K</mi></msub><annotation encoding="application/x-tex">1_K</annotation></semantics></math>
-is an all-ones vector of length
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>
-is the covariance matrix of the estimates at the doses <span class="citation">(see <a href="#ref-pinheiro2014">Pinheiro et al.
-2014</a>)</span>.</p>
+S^{-1}\biggl(\mu^0_m - \frac{(\mu^0_m)^T S^{-1}1_K}{1_K^T S^{-1}
+1_K}\biggr)
+\]</span> where <span class="math inline">\(\mu^0_m\)</span> is the
+standardized mean response, <span class="math inline">\(K\)</span> is
+the number doses, and <span class="math inline">\(1_K\)</span> is an
+all-ones vector of length <span class="math inline">\(K\)</span> and
+<span class="math inline">\(S\)</span> is the covariance matrix of the
+estimates at the doses <span class="citation">(see <a href="#ref-pinheiro2014">Pinheiro et al. 2014</a>)</span>.</p>
 <p>For calculating the optimal contrast for the generalized MCP step the
-covariance matrix
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>
-of the estimator
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>μ</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat\mu</annotation></semantics></math>
-can be re-estimated once the trial data are available. With normally
+covariance matrix <span class="math inline">\(S\)</span> of the
+estimator <span class="math inline">\(\hat\mu\)</span> can be
+re-estimated once the trial data are available. With normally
 distributed data this is possible with decent accuracy even at rather
-low sample sizes. In the case of binary data,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>μ</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat\mu</annotation></semantics></math>
-is on the logit scale and the diagonal elements of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>
-are approximately
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mo>−</mo><mn>1</mn></mrow></msup><annotation encoding="application/x-tex">(np(1-p))^{-1}</annotation></semantics></math>,
-where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
-is the sample size of the dose group. This can be derived using the
-delta method. An estimate of this variance depends on the observed
-response rate and can thus be quite variable in particular for small
-sample sizes per group (e.g. smaller than 20).</p>
+low sample sizes. In the case of binary data, <span class="math inline">\(\hat\mu\)</span> is on the logit scale and the
+diagonal elements of <span class="math inline">\(S\)</span> are
+approximately <span class="math inline">\((np(1-p))^{-1}\)</span>, where
+<span class="math inline">\(n\)</span> is the sample size of the dose
+group. This can be derived using the delta method. An estimate of this
+variance depends on the observed response rate and can thus be quite
+variable in particular for small sample sizes per group (e.g. smaller
+than 20).</p>
 <p>A crude alternative in these situations is to not use the estimated
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>
-but a diagonal matrix with the inverse of the sample size per dose on
-the diagonal in the formula for calculation of the optimal contrast. The
-contrast calculated this way will asymptotically not be equal to the
-“optimal” contrast for the underlying model, but simulations show that
-they can be closer to the “true” optimal contrast (calculated based on
-the true variance per dose group) for small sample size, compared to the
-contrast calculated based on the estimated variance.</p>
+<span class="math inline">\(S\)</span> but a diagonal matrix with the
+inverse of the sample size per dose on the diagonal in the formula for
+calculation of the optimal contrast. The contrast calculated this way
+will asymptotically not be equal to the “optimal” contrast for the
+underlying model, but simulations show that they can be closer to the
+“true” optimal contrast (calculated based on the true variance per dose
+group) for small sample size, compared to the contrast calculated based
+on the estimated variance.</p>
 <p>To re-run the adjusted analysis above for the contrasts, calculated
 as outlined above, we need to calculate and hand-over the contrast
 matrix manually via <code>contMat</code> in the <code><a href="../reference/MCTtest.html">MCTtest()</a></code>
@@ -455,11 +414,10 @@ the top of this vignette. For example, we assume a
 responses <code>lo</code> on the logit scale. When we transform it back
 to probability scale <code>p</code>, we can calculate the approximate
 variance of the (logit-scale) estimator <code>mu_hat</code> with the
-formula
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">V</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">r</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mover><mi>μ</mi><mo accent="true">̂</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mn>1</mn><mrow><mi>n</mi><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mrow><annotation encoding="application/x-tex"> \mathrm{Var}(\hat\mu) = \frac{1}{np(1-p)} </annotation></semantics></math>
-(see the section above). Next we calculate the minimum power across the
-candidate set using <code><a href="../reference/powMCT.html">powMCT()</a></code> and plot it for increasing
-<code>n</code>.</p>
+formula <span class="math display">\[ \mathrm{Var}(\hat\mu) =
+\frac{1}{np(1-p)} \]</span> (see the section above). Next we calculate
+the minimum power across the candidate set using <code><a href="../reference/powMCT.html">powMCT()</a></code>
+and plot it for increasing <code>n</code>.</p>
 <p>See also the <a href="sample_size.html">vignette on sample size
 calculation</a>.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">

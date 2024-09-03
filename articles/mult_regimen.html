@@ -10,7 +10,7 @@
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Multiple Regimen MCP-Mod">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><script src="../deps/MathJax-3.2.2/tex-chtml.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Multiple Regimen MCP-Mod">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -112,15 +112,12 @@ page at clinicaltrials.gov</a>.</p>
 has been modified and simplified (in terms of candidate models and
 dose-response modelling strategy).</p>
 <p>For most of the following code it is useful to structure the
-first-stage estimates like this:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>μ</mi><mo accent="true">̂</mo></mover><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mover><mi>μ</mi><mo accent="true">̂</mo></mover><mrow><mi mathvariant="normal">p</mi><mi mathvariant="normal">l</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">c</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">b</mi><mi mathvariant="normal">o</mi></mrow></msub><mo>,</mo><msub><mover><mi>μ</mi><mo accent="true">̂</mo></mover><mrow><mi mathvariant="normal">o</mi><mi mathvariant="normal">d</mi></mrow></msub><mo>,</mo><msub><mover><mi>μ</mi><mo accent="true">̂</mo></mover><mrow><mi mathvariant="normal">b</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">d</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
-\hat\mu=(\hat\mu_{\mathrm{placebo}}, \hat\mu_{\mathrm{od}}, \hat\mu_{\mathrm{bid}})
-</annotation></semantics></math> The length of the sub-vectors
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>μ</mi><mo accent="true">̂</mo></mover><mrow><mi mathvariant="normal">o</mi><mi mathvariant="normal">d</mi></mrow></msub><annotation encoding="application/x-tex">\hat\mu_{\mathrm{od}}</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>μ</mi><mo accent="true">̂</mo></mover><mrow><mi mathvariant="normal">b</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">d</mi></mrow></msub><annotation encoding="application/x-tex">\hat\mu_{\mathrm{bid}}</annotation></semantics></math>
-correspond to the number of different doses in the two regimens. They
-can be different, but in our example both have 4 elements.</p>
+first-stage estimates like this: <span class="math display">\[
+\hat\mu=(\hat\mu_{\mathrm{placebo}}, \hat\mu_{\mathrm{od}},
+\hat\mu_{\mathrm{bid}})
+\]</span> The length of the sub-vectors <span class="math inline">\(\hat\mu_{\mathrm{od}}\)</span> and <span class="math inline">\(\hat\mu_{\mathrm{bid}}\)</span> correspond to the
+number of different doses in the two regimens. They can be different,
+but in our example both have 4 elements.</p>
 <p>Also as discussed above everything is modeled on the total daily dose
 scale.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -190,12 +187,8 @@ candidate models for both regimen here.</p>
 <h2 id="multiple-contrast-test">Multiple contrast test<a class="anchor" aria-label="anchor" href="#multiple-contrast-test"></a>
 </h2>
 <p>The matrix of contrasts is built up from a separate matrix for each
-regimen. We stick them together in such a way that we compare
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>μ</mi><mo accent="true">̂</mo></mover><mrow><mi mathvariant="normal">o</mi><mi mathvariant="normal">d</mi></mrow></msub><annotation encoding="application/x-tex">\hat\mu_{\mathrm{od}}</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>μ</mi><mo accent="true">̂</mo></mover><mrow><mi mathvariant="normal">b</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">d</mi></mrow></msub><annotation encoding="application/x-tex">\hat\mu_{\mathrm{bid}}</annotation></semantics></math>
-with the common placebo response estimate
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>μ</mi><mo accent="true">̂</mo></mover><mrow><mi mathvariant="normal">p</mi><mi mathvariant="normal">l</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">c</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">b</mi><mi mathvariant="normal">o</mi></mrow></msub><annotation encoding="application/x-tex">\hat\mu_{\mathrm{placebo}}</annotation></semantics></math>.</p>
+regimen. We stick them together in such a way that we compare <span class="math inline">\(\hat\mu_{\mathrm{od}}\)</span> and <span class="math inline">\(\hat\mu_{\mathrm{bid}}\)</span> with the common
+placebo response estimate <span class="math inline">\(\hat\mu_{\mathrm{placebo}}\)</span>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">calculate_contrasts</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">est</span>, <span class="va">mods</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">S_hat</span> <span class="op">&lt;-</span> <span class="va">est</span><span class="op">$</span><span class="va">S_hat</span></span>
@@ -268,12 +261,11 @@ bid_sigEmax1 5.006107 9.856002e-06</code></pre>
 <h2 id="dose-response-modelling">Dose-response modelling<a class="anchor" aria-label="anchor" href="#dose-response-modelling"></a>
 </h2>
 <p>Dose-response estimation needs a handful of auxiliary functions. The
-model for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>μ</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat\mu</annotation></semantics></math>
-has a common intercept parameter for both regimen together and two sets
-of the remaining parameters of the family in question. For example, a
-model based on the Emax family has 5 parameters: one common
-<code>e0</code>, <code>(eMax, ed50)</code> for the od regimen, and
+model for <span class="math inline">\(\hat\mu\)</span> has a common
+intercept parameter for both regimen together and two sets of the
+remaining parameters of the family in question. For example, a model
+based on the Emax family has 5 parameters: one common <code>e0</code>,
+<code>(eMax, ed50)</code> for the od regimen, and
 <code>(eMax, ed50)</code> for the bid regimen.</p>
 <p>The following function calculates the responses given dose values and
 a model family.</p>
@@ -291,11 +283,10 @@ a model family.</p>
 <span>  <span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">resp_placebo</span>, <span class="va">resp_od</span>, <span class="va">resp_bid</span><span class="op">)</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">resp</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p>Next, we need to be able to fit a model family to the observed
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>μ</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat\mu</annotation></semantics></math>.
-For this we employ the usual generalized MCP-Mod approach,
-i.e. generalized least squares with the estimated covariance matrix
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>S</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat S</annotation></semantics></math><span class="citation">(<a href="#ref-pinheiro2014">Pinheiro et al.
+<p>Next, we need to be able to fit a model family to the observed <span class="math inline">\(\hat\mu\)</span>. For this we employ the usual
+generalized MCP-Mod approach, i.e. generalized least squares with the
+estimated covariance matrix <span class="math inline">\(\hat S\)</span>
+<span class="citation">(<a href="#ref-pinheiro2014">Pinheiro et al.
 2014</a>)</span>.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## find sensible starting values for `fit_model_shared_e0` by fitting separate models,</span></span>

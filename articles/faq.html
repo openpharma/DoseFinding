@@ -10,7 +10,7 @@
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="MCP-Mod FAQ">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><script src="../deps/MathJax-3.2.2/tex-chtml.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="MCP-Mod FAQ">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -118,81 +118,40 @@ generalized MCP-Mod approach <span class="citation">(<a href="#ref-pinheiro2014"
 extension that allows for example for binary, count, continuous or
 time-to-event outcomes.</p>
 <p>In both variants one tests and estimates the dose-response
-relationship among
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>
-doses
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>x</mi><mi>K</mi></msub></mrow><annotation encoding="application/x-tex">x_1,\dots,x_K</annotation></semantics></math>
-utilizing
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>M</mi><annotation encoding="application/x-tex">M</annotation></semantics></math>
-candidate models given by functions
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>f</mi><mi>m</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mi>k</mi></msub><mo>,</mo><msub><mi>θ</mi><mi>m</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">f_m(x_k, \theta_m)</annotation></semantics></math>.</p>
+relationship among <span class="math inline">\(K\)</span> doses <span class="math inline">\(x_1,\dots,x_K\)</span> utilizing <span class="math inline">\(M\)</span> candidate models given by functions
+<span class="math inline">\(f_m(x_k, \theta_m)\)</span>.</p>
 <p>The original MCP-Mod approach assumes normally distributed
-observations
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>y</mi><mrow><mi>k</mi><mo>,</mo><mi>j</mi></mrow></msub><mo>∼</mo><mrow><mi mathvariant="normal">N</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">l</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>μ</mi><mi>k</mi></msub><mo>,</mo><msup><mi>σ</mi><mn>2</mn></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
+observations <span class="math display">\[
 y_{k,j} \sim \mathrm{Normal}(\mu_k, \sigma^2)
-</annotation></semantics></math> for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>K</mi></mrow><annotation encoding="application/x-tex">k=1,\dots,K</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>j</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>n</mi><mi>k</mi></msub></mrow><annotation encoding="application/x-tex">j=1,\dots,n_k</annotation></semantics></math>
-in each group, where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>μ</mi><mi>k</mi></msub><mo>=</mo><msub><mi>f</mi><mi>m</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mi>k</mi></msub><mo>,</mo><msub><mi>θ</mi><mi>m</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mu_k = f_m(x_k, \theta_m)</annotation></semantics></math>
-under the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>m</mi><annotation encoding="application/x-tex">m</annotation></semantics></math>-th
-candidate model. In the MCP part the null hypothesis of a flat response
-profile
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>c</mi><mi>m</mi><mi>T</mi></msubsup><mi>μ</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">c_m^T \mu = 0</annotation></semantics></math>
-vs
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>c</mi><mi>m</mi><mi>T</mi></msubsup><mi>μ</mi><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">c_m^T \mu &gt; 0</annotation></semantics></math>
-(or
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>≠</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\neq 0</annotation></semantics></math>)
-is tested with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>c</mi><mi>m</mi></msub><annotation encoding="application/x-tex">c_m</annotation></semantics></math>
-chosen to maximize power under the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>m</mi><annotation encoding="application/x-tex">m</annotation></semantics></math>-th
-candidate model. Critical values are taken from the multivariate t
-distribution with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mi>K</mi></msubsup><msub><mi>n</mi><mi>k</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mi>k</mi></mrow><annotation encoding="application/x-tex">(\sum_{k=1}^K n_k) - k</annotation></semantics></math>
-degrees of freedom. In the Mod part the dose-response model parameters
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>θ</mi><annotation encoding="application/x-tex">\theta</annotation></semantics></math>
-are estimated by OLS, minimizing
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo>∑</mo><mrow><mi>k</mi><mo>,</mo><mi>j</mi></mrow></msub><msup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mrow><mi>k</mi><mo>,</mo><mi>j</mi></mrow></msub><mo>−</mo><msub><mi>f</mi><mi>m</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mrow><mi>k</mi><mo>,</mo><mi>j</mi></mrow></msub><mo>,</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">\sum_{k,j} (y_{k,j} - f_m(x_{k,j}, \theta))^2</annotation></semantics></math>.</p>
+\]</span> for <span class="math inline">\(k=1,\dots,K\)</span> and <span class="math inline">\(j=1,\dots,n_k\)</span> in each group, where <span class="math inline">\(\mu_k = f_m(x_k, \theta_m)\)</span> under the
+<span class="math inline">\(m\)</span>-th candidate model. In the MCP
+part the null hypothesis of a flat response profile <span class="math inline">\(c_m^T \mu = 0\)</span> vs <span class="math inline">\(c_m^T \mu &gt; 0\)</span> (or <span class="math inline">\(\neq 0\)</span>) is tested with <span class="math inline">\(c_m\)</span> chosen to maximize power under the
+<span class="math inline">\(m\)</span>-th candidate model. Critical
+values are taken from the multivariate t distribution with <span class="math inline">\((\sum_{k=1}^K n_k) - k\)</span> degrees of
+freedom. In the Mod part the dose-response model parameters <span class="math inline">\(\theta\)</span> are estimated by OLS, minimizing
+<span class="math inline">\(\sum_{k,j} (y_{k,j} - f_m(x_{k,j},
+\theta))^2\)</span>.</p>
 <p>In the generalized MCP-Mod approach no specific type of distribution
-is assumed for the observations,
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>y</mi><mrow><mi>k</mi><mo>,</mo><mi>j</mi></mrow></msub><mo>∼</mo><mrow><mi mathvariant="normal">S</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">D</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">s</mi><mi mathvariant="normal">t</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">b</mi><mi mathvariant="normal">u</mi><mi mathvariant="normal">t</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">n</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>μ</mi><mi>k</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
+is assumed for the observations, <span class="math display">\[
 y_{k,j} \sim \mathrm{SomeDistribution}(\mu_k),
-</annotation></semantics></math> only that
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>μ</mi><mi>k</mi></msub><annotation encoding="application/x-tex">\mu_k</annotation></semantics></math>
-can be interpreted as a kind of “average response” for dose
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>.
-The key assumption is that an estimator
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>μ</mi><mo accent="true">̂</mo></mover><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mover><mi>μ</mi><mo accent="true">̂</mo></mover><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mover><mi>μ</mi><mo accent="true">̂</mo></mover><mi>k</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\hat\mu=(\hat\mu_1,\dots,\hat\mu_k)</annotation></semantics></math>
+\]</span> only that <span class="math inline">\(\mu_k\)</span> can be
+interpreted as a kind of “average response” for dose <span class="math inline">\(k\)</span>. The key assumption is that an
+estimator <span class="math inline">\(\hat\mu=(\hat\mu_1,\dots,\hat\mu_k)\)</span>
 exists, which has (at least asymptotically) a multivariate normal
-distribution,
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>μ</mi><mo accent="true">̂</mo></mover><mo>∼</mo><mrow><mi mathvariant="normal">M</mi><mi mathvariant="normal">u</mi><mi mathvariant="normal">l</mi><mi mathvariant="normal">t</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">v</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">t</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">N</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">l</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>μ</mi><mo>,</mo><mi>S</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
+distribution, <span class="math display">\[
 \hat\mu \sim \mathrm{MultivariateNormal}(\mu, S),
-</annotation></semantics></math> and that a first-stage fitting
-procedure can provide estimates
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>μ</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat\mu</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>S</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat S</annotation></semantics></math>.
-The
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>m</mi><annotation encoding="application/x-tex">m</annotation></semantics></math>-th
-candidate model is taken to imply
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>μ</mi><mi>k</mi></msub><mo>=</mo><msub><mi>f</mi><mi>m</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mi>k</mi></msub><mo>,</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mu_k = f_m(x_k, \theta)</annotation></semantics></math>
-and the null hypothesis
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>c</mi><mi>m</mi><mi>T</mi></msubsup><mi>μ</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">c_m^T \mu = 0</annotation></semantics></math>
-is tested with optimal contrasts. The estimate
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>S</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat S</annotation></semantics></math>
-is used in place of the unknown
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>,
-and critical values are taken from the multivariate normal distribution.
-Alternatively, degrees of freedom for a multivariate t distribution can
-be specified. For the Mod part the model parameters
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>θ</mi><annotation encoding="application/x-tex">\theta</annotation></semantics></math>
-are estimated with GLS by minimizing
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mrow><mo stretchy="true" form="prefix">(</mo><mover><mi>μ</mi><mo accent="true">̂</mo></mover><mo>−</mo><msub><mi>f</mi><mi>m</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mi>T</mi></msup><msup><mover><mi>S</mi><mo accent="true">̂</mo></mover><mrow><mo>−</mo><mn>1</mn></mrow></msup><mrow><mo stretchy="true" form="prefix">(</mo><mover><mi>μ</mi><mo accent="true">̂</mo></mover><mo>−</mo><msub><mi>f</mi><mi>m</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">
+\]</span> and that a first-stage fitting procedure can provide estimates
+<span class="math inline">\(\hat\mu\)</span> and <span class="math inline">\(\hat S\)</span>. The <span class="math inline">\(m\)</span>-th candidate model is taken to imply
+<span class="math inline">\(\mu_k = f_m(x_k, \theta)\)</span> and the
+null hypothesis <span class="math inline">\(c_m^T \mu = 0\)</span> is
+tested with optimal contrasts. The estimate <span class="math inline">\(\hat S\)</span> is used in place of the unknown
+<span class="math inline">\(S\)</span>, and critical values are taken
+from the multivariate normal distribution. Alternatively, degrees of
+freedom for a multivariate t distribution can be specified. For the Mod
+part the model parameters <span class="math inline">\(\theta\)</span>
+are estimated with GLS by minimizing <span class="math display">\[
 (\hat\mu - f_m(x, \theta))^T\hat{S}^{-1}(\hat\mu - f_m(x, \theta)).
-</annotation></semantics></math></p>
+\]</span></p>
 <p>In generalized MCP-Mod with an ANOVA as the first stage (based on an
 normality assumption), the multiple contrast test (with appropriate
 degrees of freedom) will provide the same result as the original MCP-Mod
@@ -289,14 +248,11 @@ sigmoid shape this can be achieved by fixing the Hill parameter to a
 given value (for example 3 and/or 5), and then use different sigmoid
 Emax candidate models with fixed Hill parameter also for model fitting.
 Model fitting of these models can be performed with the standard Emax
-model but utilizing
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mi>o</mi><mi>s</mi><mi>e</mi><msup><mi>s</mi><mi>h</mi></msup></mrow><annotation encoding="application/x-tex">doses^h</annotation></semantics></math>
-instead of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mi>o</mi><mi>s</mi><mi>e</mi><mi>s</mi></mrow><annotation encoding="application/x-tex">doses</annotation></semantics></math>
-as the dose variable, where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>h</mi><annotation encoding="application/x-tex">h</annotation></semantics></math>
-is the assumed fixed Hill parameter (note that the interpretation of
-ED50 parameter returned by <code>fitMod</code> then changes).</p>
+model but utilizing <span class="math inline">\(doses^h\)</span> instead
+of <span class="math inline">\(doses\)</span> as the dose variable,
+where <span class="math inline">\(h\)</span> is the assumed fixed Hill
+parameter (note that the interpretation of ED50 parameter returned by
+<code>fitMod</code> then changes).</p>
 <p><em>Consequence of model misspecification:</em> Omission of the
 “correct” dose-response shape from the set of candidate models might not
 necessarily have severe consequences, if other models can pick up the

@@ -1,4 +1,38 @@
 url: https://openpharma.github.io/DoseFinding/
 template:
   bootstrap: 5
-
+  math-rendering: mathjax
+reference:
+- title: Design dose-reponse trials
+- contents:
+  - Mods
+  - guesst
+  - optContr
+  - optDesign
+  - planMod
+  - powMCT
+  - sampSize
+  - DesignMCPModApp
+- title: Analyze dose-response trials
+- contents:
+  - MCPMod
+  - MCTpval
+  - MCTtest
+  - bMCTtest
+  - critVal
+  - mvpostmix
+  - mvtnorm.control
+- title: Fit dose-response model
+- contents:
+  - bFitMod
+  - defBnds
+  - drmodels
+  - fitMod
+  - TD
+- title: Datasets
+- contents:
+  - biom
+  - glycobrom
+  - IBScovars
+  - migraine
+  - neurodeg

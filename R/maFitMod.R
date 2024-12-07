@@ -194,7 +194,18 @@ plot.maFit <- function(x,
 #' @return 
 #' @author XYZ
 #' @seealso \code{\link{ED}}, \code{\link{maFitMod}}
-#' @export
+#' @examples
+#' data(biom)
+#  ## produce first stage fit (using dose as factor)
+#' anMod <- lm(resp~factor(dose)-1, data=biom)
+#' drFit <- coef(anMod)
+#' S <- vcov(anMod)
+#' dose <- sort(unique(biom$dose))
+#' ## fit an emax and sigEmax model
+#' mFit <- maFitMod(dose, drFit, S, model = c("emax", "sigEmax"), nSim = 1000)
+#' mFit
+#' plot(mFit, plotData = "meansCI")
+#' ED.maFit(mFit, direction = "increasing")
 ED.maFit <- function(x, p=0.9, direction = NULL){
   if(!inherits(x, "maFit"))
     stop("x needs to be of class maFit")

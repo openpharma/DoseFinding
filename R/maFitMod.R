@@ -33,6 +33,17 @@
 #' @author XYZ
 #' @examples
 #' @seealso \code{\link{fitMod}}, \code{\link{bFitMod}}, \code{\link{drmodels}}
+#' data(biom)
+#  ## produce first stage fit (using dose as factor)
+#' anMod <- lm(resp~factor(dose)-1, data=biom)
+#' drFit <- coef(anMod)
+#' S <- vcov(anMod)
+#' dose <- sort(unique(biom$dose))
+#' ## fit an emax and sigEmax model
+#' mFit <- maFitMod(dose, drFit, S, model = c("emax", "sigEmax"), nSim = 10)
+#' mFit
+#' plot(mFit, plotData = "meansCI")
+#' ED.maFit(mFit, direction = "increasing")
 #' @export
 maFitMod <- function(dose, resp, S, models, 
                      nSim = 1000,
@@ -48,11 +59,16 @@ maFitMod <- function(dose, resp, S, models,
                         paste(models[is.na(modelNum)], collapse = ", "))
     stop(stop_str)
   }
-  if(missing(bnds)){
-    bnds <- defBnds(max(dose))
-  } else {
+
+  if(!missing(bnds)){
     if(!is.list(bnds))
       stop("bnds needs to be a list")
+  }
+  if(any(modelNum > 4)){ # non-linear model -> needs bounds
+    if(missing(bnds)){
+      message("Message: Need bounds in \"bnds\" for nonlinear models, using default bounds from \"defBnds\".")
+      bnds <- defBnds(max(dose))
+    }
   }
 
   ## parametric bootstrap
@@ -187,7 +203,7 @@ plot.maFit <- function(x,
 #' relative to the _asymptotic_ maximum effect (rather than the
 #' maximum effect in the observed dose-range).
 #'
-#' @title findED
+#' @title Find ED for maFit object
 #' @param x An object of class maFitMod
 #' @param p The percentage (in (0,1)) of the dose to use for the ED calculation.
 #' @param direction Desired direction of dose-response ("increasing" or "decreasing")
@@ -202,7 +218,7 @@ plot.maFit <- function(x,
 #' S <- vcov(anMod)
 #' dose <- sort(unique(biom$dose))
 #' ## fit an emax and sigEmax model
-#' mFit <- maFitMod(dose, drFit, S, model = c("emax", "sigEmax"), nSim = 1000)
+#' mFit <- maFitMod(dose, drFit, S, model = c("emax", "sigEmax"), nSim = 10)
 #' mFit
 #' plot(mFit, plotData = "meansCI")
 #' ED.maFit(mFit, direction = "increasing")

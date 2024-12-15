@@ -31,8 +31,8 @@
 #'   dose-response models \samp{DRMod} objects, as well as which model
 #'   was selected in each bootstrap and basic input parameters.
 #' @author XYZ
-#' @examples
 #' @seealso \code{\link{fitMod}}, \code{\link{bFitMod}}, \code{\link{drmodels}}
+#' @examples
 #' data(biom)
 #  ## produce first stage fit (using dose as factor)
 #' anMod <- lm(resp~factor(dose)-1, data=biom)
@@ -140,30 +140,39 @@ print.maFit <- function(x, digits = 3, ...){
 #' @param ylab y-axis label
 #' @param level Level for CI, when plotData is equal to
 #'   \samp{meansCI}.
+#' @param trafo Plot the fitted models on a transformed scale
+#'   (e.g. probability scale if models have been fitted on log-odds
+#'   scale). The default for \samp{trafo} is the identity function.
 #' @param lenDose Number of grid values to use for display.
-#' @param ...
+#' @param ... Additional parametes (unused)
 #' @export
 plot.maFit <- function(x, 
                        plotData = c("means", "meansCI", "none"),
                        xlab = "Dose", ylab = "Response",
-                       level = 0.95, lenDose = 201, ...){
+                       title = NULL,
+                       level = 0.95, trafo = function(x) x,
+                       lenDose = 201, ...){
+  if(!inherits(trafo, "function"))
+    stop("trafo needs to be a function")
   plotData <- match.arg(plotData)
   dsq <- seq(0, max(x$args$dose), length = lenDose)
   preds <- predict(x, doseSeq = dsq)
-  pdat <- data.frame(dose = dsq)
-  pdat$median <- apply(preds, 2, function(x) quantile(x, 0.5))
   tail_prob <- (1-level)/2
-  pdat$UB <- apply(preds, 2, function(x) quantile(x, 1-tail_prob))
-  pdat$LB <- apply(preds, 2, function(x) quantile(x, tail_prob))
+  pdat <- data.frame(
+    dose = dsq,
+    median = trafo(apply(preds, 2, function(x) quantile(x, 0.5))),
+    UB = trafo(apply(preds, 2, function(x) quantile(x, 1-tail_prob))),
+    LB = trafo(apply(preds, 2, function(x) quantile(x, tail_prob)))
+  )
   if (plotData %in% c("meansCI", "means")) {
     pmdat <- data.frame(dose = x$args$dose,
-                        median = x$args$resp)
+                        median = trafo(x$args$resp))
     sdev <- sqrt(diag(x$args$S))
     crit <- qnorm(1 - tail_prob)
     LBm <- UBm <- numeric(length(x$args$dose))
     for (i in 1:length(x$args$dose)) {
-      LBm[i] <- x$args$resp[i] - crit * sdev[i]
-      UBm[i] <- x$args$resp[i] + crit * sdev[i]
+      LBm[i] <- trafo(x$args$resp[i] - crit * sdev[i])
+      UBm[i] <- trafo(x$args$resp[i] + crit * sdev[i])
     }
     pmdat$LBm <- LBm
     pmdat$UBm <- UBm
@@ -175,15 +184,18 @@ plot.maFit <- function(x,
     ggplot2::ylab(ylab)+
     ggplot2::theme_bw()+
     ggplot2::scale_x_continuous(breaks=x$args$dose)+
-    ggplot2::scale_y_continuous(breaks=pretty(c(pdat$UB, pdat$LB), 8))+
-    ggplot2::theme(panel.grid.minor = element_line(colour = "grey", linetype=3), 
-                  panel.grid.major = element_line(colour = "grey", linetype=3))
+    ggplot2::scale_y_continuous(breaks=pretty(c(pdat$UB, pdat$LB), 8))
   if(plotData %in% c("means", "meansCI")){
     pp <- pp +
       ggplot2::geom_point(ggplot2::aes_string(x="dose", y="median"), data=pmdat)
     if(plotData == "meansCI")
       pp <- pp +
         ggplot2::geom_errorbar(ggplot2::aes_string(ymin="LBm", ymax="UBm"), data=pmdat, width = 0)
+  }
+  if(!is.null(title)){
+    if(!is.character(title))
+      stop("title needs to be a character")
+    pp <- pp + ggplot2::ggtitle(title)
   }
   pp
 }
@@ -207,7 +219,7 @@ plot.maFit <- function(x,
 #' @param x An object of class maFitMod
 #' @param p The percentage (in (0,1)) of the dose to use for the ED calculation.
 #' @param direction Desired direction of dose-response ("increasing" or "decreasing")
-#' @return 
+#' @return ED estimate
 #' @author XYZ
 #' @seealso \code{\link{ED}}, \code{\link{maFitMod}}
 #' @examples

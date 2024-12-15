@@ -248,7 +248,8 @@ ma_pred <- predict(fit_mod_av, doseSeq = c(0, 12.5, 25, 50, 100))
 # point estimates (median) and bootstrap quantile intervals can be extracted via
 apply(ma_pred, 2, function(x) quantile(x, c(0.025, 0.5, 0.975)))
 # plotting can be done via
-plot(fit_mod_av, ylab = "Model averaging estimate with 95% CI")
+plot(fit_mod_av, plotData = "meansCI",
+     ylab = "Model averaging estimate with 95% CI")
 ```
 
 ## How to adjust for covariates?

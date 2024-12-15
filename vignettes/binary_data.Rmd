@@ -103,26 +103,9 @@ to the probability scale.
 ```{r, estimate_no_covariates}
 fit_mod_av <- maFitMod(doses, mu_hat, S = S_hat,
                        models = c("emax", "sigEmax", "betaMod"))
-# plotting on probability scale, need to transform predictions on logit scale
-dose_seq <- seq(0, 4, length.out = 51)		       
-ma_pred <- predict(fit_mod_av, doseSeq = dose_seq)
-med <- apply(ma_pred, 2, median)
-quants <- apply(ma_pred, 2, quantile, probs = c(0.025, 0.975))
-ma_pred <- data.frame(dose_seq = dose_seq, median = med, low = quants[1,], high = quants[2,])
-ma_summary <- as.data.frame(inv_logit(ma_pred)) # back to probability scale
-ma_summary$dose_seq <- dose_seq
-ci_half_width <- qnorm(0.975) * sqrt(diag(S_hat))
-glm_summary <- data.frame(dose = doses, mu_hat = inv_logit(mu_hat),
-                          low = inv_logit(mu_hat - ci_half_width),
-                          high = inv_logit(mu_hat + ci_half_width))
-ggplot(ma_summary) + geom_line(aes(dose_seq, median)) +
-    geom_ribbon(aes(x = dose_seq, ymin = low, ymax = high), alpha = 0.2) +
-    geom_point(aes(dose, mu_hat), glm_summary) +
-    geom_errorbar(aes(dose, ymin = low, ymax = high), glm_summary, width = 0, alpha = 0.5) +
-    scale_y_continuous(breaks = seq(0, 1, 0.05)) +
-    xlab("Dose") + ylab("Response Probability") +
-    labs(title = "Bootstrap estimates for population response probability",
-         subtitle = "confidence level 95%")
+plot(fit_mod_av, plotData = "meansCI",
+     title = "Bootstrap estimates for population response probability",
+     trafo = function(x) 1/(1+exp(-x)))
 ```
 
 ## Analysis with covariates
@@ -202,24 +185,9 @@ Dose-response modelling proceeds in the same way as before, but now on the adjus
 fit_cov_adj <- maFitMod(doses, ca$mu_star, S = ca$S_star,
                         models = c("emax", "sigEmax", "betaMod"))
 # plotting on probability scale, need to transform predictions on logit scale
-ma_pred <- predict(fit_cov_adj, doseSeq = dose_seq)
-med <- apply(ma_pred, 2, median)
-quants <- apply(ma_pred, 2, quantile, probs = c(0.025, 0.975))
-ma_pred <- data.frame(dose_seq = dose_seq, median = med, low = quants[1,], high = quants[2,])
-ma_summary <- as.data.frame(inv_logit(ma_pred)) # back to probability scale
-ma_summary$dose_seq <- dose_seq
-ci_half_width <- qnorm(0.975) * sqrt(diag(S_hat))
-glm_summary <- data.frame(dose = doses, mu_hat = inv_logit(mu_hat),
-                          low = inv_logit(mu_hat - ci_half_width),
-                          high = inv_logit(mu_hat + ci_half_width))
-ggplot(ma_summary) + geom_line(aes(dose_seq, median)) +
-    geom_ribbon(aes(x = dose_seq, ymin = low, ymax = high), alpha = 0.2) +
-    geom_point(aes(dose, mu_hat), glm_summary) +
-    geom_errorbar(aes(dose, ymin = low, ymax = high), glm_summary, width = 0, alpha = 0.5) +
-    scale_y_continuous(breaks = seq(0, 1, 0.05)) +
-    xlab("Dose") + ylab("Response Probability") +
-    labs(title = "Covariate adjusted bootstrap estimates for population response probability",
-         subtitle = "confidence level 95%")
+plot(fit_cov_adj, plotData = "meansCI",
+     title = "Bootstrap estimates for population response probability",
+     trafo = function(x) 1/(1+exp(-x)))
 ```
 
 ## Avoiding problems with complete seperation and 0 responders

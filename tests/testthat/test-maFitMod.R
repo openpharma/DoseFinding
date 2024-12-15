@@ -1,5 +1,4 @@
-library(DoseFinding, lib.loc="~/Projekte/DoseFindingPackage/testlib/")
-library(testthat)
+context("maFitMod")
 
 data(biom)
 anMod <- lm(resp~factor(dose)-1, data=biom)
@@ -74,26 +73,27 @@ test_that("Test input parameters of maFitMod", {
 
 test_that("test model fitting", {
   set.seed(295)
+  bnds <- defBnds(max(doses))
   expect_silent(fits1 <- maFitMod(doses, drFit, S, models = c("linear"), nSim = 10))
   expect_silent(fits2 <- maFitMod(doses, drFit, S, models = c("linInt"), nSim = 10))
-  expect_silent(fits3 <- maFitMod(doses, drFit, S, models = c("emax", "sigEmax"), nSim = 10))
-  expect_silent(fits4 <- maFitMod(doses, drFit, S, models = c("linear", "emax", "betaMod"), nSim = 10))
-  expect_silent(fits5 <- maFitMod(doses, drFit, S, models = c("linear", "emax", "betaMod"), nSim = 10))
+  expect_silent(fits3 <- maFitMod(doses, drFit, S, models = c("emax", "sigEmax"), nSim = 10, bnds = bnds))
+  expect_silent(fits4 <- maFitMod(doses, drFit, S, models = c("linear", "emax", "betaMod"), nSim = 10, bnds = bnds))
+  expect_silent(fits5 <- maFitMod(doses, drFit, S, models = c("linear", "emax", "betaMod"), nSim = 10, bnds = bnds))
   builtin <- c("linlog", "linear", "quadratic", "linInt", "emax",
                "exponential", "logistic", "betaMod", "sigEmax")
-  expect_silent(fits6 <- maFitMod(doses, drFit, S, models = builtin, nSim = 10))
+  expect_silent(fits6 <- maFitMod(doses, drFit, S, models = builtin, nSim = 10, bnds = bnds))
   expect_true(class(fits6) == "maFit")
   expect_equal(length(fits6$fits), 10)
   expect_equal(length(fits6$selModels), 10)
   expect_named(fits6, c("fits", "selModels", "args"))
   
-  ## test print method
-  print(fits1)
-  print(fits2, digits=10)
-  print(fits3)
-  print(fits4)
-  print(fits5)
-  print(fits6)
+  ## test print method (HOW TO TEST PRINT, WITHOUT PRINTING TO CONSOLE)
+  ## expect_no_condition(print(fits1))
+  ## expect_no_condition(print(fits2, digits=10))
+  ## expect_no_condition(print(fits3))
+  ## expect_no_condition(print(fits4)
+  ## expect_no_condition(print(fits5))
+  ## expect_no_condition(print(fits6))
   
   ## test prediction
   expect_error(
@@ -111,7 +111,7 @@ test_that("test model fitting", {
   expect_silent(plot(fits1))
   expect_silent(plot(fits2, xlab = "ABC"))
   expect_silent(plot(fits3, ylab = "XYZ"))
-  expect_silent(plot(fits4))
+  expect_silent(plot(fits4, title = "123"))
   expect_silent(plot(fits5))
   expect_silent(plot(fits6))
   
@@ -128,9 +128,11 @@ test_that("test model fitting", {
   expect_silent(plot(fits4, plotData = "meansCI"))
   expect_silent(plot(fits5, plotData = "meansCI"))
   expect_silent(plot(fits6, plotData = "meansCI"))
-})
-
-test_that("ED calculation based on median dose-response", {
+  expect_error(plot(fits6, title = 23),
+               "title needs to be a character")
+  expect_error(plot(fits6, trafo = 23),
+               "trafo needs to be a function")
+  
   expect_error(
     ED.maFit(fits5, p = 0.9)) # should fail (direction not specified)
   expect_silent(ED.maFit(fits5, p = 0.9, direction = "increasing"))
@@ -138,14 +140,14 @@ test_that("ED calculation based on median dose-response", {
   
   ## check decreasing direction
   drFit2 <- 1-drFit
-  fits6 <- maFitMod(doses, drFit2, S, models = builtin, nSim = 10)
+  fits6 <- maFitMod(doses, drFit2, S, models = builtin, nSim = 10, bnds = bnds)
   expect_true(
     is.na(ED.maFit(fits6, p = 0.9, direction = "increasing")))
   expect_silent(ED.maFit(fits6, p = 0.9, direction = "decreasing"))
   expect_silent(ED.maFit(fits6, p = 0.5, direction = "decreasing"))
 })
 
-## model fitting
+## compare model fitting to bFitMod
 ## Helper function to create example data
 make_example_data <- function() {
   dose <- c(0, 5, 10, 20, 40)

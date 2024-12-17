@@ -33,17 +33,17 @@
 #' @author XYZ
 #' @seealso \code{\link{fitMod}}, \code{\link{bFitMod}}, \code{\link{drmodels}}
 #' @examples
-#' data(biom)
-#  ## produce first stage fit (using dose as factor)
-#' anMod <- lm(resp~factor(dose)-1, data=biom)
-#' drFit <- coef(anMod)
-#' S <- vcov(anMod)
-#' dose <- sort(unique(biom$dose))
-#' ## fit an emax and sigEmax model
-#' mFit <- maFitMod(dose, drFit, S, model = c("emax", "sigEmax"), nSim = 10)
-#' mFit
-#' plot(mFit, plotData = "meansCI")
-#' ED.maFit(mFit, direction = "increasing")
+# data(biom)
+# ## produce first stage fit (using dose as factor)
+# anMod <- lm(resp~factor(dose)-1, data=biom)
+# drFit <- coef(anMod)
+# S <- vcov(anMod)
+# dose <- sort(unique(biom$dose))
+# ## fit an emax and sigEmax model
+# mFit <- maFitMod(dose, drFit, S, model = c("emax", "sigEmax"), nSim = 10)
+# mFit
+# plot(mFit, plotData = "meansCI")
+# ED.maFit(mFit, direction = "increasing")
 #' @export
 maFitMod <- function(dose, resp, S, models, 
                      nSim = 1000,
@@ -64,10 +64,16 @@ maFitMod <- function(dose, resp, S, models,
     if(!is.list(bnds))
       stop("bnds needs to be a list")
   }
+
   if(any(modelNum > 4)){ # non-linear model -> needs bounds
     if(missing(bnds)){
       message("Message: Need bounds in \"bnds\" for nonlinear models, using default bounds from \"defBnds\".")
       bnds <- defBnds(max(dose))
+    } else{
+      nonlin_models <- builtIn[modelNum[modelNum > 4]]
+      bnds <- sapply(nonlin_models, function(x) if(x %in% names(bnds)){bnds[[x]]} else{
+        message("Message: Need bounds in \"bnds\" for nonlinear models, using default bounds from \"defBnds\".");
+        defBnds(max(dose))[[x]]})
     }
   }
 
@@ -134,7 +140,7 @@ print.maFit <- function(x, digits = 3, ...){
 
 #' @param x object of class maFit
 #' @param plotData Determines how the original data are plotted:
-#'   Either as means or as means with CI or not. The level of the CI
+#'   Either as means or as means with CI or not at all. The level of the CI
 #'   is determined by the argument \samp{level}.
 #' @param xlab x-axis label
 #' @param ylab y-axis label
@@ -177,8 +183,8 @@ plot.maFit <- function(x,
     pmdat$LBm <- LBm
     pmdat$UBm <- UBm
   }
-  pp <- ggplot2::ggplot(pdat, ggplot2::aes_string(x="dose", y="median"))+
-    ggplot2::geom_ribbon(ggplot2::aes_string(ymin = "LB", ymax = "UB"), alpha=0.2)+
+  pp <- ggplot2::ggplot(pdat, ggplot2::aes(x=dose, y=median)) +
+    ggplot2::geom_ribbon(ggplot2::aes(ymin = LB, ymax = UB), alpha=0.2)+
     ggplot2::geom_line()+
     ggplot2::xlab(xlab)+
     ggplot2::ylab(ylab)+
@@ -187,10 +193,10 @@ plot.maFit <- function(x,
     ggplot2::scale_y_continuous(breaks=pretty(c(pdat$UB, pdat$LB), 8))
   if(plotData %in% c("means", "meansCI")){
     pp <- pp +
-      ggplot2::geom_point(ggplot2::aes_string(x="dose", y="median"), data=pmdat)
+      ggplot2::geom_point(ggplot2::aes(x=dose, y=median), data=pmdat)
     if(plotData == "meansCI")
       pp <- pp +
-        ggplot2::geom_errorbar(ggplot2::aes_string(ymin="LBm", ymax="UBm"), data=pmdat, width = 0)
+        ggplot2::geom_errorbar(ggplot2::aes(ymin=LBm, ymax=UBm), data=pmdat, width = 0)
   }
   if(!is.null(title)){
     if(!is.character(title))

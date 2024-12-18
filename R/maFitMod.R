@@ -73,7 +73,7 @@ maFitMod <- function(dose, resp, S, models,
       nonlin_models <- builtIn[modelNum[modelNum > 4]]
       bnds <- sapply(nonlin_models, function(x) if(x %in% names(bnds)){bnds[[x]]} else{
         message("Message: Need bounds in \"bnds\" for nonlinear models, using default bounds from \"defBnds\".");
-        defBnds(max(dose))[[x]]})
+        defBnds(max(dose))[[x]]}, simplify = FALSE)
     }
   }
 

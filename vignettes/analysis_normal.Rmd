@@ -244,9 +244,11 @@ fitted model on each boostrap sample. The `plot` method allows to summarize
 the model fits (some limited customization is possible see `?plot.maFit`).
 
 ```{r, bootstrap_summarize}
-ma_pred <- predict(fit_mod_av, doseSeq = c(0, 12.5, 25, 50, 100))
 # point estimates (median) and bootstrap quantile intervals can be extracted via
-apply(ma_pred, 2, function(x) quantile(x, c(0.025, 0.5, 0.975)))
+ma_pred <- predict(fit_mod_av, doseSeq = c(0, 12.5, 25, 50, 100))
+# individual bootstrap estimates via
+indiv_pred <- predict(fit_mod_av, doseSeq = c(0, 12.5, 25, 50, 100),
+                      summaryFct = NULL)
 # plotting can be done via
 plot(fit_mod_av, plotData = "meansCI",
      ylab = "Model averaging estimate with 95% CI")

@@ -33,17 +33,17 @@
 #' @author XYZ
 #' @seealso \code{\link{fitMod}}, \code{\link{bFitMod}}, \code{\link{drmodels}}
 #' @examples
-# data(biom)
-# ## produce first stage fit (using dose as factor)
-# anMod <- lm(resp~factor(dose)-1, data=biom)
-# drFit <- coef(anMod)
-# S <- vcov(anMod)
-# dose <- sort(unique(biom$dose))
-# ## fit an emax and sigEmax model
-# mFit <- maFitMod(dose, drFit, S, model = c("emax", "sigEmax"), nSim = 10)
-# mFit
-# plot(mFit, plotData = "meansCI")
-# ED.maFit(mFit, direction = "increasing")
+#' data(biom)
+#' ## produce first stage fit (using dose as factor)
+#' anMod <- lm(resp~factor(dose)-1, data=biom)
+#' drFit <- coef(anMod)
+#' S <- vcov(anMod)
+#' dose <- sort(unique(biom$dose))
+#' ## fit an emax and sigEmax model (increase nSim for real use)
+#' mFit <- maFitMod(dose, drFit, S, model = c("emax", "sigEmax"), nSim = 10)
+#' mFit
+#' plot(mFit, plotData = "meansCI")
+#' ED(mFit, direction = "increasing", p = 0.9)
 #' @export
 maFitMod <- function(dose, resp, S, models, 
                      nSim = 1000,
@@ -100,7 +100,16 @@ maFitMod <- function(dose, resp, S, models,
 }
 
 #' @export
+#' @param object Object of class maFit
+#' @param summaryFct If equal to NULL predictions are calculated for
+#'   each sampled parameter value. Otherwise a summary function is
+#'   applied to the dose-response predictions for each parameter
+#'   value.  The default is to calculate 0.025, 0.25, 0.5, 0.75, 0.975
+#'   quantiles of the predictions for each dose.
+#' @param doseSeq Where to calculate predictions. 
+#' @param ... Further arguments (currently ignored)
 predict.maFit <- function(object,
+                          summaryFct = function(x) quantile(x, probs = c(0.025, 0.25, 0.5, 0.75, 0.975)),
                           doseSeq = NULL,
                           ...){
   if(is.null(doseSeq))
@@ -112,7 +121,14 @@ predict.maFit <- function(object,
   for(i in 1:nSim){
     pred[i,] <- predict(object$fits[[i]], doseSeq = doseSeq, predType = "ls-means")
   }
-  pred
+  if(!is.null(summaryFct)){
+    out0 <- apply(pred, 2, summaryFct)
+    out <- matrix(out0, ncol = length(doseSeq))
+  } else {
+    out <- pred
+  }
+  colnames(out) <- doseSeq
+  out
 }
 
 #' @export
@@ -162,7 +178,7 @@ plot.maFit <- function(x,
     stop("trafo needs to be a function")
   plotData <- match.arg(plotData)
   dsq <- seq(0, max(x$args$dose), length = lenDose)
-  preds <- predict(x, doseSeq = dsq)
+  preds <- predict(x, doseSeq = dsq, summaryFct = NULL)
   tail_prob <- (1-level)/2
   pdat <- data.frame(
     dose = dsq,
@@ -204,65 +220,4 @@ plot.maFit <- function(x,
     pp <- pp + ggplot2::ggtitle(title)
   }
   pp
-}
-
-#' Calculate the ED based on the median predicted curve from a
-#' bootstrap model averaging (bagging) fit.
-#' 
-#' The ED (effective dose) is defined as the dose that achieves a
-#' certain percentage p of the full effect size (within the observed
-#' dose-range!)  over placebo (if there are multiple such doses, the
-#' smallest is chosen).
-#'
-#' \deqn{ED_p=\min\{x|f(x) > f(0) + p(f(dmax)-f(0))}{ EDp=min{x|f(x) > f(0) + p(f(dmax)-f(0))}}
-#'
-#' Note that this definition of the EDp is different from traditional
-#' definition based on the Emax model, where the EDp is defined
-#' relative to the _asymptotic_ maximum effect (rather than the
-#' maximum effect in the observed dose-range).
-#'
-#' @title Find ED for maFit object
-#' @param x An object of class maFitMod
-#' @param p The percentage (in (0,1)) of the dose to use for the ED calculation.
-#' @param direction Desired direction of dose-response ("increasing" or "decreasing")
-#' @return ED estimate
-#' @author XYZ
-#' @seealso \code{\link{ED}}, \code{\link{maFitMod}}
-#' @examples
-#' data(biom)
-#  ## produce first stage fit (using dose as factor)
-#' anMod <- lm(resp~factor(dose)-1, data=biom)
-#' drFit <- coef(anMod)
-#' S <- vcov(anMod)
-#' dose <- sort(unique(biom$dose))
-#' ## fit an emax and sigEmax model
-#' mFit <- maFitMod(dose, drFit, S, model = c("emax", "sigEmax"), nSim = 10)
-#' mFit
-#' plot(mFit, plotData = "meansCI")
-#' ED.maFit(mFit, direction = "increasing")
-ED.maFit <- function(x, p=0.9, direction = NULL){
-  if(!inherits(x, "maFit"))
-    stop("x needs to be of class maFit")
-    
-  if(is.null(direction)){
-    stop("Need to selection direction of dose-response (\"increasing\" or \"decreasing\").")
-  } else {
-    direction <- match.arg(direction, c("increasing", "decreasing"))
-  }
-  doseSeq <- seq(0, max(x$args$dose), length=501)
-  pred <- predict(x, doseSeq = doseSeq)
-  pred_med <- apply(pred, 2, function(x) quantile(x, 0.5))
-
-  if(direction == "decreasing")
-    pred_med <- -pred_med
-  
-  difs <- (pred_med - pred_med[1])
-  difs_stand <- difs/max(difs)
-  ind <- which(difs_stand > p)
-  
-  if (any(ind)) {
-    return(min(doseSeq[ind]))
-  } else {
-    return(NA)
-  }
 }

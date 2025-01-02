@@ -100,12 +100,12 @@ test_that("test model fitting", {
     predict(fits1),
     "Need to provide doseSeq argument")
   dsq <- seq(0,1,length=101)
-  expect_silent(p1 <- predict(fits1, doseSeq = dsq))
-  expect_silent(p2 <- predict(fits2, doseSeq = dsq))
-  expect_silent(p3 <- predict(fits3, doseSeq = dsq))
-  expect_silent(p4 <- predict(fits4, doseSeq = dsq))
-  expect_silent(p5 <- predict(fits5, doseSeq = dsq))
-  expect_silent(p6 <- predict(fits5, doseSeq = dsq))
+  expect_silent(p1 <- predict(fits1, doseSeq = dsq, summaryFct = NULL))
+  expect_silent(p2 <- predict(fits2, doseSeq = dsq, summaryFct = NULL))
+  expect_silent(p3 <- predict(fits3, doseSeq = dsq, summaryFct = NULL))
+  expect_silent(p4 <- predict(fits4, doseSeq = dsq, summaryFct = NULL))
+  expect_silent(p5 <- predict(fits5, doseSeq = dsq, summaryFct = NULL))
+  expect_silent(p6 <- predict(fits5, doseSeq = dsq, summaryFct = NULL))
   expect_equal(dim(p6), c(10,101))
   
   expect_silent(plot(fits1))
@@ -133,18 +133,43 @@ test_that("test model fitting", {
   expect_error(plot(fits6, trafo = 23),
                "trafo needs to be a function")
   
+  ## check target dose estimation
+  ## ED
   expect_error(
-    ED.maFit(fits5, p = 0.9)) # should fail (direction not specified)
-  expect_silent(ED.maFit(fits5, p = 0.9, direction = "increasing"))
-  expect_silent(ED.maFit(fits5, p = 0.5, direction = "increasing"))
+    ED(fits5, p = 0.9)) # should fail (direction not specified)
+  expect_silent(ED(fits5, p = 0.9, direction = "increasing"))
+  expect_silent(ED(fits5, p = 0.5, direction = "increasing"))
+  expect_error(
+    ED(fits5, p = 0.9, direction = "increasing", EDtype = "discrete"),
+    "argument \"doses\" is missing, with no default")
+  expect_silent(ED(fits5, p = 0.9, direction = "increasing",
+                   EDtype = "discrete", doses = doses))
+  expect_silent(ED(fits5, p = 0.5, direction = "increasing",
+                   EDtype = "discrete", doses = doses))
   
   ## check decreasing direction
   drFit2 <- 1-drFit
   fits6 <- maFitMod(doses, drFit2, S, models = builtin, nSim = 10, bnds = bnds)
   expect_true(
-    is.na(ED.maFit(fits6, p = 0.9, direction = "increasing")))
-  expect_silent(ED.maFit(fits6, p = 0.9, direction = "decreasing"))
-  expect_silent(ED.maFit(fits6, p = 0.5, direction = "decreasing"))
+    is.na(ED(fits6, p = 0.9, direction = "increasing")))
+  expect_silent(ED(fits6, p = 0.9, direction = "decreasing"))
+  expect_silent(ED(fits6, p = 0.5, direction = "decreasing"))
+  expect_silent(ED(fits6, p = 0.9, direction = "decreasing",
+                   EDtype = "discrete", doses = doses))
+  expect_silent(ED(fits6, p = 0.5, direction = "decreasing",
+                   EDtype = "discrete", doses = doses))
+
+  ## TD
+  expect_silent(TD(fits5, Delta=0.5, direction = "increasing"))
+  expect_error(
+    TD(fits5, Delta=0.5, direction = "increasing",
+       TDtype = "discrete"),
+    "argument \"doses\" is missing, with no default")
+  expect_silent(
+    TD(fits5, Delta=0.5, direction = "increasing",
+       TDtype = "discrete", doses = doses))
+  expect_true(
+    is.na(TD(fits5, Delta=0.5, direction = "decreasing")))
 })
 
 ## compare model fitting to bFitMod
@@ -170,7 +195,7 @@ test_that("Compare fits of maFitMod to bFitMod", {
                     nSim = 10, bnds = bnds[[builtin[i]]])
     
     ds <- seq(0,40,by=1)
-    pred0 <- predict(res1, doseSeq = ds)
+    pred0 <- predict(res1, doseSeq = ds, summaryFct = NULL)
     pred1 <- apply(pred0, 2, function(x){
       quantile(x, c(0.025, 0.25, 0.5, 0.75, 0.975))
     })

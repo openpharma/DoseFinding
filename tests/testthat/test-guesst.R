@@ -70,3 +70,32 @@ test_that("sigEmax local", {
                tolerance = 0.001)
 })
 
+
+## test error conditions
+
+
+test_that("Error conditions for guesst function", {
+  
+  # Test for invalid percentage values (negative or greater than 1)
+  expect_error(guesst(d = 0.5, p = -0.2, model = "emax"), "must have 0 < p <= 1")
+  expect_error(guesst(d = 0.5, p = 1.2, model = "emax"), "must have 0 < p <= 1")
+  
+  # Test for logistic model needing at least two pairs
+  expect_error(guesst(d = 0.2, p = 0.5, model = "logistic"), "logistic model needs at least two pairs")
+  
+  # Test for local version of emax with p <= d/Maxd
+  expect_error(guesst(d = 0.3, p = 0.2, model = "emax", local = TRUE, Maxd = 1), "must have p > d/Maxd, for local version")
+  
+  # Test for exponential model needing p < d/Maxd
+  expect_error(guesst(d = 0.8, p = 0.9, model = "exponential", Maxd = 1), "must have p < d/Maxd")
+  
+  # Test for betaMod model needing scal > dMax
+  expect_error(guesst(d = 0.4, p = 0.8, model = "betaMod", dMax = 0.8, scal = 0.8, Maxd = 1), "scal needs to be larger than dMax to calculate guesstimate")
+  
+  # Test for betaMod model needing dMax <= Maxd
+  expect_error(guesst(d = 0.4, p = 0.8, model = "betaMod", dMax = 1.2, scal = 1.5, Maxd = 1), "dose with maximum effect \\(dMax\\) needs to be smaller than maximum dose \\(Maxd\\)")
+  
+  # Test for sigmoid Emax model needing at least two pairs
+  expect_error(guesst(d = 0.2, p = 0.5, model = "sigEmax"), "sigmoid Emax model needs at least two pairs")
+  
+})

@@ -76,3 +76,66 @@ test_that("negative values for Delta lead to an error", {
   expect_error(summary(pObj,Delta=-1.1),
                "\"Delta\" needs to be > 0")
 })
+
+
+## error testing
+doses <- c(0, 10, 25, 50, 100, 150)
+fmodels <- Mods(linear = NULL, emax = 25, logistic = c(50, 10.88111), exponential = 85, betaMod = rbind(c(0.33, 2.31), c(1.39, 1.39)), doses = doses)
+sigma <- 1
+n <- rep(62, 6) * 2
+
+test_that("planMod errors when wrong or incomplete arguments supplied", {
+  expect_error(planMod("linInt", fmodels, n, sigma, doses = doses), "planMod works for all built-in models but not linInt")
+  expect_error(planMod(c("linear", "quadratic"), fmodels, n, sigma, doses = doses, asyApprox = TRUE, simulation = FALSE), "\"asyApprox\" needs to be FALSE for multiple models")
+  expect_error(planMod("linear", fmodels, doses = doses, asyApprox = TRUE, simulation = FALSE), "either S or n and sigma need to be specified")
+  expect_error(planMod("linear", fmodels, c(62, 62), sigma, doses = doses, asyApprox = TRUE, simulation = FALSE), "\"n\" and \"doses\" need to be of same length")
+  expect_error(planMod("linear", fmodels, n, sigma, doses = doses, asyApprox = FALSE, simulation = FALSE), "Need to select either \"asyApprox = TRUE\" or \"simulation = TRUE\"")
+  
+})
+
+## test print and plot methods
+# Mock some inputs for the planMod function to use in the tests
+doses <- c(0, 10, 25, 50, 100, 150)
+fmodels <- Mods(linear = NULL, emax = 25, logistic = c(50, 10.88111), exponential = 85, betaMod = rbind(c(0.33, 2.31), c(1.39, 1.39)), doses = doses)
+sigma <- 1
+n <- rep(62, 6) * 2
+
+# Generate a planMod object to use in tests
+pObj <- planMod("linear", fmodels, n, sigma, doses = doses, asyApprox = TRUE, simulation = TRUE, nSim = 10)
+
+# Test cases
+test_that("print.planMod works without errors", {
+  expect_output(print(pObj), "Fitted Model: linear", fixed = TRUE)
+})
+
+test_that("plot.planMod dose-response plot works without errors", {
+  expect_silent(plot(pObj, type = "dose-response"))
+})
+
+test_that("plot.planMod ED plot works without errors", {
+  expect_silent(plot(pObj, type = "ED", p = 0.5))
+})
+
+test_that("plot.planMod TD plot works without errors", {
+  expect_silent(plot(pObj, type = "TD", Delta = 0.3))
+})
+
+test_that("print.planMod for multiple models works without errors", {
+  pObj_multi <- planMod(c("linear", "quadratic"), fmodels, n, sigma, doses = doses, asyApprox = FALSE, simulation = TRUE, nSim = 10)
+  expect_output(print(pObj_multi), "Fitted Models: linear quadratic", fixed = TRUE)
+})
+
+test_that("plot.planMod for multiple models dose-response plot works without errors", {
+  pObj_multi <- planMod(c("linear", "quadratic"), fmodels, n, sigma, doses = doses, asyApprox = FALSE, simulation = TRUE, nSim = 10)
+  expect_silent(plot(pObj_multi, type = "dose-response"))
+})
+
+test_that("plot.planMod for multiple models ED plot works without errors", {
+  pObj_multi <- planMod(c("linear", "quadratic"), fmodels, n, sigma, doses = doses, asyApprox = FALSE, simulation = TRUE, nSim = 10)
+  expect_silent(plot(pObj_multi, type = "ED", p = 0.5))
+})
+
+test_that("plot.planMod for multiple models TD plot works without errors", {
+  pObj_multi <- planMod(c("linear", "quadratic"), fmodels, n, sigma, doses = doses, asyApprox = FALSE, simulation = TRUE, nSim = 10)
+  expect_silent(plot(pObj_multi, type = "TD", Delta = 0.3))
+})

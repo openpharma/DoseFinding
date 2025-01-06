@@ -49,6 +49,7 @@ S3method(gAIC, DRMod)
 S3method(predict, bFitMod)
 S3method(plot, bFitMod)
 S3method(print, bFitMod)
+S3method(coef, bFitMod)
 
 S3method(plot, targN)
 

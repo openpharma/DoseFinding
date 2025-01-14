@@ -183,3 +183,134 @@ test_that("there are no instabilities for numerical gradients", {
   des <- optDesign(mm, probs=1, designCrit="TD", Delta=0.5)
   expect_equal(des$design, c(0.4895, 0.3552, 0.1448, 0, 0.0105), tolerance = 1e-4)
 })
+
+## test error conditions
+# Create sample Mods object for testing
+doses <- c(0, 10, 25, 50, 100)
+models <- Mods(emax = 15, doses = doses, placEff = 0, maxEff = 1)
+
+# Define some allocation weights for testing
+design <- c(0.2, 0.2, 0.2, 0.2, 0.2)
+
+test_that("optDesign errors when wrong inputs are supplied", {
+  expect_error(optDesign(models = list(dummy = 1), probs = 1), "\"models\" needs to be of class Mods")
+  expect_error(optDesign(probs = 1, doses = c(0, 5, 20, 100)), "either \"models\" or \"userCrit\" need to be specified")
+  expect_error(optDesign(models, probs = 1, optimizer = "exact"), "need to specify sample size via n argument")
+  expect_error(optDesign(models, probs = 1, nold = c(1, 2, 3)), "need to specify sample size for next cohort via n argument")
+  expect_error(optDesign(models, probs = 1, designCrit = "TD"), "need to specify target difference \"Delta\"")
+  expect_error(optDesign(models, probs = 1, designCrit = "Dopt&TD"), "need to specify target difference \"Delta\"")
+  expect_error(optDesign(models, probs = 1, designCrit = "TD", Delta = -0.5), "\"Delta\" needs to be > 0")
+  expect_error(optDesign(models, probs = 1, weights = c(1, 1)), "weights and doses need to be of equal length")
+  expect_error(optDesign(models, probs = 1, lowbnd = rep(0.3, length(doses))), "Infeasible lower bound specified")
+  expect_error(optDesign(models, probs = 1, uppbnd = rep(0.1, length(doses))), "Infeasible upper bound specified")
+  expect_error(optDesign(models, probs = 1, lowbnd = c(0.1, 0.2)), "lowbnd needs to be of same length as doses")
+  expect_error(optDesign(models, probs = 1, uppbnd = c(0.8, 0.9)), "uppbnd needs to be of same length as doses")
+  expect_error(optDesign(models, probs = 1, doses = c(0, 10), designCrit = "Dopt"), "need at least as many dose levels as there are parameters to calculate Dopt design.")
+})
+
+
+
+# Combine all tests in one testthat call
+test_that("calcCrit function error handling", {
+  
+  expect_error(calcCrit(design = design, models = list(dummy = 1), probs = 1, doses = doses), 
+               "\"models\" needs to be of class Mods",
+               info = "models argument needs to be of class Mods")
+  
+  expect_error(calcCrit(design = list(1, 2, 3), models = models, probs = 1, doses = doses), 
+               "design needs to be numeric",
+               info = "design needs to be numeric")
+  
+  expect_error(calcCrit(design = c(0.5, 0.5), models = models, probs = 1, doses = doses), 
+               "design and doses should be of the same length",
+               info = "design and doses should be of the same length")
+  
+  expect_error(calcCrit(design = c(0.5, 0.4, 0, 0, 0), models = models, probs = 1, doses = doses), 
+               "design needs to sum to 1",
+               info = "design needs to sum to 1")
+  
+  expect_error(calcCrit(design = design, models = models, probs = 1, doses = doses, n = c(1, 2)), 
+               "n needs to be of length 1",
+               info = "n needs to be of length 1")
+  
+  expect_error(calcCrit(design = design, models = models, probs = 1, doses = doses, weights = c(1, 2)), 
+               "weights and doses need to be of equal length",
+               info = "weights and doses need to be of equal length")
+  
+  expect_error(calcCrit(design = design, models = models, probs = 1, doses = doses, designCrit = "TD"), 
+               "need to specify clinical relevance parameter",
+               info = "Delta needs to be specified for TD designCrit values")
+
+  expect_error(calcCrit(design = design, models = models, probs = 1, doses = doses, designCrit = "Dopt", standDopt = "string"), 
+               "standDopt needs to contain a logical value",
+               info = "standDopt needs to be logical")
+  
+  models_with_invalid_probs <- Mods(emax = 15, doses = doses, placEff = 0, maxEff = 1)
+  probs_invalid <- c(0.5, 0.5) # Probs length not matching models length
+  expect_error(calcCrit(design = design, models = models_with_invalid_probs, probs = probs_invalid, doses = doses),
+               "Probs of wrong length",
+               info = "probs length should match models length")
+  expect_error(calcCrit(design = c(0.5, 0.5), models = models, probs = 1, doses = doses[1:2]),
+               "need more dose levels to calculate Dopt design.",
+               info = "D-optimality requires enough doses")
+})
+
+## rndDesign testing
+design <- optDesign(models, probs = 1)
+design_vector <- design$design
+
+test_that("rndDesign function error handling and functionality", {
+  
+  # Error tests
+  expect_error(rndDesign(design = design_vector), 
+               "total sample size \"n\" needs to be specified",
+               info = "total sample size n needs to be specified")
+  
+  expect_error(rndDesign(design = list(1, 2, 3), n = 100), 
+               "design needs to be a numeric vector.",
+               info = "design needs to be a numeric vector")
+  
+  # General functionality tests
+  result <- rndDesign(design = design_vector, n = 100)
+  expect_equal(sum(result), 100, 
+               info = "sum of rounded design should equal n")
+  
+  design_with_small_values <- c(0.1, 0.2, 0.00001, 0.1, 0.6)
+  result_with_small_values <- rndDesign(design = design_with_small_values, n = 50)
+  expect_equal(sum(result_with_small_values), 50, 
+               info = "sum of rounded design with small values should equal n")
+  expect_equal(result_with_small_values[3], 0, 
+               info = "elements of design below eps should be regarded as 0")
+  
+  # Test with an actual DRdesign object
+  result_from_DRdesign <- rndDesign(design = design, n = 100)
+  expect_equal(sum(result_from_DRdesign), 100, 
+               info = "sum of rounded design from DRdesign object should equal n")
+  
+  # Test edge case where design elements sum to exactly 1
+  design_exact <- c(0.2, 0.3, 0.5)
+  result_exact <- rndDesign(design = design_exact, n = 90)
+  expect_equal(sum(result_exact), 90, 
+               info = "sum of rounded design with exact sum to 1 should equal n")
+})
+
+## plot testing
+test_that("plot.DRdesign function error handling and functionality", {
+  
+  # Error test
+  expect_error(plot.DRdesign(x = design),
+               info = "models argument needs to be specified")
+  
+  # General functionality tests
+  expect_silent(plot(design, models = models))
+  
+  # Custom line width and color
+  expect_silent(plot(design, models = models, lwdDes = 5, colDes = "blue"))
+  
+  # Test with additional plot arguments
+  expect_silent(plot(design, models = models, main = "Optimal Design Plot", xlab = "Dose", ylab = "Response"))
+  
+  # Verify that plot produces expected output
+  # Note: This is a visual inspection step, automated checking of graphical output would typically involve visual inspection.
+  # Ensure that calling plot function does not produce errors or warnings
+})

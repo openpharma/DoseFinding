@@ -135,3 +135,88 @@ calculate optimal contrasts for this shape.")
   expect_message(optContr(modlist2, w=1, doses=c(0, 0.05, 0.5), placAdj=FALSE, type = "c"), "The linInt2 model has a constant shape, cannot
 calculate optimal contrasts for this shape.")
 })
+
+test_that("optContr errors when invalid inputs are provided", {
+  expect_error(optContr(models = list(), doses = c(0, 10), w = c(1, 1)),
+               "models needs to be of class Mods")
+  models <- Mods(linear = NULL, emax = 25, direction = c("increasing", "decreasing"), doses = c(0, 10))
+  models <- Mods(linear = NULL, doses = c(0, 10))
+  expect_error(optContr(models, doses = c(0, 10)),
+               "Need to specify exactly one of \"w\" or \"S\"")
+  expect_error(optContr(models, doses = c(0, 10), w = c(1, 1), S = diag(2)),
+               "Need to specify exactly one of \"w\" or \"S\"")
+  expect_error(optContr(models, doses = c(0, 10), w = c(1, 1), placAdj = TRUE),
+               "If placAdj == TRUE there should be no placebo group in \"doses\"")
+  expect_error(optContr(models, doses = c(0, 10), w = c(1, 1, 1)),
+               "w needs to be of length 1 or of the same length as doses")
+  expect_error(optContr(models, doses = c(0, 10), S = c(1, 1)),
+               "S needs to be a matrix")
+})
+
+models <- Mods(linear = NULL, doses = c(0, 10))
+
+test_that("print.optContr prints contrast matrix", {
+  contMat <- optContr(models, doses = c(0, 10), w = c(1, 1))
+  expect_output(print(contMat), "Optimal contrasts\n.*")
+})
+
+test_that("summary.optContr summarizes and prints an optContr object", {
+  contMat <- optContr(models, doses = c(0, 10), w = c(1, 1))
+  expect_output(summary(contMat), "Optimal contrasts\n.*")
+  expect_output(summary(contMat), "Contrast Correlation Matrix:.*")
+})
+
+test_that("plot.optContr plots contrast coefficients", {
+  contMat <- optContr(models, doses = c(0, 10), w = c(1, 1))
+  expect_silent(plot(contMat, plotType = "contrasts"))
+  expect_silent(plot(contMat, plotType = "means"))
+})
+
+test_that("plotContr creates a ggplot object for the contrast coefficients", {
+  contMat <- optContr(models, doses = c(0, 10), w = c(1, 1))
+  expect_s3_class(plotContr(contMat), "ggplot")
+})
+
+test_that("plotContr creates a ggplot object with the correct data", {
+  contMat <- optContr(models, doses = c(0, 10), w = c(1, 1))
+  plot <- plotContr(contMat)
+  
+  # Ensure all dose levels are present in the plot
+  expect_true(all(levels(as.factor(plot$data$dose)) %in% c(0, 10)))
+  # Ensure all models are present in the plot
+  expect_true(all(levels(as.factor(plot$data$model)) %in% c("linear")))
+  # Check y-axis label
+  expect_equal(plot$labels$y, "Contrast coefficients")
+  # Check x-axis label
+  expect_equal(plot$labels$x, "Dose")
+})
+
+test_that("lattice plot for optContr with superpose options works correctly", {
+  contMat <- optContr(models, doses = c(0, 10), w = c(1, 1))
+  expect_no_error(plot(contMat, plotType = "contrasts", superpose = TRUE))
+})
+
+test_that("lattice plot for optContr without superpose options works correctly", {
+  contMat <- optContr(models, doses = c(0, 10), w = c(1, 1))
+  expect_no_error(plot(contMat, plotType = "contrasts", superpose = FALSE))
+})
+
+# Additional test to ensure plotContr produces the correct ggplot2 plot
+test_that("plotContr returns a ggplot2 plot with correct elements", {
+  models <- Mods(linear = NULL, doses = c(0, 10, 25, 50, 100, 150))
+  contMat <- optContr(models, doses = c(0, 10, 25, 50, 100, 150), w = rep(50, 6))
+  p <- plotContr(contMat)
+  expect_s3_class(p, "ggplot")
+  expect_equal(p$theme$legend.position, "top")
+})
+
+# Additional test to ensure plot.optContr correctly sets y-axis labels
+test_that("plot.optContr sets correct y-axis labels", {
+  contMat <- optContr(models, doses = c(0, 10), w = c(1, 1))
+  
+  p1 <- plot(contMat, plotType = "contrasts", ylab = "Contrast coefficients")
+  expect_equal(p1$ylab, "Contrast coefficients")
+  
+  p2 <- plot(contMat, plotType = "means", ylab = "Normalized model means")
+  expect_equal(p2$ylab, "Normalized model means")
+})

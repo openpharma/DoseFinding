@@ -1,13 +1,14 @@
+#' Fit dose-response models via bootstrap model
+#'   averaging (bagging)
+#'
 #' This function fits dose-response models in a bootstrap model
-#' averaging approach motivated from the bagging procedure (Breiman
-#' XYZ). Given summary estimates for the outcome at doses, the
+#' averaging approach motivated by the bagging procedure (Breiman
+#' 1996). Given summary estimates for the outcome at each dose, the
 #' function samples summary data from the multivariate normal
 #' distribution. For each sample dose-response models are fit to these
-#' summary estimates and within each bootstrap the best model
+#' summary estimates and the best model
 #' according to the gAIC is selected.
 #'
-#' @title maFitMod - Fit dose-response models via bootstrap model
-#'   averaging (bagging)
 #' @aliases predict.maFit plot.maFit print.maFit
 #' @param dose Numeric specifying the dose variable.
 #' @param resp Numeric specifying the response estimate corresponding
@@ -28,10 +29,11 @@
 #'   following defaults are used \samp{list(scal = 1.2*max(doses), off
 #'   = 0.01*max(doses))}
 #' @return An object of class \samp{maFit}, which contains the fitted
-#'   dose-response models \samp{DRMod} objects, as well as which model
+#'   dose-response models \samp{DRMod} objects, information on which model
 #'   was selected in each bootstrap and basic input parameters.
-#' @author XYZ
+#' @author Bjoern Bornkamp
 #' @seealso \code{\link{fitMod}}, \code{\link{bFitMod}}, \code{\link{drmodels}}
+#' @references Breiman, L. (1996). Bagging predictors. Machine learning, 24, 123-140.
 #' @examples
 #' data(biom)
 #' ## produce first stage fit (using dose as factor)
@@ -99,7 +101,6 @@ maFitMod <- function(dose, resp, S, models,
   out
 }
 
-#' @export
 #' @param object Object of class maFit
 #' @param summaryFct If equal to NULL predictions are calculated for
 #'   each sampled parameter value. Otherwise a summary function is
@@ -108,6 +109,9 @@ maFitMod <- function(dose, resp, S, models,
 #'   quantiles of the predictions for each dose.
 #' @param doseSeq Where to calculate predictions. 
 #' @param ... Further arguments (currently ignored)
+#' @rdname maFitMod
+#' @method predict maFitMod
+#' #' @export
 predict.maFit <- function(object,
                           summaryFct = function(x) quantile(x, probs = c(0.025, 0.25, 0.5, 0.75, 0.975)),
                           doseSeq = NULL,
@@ -160,6 +164,7 @@ print.maFit <- function(x, digits = 3, ...){
 #'   is determined by the argument \samp{level}.
 #' @param xlab x-axis label
 #' @param ylab y-axis label
+#' @param title plot title
 #' @param level Level for CI, when plotData is equal to
 #'   \samp{meansCI}.
 #' @param trafo Plot the fitted models on a transformed scale
@@ -167,6 +172,8 @@ print.maFit <- function(x, digits = 3, ...){
 #'   scale). The default for \samp{trafo} is the identity function.
 #' @param lenDose Number of grid values to use for display.
 #' @param ... Additional parametes (unused)
+#' @rdname maFitMod
+#' @method plot maFit
 #' @export
 plot.maFit <- function(x, 
                        plotData = c("means", "meansCI", "none"),
@@ -199,8 +206,8 @@ plot.maFit <- function(x,
     pmdat$LBm <- LBm
     pmdat$UBm <- UBm
   }
-  pp <- ggplot2::ggplot(pdat, ggplot2::aes(x=dose, y=median)) +
-    ggplot2::geom_ribbon(ggplot2::aes(ymin = LB, ymax = UB), alpha=0.2)+
+  pp <- ggplot2::ggplot(pdat, ggplot2::aes(x=.data$dose, y=.data$median)) +
+    ggplot2::geom_ribbon(ggplot2::aes(ymin = .data$LB, ymax = .data$UB), alpha=0.2)+
     ggplot2::geom_line()+
     ggplot2::xlab(xlab)+
     ggplot2::ylab(ylab)+
@@ -209,10 +216,10 @@ plot.maFit <- function(x,
     ggplot2::scale_y_continuous(breaks=pretty(c(pdat$UB, pdat$LB), 8))
   if(plotData %in% c("means", "meansCI")){
     pp <- pp +
-      ggplot2::geom_point(ggplot2::aes(x=dose, y=median), data=pmdat)
+      ggplot2::geom_point(ggplot2::aes(x=.data$dose, y=.data$median), data=pmdat)
     if(plotData == "meansCI")
       pp <- pp +
-        ggplot2::geom_errorbar(ggplot2::aes(ymin=LBm, ymax=UBm), data=pmdat, width = 0)
+        ggplot2::geom_errorbar(ggplot2::aes(ymin=.data$LBm, ymax=.data$UBm), data=pmdat, width = 0)
   }
   if(!is.null(title)){
     if(!is.character(title))

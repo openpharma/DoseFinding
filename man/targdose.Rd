@@ -15,10 +15,16 @@ TD(
   doses
 )
 
-ED(object, p, EDtype = c("continuous", "discrete"), doses)
+ED(
+  object,
+  p,
+  EDtype = c("continuous", "discrete"),
+  direction = c("increasing", "decreasing"),
+  doses
+)
 }
 \arguments{
-\item{object}{An object of class c(Mods, fullMod), DRMod or bFitMod}
+\item{object}{An object of class c(Mods, fullMod), DRMod, bFitMod or maFit}
 
 \item{Delta, p}{Delta: The target effect size use for the target dose (TD) (Delta should be > 0).
 
@@ -28,10 +34,10 @@ p: The percentage of the dose to use for the effective dose.}
 variable when calculating the TD/ED or whether the TD/ED should be calculated based on a grid of doses specified in \samp{doses}}
 
 \item{direction}{Direction to be used in defining the TD. This depends on whether an increasing
-or decreasing of the response variable is beneficial.}
+or decreasing of the response variable is beneficial. In case of ED calculation only needed for maFit objects.}
 
-\item{doses}{Dose levels to be used, this needs to include placebo, \samp{TDtype} or \samp{EDtype} are
-equal to \samp{"discrete"}.}
+\item{doses}{Dose levels to be used if \samp{TDtype} or \samp{EDtype} are
+equal to \samp{"discrete"}, this needs to include placebo, .}
 }
 \value{
 Returns the dose estimate
@@ -55,6 +61,8 @@ the observed dose-range!) over placebo (if there are multiple such doses, the sm
 
 Note that this definition of the EDp is different from traditional definition based on the Emax model,
 where the EDp is defined relative to the \emph{asymptotic} maximum effect (rather than the maximum effect in the observed dose-range).
+
+ED or TD calculation for bootstrap model averaging (maFit) objects is based on first calculating the pointwise median dose-response curve estimate. Then calculating the dose estimate based on this curve.
 }
 \examples{
 ## example for creating a "full-model" candidate set placebo response

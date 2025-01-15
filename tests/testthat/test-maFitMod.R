@@ -140,8 +140,7 @@ test_that("test model fitting", {
   expect_silent(ED(fits5, p = 0.9, direction = "increasing"))
   expect_silent(ED(fits5, p = 0.5, direction = "increasing"))
   expect_error(
-    ED(fits5, p = 0.9, direction = "increasing", EDtype = "discrete"),
-    "argument \"doses\" is missing, with no default")
+    ED(fits5, p = 0.9, direction = "increasing", EDtype = "discrete"))
   expect_silent(ED(fits5, p = 0.9, direction = "increasing",
                    EDtype = "discrete", doses = doses))
   expect_silent(ED(fits5, p = 0.5, direction = "increasing",
@@ -163,8 +162,7 @@ test_that("test model fitting", {
   expect_silent(TD(fits5, Delta=0.5, direction = "increasing"))
   expect_error(
     TD(fits5, Delta=0.5, direction = "increasing",
-       TDtype = "discrete"),
-    "argument \"doses\" is missing, with no default")
+       TDtype = "discrete"))
   expect_silent(
     TD(fits5, Delta=0.5, direction = "increasing",
        TDtype = "discrete", doses = doses))

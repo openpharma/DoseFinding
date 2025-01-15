@@ -347,8 +347,8 @@ plot.Mods <- function(x, nPoints = 200, superpose = FALSE, xlab = "Dose",
 #' variable when calculating the TD/ED or whether the TD/ED should be calculated based on a grid of doses specified in \samp{doses}
 #' @param direction Direction to be used in defining the TD. This depends on whether an increasing
 #' or decreasing of the response variable is beneficial. In case of ED calculation only needed for maFit objects.
-#' @param doses Dose levels to be used, this needs to include placebo, \samp{TDtype} or \samp{EDtype} are
-#' equal to \samp{"discrete"}.
+#' @param doses Dose levels to be used if \samp{TDtype} or \samp{EDtype} are
+#' equal to \samp{"discrete"}, this needs to include placebo, .
 #'
 #' @return Returns the dose estimate
 #'
@@ -443,12 +443,17 @@ TD <- function(object, Delta, TDtype = c("continuous", "discrete"),
   if(inherits(object, "maFit")){
     direction <- match.arg(direction, c("increasing", "decreasing"))
     TDtype <- match.arg(TDtype)
+    maxD <-  max(object$args$dose)
     if(TDtype == "discrete"){
+      if(missing(doses))
+        stop("For TDtype = \"discrete\" need the possible doses in doses argument")
       if(doses[1] != 0)
         stop("need placebo dose for TD calculation")
+      if(any(doses > maxD))
+        stop("Doses provided may not exceed the observed dose range")
       doseSeq <- doses
     } else { # TDtype == "continuous"
-      doseSeq <- seq(0, max(object$args$dose), length=501) 
+      doseSeq <- seq(0, maxD, length=501) 
     }
     pred_med <- predict(object, doseSeq = doseSeq, summaryFct = stats::median)
     
@@ -456,8 +461,8 @@ TD <- function(object, Delta, TDtype = c("continuous", "discrete"),
       pred_med <- -pred_med
     
     ind <- which(pred_med > pred_med[1] + Delta)
-    
-    if (any(ind)) {
+
+    if (length(ind)>0) {
       return(min(doseSeq[ind]))
     } else {
       return(NA)
@@ -542,15 +547,22 @@ ED <- function(object, p, EDtype = c("continuous", "discrete"),
   }
   if(inherits(object, "maFit")){
     EDtype <- match.arg(EDtype)
+    maxD <- max(object$args$dose)
+    if(EDtype == "discrete"){
+      if(missing(doses))
+        stop("For EDtype = \"discrete\" need the possible doses in doses argument")
+      if(any(doses > maxD))
+        stop("Doses provided may not exceed the observed dose range.")
+    }
     if(missing(direction)){
-      stop("Need to selection direction of dose-response (\"increasing\" or \"decreasing\") for objects of class maFitMod.")
+      stop("Need to provide direction of dose-response (\"increasing\" or \"decreasing\") for objects of class maFitMod.")
     } else {
       direction <- match.arg(direction, c("increasing", "decreasing"))
     }
     if(EDtype == "discrete"){
-      doseSeq <- doses
+      doseSeq <- unique(c(doses, maxD))
     } else { # EDtype == "continuous"
-      doseSeq <- seq(0, max(object$args$dose), length=501) 
+      doseSeq <- seq(0, maxD, length=501) 
     }
     pred_med <- predict(object, doseSeq = doseSeq, summaryFct = stats::median)
     
@@ -559,8 +571,10 @@ ED <- function(object, p, EDtype = c("continuous", "discrete"),
     
     difs <- (pred_med - pred_med[1])
     ind <- which(difs > p*max(difs))
+    if(EDtype == "discrete")
+      ind <- ind[ind <= length(doses)] ## only include doses that where initially included
     
-    if (any(ind)) {
+    if (length(ind)>0) {
       return(min(doseSeq[ind]))
     } else {
       return(NA)

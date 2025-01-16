@@ -28,6 +28,7 @@ reference:
   - defBnds
   - drmodels
   - fitMod
+  - maFitMod
   - TD
 - title: Datasets
 - contents:

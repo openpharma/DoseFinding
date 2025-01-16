@@ -8,7 +8,7 @@ importFrom("stats", "AIC", "IQR", "acf", "approx", "as.formula",
            "sd", "terms", "uniroot", "var", "vcov")
 importFrom("utils", "setTxtProgressBar", "txtProgressBar", "browseURL")
 
-export(fitMod, defBnds, bFitMod, MCTtest, bMCTtest, MCPMod,
+export(fitMod, defBnds, bFitMod, maFitMod, MCTtest, bMCTtest, MCPMod,
        betaMod, quadratic, emax, exponential,linear, linlog, logistic, sigEmax, linInt,
        betaModGrad, quadraticGrad, emaxGrad, exponentialGrad,
        linearGrad, linlogGrad, logisticGrad, sigEmaxGrad, linIntGrad,
@@ -50,6 +50,10 @@ S3method(predict, bFitMod)
 S3method(plot, bFitMod)
 S3method(print, bFitMod)
 S3method(coef, bFitMod)
+
+S3method(print, maFit)
+S3method(predict, maFit)
+S3method(plot, maFit)
 
 S3method(plot, targN)
 

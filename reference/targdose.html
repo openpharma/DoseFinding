@@ -10,7 +10,8 @@ The ED (effective dose) is defined as the dose that achieves a certain percentag
 the observed dose-range!) over placebo (if there are multiple such doses, the smallest is chosen).
 $$ED_p=\min\{x|f(x) &amp;gt; f(0) + p(f(dmax)-f(0))$$
 Note that this definition of the EDp is different from traditional definition based on the Emax model,
-where the EDp is defined relative to the asymptotic maximum effect (rather than the maximum effect in the observed dose-range)."><meta property="og:description" content="The TD (target dose) is defined as the dose that achieves a target effect of Delta over placebo (if
+where the EDp is defined relative to the asymptotic maximum effect (rather than the maximum effect in the observed dose-range).
+ED or TD calculation for bootstrap model averaging (maFit) objects is based on first calculating the pointwise median dose-response curve estimate. Then calculating the dose estimate based on this curve."><meta property="og:description" content="The TD (target dose) is defined as the dose that achieves a target effect of Delta over placebo (if
 there are multiple such doses, the smallest is chosen):
 $$TD_\Delta = \min \{x|f(x) &amp;gt; f(0)+\Delta\}$$
 If a decreasing trend is beneficial the definition of the TD is
@@ -21,7 +22,8 @@ The ED (effective dose) is defined as the dose that achieves a certain percentag
 the observed dose-range!) over placebo (if there are multiple such doses, the smallest is chosen).
 $$ED_p=\min\{x|f(x) &amp;gt; f(0) + p(f(dmax)-f(0))$$
 Note that this definition of the EDp is different from traditional definition based on the Emax model,
-where the EDp is defined relative to the asymptotic maximum effect (rather than the maximum effect in the observed dose-range)."></head><body>
+where the EDp is defined relative to the asymptotic maximum effect (rather than the maximum effect in the observed dose-range).
+ED or TD calculation for bootstrap model averaging (maFit) objects is based on first calculating the pointwise median dose-response curve estimate. Then calculating the dose estimate based on this curve."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -77,6 +79,7 @@ the observed dose-range!) over placebo (if there are multiple such doses, the sm
 $$ED_p=\min\{x|f(x) &gt; f(0) + p(f(dmax)-f(0))$$</p>
 <p>Note that this definition of the EDp is different from traditional definition based on the Emax model,
 where the EDp is defined relative to the <em>asymptotic</em> maximum effect (rather than the maximum effect in the observed dose-range).</p>
+<p>ED or TD calculation for bootstrap model averaging (maFit) objects is based on first calculating the pointwise median dose-response curve estimate. Then calculating the dose estimate based on this curve.</p>
     </div>
 
     <div class="section level2">
@@ -89,7 +92,13 @@ where the EDp is defined relative to the <em>asymptotic</em> maximum effect (rat
 <span>  <span class="va">doses</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">ED</span><span class="op">(</span><span class="va">object</span>, <span class="va">p</span>, EDtype <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"continuous"</span>, <span class="st">"discrete"</span><span class="op">)</span>, <span class="va">doses</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">ED</span><span class="op">(</span></span>
+<span>  <span class="va">object</span>,</span>
+<span>  <span class="va">p</span>,</span>
+<span>  EDtype <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"continuous"</span>, <span class="st">"discrete"</span><span class="op">)</span>,</span>
+<span>  direction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"increasing"</span>, <span class="st">"decreasing"</span><span class="op">)</span>,</span>
+<span>  <span class="va">doses</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -97,7 +106,7 @@ where the EDp is defined relative to the <em>asymptotic</em> maximum effect (rat
 
 
 <dl><dt id="arg-object">object<a class="anchor" aria-label="anchor" href="#arg-object"></a></dt>
-<dd><p>An object of class c(Mods, fullMod), DRMod or bFitMod</p></dd>
+<dd><p>An object of class c(Mods, fullMod), DRMod, bFitMod or maFit</p></dd>
 
 
 <dt id="arg-delta-p">Delta, p<a class="anchor" aria-label="anchor" href="#arg-delta-p"></a></dt>
@@ -112,12 +121,12 @@ variable when calculating the TD/ED or whether the TD/ED should be calculated ba
 
 <dt id="arg-direction">direction<a class="anchor" aria-label="anchor" href="#arg-direction"></a></dt>
 <dd><p>Direction to be used in defining the TD. This depends on whether an increasing
-or decreasing of the response variable is beneficial.</p></dd>
+or decreasing of the response variable is beneficial. In case of ED calculation only needed for maFit objects.</p></dd>
 
 
 <dt id="arg-doses">doses<a class="anchor" aria-label="anchor" href="#arg-doses"></a></dt>
-<dd><p>Dose levels to be used, this needs to include placebo, <samp>TDtype</samp> or <samp>EDtype</samp> are
-equal to <samp>"discrete"</samp>.</p></dd>
+<dd><p>Dose levels to be used if <samp>TDtype</samp> or <samp>EDtype</samp> are
+equal to <samp>"discrete"</samp>, this needs to include placebo, .</p></dd>
 
 </dl></div>
     <div class="section level2">

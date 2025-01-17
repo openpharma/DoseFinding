@@ -12,7 +12,7 @@ TD(
   Delta,
   TDtype = c("continuous", "discrete"),
   direction = c("increasing", "decreasing"),
-  doses
+  doses = NULL
 )
 
 ED(
@@ -20,7 +20,7 @@ ED(
   p,
   EDtype = c("continuous", "discrete"),
   direction = c("increasing", "decreasing"),
-  doses
+  doses = NULL
 )
 }
 \arguments{
@@ -37,7 +37,7 @@ variable when calculating the TD/ED or whether the TD/ED should be calculated ba
 or decreasing of the response variable is beneficial. In case of ED calculation only needed for maFit objects.}
 
 \item{doses}{Dose levels to be used if \samp{TDtype} or \samp{EDtype} are
-equal to \samp{"discrete"}, this needs to include placebo, .}
+equal to \samp{"discrete"}. Needs to include placebo, .}
 }
 \value{
 Returns the dose estimate

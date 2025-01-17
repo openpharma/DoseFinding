@@ -98,7 +98,7 @@ checkEntries <- function(modL, doses, fullMod){
     })
   }
 }
-  
+
 ## calculates parameters for all models in the candidate set returns a
 ## list with all model parameters.
 fullMod <-  function(models, doses, placEff, maxEff, scal, off){
@@ -128,22 +128,22 @@ fullMod <-  function(models, doses, placEff, maxEff, scal, off){
       Pars <- getLinPars(nm, doses, NULL, placEff[z], maxEff[z], off); i <- i+1; z <- z+1
     } 
     if(is.element(nm,c("emax", "exponential", "quadratic"))){
-        nmod <- length(pars)
-        if(nmod > 1){
-          Pars <- matrix(ncol=3, nrow=nmod)
-          for(j in 1:length(pars)){
-            tmp <- getLinPars(nm, doses, as.vector(pars[j]), placEff[z], maxEff[z])
-            Pars[j,] <- tmp
-            z <- z+1
-          }
-          colnames(Pars) <- names(tmp)
-          rownames(Pars) <- 1:length(pars)
-          i <- i+1
-        } else {
-          Pars <-  getLinPars(nm, doses, as.vector(pars), placEff[z], maxEff[z])
-          i <- i+1; z <- z+1
+      nmod <- length(pars)
+      if(nmod > 1){
+        Pars <- matrix(ncol=3, nrow=nmod)
+        for(j in 1:length(pars)){
+          tmp <- getLinPars(nm, doses, as.vector(pars[j]), placEff[z], maxEff[z])
+          Pars[j,] <- tmp
+          z <- z+1
         }
+        colnames(Pars) <- names(tmp)
+        rownames(Pars) <- 1:length(pars)
+        i <- i+1
+      } else {
+        Pars <-  getLinPars(nm, doses, as.vector(pars), placEff[z], maxEff[z])
+        i <- i+1; z <- z+1
       }
+    }
     if(is.element(nm,c("logistic", "betaMod", "sigEmax"))){
       if(is.matrix(pars)){
         Pars <- matrix(ncol=4, nrow=nrow(pars))
@@ -512,7 +512,7 @@ calcED <- function(model, pars, p, maxD, EDtype = c("continuous", "discrete"),
   
   if(EDtype == "continuous"){ ## calculate target dose analytically
     cf <- pars
-    if(cf[2] == 0){
+    if(cf[2] == 0 & model != "linInt"){
       return(NA)
     }
     if(model == "linear"){
@@ -578,17 +578,19 @@ calcED <- function(model, pars, p, maxD, EDtype = c("continuous", "discrete"),
       stop("For EDtype = \"discrete\" need the possible doses in doses argument")
     if(!any(doses == 0))
       stop("need placebo dose for ED calculation")
-    doses <- sort(doses)
+    if(any(doses > maxD))
+      stop("Doses provided may not exceed the observed dose range")
+    doseSeq <- unique(c(sort(doses), maxD))
     if(model != "linInt"){
       if(model == "betaMod")
         pars <- c(pars, scal)
       if(model == "linlog")
         pars <- c(pars, off)
       resp0 <- do.call(model, c(list(0), as.list(pars)))
-      resp <- abs(do.call(model, c(list(doses), as.list(pars)))-resp0)
+      resp <- abs(do.call(model, c(list(doseSeq), as.list(pars)))-resp0)
     } else {
       resp0 <- do.call(model, c(list(0), as.list(list(pars, nodes))))
-      resp <- abs(do.call(model, c(list(doses), as.list(list(pars, nodes))))-resp0)
+      resp <- abs(do.call(model, c(list(doseSeq), as.list(list(pars, nodes))))-resp0)
     }
     ## calculate maximum response
     if(model %in% c("betaMod", "quadratic")){
@@ -596,15 +598,18 @@ calcED <- function(model, pars, p, maxD, EDtype = c("continuous", "discrete"),
         resp0 <- do.call(model, c(list(0), as.list(pars)))
         abs(do.call(model, c(list(x), as.list(pars)))-resp0)
       }
-      opt <- optimize(func2, range(doses), maximum=TRUE)
+      opt <- optimize(func2, range(doseSeq), maximum=TRUE)
       maxResp <- opt$objective
     } else {
       maxResp <- max(resp)
     }
   }
-  ind <- resp >= p*maxResp
-  if(any(ind)){ ## TD does exist return smallest dose fulfilling threshold
-    return(min(doses[ind]))
+  ind <- which(resp > p*maxResp)
+  if(EDtype == "discrete")
+    ind <- ind[ind <= length(doses)] ## only include doses that where initially included
+  
+  if(length(ind) > 0){ ## ED does exist return smallest dose fulfilling threshold
+    return(min(doseSeq[ind]))
   } else {
     return(NA)
   }
@@ -725,7 +730,7 @@ getLinPars <- function(model, doses, guesstim, placEff, maxEff, off, scal){
   if(model == "logistic"){
     emax.p <- maxEff/
       (logistic(max(doses),0,1, guesstim[1], guesstim[2]) -
-       logistic(0, 0, 1, guesstim[1], guesstim[2]))
+         logistic(0, 0, 1, guesstim[1], guesstim[2]))
     e0 <- placEff-emax.p*logistic(0,0,1,guesstim[1], guesstim[2])
     return(c(e0=e0, eMax=emax.p, ed50=guesstim[1], delta=guesstim[2]))
   }
@@ -766,9 +771,8 @@ getModNams <- function(parList){
     if(startsWith(mod_nams[i], "betaMod"))
       mod_nams[i] <- sprintf("betaMod (delta1=%s,delta2=%s,scal=%s)",
                              parList[[i]][3], parList[[i]][4], parList[[i]][5])
-      if(startsWith(mod_nams[i], "linInt"))
-        mod_nams[i] <- sprintf("linInt (%s)", paste0(parList[[i]], collapse=","))
+    if(startsWith(mod_nams[i], "linInt"))
+      mod_nams[i] <- sprintf("linInt (%s)", paste0(parList[[i]], collapse=","))
   }
   mod_nams
 }
-

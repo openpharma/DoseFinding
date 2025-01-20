@@ -269,12 +269,12 @@ plotMods <- function(ModsObj, nPoints = 200, superpose = FALSE,
                          dose = rep(doseSeq, ncol(resp)),
                          model = modelfact)
   if(superpose){
-    pp <- ggplot2::ggplot(respdata, ggplot2::aes_string(x="dose", y="response", col="model"))+
+    pp <- ggplot2::ggplot(respdata, ggplot2::aes(x=.data$dose, y=.data$response, col=.data$model))+
       ggplot2::geom_line(size=1.2)+
       ggplot2::theme_bw()+
       ggplot2::theme(legend.position = "top", legend.title = ggplot2::element_blank())
   } else {
-    pp <- ggplot2::ggplot(respdata, ggplot2::aes_string(x="dose", y="response"))+
+    pp <- ggplot2::ggplot(respdata, ggplot2::aes(x=.data$dose, y=.data$response))+
       ggplot2::geom_line(size=1.2)+
       ggplot2::theme_bw()+
       ggplot2::facet_wrap(~model, labeller = ggplot2::label_wrap_gen())
@@ -287,7 +287,7 @@ plotMods <- function(ModsObj, nPoints = 200, superpose = FALSE,
                           dose = rep(doses, ncol(resp)),
                           model = modelfact2)
   pp +
-    ggplot2::geom_point(ggplot2::aes_string(x="dose", y="response"), size=1.8, data=respdata2) +
+    ggplot2::geom_point(ggplot2::aes(x=.data$dose, y=.data$response), size=1.8, data=respdata2) +
     ggplot2::xlab(xlab) +
     ggplot2::ylab(ylab)
 }

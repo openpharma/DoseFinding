@@ -90,3 +90,108 @@ test_that("plot.Mods handles customizations correctly", {
   
   expect_s3_class(p_custom, "trellis")
 })
+
+#########################
+## tests for ED and TD
+#########################
+data(biom)
+modlist <- Mods(emax = 0.05, linear = NULL, logistic = c(0.5, 0.1),
+                linInt = c(0, 0.5, 1, 1), doses = c(0, 0.05, 0.2, 0.6, 1))
+## produce first stage fit (using dose as factor)
+anMod <- lm(resp~factor(dose)-1, data=biom)
+drFit <- coef(anMod)
+S <- vcov(anMod)
+dose <- sort(unique(biom$dose))
+mod_dr <- fitMod(dose, drFit, S = S, type = "general", model = "emax",  bnds = c(0.01, 4))
+prior <- list(norm = c(0, 10), norm = c(0,100), beta=c(0,1.5,0.45,1.7))
+mod_bfit <- bFitMod(dose, drFit, S, model = "emax", 
+                    start = c(0, 1, 0.1), nSim = 1000, prior = prior)
+mod_maFit <- maFitMod(dose, drFit, S, model = c("emax", "sigEmax"), nSim = 10)
+
+test_that("TD errors with type discrete if incorrect dose-range supplied", {
+  expect_error(TD(modlist, Delta=0.3, TDtype = "discrete", doses=dose[-1]), "need placebo dose for TD calculation")
+  expect_error(TD(mod_dr, Delta=0.3, TDtype = "discrete", doses=dose[-1]), "need placebo dose for TD calculation")
+  expect_error(TD(mod_bfit, Delta=0.3, TDtype = "discrete", doses=dose[-1]), "need placebo dose for TD calculation")
+  expect_error(TD(mod_maFit, Delta=0.3, TDtype = "discrete", doses=dose[-1]), "need placebo dose for TD calculation")
+  
+  expect_error(TD(modlist, Delta=0.3, TDtype = "discrete", doses=c(dose, 2)), "Doses provided may not exceed the observed dose range")
+  expect_error(TD(mod_dr, Delta=0.3, TDtype = "discrete", doses=c(dose, 2)), "Doses provided may not exceed the observed dose range")
+  expect_error(TD(mod_bfit, Delta=0.3, TDtype = "discrete", doses=c(dose, 2)), "Doses provided may not exceed the observed dose range")
+  expect_error(TD(mod_maFit, Delta=0.3, TDtype = "discrete", doses=c(dose, 2)), "Doses provided may not exceed the observed dose range")
+  
+  
+})
+
+test_that("TD gives consistent results for discrete and continuous type", {
+  td1a <- TD(modlist, Delta=0.3, TDtype = "discrete", doses=seq(0, max(dose), 0.002))
+  td1b <- TD(modlist, Delta=0.3, TDtype = "discrete", doses=seq(0, max(dose) - 0.1, 0.002))
+  td2 <- TD(modlist, Delta=0.3, TDtype = "continuous")
+  
+  expect_equal(td1a, td2, tolerance = 0.01)
+  expect_equal(td1b, td2, tolerance = 0.01)
+  
+  td1a <- TD(mod_dr, Delta=0.3, TDtype = "discrete", doses=seq(0, max(dose), 0.002))
+  td1b <- TD(mod_dr, Delta=0.3, TDtype = "discrete", doses=seq(0, max(dose) - 0.1, 0.002))
+  td2 <- TD(mod_dr, Delta=0.3, TDtype = "continuous")
+  expect_equal(td1a, td2, tolerance = 0.01)
+  expect_equal(td1b, td2, tolerance = 0.01)
+  
+  td1a <- median(TD(mod_bfit, Delta=0.3, TDtype = "discrete", doses=seq(0, max(dose), 0.002)))
+  td1b <- median(TD(mod_bfit, Delta=0.3, TDtype = "discrete", doses=seq(0, max(dose) - 0.1, 0.002)))
+  td2 <- median(TD(mod_bfit, Delta=0.3, TDtype = "continuous"))
+  expect_equal(td1a, td2, tolerance = 0.01)
+  expect_equal(td1b, td2, tolerance = 0.01)
+  
+  td1a <- TD(mod_maFit, Delta=0.3, TDtype = "discrete", doses=seq(0, max(dose), 0.002))
+  td1b <- TD(mod_maFit, Delta=0.3, TDtype = "discrete", doses=seq(0, max(dose) - 0.1, 0.002))
+  td2 <- TD(mod_maFit, Delta=0.3, TDtype = "continuous")
+  expect_equal(td1a, td2, tolerance = 0.01)
+  expect_equal(td1b, td2, tolerance = 0.01)
+  
+})
+
+
+test_that("ED errors with type discrete if incorrect dose-range supplied", {
+  expect_error(ED(modlist, p=0.9, EDtype = "discrete", doses=dose[-1]), "need placebo dose for ED calculation")
+  expect_error(ED(mod_dr, p=0.9, EDtype = "discrete", doses=dose[-1]), "need placebo dose for ED calculation")
+  expect_error(ED(mod_bfit, p=0.9, EDtype = "discrete", doses=dose[-1]), "need placebo dose for ED calculation")
+  expect_error(ED(mod_maFit, p=0.9, EDtype = "discrete", doses=dose[-1]), "need placebo dose for ED calculation")
+  
+  expect_error(ED(modlist, p=0.9, EDtype = "discrete", doses=c(dose, 2)), "Doses provided may not exceed the observed dose range")
+  expect_error(ED(mod_dr, p=0.9, EDtype = "discrete", doses=c(dose, 2)), "Doses provided may not exceed the observed dose range")
+  expect_error(ED(mod_bfit, p=0.9, EDtype = "discrete", doses=c(dose, 2)), "Doses provided may not exceed the observed dose range")
+  expect_error(ED(mod_maFit, p=0.9, EDtype = "discrete", doses=c(dose, 2)), "Doses provided may not exceed the observed dose range")
+  
+  
+})
+
+test_that("ED gives consistent results for discrete and continuous type", {
+  ed1a <- ED(modlist, p=0.9, EDtype = "discrete", doses=seq(0, max(dose), 0.002))
+  ed1b <- ED(modlist, p=0.9, EDtype = "discrete", doses=seq(0, max(dose) - 0.05, 0.002))
+  ed2 <- ED(modlist, p=0.9, EDtype = "continuous")
+  expect_equal(ed1a, ed1b)
+  expect_equal(ed1a, ed2, tolerance = 0.01)
+  expect_equal(ed1b, ed2, tolerance = 0.01)
+  
+  ed1a <- ED(mod_dr, p=0.9, EDtype = "discrete", doses=seq(0, max(dose), 0.002))
+  ed1b <- ED(mod_dr, p=0.9, EDtype = "discrete", doses=seq(0, max(dose) - 0.05, 0.002))
+  ed2 <- ED(mod_dr, p=0.9, EDtype = "continuous")
+  expect_equal(ed1a, ed1b)
+  expect_equal(ed1a, ed2, tolerance = 0.01)
+  expect_equal(ed1b, ed2, tolerance = 0.01)
+  
+  ed1a <- median(ED(mod_bfit, p=0.9, EDtype = "discrete", doses=seq(0, max(dose), 0.002)))
+  ed1b <- median(ED(mod_bfit, p=0.9, EDtype = "discrete", doses=seq(0, max(dose) - 0.05, 0.002)))
+  ed2 <- median(ED(mod_bfit, p=0.9, EDtype = "continuous"))
+  expect_equal(ed1a, ed1b)
+  expect_equal(ed1a, ed2, tolerance = 0.01)
+  expect_equal(ed1b, ed2, tolerance = 0.01)
+  
+  ed1a <- ED(mod_maFit, p=0.9, EDtype = "discrete", doses=seq(0, max(dose), 0.002), direction = "increasing")
+  ed1b <- ED(mod_maFit, p=0.9, EDtype = "discrete", doses=seq(0, max(dose) - 0.05, 0.002), direction = "increasing")
+  ed2 <- ED(mod_maFit, p=0.9, EDtype = "continuous", direction = "increasing")
+  expect_equal(ed1a, ed1b)
+  expect_equal(ed1a, ed2, tolerance = 0.01)
+  expect_equal(ed1b, ed2, tolerance = 0.01)
+  
+})

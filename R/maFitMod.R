@@ -110,8 +110,8 @@ maFitMod <- function(dose, resp, S, models,
 #' @param doseSeq Where to calculate predictions. 
 #' @param ... Further arguments (currently ignored)
 #' @rdname maFitMod
-#' @method predict maFitMod
-#' #' @export
+#' @method predict maFit
+#' @export
 predict.maFit <- function(object,
                           summaryFct = function(x) quantile(x, probs = c(0.025, 0.25, 0.5, 0.75, 0.975)),
                           doseSeq = NULL,

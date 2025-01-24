@@ -4,8 +4,8 @@
 \alias{Target doses}
 \alias{TD}
 \alias{ED}
-\title{Calculate dose estimates for a fitted dose-response model (via \code{\link{fitMod}} or \code{\link{bFitMod}}) or a
-\code{\link{Mods}} object}
+\title{Calculate dose estimates for a fitted dose-response model (via \code{\link{fitMod}}, \code{\link{bFitMod}}) 
+ or \code{\link{maFitMod}}) or a \code{\link{Mods}} object}
 \usage{
 TD(
   object,
@@ -37,7 +37,7 @@ variable when calculating the TD/ED or whether the TD/ED should be calculated ba
 or decreasing of the response variable is beneficial. In case of ED calculation only needed for maFit objects.}
 
 \item{doses}{Dose levels to be used if \samp{TDtype} or \samp{EDtype} are
-equal to \samp{"discrete"}. Needs to include placebo, .}
+equal to \samp{"discrete"}. Needs to include placebo, and may not exceed the dose range of the model(s) provided in \samp{object}.}
 }
 \value{
 Returns the dose estimate

@@ -605,11 +605,12 @@ calcED <- function(model, pars, p, maxD, EDtype = c("continuous", "discrete"),
     }
   }
   ind <- which(resp > p*maxResp)
-  if(EDtype == "discrete")
-    ind <- ind[ind <= length(doses)] ## only include doses that where initially included
+  if(length(ind) == 0)
+    return(NA)
   
-  if(length(ind) > 0){ ## ED does exist return smallest dose fulfilling threshold
-    return(min(doseSeq[ind]))
+  edose <- min(doseSeq[ind])
+  if (EDtype == "continuous" | edose %in% doses) {## don't return maxD if it was not in originally provided doses for discrete type
+    return(edose)
   } else {
     return(NA)
   }

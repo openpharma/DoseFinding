@@ -1,4 +1,12 @@
-# DoseFinding (development version)
+# DoseFinding 1.3-1
+* Added maFitMod function to implement fitting of dose-response models via
+model averaging (#11, thanks to Björn Bornkamp)
+* Fixed the way ED dose estimation works with type = "discrete". Previously
+the maximum effect size for ED calculation was taken to be the highest effect
+among the doses provided as arguments, rather than across the observed dose
+range for the fitted model (#18)
+* replaced uses of ggplot2::aes_string, which is deprecated (#14)
+* added additional tests for several functions
 
 # DoseFinding 1.2-1
 * Documentation revised and updated, documentation now uses roxygen,

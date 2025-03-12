@@ -1,17 +1,10 @@
-## Resubmission
-This is a resubmission. In this version I have:
-
-* added dontrun for long-running example code for bMCTtest
-  
 ## R CMD check results
 
-0 errors | 0 warnings | 1 note
+0 errors | 0 warnings | 0 notes
 
-* Marius Thomas is taking over as maintainer from Björn Bornkamp from this version.
+## revdepcheck results
 
-## Reverse dependency checks
+We checked 9 reverse dependencies, comparing R CMD check results across CRAN and dev versions of this package.
 
-We checked 10 reverse dependencies and noticed one new issue for the MCPModgeneral package:
-
-The maintainer was notified on Aug 7 and a fix was proposed. The maintainer has now updated his package but the fix has been applied incompletely in MCPModGeneral so revdepchecks still show errors. We have again notified the maintainer today (Aug 23) that the issue persists and which remaining fixes need to be made.
-
+ * We saw 0 new problems
+ * We failed to check 0 packages

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">DoseFinding</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3-1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,12 +38,16 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/openpharma/DoseFinding/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/openpharma/DoseFinding/blob/v1.3-1/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="development version" id="dosefinding-development-version">DoseFinding (development version)<a class="anchor" aria-label="anchor" href="#dosefinding-development-version"></a></h2>
-</div>
+<h2 class="pkg-version" data-toc-text="1.3-1" id="dosefinding-13-1">DoseFinding 1.3-1<a class="anchor" aria-label="anchor" href="#dosefinding-13-1"></a></h2><p class="text-muted">CRAN release: 2025-03-11</p>
+<ul><li>Added maFitMod function to implement fitting of dose-response models via model averaging (<a href="https://github.com/openpharma/DoseFinding/issues/11" class="external-link">#11</a>, thanks to Björn Bornkamp)</li>
+<li>Fixed the way ED dose estimation works with type = “discrete”. Previously the maximum effect size for ED calculation was taken to be the highest effect among the doses provided as arguments, rather than across the observed dose range for the fitted model (<a href="https://github.com/openpharma/DoseFinding/issues/18" class="external-link">#18</a>)</li>
+<li>replaced uses of ggplot2::aes_string, which is deprecated (<a href="https://github.com/openpharma/DoseFinding/issues/14" class="external-link">#14</a>)</li>
+<li>added additional tests for several functions</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.2-1" id="dosefinding-12-1">DoseFinding 1.2-1<a class="anchor" aria-label="anchor" href="#dosefinding-12-1"></a></h2><p class="text-muted">CRAN release: 2024-08-23</p>
 <ul><li>Documentation revised and updated, documentation now uses roxygen, README and NEWS (replacing old changelog) added</li>

@@ -14,6 +14,8 @@
 #'   conditional power should be calculated. For conditional power
 #'   mu_assumed needs to be specified.
 #' @param mu_assumed Mean vector to assume for the second stage
+#' @param control A list specifying additional control parameters for the \samp{pmvnorm} calls in the code, see also
+#' \samp{mvtnorm.control} for details.
 #' @return Numeric containing the calculated power values
 #' @seealso \code{\link{powMCT}} \code{\link{MCTtest}}, \code{\link{optContr}}
 #' @references Bornkamp, B., Zhou, J., Xi, D. and Cao W. (2025). Futility analyses for the MCP-Mod methodology based

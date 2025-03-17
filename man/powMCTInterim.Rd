@@ -20,43 +20,26 @@ powMCTInterim(
 \item{contMat}{Contrast matrix to use. The individual contrasts should be
 saved in the columns of the matrix}
 
+\item{mu0t}{The first stage estimates}
+
+\item{S0t}{The covariance matrix for the first stage estimates}
+
+\item{S_end}{The covariance matrix anticipated for the estimates at
+study end}
+
 \item{alpha}{Significance level to use}
+
+\item{type}{Whether predictive power (for a flat prior) or
+conditional power should be calculated. For conditional power
+mu_assumed needs to be specified.}
+
+\item{mu_assumed}{Mean vector to assume for the second stage}
 
 \item{alternative}{Character determining the alternative for the multiple
 contrast trend test.}
 
-\item{control}{A list specifying additional control parameters for the
-\samp{qmvt} and \samp{pmvt} calls in the code, see also
+\item{control}{A list specifying additional control parameters for the \samp{pmvnorm} calls in the code, see also
 \samp{mvtnorm.control} for details.}
-
-\item{altModels}{An object of class \samp{Mods}, defining the mean vectors
-under which the power should be calculated}
-
-\item{n, sigma, S}{Either a vector \samp{n} and \samp{sigma} or \samp{S} need
-to be specified.  When \samp{n} and \samp{sigma} are specified it is assumed
-computations are made for a normal homoscedastic ANOVA model with group
-sample sizes given by \samp{n} and residual standard deviation \samp{sigma},
-i.e. the covariance matrix used for the estimates is thus
-\code{sigma^2*diag(1/n)} and the degrees of freedom are calculated as
-\code{sum(n)-nrow(contMat)}. When a single number is specified for \samp{n}
-it is assumed this is the sample size per group and balanced allocations are
-used.\cr
-
-When \samp{S} is specified this will be used as covariance matrix for the
-estimates.}
-
-\item{placAdj}{Logical, if true, it is assumed that the standard deviation
-or variance matrix of the placebo-adjusted estimates are specified in
-\samp{sigma} or \samp{S}, respectively. The contrast matrix has to be
-produced on placebo-adjusted scale, see \code{\link{optContr}}, so that the
-coefficients are no longer contrasts (i.e. do not sum to 0).}
-
-\item{df}{Degrees of freedom to assume in case \samp{S} (a general
-covariance matrix) is specified. When \samp{n} and \samp{sigma} are
-specified the ones from the corresponding ANOVA model are calculated.}
-
-\item{critV}{Critical value, if equal to \samp{TRUE} the critical value will
-be calculated. Otherwise one can directly specify the critical value here.}
 }
 \value{
 Numeric containing the calculated power values

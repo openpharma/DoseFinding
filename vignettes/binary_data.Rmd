@@ -291,9 +291,12 @@ min_power_at_group_size <- function(n) {
 }
 
 n <- seq(5, 80, by=5)
-pwrs <- sapply(n, min_power_at_group_size)
-qplot(n, pwrs, geom="line", ylab="Min. Power over candidate set")+
-  scale_y_continuous(breaks = seq(0,1,by=0.1), limits = c(0,1))
+pdat <- data.frame(n = n,
+                   pwrs = sapply(n, min_power_at_group_size))
+ggplot(pdat, aes(n, pwrs))+
+  geom_line()+
+  scale_y_continuous(breaks = seq(0,1,by=0.1), limits = c(0,1))+
+  ylab("Min. Power over candidate set")
 ```
 
 ## References

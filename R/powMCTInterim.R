@@ -79,7 +79,7 @@ powMCTInterim <- function(contMat,
   ## pre-calculate critical value
   covMat <- t(contMat) %*% S_end %*% contMat
   corMat <- cov2cor(covMat)
-  critV <- DoseFinding:::critVal(corMat, alpha = alpha, df = Inf)
+  critV <- critVal(corMat, alpha = alpha, df = Inf)
   den <- sqrt(diag(covMat))  ## numerator of t-statistics
   
   P <- diag(1/den)

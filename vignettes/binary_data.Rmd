@@ -290,7 +290,8 @@ min_power_at_group_size <- function(n) {
   return(min(pwr))
 }
 
-pdat <- data.frame(n = seq(5, 80, by=5),
+n <- seq(5, 80, by=5)
+pdat <- data.frame(n = n,
                    pwrs = sapply(n, min_power_at_group_size))
 ggplot(pdat, aes(n, pwrs))+
   geom_line()+

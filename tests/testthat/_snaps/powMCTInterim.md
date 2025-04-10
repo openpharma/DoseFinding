@@ -10,3 +10,7 @@
 
     structure(0.0093306779418515, error = 0.000698968268372449, msg = "Normal Completion")
 
+# powMCTInterim can specify control via list
+
+    structure(0.947267223803965, error = 1.60116269778373e-05, msg = "Normal Completion")
+

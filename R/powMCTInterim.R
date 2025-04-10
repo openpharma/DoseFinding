@@ -107,12 +107,11 @@ powMCTInterim <- function(
   covMat <- t(contMat) %*% S_01 %*% contMat
   corMat <- cov2cor(covMat)
   criticalValue <- critVal(corMat, alpha = alpha, df = Inf)
-  tTestDenominator <- sqrt(diag(covMat))
-
-  P <- diag(1 / tTestDenominator)
 
   # Calculate the mean vector and covariance matrix for the predictive
   # or conditional distribution at the second stage.
+  tTestDenominator <- sqrt(diag(covMat))
+  P <- diag(1 / tTestDenominator)
   if (type == "predictive") {
     meanVector <- P %*% t(contMat) %*% mu_0t
     V0 <- S_0t + St1

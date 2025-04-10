@@ -40,13 +40,17 @@
 #' powMCTInterim(contMat = contMat, S0t = S0t, S_end = S_end, mu0t = mu0t, type = "conditional", mu_assumed = mu_assumed)
 
 #' @export
-powMCTInterim <- function(contMat,
-                          mu0t, S0t, S_end,
-                          alpha = 0.025,
-                          type = c("predictive", "conditional"),
-                          mu_assumed = NULL,
-                          alternative = c("one.sided", "two.sided"),
-                          control = mvtnorm.control()) {
+powMCTInterim <- function(
+  contMat,
+  mu0t,
+  S0t,
+  S_end,
+  alpha = 0.025,
+  type = c("predictive", "conditional"),
+  mu_assumed = NULL,
+  alternative = c("one.sided", "two.sided"),
+  control = mvtnorm.control()
+) {
   alternative <- match.arg(alternative)
   if (inherits(contMat, "optContr")) {
     contMat <- contMat$contMat
@@ -62,7 +66,9 @@ powMCTInterim <- function(contMat,
     stop("S0t and S_end need to be square matrices")
   }
   if ((nrow(S0t) != nD) | (nrow(S_end) != nD)) {
-    stop("Number of rows & cols of S0t and S_end need to match number of doses (i.e. number of rows of contMat)")
+    stop(
+      "Number of rows & cols of S0t and S_end need to match number of doses (i.e. number of rows of contMat)"
+    )
   }
   if (type == "conditional") {
     if (missing(mu_assumed)) {
@@ -70,11 +76,15 @@ powMCTInterim <- function(contMat,
       mu_assumed <- mu0t
     }
     if (length(mu_assumed) != nD) {
-      stop("Length mu_assumed needs to match number of doses (i.e. number of rows of contMat)")
+      stop(
+        "Length mu_assumed needs to match number of doses (i.e. number of rows of contMat)"
+      )
     }
   }
   if ((length(mu0t) != nD)) {
-    stop("Length of mu0t needs to match number of doses (i.e. number of rows of contMat)")
+    stop(
+      "Length of mu0t needs to match number of doses (i.e. number of rows of contMat)"
+    )
   }
 
   S0t_inv <- solve(S0t)
@@ -117,6 +127,12 @@ powMCTInterim <- function(contMat,
     ctrl <- control
   }
 
-  pmvnormCall <- c(list(lower, upper, mean = as.numeric(mnV), sigma = V, algorithm = ctrl))
+  pmvnormCall <- c(list(
+    lower,
+    upper,
+    mean = as.numeric(mnV),
+    sigma = V,
+    algorithm = ctrl
+  ))
   1 - do.call(mvtnorm::pmvnorm, pmvnormCall)
 }

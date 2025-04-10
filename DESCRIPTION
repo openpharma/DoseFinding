@@ -11,7 +11,18 @@ Authors@R: c(
    person("Marius", "Thomas", role = c("aut", "cre"), email = "marius.thomas@novartis.com"),
    person(given = "Novartis Pharma AG", role = c("cph", "fnd")))
 Imports: ggplot2, lattice, mvtnorm
-Suggests: numDeriv, Rsolnp, quadprog, parallel, multcomp, knitr, rmarkdown, MASS, testthat, RBesT, nlme
+Suggests: 
+    numDeriv,
+    Rsolnp,
+    quadprog,
+    parallel,
+    multcomp,
+    knitr,
+    rmarkdown,
+    MASS,
+    testthat (>= 3.0.0),
+    RBesT,
+    nlme
 Maintainer: Marius Thomas <marius.thomas@novartis.com>
 Description: The DoseFinding package provides functions for the design and analysis
 	     of dose-finding experiments (with focus on pharmaceutical Phase
@@ -27,3 +38,4 @@ RoxygenNote: 7.3.1
 Encoding: UTF-8
 URL: https://github.com/openpharma/DoseFinding, https://openpharma.github.io/DoseFinding/
 BugReports: https://github.com/openpharma/DoseFinding/issues
+Config/testthat/edition: 3

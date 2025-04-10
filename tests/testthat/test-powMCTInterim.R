@@ -83,3 +83,102 @@ test_that("powMCTInterim can specify control via list", {
   )
   expect_snapshot_value(result, style = "deparse")
 })
+
+# Simulation based calculation, used for the integration tests below.
+interim_power <- function(
+  nSim,
+  contMat,
+  S0t,
+  S_end,
+  mu0t,
+  type = c("predictive", "conditional"),
+  mu_assumed,
+  alpha
+) {
+  S0t_inv <- solve(S0t)
+  St1_inv <- solve(S_end) - S0t_inv
+  St1 <- solve(St1_inv)
+
+  ## simulate incremental information for second stage data
+  if (type == "predictive") {
+    mu_stage2 <- rmvnorm(nSim, mu0t, S0t + St1)
+  }
+  if (type == "conditional") {
+    mu_stage2 <- rmvnorm(nSim, mu_assumed, St1)
+  }
+
+  ## pre-calculate critical value
+  covMat <- t(contMat) %*% S_end %*% contMat
+  corMat <- cov2cor(covMat)
+  critV <- critVal(corMat, alpha = alpha, df = Inf)
+  den <- sqrt(diag(covMat)) ## numerator of t-statistics
+  ## now determine for each sampled second stage estimate, whether final test
+  ## would be significant
+  maxT <- numeric(nSim)
+  for (i in 1:nSim) {
+    ## combine estimates from part 1 and 2
+    mu_end <- as.numeric(
+      S_end %*% (S0t_inv %*% mu0t + St1_inv %*% mu_stage2[i, ])
+    )
+    ## calculate maximum statistic
+    ct <- as.vector(mu_end %*% contMat)
+    tStat <- ct / den
+    maxT[i] <- max(tStat)
+  }
+  ## final power value
+  mean(maxT > critV)
+}
+
+test_that("powMCTInterim gives same conditional power result as with simulation based approach", {
+  skip_on_cran()
+  set.seed(245)
+  example_data <- get_pow_mct_interim_example()
+
+  result <- powMCTInterim(
+    contMat = example_data$contMat,
+    S_0t = example_data$S_0t,
+    S_01 = example_data$S_01,
+    mu_0t = example_data$mu_0t,
+    mu_assumed = example_data$mu_assumed,
+    type = "conditional"
+  )
+
+  expected <- interim_power(
+    nSim = 1e6,
+    contMat = example_data$contMat,
+    S0t = example_data$S_0t,
+    S_end = example_data$S_01,
+    mu0t = example_data$mu_0t,
+    type = "conditional",
+    mu_assumed = example_data$mu_assumed,
+    alpha = 0.025
+  )
+
+  expect_equal(result, expected, tolerance = 1e-2, ignore_attr = TRUE)
+})
+
+test_that("powMCTInterim gives same conditional power result as with simulation based approach", {
+  skip_on_cran()
+  set.seed(245)
+  example_data <- get_pow_mct_interim_example()
+
+  result <- powMCTInterim(
+    contMat = example_data$contMat,
+    S_0t = example_data$S_0t,
+    S_01 = example_data$S_01,
+    mu_0t = example_data$mu_0t,
+    type = "predictive"
+  )
+
+  expected <- interim_power(
+    nSim = 1e6,
+    contMat = example_data$contMat,
+    S0t = example_data$S_0t,
+    S_end = example_data$S_01,
+    mu0t = example_data$mu_0t,
+    type = "predictive",
+    alpha = 0.025
+  )
+
+  expect_equal(result, expected, tolerance = 1e-2, ignore_attr = TRUE)
+})

@@ -11,40 +11,42 @@ get_pow_mct_interim_example <- function() {
   sigma <- 0.3
   n_final <- round(531 * w / sum(w))
   n <- floor(n_final / 2)
-  S0t <- diag(sigma^2 / n)
-  S_end <- diag(sigma^2 / n_final)
+  S_0t <- diag(sigma^2 / n)
+  S_01 <- diag(sigma^2 / n_final)
   ## assumed interim estimate
-  mu0t <- 0.05 * doses / (doses + 1) + rnorm(6, 0, 0.382 / sqrt(n))
+  mu_0t <- 0.05 * doses / (doses + 1) + rnorm(6, 0, 0.382 / sqrt(n))
   ## assumed mu (needed for conditional power)
   mu_assumed <- 0.135 * doses / (doses + 1)
   list(
     contMat = contMat,
-    S0t = S0t,
-    S_end = S_end,
-    mu0t = mu0t,
+    S_0t = S_0t,
+    S_01 = S_01,
+    mu_0t = mu_0t,
     mu_assumed = mu_assumed
   )
 }
 
 test_that("powMCTInterim works as expected with predictive power", {
+  set.seed(123)
   example_data <- get_pow_mct_interim_example()
   result <- powMCTInterim(
     contMat = example_data$contMat,
-    S0t = example_data$S0t,
-    S_end = example_data$S_end,
-    mu0t = example_data$mu0t,
+    S_0t = example_data$S_0t,
+    S_01 = example_data$S_01,
+    mu_0t = example_data$mu_0t,
     type = "predictive"
   )
   expect_snapshot_value(result, style = "deparse")
 })
 
 test_that("powMCTInterim works as expected with conditional power", {
+  set.seed(321)
   example_data <- get_pow_mct_interim_example()
   result <- powMCTInterim(
     contMat = example_data$contMat,
-    S0t = example_data$S0t,
-    S_end = example_data$S_end,
-    mu0t = example_data$mu0t,
+    S_0t = example_data$S_0t,
+    S_01 = example_data$S_01,
+    mu_0t = example_data$mu_0t,
     mu = example_data$mu_assumed,
     type = "conditional"
   )

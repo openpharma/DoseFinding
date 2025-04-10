@@ -1,15 +1,16 @@
-#' Calculate conditional or predictive power for multiple contrast test
+#' Calculate Conditional or Predictive Power for Multiple Contrast Test
 #'
-#' Calculate predictive or conditional power for a multiple contrast test based on interim data, e.g. for a futility
-#' interim analysis. This function can also be applied to longitudinal endpoints, where at the time of interim analysis
-#' incomplete data is available.
-#'
+#' @description
+#' Calculates the predictive or conditional power for a multiple contrast test based on
+#' interim data, e.g. for a futility interim analysis. This function can also be applied
+#' to longitudinal endpoints, where at the time of interim analysis incomplete data is
+#' available.
 #'
 #' @inheritParams powMCT
-#' @param S0t The covariance matrix for the first stage estimates
-#' @param S_end The covariance matrix anticipated for the estimates at
+#' @param S_0t The covariance matrix for the first stage estimates
+#' @param S_01 The covariance matrix anticipated for the estimates at
 #'   study end
-#' @param mu0t The first stage estimates
+#' @param mu_0t The first stage estimates
 #' @param type Whether predictive power (for a flat prior) or
 #'   conditional power should be calculated. For conditional power
 #'   mu_assumed needs to be specified.
@@ -29,22 +30,22 @@
 #' sigma <- 0.3
 #' n_final <- round(531 * w / sum(w))
 #' n <- floor(n_final / 2)
-#' S0t <- diag(sigma^2 / n)
-#' S_end <- diag(sigma^2 / n_final)
+#' S_0t <- diag(sigma^2 / n)
+#' S_01 <- diag(sigma^2 / n_final)
 #' ## assumed interim estimate
-#' mu0t <- 0.05 * doses / (doses + 1) + rnorm(6, 0, 0.382 / sqrt(n))
+#' mu_0t <- 0.05 * doses / (doses + 1) + rnorm(6, 0, 0.382 / sqrt(n))
 #' ## assumed mu (needed for conditional power)
 #' mu_assumed <- 0.135 * doses / (doses + 1)
 #' ## compare simulation based and numerical integration approach
-#' powMCTInterim(contMat = contMat, S0t = S0t, S_end = S_end, mu0t = mu0t, type = "predictive")
-#' powMCTInterim(contMat = contMat, S0t = S0t, S_end = S_end, mu0t = mu0t, type = "conditional", mu_assumed = mu_assumed)
+#' powMCTInterim(contMat = contMat, S_0t = S_0t, S_01 = S_01, mu_0t = mu_0t, type = "predictive")
+#' powMCTInterim(contMat = contMat, S_0t = S_0t, S_01 = S_01, mu_0t = mu_0t, type = "conditional", mu_assumed = mu_assumed)
 
 #' @export
 powMCTInterim <- function(
   contMat,
-  mu0t,
-  S0t,
-  S_end,
+  mu_0t,
+  S_0t,
+  S_01,
   alpha = 0.025,
   type = c("predictive", "conditional"),
   mu_assumed = NULL,
@@ -62,18 +63,18 @@ powMCTInterim <- function(
   if (!is.matrix(contMat)) {
     stop("contMat needs to be a matrix")
   }
-  if ((nrow(S0t) != ncol(S0t)) | (nrow(S_end) != ncol(S_end))) {
-    stop("S0t and S_end need to be square matrices")
+  if ((nrow(S_0t) != ncol(S_0t)) | (nrow(S_01) != ncol(S_01))) {
+    stop("S_0t and S_01 need to be square matrices")
   }
-  if ((nrow(S0t) != nD) | (nrow(S_end) != nD)) {
+  if ((nrow(S_0t) != nD) | (nrow(S_01) != nD)) {
     stop(
-      "Number of rows & cols of S0t and S_end need to match number of doses (i.e. number of rows of contMat)"
+      "Number of rows & cols of S_0t and S_01 need to match number of doses (i.e. number of rows of contMat)"
     )
   }
   if (type == "conditional") {
     if (missing(mu_assumed)) {
-      message("mu_assumed not supplied, setting mu_assumed = mu0t")
-      mu_assumed <- mu0t
+      message("mu_assumed not supplied, setting mu_assumed = mu_0t")
+      mu_assumed <- mu_0t
     }
     if (length(mu_assumed) != nD) {
       stop(
@@ -81,18 +82,18 @@ powMCTInterim <- function(
       )
     }
   }
-  if ((length(mu0t) != nD)) {
+  if ((length(mu_0t) != nD)) {
     stop(
-      "Length of mu0t needs to match number of doses (i.e. number of rows of contMat)"
+      "Length of mu_0t needs to match number of doses (i.e. number of rows of contMat)"
     )
   }
 
-  S0t_inv <- solve(S0t)
-  St1_inv <- solve(S_end) - S0t_inv
+  S_0t_inv <- solve(S_0t)
+  St1_inv <- solve(S_01) - S_0t_inv
   St1 <- solve(St1_inv)
 
   ## pre-calculate critical value
-  covMat <- t(contMat) %*% S_end %*% contMat
+  covMat <- t(contMat) %*% S_01 %*% contMat
   corMat <- cov2cor(covMat)
   critV <- critVal(corMat, alpha = alpha, df = Inf)
   den <- sqrt(diag(covMat)) ## numerator of t-statistics
@@ -100,15 +101,15 @@ powMCTInterim <- function(
   P <- diag(1 / den)
   ## simulate incremental information for second stage data
   if (type == "predictive") {
-    mnV <- P %*% t(contMat) %*% mu0t
-    V0 <- S0t + St1
-    tmp <- P %*% t(contMat) %*% S_end %*% St1_inv
+    mnV <- P %*% t(contMat) %*% mu_0t
+    V0 <- S_0t + St1
+    tmp <- P %*% t(contMat) %*% S_01 %*% St1_inv
     V <- tmp %*% V0 %*% t(tmp)
   }
   if (type == "conditional") {
-    m0 <- S_end %*% (S0t_inv %*% mu0t + St1_inv %*% mu_assumed)
+    m0 <- S_01 %*% (S_0t_inv %*% mu_0t + St1_inv %*% mu_assumed)
     mnV <- P %*% t(contMat) %*% m0
-    tmp <- P %*% t(contMat) %*% S_end
+    tmp <- P %*% t(contMat) %*% S_01
     V <- tmp %*% St1_inv %*% t(tmp)
   }
 

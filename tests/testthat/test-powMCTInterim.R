@@ -69,3 +69,17 @@ test_that("powMCTInterim works as expected when using NULL explicitly for mu_ass
   )
   expect_snapshot_value(result, style = "deparse")
 })
+
+test_that("powMCTInterim can specify control via list", {
+  set.seed(123)
+  example_data <- get_pow_mct_interim_example()
+  result <- powMCTInterim(
+    contMat = example_data$contMat,
+    S_0t = example_data$S_0t,
+    S_01 = example_data$S_01,
+    mu_0t = example_data$mu_0t,
+    type = "predictive",
+    control = list(maxpts = 1e5)
+  )
+  expect_snapshot_value(result, style = "deparse")
+})

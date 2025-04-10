@@ -90,11 +90,11 @@ powMCTInterim <- function(
       "Length of mu_0t needs to match number of doses (i.e. number of rows of contMat)"
     )
   }
-  ctrl <- if (!missing(control)) {
+  algorithm <- if (!inherits(control, "GenzBretz")) {
     if (!is.list(control)) {
       stop("when specified, 'control' must be a list")
     }
-    do.call("", control)
+    do.call(mvtnorm.control, control)
   } else {
     control
   }
@@ -127,7 +127,7 @@ powMCTInterim <- function(
   }
 
   # Define integration boundaries.
-  lower <- if (alternative[1] == "two.sided") {
+  lower <- if (alternative == "two.sided") {
     rep(-criticalValue, nContrasts)
   } else {
     rep(-Inf, nContrasts)
@@ -140,7 +140,7 @@ powMCTInterim <- function(
     upper = upper,
     mean = as.numeric(meanVector),
     sigma = covMatrix,
-    algorithm = ctrl
+    algorithm = algorithm
   )
   1 - intResult
 }

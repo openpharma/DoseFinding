@@ -54,21 +54,22 @@ powMCTInterim <- function(
   alternative = c("one.sided", "two.sided"),
   control = mvtnorm.control()
 ) {
+  type <- match.arg(type)
   alternative <- match.arg(alternative)
   if (inherits(contMat, "optContr")) {
     contMat <- contMat$contMat
   }
 
-  nD <- nrow(contMat) # nr of doses
-  nC <- ncol(contMat) # nr of contrasts
+  nDoses <- nrow(contMat)
+  nContrasts <- ncol(contMat)
 
   if (!is.matrix(contMat)) {
     stop("contMat needs to be a matrix")
   }
-  if ((nrow(S_0t) != ncol(S_0t)) | (nrow(S_01) != ncol(S_01))) {
+  if ((nrow(S_0t) != ncol(S_0t)) || (nrow(S_01) != ncol(S_01))) {
     stop("S_0t and S_01 need to be square matrices")
   }
-  if ((nrow(S_0t) != nD) | (nrow(S_01) != nD)) {
+  if ((nrow(S_0t) != nDoses) || (nrow(S_01) != nDoses)) {
     stop(
       "Number of rows & cols of S_0t and S_01 need to match number of doses (i.e. number of rows of contMat)"
     )
@@ -78,64 +79,68 @@ powMCTInterim <- function(
       message("mu_assumed not supplied, setting mu_assumed = mu_0t")
       mu_assumed <- mu_0t
     }
-    if (length(mu_assumed) != nD) {
+    if (length(mu_assumed) != nDoses) {
       stop(
         "Length mu_assumed needs to match number of doses (i.e. number of rows of contMat)"
       )
     }
   }
-  if ((length(mu_0t) != nD)) {
+  if ((length(mu_0t) != nDoses)) {
     stop(
       "Length of mu_0t needs to match number of doses (i.e. number of rows of contMat)"
     )
+  }
+  ctrl <- if (!missing(control)) {
+    if (!is.list(control)) {
+      stop("when specified, 'control' must be a list")
+    }
+    do.call("", control)
+  } else {
+    control
   }
 
   S_0t_inv <- solve(S_0t)
   St1_inv <- solve(S_01) - S_0t_inv
   St1 <- solve(St1_inv)
 
-  ## pre-calculate critical value
+  # Pre-calculate the critical value.
   covMat <- t(contMat) %*% S_01 %*% contMat
   corMat <- cov2cor(covMat)
-  critV <- critVal(corMat, alpha = alpha, df = Inf)
-  den <- sqrt(diag(covMat)) ## numerator of t-statistics
+  criticalValue <- critVal(corMat, alpha = alpha, df = Inf)
+  tTestDenominator <- sqrt(diag(covMat))
 
-  P <- diag(1 / den)
-  ## simulate incremental information for second stage data
+  P <- diag(1 / tTestDenominator)
+
+  # Calculate the mean vector and covariance matrix for the predictive
+  # or conditional distribution at the second stage.
   if (type == "predictive") {
-    mnV <- P %*% t(contMat) %*% mu_0t
+    meanVector <- P %*% t(contMat) %*% mu_0t
     V0 <- S_0t + St1
     tmp <- P %*% t(contMat) %*% S_01 %*% St1_inv
-    V <- tmp %*% V0 %*% t(tmp)
+    covMatrix <- tmp %*% V0 %*% t(tmp)
   }
   if (type == "conditional") {
     m0 <- S_01 %*% (S_0t_inv %*% mu_0t + St1_inv %*% mu_assumed)
-    mnV <- P %*% t(contMat) %*% m0
+    meanVector <- P %*% t(contMat) %*% m0
     tmp <- P %*% t(contMat) %*% S_01
-    V <- tmp %*% St1_inv %*% t(tmp)
+    covMatrix <- tmp %*% St1_inv %*% t(tmp)
   }
 
-  if (alternative[1] == "two.sided") {
-    lower <- rep(-critV, nC)
+  # Define integration boundaries.
+  lower <- if (alternative[1] == "two.sided") {
+    rep(-criticalValue, nContrasts)
   } else {
-    lower <- rep(-Inf, nC)
+    rep(-Inf, nContrasts)
   }
-  upper <- rep(critV, nC)
-  if (!missing(control)) {
-    if (!is.list(control)) {
-      stop("when specified, 'control' must be a list")
-    }
-    ctrl <- do.call("mvtnorm.control", control)
-  } else {
-    ctrl <- control
-  }
+  upper <- rep(criticalValue, nContrasts)
 
-  pmvnormCall <- c(list(
-    lower,
-    upper,
-    mean = as.numeric(mnV),
-    sigma = V,
+  # Perform integration to obtain power value.
+  intResult <- mvtnorm::pmvnorm(
+    lower = lower,
+    upper = upper,
+    mean = as.numeric(meanVector),
+    sigma = covMatrix,
     algorithm = ctrl
-  ))
-  1 - do.call(mvtnorm::pmvnorm, pmvnormCall)
+  )
+  1 - intResult
 }

@@ -14,7 +14,8 @@
 #' @param type Whether predictive power (for a flat prior) or
 #'   conditional power should be calculated. For conditional power
 #'   mu_assumed needs to be specified.
-#' @param mu_assumed Mean vector to assume for the second stage
+#' @param mu_assumed Mean vector to assume for the second stage (only used when type is
+#'   \samp{conditional}). If `NULL` (default), the first stage estimates `mu_0t` are used.
 #' @param control A list specifying additional control parameters for the \samp{pmvnorm} calls in the code, see also
 #' \samp{mvtnorm.control} for details.
 #' @return Numeric containing the calculated power values
@@ -39,7 +40,8 @@
 #' ## compare simulation based and numerical integration approach
 #' powMCTInterim(contMat = contMat, S_0t = S_0t, S_01 = S_01, mu_0t = mu_0t, type = "predictive")
 #' powMCTInterim(contMat = contMat, S_0t = S_0t, S_01 = S_01, mu_0t = mu_0t, type = "conditional", mu_assumed = mu_assumed)
-
+#' powMCTInterim(contMat = contMat, S_0t = S_0t, S_01 = S_01, mu_0t = mu_0t, type = "predictive", alternative = "two.sided")
+#' powMCTInterim(contMat = contMat, S_0t = S_0t, S_01 = S_01, mu_0t = mu_0t, type = "predictive", control = mvtnorm.control(maxpts = 1e5))
 #' @export
 powMCTInterim <- function(
   contMat,
@@ -72,7 +74,7 @@ powMCTInterim <- function(
     )
   }
   if (type == "conditional") {
-    if (missing(mu_assumed)) {
+    if (is.null(mu_assumed)) {
       message("mu_assumed not supplied, setting mu_assumed = mu_0t")
       mu_assumed <- mu_0t
     }

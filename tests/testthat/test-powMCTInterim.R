@@ -47,8 +47,25 @@ test_that("powMCTInterim works as expected with conditional power", {
     S_0t = example_data$S_0t,
     S_01 = example_data$S_01,
     mu_0t = example_data$mu_0t,
-    mu = example_data$mu_assumed,
+    mu_assumed = example_data$mu_assumed,
     type = "conditional"
+  )
+  expect_snapshot_value(result, style = "deparse")
+})
+
+test_that("powMCTInterim works as expected when using NULL explicitly for mu_assumed", {
+  set.seed(321)
+  example_data <- get_pow_mct_interim_example()
+  expect_message(
+    result <- powMCTInterim(
+      contMat = example_data$contMat,
+      S_0t = example_data$S_0t,
+      S_01 = example_data$S_01,
+      mu_0t = example_data$mu_0t,
+      mu_assumed = NULL,
+      type = "conditional"
+    ),
+    "mu_assumed not supplied, setting mu_assumed = mu_0t"
   )
   expect_snapshot_value(result, style = "deparse")
 })

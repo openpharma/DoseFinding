@@ -2,13 +2,13 @@
 % Please edit documentation in R/powMCTInterim.R
 \name{powMCTInterim}
 \alias{powMCTInterim}
-\title{Calculate conditional or predictive power for multiple contrast test}
+\title{Calculate Conditional or Predictive Power for Multiple Contrast Test}
 \usage{
 powMCTInterim(
   contMat,
-  mu0t,
-  S0t,
-  S_end,
+  mu_0t,
+  S_0t,
+  S_01,
   alpha = 0.025,
   type = c("predictive", "conditional"),
   mu_assumed = NULL,
@@ -20,11 +20,11 @@ powMCTInterim(
 \item{contMat}{Contrast matrix to use. The individual contrasts should be
 saved in the columns of the matrix}
 
-\item{mu0t}{The first stage estimates}
+\item{mu_0t}{The first stage estimates}
 
-\item{S0t}{The covariance matrix for the first stage estimates}
+\item{S_0t}{The covariance matrix for the first stage estimates}
 
-\item{S_end}{The covariance matrix anticipated for the estimates at
+\item{S_01}{The covariance matrix anticipated for the estimates at
 study end}
 
 \item{alpha}{Significance level to use}
@@ -33,7 +33,8 @@ study end}
 conditional power should be calculated. For conditional power
 mu_assumed needs to be specified.}
 
-\item{mu_assumed}{Mean vector to assume for the second stage}
+\item{mu_assumed}{Mean vector to assume for the second stage (only used when type is
+\samp{conditional}). If \code{NULL} (default), the first stage estimates \code{mu_0t} are used.}
 
 \item{alternative}{Character determining the alternative for the multiple
 contrast trend test.}
@@ -45,28 +46,33 @@ contrast trend test.}
 Numeric containing the calculated power values
 }
 \description{
-Calculate predictive or conditional power for a multiple contrast test based on interim data, e.g. for a futility
-interim analysis. This function can also be applied to longitudinal endpoints, where at the time of interim analysis
-incomplete data is available.
+Calculates the predictive or conditional power for a multiple contrast test based on
+interim data, e.g. for a futility interim analysis. This function can also be applied
+to longitudinal endpoints, where at the time of interim analysis incomplete data is
+available.
 }
 \examples{
 
+# Setup the scenario.
 doses <- c(0, 0.5, 1, 2, 4, 8)
-mods <- Mods(emax = c(0.5,1,2,4), sigEmax = rbind(c(0.5, 3), c(1, 3), c(2, 3), c(4,3)), quadratic = -0.1, doses = doses)
-w <- c(1,0.5,0.5,0.5,1,1)
-contMat <- optContr(models=mods,w=w)$contMat
+mods <- Mods(emax = c(0.5, 1, 2, 4), sigEmax = rbind(c(0.5, 3), c(1, 3), c(2, 3), c(4, 3)), quadratic = -0.1, doses = doses)
+w <- c(1, 0.5, 0.5, 0.5, 1, 1)
+contMat <- optContr(models = mods, w = w)$contMat
 sigma <- 0.3
-n_final <- round(531*w/sum(w))
-n <- floor(n_final/2)
-S0t <- diag(sigma^2/n)
-S_end <- diag(sigma^2/n_final)
+n_final <- round(531 * w / sum(w))
+n <- floor(n_final / 2)
+S_0t <- diag(sigma^2 / n)
+S_01 <- diag(sigma^2 / n_final)
 ## assumed interim estimate
-mu0t <- 0.05*doses/(doses+1) + rnorm(6,0,0.382/sqrt(n))
+mu_0t <- 0.05 * doses / (doses + 1) + rnorm(6, 0, 0.382 / sqrt(n))
 ## assumed mu (needed for conditional power)
-mu_assumed <- 0.135*doses/(doses+1)
-## compare simulation based and numerical integration approach
-powMCTInterim(contMat = contMat, S0t = S0t, S_end = S_end, mu0t = mu0t, type = 'predictive')
-powMCTInterim(contMat = contMat, S0t = S0t, S_end = S_end, mu0t = mu0t, type = 'conditional', mu_assumed = mu_assumed)
+mu_assumed <- 0.135 * doses / (doses + 1)
+
+# Calculate predictive and conditional power.
+powMCTInterim(contMat = contMat, S_0t = S_0t, S_01 = S_01, mu_0t = mu_0t, type = "predictive")
+powMCTInterim(contMat = contMat, S_0t = S_0t, S_01 = S_01, mu_0t = mu_0t, type = "conditional", mu_assumed = mu_assumed)
+powMCTInterim(contMat = contMat, S_0t = S_0t, S_01 = S_01, mu_0t = mu_0t, type = "predictive", alternative = "two.sided")
+powMCTInterim(contMat = contMat, S_0t = S_0t, S_01 = S_01, mu_0t = mu_0t, type = "predictive", control = mvtnorm.control(maxpts = 1e5))
 }
 \references{
 Bornkamp, B., Zhou, J., Xi, D. and Cao W. (2025). Futility analyses for the MCP-Mod methodology based

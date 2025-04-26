@@ -102,8 +102,8 @@ powMCTInterim <- function(
   }
 
   S_0t_inv <- solve(S_0t)
-  St1_inv <- solve(S_01) - S_0t_inv
-  St1 <- solve(St1_inv)
+  S_t1_inv <- solve(S_01) - S_0t_inv
+  S_t1 <- solve(S_t1_inv)
 
   # Pre-calculate the critical value.
   covMat <- t(contMat) %*% S_01 %*% contMat
@@ -116,15 +116,15 @@ powMCTInterim <- function(
   P <- diag(1 / tTestDenominator)
   if (type == "predictive") {
     meanVector <- P %*% t(contMat) %*% mu_0t
-    V0 <- S_0t + St1
-    tmp <- P %*% t(contMat) %*% S_01 %*% St1_inv
+    V0 <- S_0t + S_t1
+    tmp <- P %*% t(contMat) %*% S_01 %*% S_t1_inv
     covMatrix <- tmp %*% V0 %*% t(tmp)
   }
   if (type == "conditional") {
-    m0 <- S_01 %*% (S_0t_inv %*% mu_0t + St1_inv %*% mu_assumed)
+    m0 <- S_01 %*% (S_0t_inv %*% mu_0t + S_t1_inv %*% mu_assumed)
     meanVector <- P %*% t(contMat) %*% m0
     tmp <- P %*% t(contMat) %*% S_01
-    covMatrix <- tmp %*% St1_inv %*% t(tmp)
+    covMatrix <- tmp %*% S_t1_inv %*% t(tmp)
   }
 
   # Define integration boundaries.

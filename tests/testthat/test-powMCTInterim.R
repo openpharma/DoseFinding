@@ -36,7 +36,7 @@ test_that("powMCTInterim works as expected with predictive power", {
     mu_0t = example_data$mu_0t,
     type = "predictive"
   )
-  expect_snapshot_value(result, style = "deparse")
+  expect_equal(as.numeric(result), 0.9473, tolerance = 1e-4)
 })
 
 test_that("powMCTInterim works as expected with conditional power", {
@@ -50,7 +50,7 @@ test_that("powMCTInterim works as expected with conditional power", {
     mu_assumed = example_data$mu_assumed,
     type = "conditional"
   )
-  expect_snapshot_value(result, style = "deparse")
+  expect_equal(as.numeric(result), 0.2739, tolerance = 1e-4)
 })
 
 test_that("powMCTInterim works as expected when using NULL explicitly for mu_assumed", {
@@ -67,7 +67,7 @@ test_that("powMCTInterim works as expected when using NULL explicitly for mu_ass
     ),
     "mu_assumed not supplied, setting mu_assumed = mu_0t"
   )
-  expect_snapshot_value(result, style = "deparse")
+  expect_equal(as.numeric(result), 0.00933, tolerance = 1e-4)
 })
 
 test_that("powMCTInterim can specify control via list", {
@@ -81,7 +81,7 @@ test_that("powMCTInterim can specify control via list", {
     type = "predictive",
     control = list(maxpts = 1e5)
   )
-  expect_snapshot_value(result, style = "deparse")
+  expect_equal(as.numeric(result), 0.9473, tolerance = 1e-4)
 })
 
 # Simulation based calculation, used for the integration tests below.

@@ -5,3 +5,4 @@ indent-style = "space"
 line-ending = "auto"
 persistent-line-breaks = true
 default-exclude = true
+exclude = ["**/**"]

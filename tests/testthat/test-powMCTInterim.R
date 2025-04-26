@@ -154,7 +154,7 @@ test_that("powMCTInterim gives same conditional power result as with simulation 
     alpha = 0.025
   )
 
-  expect_equal(result, expected, tolerance = 1e-2, ignore_attr = TRUE)
+  expect_equal(result, expected, tolerance = 1e-2, check.attributes = FALSE)
 })
 
 test_that("powMCTInterim gives same conditional power result as with simulation based approach", {
@@ -180,5 +180,5 @@ test_that("powMCTInterim gives same conditional power result as with simulation 
     alpha = 0.025
   )
 
-  expect_equal(result, expected, tolerance = 1e-2, ignore_attr = TRUE)
+  expect_equal(result, expected, tolerance = 1e-2, check.attributes = FALSE)
 })

@@ -15,7 +15,7 @@
 #'   conditional power should be calculated. For conditional power
 #'   mu_assumed needs to be specified.
 #' @param mu_assumed Mean vector to assume for the second stage (only used when type is
-#'   \samp{conditional}). If `NULL` (default), the first stage estimates `mu_0t` are used.
+#'   \samp{conditional}). If \code{NULL} (default), the first stage estimates \code{mu_0t} are used.
 #' @param control A list specifying additional control parameters for the \samp{pmvnorm} calls in the code, see also
 #' \samp{mvtnorm.control} for details.
 #' @return Numeric containing the calculated power values

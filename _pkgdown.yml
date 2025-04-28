@@ -19,6 +19,7 @@ reference:
   - MCTpval
   - MCTtest
   - bMCTtest
+  - powMCTInterim
   - critVal
   - mvpostmix
   - mvtnorm.control

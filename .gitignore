@@ -12,3 +12,4 @@ src/*.dll
 inst/doc
 docs
 revdep
+tests/testthat/Rplots.pdf

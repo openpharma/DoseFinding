@@ -373,7 +373,6 @@ optDesign <- function(models, probs, doses,
 
 #' Calculate design criteria for set of designs
 #'
-#' @inheritParams optDesign
 #' @param design Argument for \samp{rndDesign} and \samp{calcCrit} functions: Numeric vector (or matrix) of allocation
 #'   weights for the different doses. The rows of the matrices need to sum to 1. Alternatively also an object of class
 #'   "DRdesign" can be used for \samp{rndDesign}. Note that there should be at least as many design points available as
@@ -497,7 +496,6 @@ print.DRdesign <- function(x, digits = 5, eps = 0.001, ...){
 
 #' Efficiently round calculated design to a finite sample size
 #'
-#' @inheritParams calcCrit
 #' @param eps Argument for \samp{rndDesign} function: Value under which elements of w will be regarded as 0.
 #' @rdname optDesign
 #' @export
@@ -539,7 +537,6 @@ rndDesign <- function(design, n, eps = 0.0001){
 
 #' Plot optimal designs
 #'
-#' @inheritParams optDesign
 #' @param x Object of class \samp{DRdesign} (for \samp{plot.design})
 #' @param lwdDes,colDes Line width and color of the lines plotted for the design (in \samp{plot.design})
 #'

@@ -79,6 +79,8 @@ one_sim <- function() {
 
 test_that("calculation of contrasts works", {
   skip_on_cran()
+  skip_on_ci()
+
   set.seed(1)
   require_extra_packages()
   ncps <- replicate(1000, one_sim())

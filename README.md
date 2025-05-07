@@ -7,6 +7,7 @@
 
 [![CRAN
 status](https://www.r-pkg.org/badges/version/DoseFinding)](https://CRAN.R-project.org/package=DoseFinding)
+[![R-CMD-check](https://github.com/openpharma/DoseFinding/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/openpharma/DoseFinding/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The DoseFinding package provides functions for the design and analysis

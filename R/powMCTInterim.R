@@ -26,7 +26,12 @@
 #'
 #' # Setup the scenario.
 #' doses <- c(0, 0.5, 1, 2, 4, 8)
-#' mods <- Mods(emax = c(0.5, 1, 2, 4), sigEmax = rbind(c(0.5, 3), c(1, 3), c(2, 3), c(4, 3)), quadratic = -0.1, doses = doses)
+#' mods <- Mods(
+#'   emax = c(0.5, 1, 2, 4),
+#'   sigEmax = rbind(c(0.5, 3), c(1, 3), c(2, 3), c(4, 3)),
+#'   quadratic = -0.1,
+#'   doses = doses
+#' )
 #' w <- c(1, 0.5, 0.5, 0.5, 1, 1)
 #' contMat <- optContr(models = mods, w = w)$contMat
 #' sigma <- 0.3
@@ -40,10 +45,22 @@
 #' mu_assumed <- 0.135 * doses / (doses + 1)
 #'
 #' # Calculate predictive and conditional power.
-#' powMCTInterim(contMat = contMat, S_0t = S_0t, S_01 = S_01, mu_0t = mu_0t, type = "predictive")
-#' powMCTInterim(contMat = contMat, S_0t = S_0t, S_01 = S_01, mu_0t = mu_0t, type = "conditional", mu_assumed = mu_assumed)
-#' powMCTInterim(contMat = contMat, S_0t = S_0t, S_01 = S_01, mu_0t = mu_0t, type = "predictive", alternative = "two.sided")
-#' powMCTInterim(contMat = contMat, S_0t = S_0t, S_01 = S_01, mu_0t = mu_0t, type = "predictive", control = mvtnorm.control(maxpts = 1e5))
+#' powMCTInterim(
+#'   contMat = contMat, S_0t = S_0t, S_01 = S_01, mu_0t = mu_0t,
+#'   type = "predictive"
+#' )
+#' powMCTInterim(
+#'   contMat = contMat, S_0t = S_0t, S_01 = S_01, mu_0t = mu_0t,
+#'   type = "conditional", mu_assumed = mu_assumed
+#' )
+#' powMCTInterim(
+#'   contMat = contMat, S_0t = S_0t, S_01 = S_01, mu_0t = mu_0t,
+#'   type = "predictive", alternative = "two.sided"
+#' )
+#' powMCTInterim(
+#'   contMat = contMat, S_0t = S_0t, S_01 = S_01, mu_0t = mu_0t,
+#'   type = "predictive", control = mvtnorm.control(maxpts = 1e5)
+#' )
 #' @export
 powMCTInterim <- function(
   contMat,

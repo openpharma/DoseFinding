@@ -233,7 +233,6 @@ print.bFitMod <- function(x, digits = 3, ...){
 
 #' Make predictions from fitted dose-response model
 #'
-#' @inheritParams coef.bFitMod
 #' @param predType,summaryFct,doseSeq,lenSeq Arguments for the predict method.
 #'
 #'   \samp{predType}: predType determines whether predictions are returned for the dose-response curve or the effect
@@ -286,7 +285,6 @@ predict.bFitMod <- function(object, predType = c("full-model", "effect-curve"),
 
 #' Plot fitted dose-response model
 #'
-#' @inheritParams coef.bFitMod
 #' @param plotType,quant,plotData,level,lenDose Arguments for plot method.
 #'
 #'   \samp{plotType}: Determining whether the dose-response curve or the effect curve should be plotted.

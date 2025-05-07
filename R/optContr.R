@@ -222,7 +222,6 @@ plot.optContr <- function (x, superpose = TRUE, xlab = "Dose",
 
 #' Plot optimal contrasts
 #'
-#' @inheritParams plot.optContr
 #' @param optContrObj For function \samp{plotContr} the \samp{optContrObj}
 #' should contain an object of class \samp{optContr}.
 #' 

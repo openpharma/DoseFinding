@@ -14,7 +14,6 @@ emax <-  function(dose, e0, eMax, ed50){
 }
 
 #' @rdname drmodels
-#' @inheritParams emax
 #' @param ...  Just included for convenience in the gradient functions, so that
 #' for example \code{quadratic(dose, e0=0, b1=1, b2=3)} will not throw an error
 #' (although the gradient of the quadratic model is independent of e0, b1 and
@@ -26,7 +25,6 @@ emaxGrad <- function(dose, eMax, ed50, ...){
 }
 
 #' @rdname drmodels
-#' @inheritParams emax
 #' @param h Hill parameter, determining the steepness of the model at the ED50
 #' @usage NULL
 #' @export 
@@ -35,7 +33,6 @@ sigEmax <- function(dose, e0, eMax, ed50, h){
 }
 
 #' @rdname drmodels
-#' @inheritParams sigEmax
 #' @usage NULL
 #' @export 
 sigEmaxGrad <- function(dose, eMax, ed50, h, ...){
@@ -48,7 +45,6 @@ sigEmaxGrad <- function(dose, eMax, ed50, h, ...){
 }
 
 #' @rdname drmodels
-#' @inheritParams emax
 #' @param e1 Slope parameter for exponential model
 #' @param delta Exponential model: Parameter, controlling the convexity of the
 #' model.\cr Linear and linlog model: Slope parameter\cr Logistic model:
@@ -60,7 +56,6 @@ exponential <- function(dose, e0, e1, delta){
 }
 
 #' @rdname drmodels
-#' @inheritParams exponential
 #' @usage NULL
 #' @export 
 exponentialGrad <- function(dose, e1, delta, ...){
@@ -68,7 +63,6 @@ exponentialGrad <- function(dose, e1, delta, ...){
 }
 
 #' @rdname drmodels
-#' @inheritParams emax
 #' @param b1 first parameter of quadratic model
 #' @param b2 second parameter of quadratic model (controls, whether model is
 #' convex or concave)
@@ -79,7 +73,6 @@ quadratic <- function(dose, e0, b1, b2){
 }
 
 #' @rdname drmodels
-#' @inheritParams quadratic
 #' @usage NULL
 #' @export 
 quadraticGrad <- function(dose, ...){
@@ -87,7 +80,6 @@ quadraticGrad <- function(dose, ...){
 }
 
 #' @rdname drmodels
-#' @inheritParams emax
 #' @param delta1 delta1 parameter for beta model
 #' @param delta2 delta2 parameter for beta model
 #' @param scal Scale parameter (treated as a fixed value, not estimated)
@@ -101,7 +93,6 @@ betaMod <- function(dose, e0, eMax, delta1, delta2, scal){
 }
 
 #' @rdname drmodels
-#' @inheritParams betaMod
 #' @usage NULL
 #' @export 
 betaModGrad <- function(dose, eMax, delta1, delta2, scal, ...){
@@ -119,7 +110,6 @@ betaModGrad <- function(dose, eMax, delta1, delta2, scal, ...){
 }
 
 #' @rdname drmodels
-#' @inheritParams exponential
 #' @usage NULL
 #' @export 
 linear <- function(dose, e0, delta){
@@ -127,7 +117,6 @@ linear <- function(dose, e0, delta){
 }
 
 #' @rdname drmodels
-#' @inheritParams linear
 #' @usage NULL
 #' @export 
 linearGrad <- function(dose, ...){
@@ -135,7 +124,6 @@ linearGrad <- function(dose, ...){
 }
 
 #' @rdname drmodels
-#' @inheritParams exponential
 #' @param off Offset value to avoid problems with dose=0 (treated as a fixed
 #' value, not estimated)
 #' @usage NULL
@@ -145,7 +133,6 @@ linlog <- function(dose, e0, delta, off = 1){
 }
 
 #' @rdname drmodels
-#' @inheritParams linlog
 #' @usage NULL
 #' @export 
 linlogGrad <- function(dose, off, ...){
@@ -153,7 +140,6 @@ linlogGrad <- function(dose, off, ...){
 }
 
 #' @rdname drmodels
-#' @inheritParams emax
 #' @param delta Exponential model: Parameter, controlling the convexity of the
 #' model.\cr Linear and linlog model: Slope parameter\cr Logistic model:
 #' Parameter controlling determining the steepness of the curve
@@ -164,7 +150,6 @@ logistic <- function(dose, e0, eMax, ed50, delta){
 }
 
 #' @rdname drmodels
-#' @inheritParams logistic
 #' @usage NULL
 #' @export 
 logisticGrad <- function(dose, eMax, ed50, delta, ...){
@@ -175,7 +160,6 @@ logisticGrad <- function(dose, eMax, ed50, delta, ...){
 }
 
 #' @rdname drmodels
-#' @inheritParams emax
 #' @param resp Response values at the nodes for the linInt model
 #' @param nodes Interpolation nodes for the linear interpolation for the linInt
 #' model (treated as a fixed value, not estimated)
@@ -188,7 +172,6 @@ linInt <- function(dose, resp, nodes){
 }
 
 #' @rdname drmodels
-#' @inheritParams linInt
 #' @usage NULL
 #' @export 
 linIntGrad <- function(dose, resp, nodes, ...){

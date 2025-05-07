@@ -201,7 +201,6 @@ Mods <- function(..., doses, placEff = 0, maxEff, direction = c("increasing", "d
 
 #' Extract mean response from set of dose-response models
 #'
-#' @inheritParams Mods
 #' @param fmodels An object of class Mods
 #'
 #' @rdname Mods
@@ -294,7 +293,6 @@ plotMods <- function(ModsObj, nPoints = 200, superpose = FALSE,
 
 #' Plot dose-response models
 #'
-#' @inheritParams plotMods
 #' @param Delta Delta: The target effect size use for the target dose (TD)
 #' (Delta should be > 0).
 #' @param x Object of class Mods with type Mods
@@ -485,8 +483,6 @@ TD <- function(object, Delta, TDtype = c("continuous", "discrete"),
 }
 
 #' #' Calculate effective dose for a dose-response model
-#'
-#' @inheritParams targdose
 #'
 #' @rdname targdose
 #' @export

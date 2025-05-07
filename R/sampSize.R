@@ -220,7 +220,6 @@ print.sampSize <- function(x, ...){
 
 #' Sample size calculations for multiple contrast tests
 #'
-#' @inheritParams sampSize
 #' @param ...  Arguments directly passed to the \code{\link{powMCT}} function in the \samp{sampSizeMCT} and \samp{powN}
 #'   function.
 #' @param power,sumFct power is a numeric defining the desired summary power to achieve (in \samp{sampSizeMCT}). sumFct
@@ -278,7 +277,6 @@ Use sampSize directly in case exact df are required.")
 
 #' Calculate target function for given sample size
 #'
-#' @inheritParams sampSize
 #' @param step Only needed for functions \samp{targN} and \samp{powN}. Stepsize for the sample size at which the target
 #'   function is calculated. The steps are calculated via \code{seq(lowerN,upperN,by=step)}.
 #' @param power,sumFct power is a numeric defining the desired summary power to achieve (in \samp{sampSizeMCT}).
@@ -324,8 +322,6 @@ targN <- function(upperN, lowerN, step, targFunc,
 }
 
 #' Calculate power for given sample size
-#'
-#' @inheritParams targN
 #'
 #' @rdname sampSize
 #' @export

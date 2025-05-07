@@ -421,7 +421,6 @@ print.summary.planMod <- function(x, digits = 3, len = 101,
 
 #' Plot to summarize dose-response and dose estimations
 #'
-#' @inheritParams plot.planMod
 #' @param x An object of class planMod
 #' @param type Type of plot to produce
 #' @param placAdj When \samp{type = "dose-response"}, this determines whether dose-response estimates are shown on

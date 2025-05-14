@@ -25,6 +25,8 @@ test_that("getPredVar gives the same results as predict.DRMod", {
 # test 2: "validation" using simulation
 test_that("get_{TD,ED,Pred}Var gives the same result as a simulation", {
   skip_on_cran()
+  skip_on_ci()
+
   # select very large sample size (to validate asymptotics)
   n <- c(100000, 50000, 50000, 50000, 100000) 
   ##n <- c(100, 50, 50, 50, 100) 

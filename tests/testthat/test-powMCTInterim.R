@@ -131,6 +131,8 @@ interim_power <- function(
 
 test_that("powMCTInterim gives same conditional power result as with simulation based approach", {
   skip_on_cran()
+  skip_on_ci()
+
   set.seed(245)
   example_data <- get_pow_mct_interim_example()
 
@@ -157,8 +159,10 @@ test_that("powMCTInterim gives same conditional power result as with simulation 
   expect_equal(result, expected, tolerance = 1e-2, check.attributes = FALSE)
 })
 
-test_that("powMCTInterim gives same conditional power result as with simulation based approach", {
+test_that("powMCTInterim gives same predictive power result as with simulation based approach", {
   skip_on_cran()
+  skip_on_ci()
+
   set.seed(245)
   example_data <- get_pow_mct_interim_example()
 

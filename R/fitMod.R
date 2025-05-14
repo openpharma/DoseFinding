@@ -381,8 +381,6 @@ coef.DRMod <- function(object, sep = FALSE, ...){
 
 #' Extract dose-response vcov matrix
 #'
-#' @inheritParams coef.DRMod
-#'
 #' @rdname fitMod
 #' @method vcov DRMod
 #' @export
@@ -451,7 +449,6 @@ vcov.DRMod <- function(object, ...){
 
 #'Make predictions from dose-response model
 #'
-#'@inheritParams coef.DRMod
 #'@param predType,newdata,doseSeq,se.fit predType determines whether predictions are returned for the full model
 #'  (including potential covariates), the ls-means (SAS type) or the effect curve (difference to placebo).
 #'
@@ -779,7 +776,6 @@ predict.DRMod <- function(object, predType = c("full-model", "ls-means", "effect
 
 #'Plot fitted dose-response model
 #'
-#'@inheritParams coef.DRMod
 #'@param CI,level,plotData,plotGrid,colMn,colFit Arguments for plot method: \samp{CI} determines whether confidence
 #'  intervals should be plotted. \samp{level} determines the level of the confidence intervals. \samp{plotData}
 #'  determines how the data are plotted: Either as means or as means with CI, raw data or none. In case of \samp{type =
@@ -797,8 +793,6 @@ plot.DRMod <- function(x, CI = FALSE, level = 0.95,
 
 
 #' Extract log-likelihood of dose-response model
-#'
-#' @inheritParams coef.DRMod
 #'
 #' @rdname fitMod
 #' @method logLik DRMod
@@ -822,7 +816,6 @@ logLik.DRMod <- function(object, ...){
 
 #' Extract AIC of dose-response model
 #'
-#' @inheritParams coef.DRMod
 #' @param k Penalty to use for model-selection criterion (AIC uses 2, BIC uses log(n)).
 #'
 #' @rdname fitMod
@@ -838,8 +831,6 @@ AIC.DRMod <- function(object, ..., k = 2){
 
 
 #' Extract gAIC of dose-response model
-#'
-#' @inheritParams AIC.DRMod
 #'
 #' @rdname fitMod
 #' @method gAIC DRMod

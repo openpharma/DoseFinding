@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# DoseFinding
+# DoseFinding <a href="https://openpharma.github.io/DoseFinding/"><img src="man/figures/logo.png" align="right" height="139" alt="DoseFinding website" /></a>
 
 <!-- badges: start -->
 

@@ -98,7 +98,7 @@ of other different functions.</p>
 
 <dl><dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>In function Mods:<br> Dose-response model names with parameter values specifying the guesstimates for the
-\(\theta_2\) parameters. See <code><a href="drmodels.html">drmodels</a></code> for a complete list of dose-response models
+\(\theta_2\) parameters. See <code><a href="drmodels.html">drmodels()</a></code> for a complete list of dose-response models
 implemented. See below for an example specification.<br><br> In function plot.Mods:<br> Additional arguments to the
 <samp>xyplot</samp> call.</p></dd>
 
@@ -177,19 +177,19 @@ be plotted. <samp>Delta</samp> is the target effect to estimate for the TD.</p><
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>Returns an object of class <samp>"Mods"</samp>. The object contains the specified model parameter values and the
-  derived linear parameters (based on <samp>"placEff"</samp> and <samp>"maxEff"</samp>) in a list.</p>
+derived linear parameters (based on <samp>"placEff"</samp> and <samp>"maxEff"</samp>) in a list.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The dose-response models used in this package (see <code><a href="drmodels.html">drmodels</a></code> for details) are of form</p>
+    <p>The dose-response models used in this package (see <code><a href="drmodels.html">drmodels()</a></code> for details) are of form</p>
 <p>$$f(d) = \theta_0+\theta_1 f^0(d,\theta_2)$$</p>
 <p>where the parameter \(\theta_2\) is the only non-linear parameter and can be one- or two-dimensional,
 depending on the used model.</p>
 <p>One needs to hand over the effect at placebo and the maximum effect in the dose range, from which
 \(\theta_0,\theta_1\) are then back-calculated, the output object is of class <samp>"Mods"</samp>. This
 object can form the input for other functions to extract the mean response (<samp>getResp</samp>) or target doses
-(<code><a href="targdose.html">TD</a></code> and <code><a href="targdose.html">ED</a></code>) corresponding to the models. It is also needed as input to the functions
-<code><a href="powMCT.html">powMCT</a></code>, <code><a href="optDesign.html">optDesign</a></code></p>
+(<code><a href="targdose.html">TD()</a></code> and <code><a href="targdose.html">ED()</a></code>) corresponding to the models. It is also needed as input to the functions
+<code><a href="powMCT.html">powMCT()</a></code>, <code><a href="optDesign.html">optDesign()</a></code></p>
 <p>Some models, for example the beta model (<samp>scal</samp>) and the linlog model (<samp>off</samp>) have parameters that are not
 estimated from the data, they need to be specified via the <samp>addArgs</samp> argument.</p>
 <p>The default plot method for <samp>Mods</samp> objects is based on a plot using the <samp>lattice</samp> package for backward
@@ -201,12 +201,12 @@ variable it needs to specified here, either by using <samp>direction =
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>Pinheiro, J. C., Bornkamp, B., and Bretz, F. (2006). Design and analysis of dose finding studies
-  combining multiple comparisons and modeling procedures, <em>Journal of Biopharmaceutical Statistics</em>, <b>16</b>,
-  639–656</p>
+combining multiple comparisons and modeling procedures, <em>Journal of Biopharmaceutical Statistics</em>, <strong>16</strong>,
+639–656</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code>Mods</code>, <code><a href="drmodels.html">drmodels</a></code>, <code><a href="optDesign.html">optDesign</a></code>, <code><a href="powMCT.html">powMCT</a></code></p></div>
+    <div class="dont-index"><p><code>Mods()</code>, <code><a href="drmodels.html">drmodels()</a></code>, <code><a href="optDesign.html">optDesign()</a></code>, <code><a href="powMCT.html">powMCT()</a></code></p></div>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>

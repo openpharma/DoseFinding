@@ -35,11 +35,11 @@ d^2\), with \(\delta=\beta_2/\beta_1\).
 Linear Interpolation model The linInt model provides linear
 interpolation at the values defined by the nodes vector. In virtually all
 situations the nodes vector is equal to the doses used in the analysis. For
-example the Mods and the fitMod function
+example the Mods() and the fitMod() function
 automatically use the doses that are used in the context of the function
-call as nodes. The guesstimates specified in the Mods function
+call as nodes. The guesstimates specified in the Mods() function
 need to be the treatment effects at the active doses standardized to the
-interval [0,1] (see the examples in the Mods function)."><meta property="og:description" content="Dose-response model functions and gradients.
+interval [0,1] (see the examples in the Mods() function)."><meta property="og:description" content="Dose-response model functions and gradients.
 Below are the definitions of the model functions:
 Emax model $$$$$$
 f(d,\theta)=E_0+E_{max}\frac{d}{ED_{50}+d}$$
@@ -69,11 +69,11 @@ d^2\), with \(\delta=\beta_2/\beta_1\).
 Linear Interpolation model The linInt model provides linear
 interpolation at the values defined by the nodes vector. In virtually all
 situations the nodes vector is equal to the doses used in the analysis. For
-example the Mods and the fitMod function
+example the Mods() and the fitMod() function
 automatically use the doses that are used in the context of the function
-call as nodes. The guesstimates specified in the Mods function
+call as nodes. The guesstimates specified in the Mods() function
 need to be the treatment effects at the active doses standardized to the
-interval [0,1] (see the examples in the Mods function)."><meta property="og:image" content="https://openpharma.github.io/DoseFinding/logo.png"></head><body>
+interval [0,1] (see the examples in the Mods() function)."><meta property="og:image" content="https://openpharma.github.io/DoseFinding/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -118,39 +118,39 @@ interval [0,1] (see the examples in the Mods function)."><meta property="og:imag
     <div class="ref-description section level2">
     <p>Dose-response model functions and gradients.</p>
 <p>Below are the definitions of the model functions:</p>
-<p><b>Emax model</b> $$$$$$
+<p><strong>Emax model</strong> $$$$$$
 f(d,\theta)=E_0+E_{max}\frac{d}{ED_{50}+d}$$</p>
-<p><b>Sigmoid Emax Model</b> $$$$$$
+<p><strong>Sigmoid Emax Model</strong> $$$$$$
 f(d,\theta)=E_0+E_{max}\frac{d^h}{ED^h_{50}+d^h}$$</p>
-<p><b>Exponential Model</b> $$$$$$
+<p><strong>Exponential Model</strong> $$$$$$
 f(d,\theta)=E_0+E_1(\exp(d/\delta)-1)$$</p>
-<p><b>Beta model</b> $$$$$$
+<p><strong>Beta model</strong> $$$$$$
 f(d,\theta)=E_0+E_{max}B(\delta_1,\delta_2)(d/scal)^{\delta_1}(1-d/scal)^{\delta_2}
 $$
 $$$$ here
 $$B(\delta_1,\delta_2)=(\delta_1+\delta_2)^{\delta_1+\delta_2}/(\delta_1^{\delta_1}
 $$$$
 \delta_2^{\delta_2})$$ and \(scal\) is a fixed dose scaling parameter.</p>
-<p><b>Linear Model</b> $$$$$$
+<p><strong>Linear Model</strong> $$$$$$
 f(d,\theta)=E_0+\delta d$$</p>
-<p><b>Linear in log Model</b> $$$$$$
+<p><strong>Linear in log Model</strong> $$$$$$
 f(d,\theta)=E_0+\delta \log(d + off)$$
 here \(off\) is a fixed offset parameter.</p>
-<p><b>Logistic Model</b> $$
+<p><strong>Logistic Model</strong> $$
 f(d, \theta) = E_0 + E_{\max}/\left\{1 + \exp\left[ \left(ED_{50} - d
 \right)/\delta \right] \right\}$$</p>
-<p><b>Quadratic Model</b> $$$$$$
+<p><strong>Quadratic Model</strong> $$$$$$
 f(d,\theta)=E_0+\beta_1d+\beta_2d^2$$ The
 standardized model equation for the quadratic model is \(d+\delta
 d^2\), with \(\delta=\beta_2/\beta_1\).</p>
-<p><b>Linear Interpolation model</b><br> The linInt model provides linear
+<p><strong>Linear Interpolation model</strong><br> The linInt model provides linear
 interpolation at the values defined by the nodes vector. In virtually all
 situations the nodes vector is equal to the doses used in the analysis. For
-example the <code><a href="Mods.html">Mods</a></code> and the <code><a href="fitMod.html">fitMod</a></code> function
+example the <code><a href="Mods.html">Mods()</a></code> and the <code><a href="fitMod.html">fitMod()</a></code> function
 automatically use the doses that are used in the context of the function
-call as nodes. The guesstimates specified in the <code><a href="Mods.html">Mods</a></code> function
+call as nodes. The guesstimates specified in the <code><a href="Mods.html">Mods()</a></code> function
 need to be the treatment effects at the active doses standardized to the
-interval [0,1] (see the examples in the <code><a href="Mods.html">Mods</a></code> function).</p>
+interval [0,1] (see the examples in the <code><a href="Mods.html">Mods()</a></code> function).</p>
     </div>
 
     <div class="section level2">
@@ -268,19 +268,19 @@ evaluations.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The <b>Emax model</b> is used to represent monotone, concave dose-response
+    <p>The <strong>Emax model</strong> is used to represent monotone, concave dose-response
 shapes.  To distinguish it from the more general sigmoid emax model it is
 sometimes also called hyperbolic emax model.</p>
-<p>The <b>sigmoid Emax</b> model is an extension of the (hyperbolic) Emax model
+<p>The <strong>sigmoid Emax</strong> model is an extension of the (hyperbolic) Emax model
 by introducing an additional parameter h, that determines the steepness of
 the curve at the ed50 value. The sigmoid Emax model describes monotonic,
 sigmoid dose-response relationships. In the toxicology literature this model
 is also called four-parameter log-logistic (4pLL) model.</p>
-<p>The <b>quadratic</b> model is intended to capture a possible non-monotonic
+<p>The <strong>quadratic</strong> model is intended to capture a possible non-monotonic
 dose-response relationship.</p>
-<p>The <b>exponential model</b> is intended to capture a possible sub-linear or
+<p>The <strong>exponential model</strong> is intended to capture a possible sub-linear or
 a convex dose-response relationship.</p>
-<p>The <b>beta model</b> is intended to capture non-monotone dose-response
+<p>The <strong>beta model</strong> is intended to capture non-monotone dose-response
 relationships and is more flexible than the quadratic model.  The kernel of
 the beta model function consists of the kernel of the density function of a
 beta distribution on the interval [0,scal]. The parameter scal is not
@@ -289,17 +289,17 @@ can be set in most functions (<samp>fitMod</samp>, <samp>Mods</samp>) via the
 <samp>addArgs</samp> argument, when omitted a value of <samp>1.2*(maximum dose)</samp>
 is used as default, where the maximum dose is inferred from other input to
 the respective function.</p>
-<p>The <b>linear in log-dose</b> model is intended to capture concave shapes.
+<p>The <strong>linear in log-dose</strong> model is intended to capture concave shapes.
 The parameter <code>off</code> is not estimated in the code but set to a
 pre-specified value. It can be set in most functions (<samp>fitMod</samp>,
 <samp>Mods</samp>) via the <samp>addArgs</samp> argument, when omitted a value of
 <samp>0.01*(maximum dose)</samp> is used as default, where the maximum dose is
 inferred from other input to the respective function.</p>
-<p>The <b>logistic model</b> is intended to capture general monotone, sigmoid
+<p>The <strong>logistic model</strong> is intended to capture general monotone, sigmoid
 dose-response relationships. The logistic model and the sigmoid Emax model
 are closely related: The sigmoid Emax model is a logistic model in
 log(dose).</p>
-<p>The <b>linInt model</b> provids linear interpolation of the means at the
+<p>The <strong>linInt model</strong> provids linear interpolation of the means at the
 doses. This can be used as a "nonparametric" estimate of the dose-response
 curve, but is probably most interesting for specifying a "nonparametric"
 truth during planning and assess how well parametric models work under a
@@ -317,7 +317,7 @@ in Drug Development</em>, Springer, New York, pp. 146–171</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="fitMod.html">fitMod</a></code></p></div>
+    <div class="dont-index"><p><code><a href="fitMod.html">fitMod()</a></code></p></div>
     </div>
 
     <div class="section level2">

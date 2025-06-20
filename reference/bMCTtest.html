@@ -7,9 +7,9 @@
   };
 </script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Performs Bayesian multiple contrast test — bMCTtest"><meta name="description" content="This function performs a Bayesian multiple contrast test using normal mixture priors for the response on each dose,
 as proposed in Fleischer et al. (2022). For a general description of the multiple contrast test see
-MCTtest."><meta property="og:description" content="This function performs a Bayesian multiple contrast test using normal mixture priors for the response on each dose,
+MCTtest()."><meta property="og:description" content="This function performs a Bayesian multiple contrast test using normal mixture priors for the response on each dose,
 as proposed in Fleischer et al. (2022). For a general description of the multiple contrast test see
-MCTtest."><meta property="og:image" content="https://openpharma.github.io/DoseFinding/logo.png"></head><body>
+MCTtest()."><meta property="og:image" content="https://openpharma.github.io/DoseFinding/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -54,7 +54,7 @@ MCTtest."><meta property="og:image" content="https://openpharma.github.io/DoseFi
     <div class="ref-description section level2">
     <p>This function performs a Bayesian multiple contrast test using normal mixture priors for the response on each dose,
 as proposed in Fleischer et al. (2022). For a general description of the multiple contrast test see
-<code><a href="MCTtest.html">MCTtest</a></code>.</p>
+<code><a href="MCTtest.html">MCTtest()</a></code>.</p>
     </div>
 
     <div class="section level2">
@@ -90,7 +90,7 @@ assumed that <samp>dose</samp> and <samp>resp</samp> are variables referenced fr
 
 
 <dt id="arg-models">models<a class="anchor" aria-label="anchor" href="#arg-models"></a></dt>
-<dd><p>An object of class <samp>Mods</samp>, see <code><a href="Mods.html">Mods</a></code> for details</p></dd>
+<dd><p>An object of class <samp>Mods</samp>, see <code><a href="Mods.html">Mods()</a></code> for details</p></dd>
 
 
 <dt id="arg-s">S<a class="anchor" aria-label="anchor" href="#arg-s"></a></dt>
@@ -100,7 +100,7 @@ assumed that <samp>dose</samp> and <samp>resp</samp> are variables referenced fr
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
 <dd><p>Determines whether inference is based on an ANCOVA model under a homoscedastic normality assumption (when
 <samp>type = "normal"</samp>), or estimates at the doses and their covariance matrix and degrees of freedom are specified
-directly in <samp>resp</samp>, <samp>S</samp> and <samp>df</samp>. See also <code><a href="fitMod.html">fitMod</a></code> and Pinheiro et al. (2014).</p></dd>
+directly in <samp>resp</samp>, <samp>S</samp> and <samp>df</samp>. See also <code><a href="fitMod.html">fitMod()</a></code> and Pinheiro et al. (2014).</p></dd>
 
 
 <dt id="arg-prior">prior<a class="anchor" aria-label="anchor" href="#arg-prior"></a></dt>
@@ -124,13 +124,13 @@ posterior mixture is part of the result object under "posterior".</p></dd>
 
 <dt id="arg-mvtcontrol">mvtcontrol<a class="anchor" aria-label="anchor" href="#arg-mvtcontrol"></a></dt>
 <dd><p>A list specifying additional control parameters for the <samp>qmvt</samp> and <samp>pmvt</samp> calls in the
-code, see also <code><a href="mvtnorm-control.html">mvtnorm.control</a></code> for details.</p></dd>
+code, see also <code><a href="mvtnorm-control.html">mvtnorm.control()</a></code> for details.</p></dd>
 
 
 <dt id="arg-contmat">contMat<a class="anchor" aria-label="anchor" href="#arg-contmat"></a></dt>
 <dd><p>Contrast matrix to apply to the posterior dose-response estimates. The contrasts need to be in the
 columns of the matrix (i.e. the column sums need to be 0). If not specified optimal contrasts are calculated using
-<code><a href="optContr.html">optContr</a></code>.</p></dd>
+<code><a href="optContr.html">optContr()</a></code>.</p></dd>
 
 
 <dt id="arg-critv">critV<a class="anchor" aria-label="anchor" href="#arg-critv"></a></dt>
@@ -155,21 +155,21 @@ zero. Thresholds for the posterior probability can either be supplied or will be
 values. In the latter case the Bayesian test will give approximately the same results as the frequentist multiple
 contrast test if uninformative priors are used.</p>
 <p>For the default calculation of optimal contrasts the prior information is ignored (i.e. contrasts are calculated in
-the same way as in <code><a href="MCTtest.html">MCTtest</a></code>).  Fleischer et al. (2022) discuss using contrasts that take the prior
+the same way as in <code><a href="MCTtest.html">MCTtest()</a></code>).  Fleischer et al. (2022) discuss using contrasts that take the prior
 effective sample sizes into account, which can be slightly more favourable for the Bayesian MCT test. Such
 alternative contrasts can be directly handed over via the <samp>contMat</samp> argument.</p>
 <p>For analysis with covariate adjustment, covariate-adjusted <samp>resp</samp> and <samp>S</samp> can be supplied together with
-using <samp>type = "general"</samp>. See  `vignette("binary_data")` vignette "Design and analysis template MCP-Mod for binary data" for an example
+using <samp>type = "general"</samp>. See  <code><a href="../articles/binary_data.html">vignette("binary_data")</a></code> vignette "Design and analysis template MCP-Mod for binary data" for an example
 on how to obtain covariate adjusted estimates.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>Fleischer, F., Bossert, S., Deng, Q., Loley, C. and Gierse, J. (2022).  Bayesian MCP-Mod,
-  <em>Pharmaceutical Statistics</em>, <b>21</b>, 654–670</p>
+<em>Pharmaceutical Statistics</em>, <strong>21</strong>, 654–670</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="MCTtest.html">MCTtest</a></code>, <code><a href="optContr.html">optContr</a></code></p></div>
+    <div class="dont-index"><p><code><a href="MCTtest.html">MCTtest()</a></code>, <code><a href="optContr.html">optContr()</a></code></p></div>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>

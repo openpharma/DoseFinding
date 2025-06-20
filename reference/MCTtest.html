@@ -232,10 +232,10 @@ For type = "general" it is assumed multivariate normally
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Multiple Contrast Test:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          t-Stat   adj-p</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax      3.178 0.00187</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> logistic  3.164 0.00210</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> linear    2.640 0.01035</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> linInt    2.247 0.02764</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax      3.178 0.00213</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> logistic  3.164 0.00227</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> linear    2.640 0.00990</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> linInt    2.247 0.02756</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## example using general approach (fitted on placebo-adjusted scale)</span></span></span>
 <span class="r-in"><span><span class="va">ancMod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">resp</span><span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">dose</span><span class="op">)</span><span class="op">+</span><span class="va">gender</span>, data<span class="op">=</span><span class="va">IBScovars</span><span class="op">)</span></span></span>
@@ -263,9 +263,9 @@ For type = "general" it is assumed multivariate normally
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Multiple Contrast Test:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          t-Stat   adj-p</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> emax      3.178 0.00187</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> emax      3.178 0.00182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> logistic  3.164 0.00203</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> linear    2.640 0.00988</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> linear    2.640 0.00965</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> linInt    2.247 0.02681</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## example with general alternatives handed over</span></span></span>

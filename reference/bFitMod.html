@@ -261,30 +261,30 @@ For type = "bootstrap", a multivariate normal distribution for
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Summary of posterior draws</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       mean  sdev   2.5%   25%   50%   75% 97.5% n.eff</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> e0   0.347 0.139 0.0476 0.266 0.355 0.446 0.588   184</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> eMax 0.893 0.342 0.3428 0.652 0.856 1.074 1.742   156</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ed50 0.378 0.335 0.0218 0.115 0.266 0.557 1.216   133</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> e0   0.371 0.138 0.0932 0.275 0.373 0.470 0.626   269</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> eMax 0.864 0.333 0.2923 0.647 0.815 1.057 1.588   157</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ed50 0.407 0.343 0.0241 0.123 0.308 0.611 1.262   172</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Fitted to:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       0    0.05     0.2     0.6       1 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 0.34491 0.45675 0.81032 0.93444 0.94871 </span>
 <span class="r-in"><span>  <span class="co">## samples are stored in</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gsample</span><span class="op">$</span><span class="va">samples</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               e0      eMax        ed50</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]  0.15284581 0.9570781 0.042075268</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]  0.03231835 0.8573154 0.044708444</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]  0.05388497 0.9142132 0.024812400</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4,] -0.05152308 0.8731606 0.008853658</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [5,]  0.06155071 0.8297683 0.073817334</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [6,]  0.22650197 0.9404226 0.217721379</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             e0      eMax       ed50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 0.2285613 0.6680033 0.03873810</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 0.3556436 0.5905146 0.21497721</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,] 0.3281728 0.4185104 0.09686954</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4,] 0.5147517 0.5065391 0.26245196</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [5,] 0.5357584 0.3991353 0.34698651</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [6,] 0.5983099 0.4332852 0.22866849</span>
 <span class="r-in"><span>  <span class="co">## predict 0.025, 0.25, 0.5, 0.75, 0.975 Quantile at 0, 0.5 and 1</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">gsample</span>, doseSeq <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               0       0.5        1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 0.04759272 0.7076645 0.769421</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 0.26585613 0.8132222 0.904595</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3,] 0.35469505 0.8794331 0.992379</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4,] 0.44627453 0.9414073 1.083946</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [5,] 0.58765331 1.0659162 1.241633</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               0       0.5         1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 0.09315894 0.6989780 0.7596054</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 0.27503601 0.8082407 0.9003632</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,] 0.37335209 0.8722832 0.9825789</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4,] 0.47044910 0.9334431 1.0687566</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [5,] 0.62629836 1.0591235 1.2376306</span>
 <span class="r-in"><span>  <span class="co">## simple plot function</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gsample</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="bFitMod-1.png" alt="" width="700" height="433"></span>
@@ -319,26 +319,23 @@ For type = "bootstrap", a multivariate normal distribution for
 <span class="r-in"><span>                     nSim <span class="op">=</span> <span class="fl">100</span>, prior <span class="op">=</span> <span class="va">prior</span>, bnds <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.01</span>,<span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="co">## calculate target dose estimate</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="targdose.html">TD</a></span><span class="op">(</span><span class="va">gsample</span>, Delta <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 5.483246e-01           NA 2.082177e-02           NA 1.012294e+00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [6] 7.170960e+00 9.170305e-02 1.164439e+00 4.473308e-01 8.647422e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [11] 8.524866e-01 3.265359e-01 6.115726e-03 6.464406e-01 1.168766e+00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [16] 8.012687e-02 4.644101e-02 2.918858e-01 1.980985e-02 8.306477e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [21] 3.249893e+00 5.186899e-02 6.817803e+02           NA 3.955707e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [26] 1.173023e-02 1.762746e-02 1.609045e+00 3.311992e-01 1.252110e+00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [31] 1.046662e-02 3.420285e-02 3.278316e-01 7.190523e-01 1.830558e+00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [36] 4.315960e-01 6.644240e-01 4.524656e-01 2.626864e+00 9.839347e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [41] 8.395836e-01 8.418548e-01 9.022919e-01 3.124601e-01 4.169349e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [46] 1.878729e-02 1.573643e-01 2.584459e-01 1.086026e+00 2.016593e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [51] 1.142066e-01 1.245746e-02 5.157838e-02           NA 1.162715e+00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [56] 6.292261e-01 2.938004e-01 4.014124e-01 8.601197e+00 1.414026e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [61] 4.714891e-02           NA 2.442323e+00           NA 1.013448e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [66] 1.678585e-01 1.624529e-02 9.736559e-01 9.079957e-01 2.013135e+00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [71] 5.200823e-01 3.835070e-01 2.728112e-02 6.631502e-01 2.449805e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [76] 1.046263e+00 3.623976e-01 1.311963e+00 1.315941e+00           NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [81] 6.498328e-02 7.201673e+00 1.084076e-02 7.791422e-01 2.891102e+01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [86] 2.429044e+00 6.605563e-01 3.567867e-01 1.220284e-02 1.625772e+00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [91] 4.291899e-01 6.428695e-03 8.695904e-01 6.967239e-01 1.238257e+00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [96] 2.416458e-01 3.849889e-01 8.106360e-01 1.399761e+00 1.162878e+00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 0.328484679 0.021359123 1.100133333          NA 0.488505236 0.307754046</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [7] 0.633737653 0.232463613 0.007004876 0.326581628 0.010923631 3.777847585</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [13] 0.008681314 0.923299138 0.496244794 0.020377425 0.981195000 0.906321593</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [19] 0.897700910 1.134684881 0.040656828 1.796020526 0.385860070 0.007959519</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [25] 2.982013818 0.670871832 0.415647030 0.166747195 0.010979531          NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [31] 0.846949944 0.010298088 0.015255131 1.039726850 0.770168362 0.039217410</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [37] 0.043668547 2.186565977          NA 0.353336531 0.223994146 0.020984293</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [43] 0.350208918 0.012829304 2.724866852 0.006441993 0.260906993 0.025312635</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [49] 0.213119246 1.022828579 0.313769267 0.082124574 0.532987332 0.581898481</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [55] 2.131150244 1.255991534 1.284198185 0.598099581 0.564644464 0.014088899</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [61] 1.008487835          NA 0.677538538 0.023163561 0.946908952 1.754442525</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [67] 0.723084674 0.933466938 0.012367718 0.226667254 1.780935413 0.689908416</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [73] 1.760939465 0.012383204          NA 0.437408095 0.055769611          NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [79]          NA 0.024661051 0.388383728          NA 0.732919397 0.404642512</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [85] 0.359144120 0.348400198 0.421696183 8.634140945 0.402564631 0.967146474</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [91] 0.924591264 0.478732434 0.014010219 0.208402911 0.006788798 0.395789511</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [97] 0.009400354 0.015219517 0.015145893 1.078904099</span>
 <span class="r-in"><span>  <span class="co">## now fit linear interpolation</span></span></span>
 <span class="r-in"><span>  <span class="va">prior</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>norm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1000</span><span class="op">)</span>, norm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1000</span><span class="op">)</span>, norm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1000</span><span class="op">)</span>, norm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">100</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">gsample</span> <span class="op">&lt;-</span> <span class="fu">bFitMod</span><span class="op">(</span><span class="va">dose</span>, <span class="va">drFit</span>, <span class="va">vCov</span>, model <span class="op">=</span> <span class="st">"linInt"</span>, placAdj<span class="op">=</span><span class="cn">TRUE</span>,</span></span>

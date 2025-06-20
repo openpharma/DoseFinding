@@ -107,7 +107,7 @@ estimates.</p></dd>
 <dd><p>Logical, if true, it is assumed that the standard deviation
 or variance matrix of the placebo-adjusted estimates are specified in
 <samp>sigma</samp> or <samp>S</samp>, respectively. The contrast matrix has to be
-produced on placebo-adjusted scale, see <code><a href="optContr.html">optContr</a></code>, so that the
+produced on placebo-adjusted scale, see <code><a href="optContr.html">optContr()</a></code>, so that the
 coefficients are no longer contrasts (i.e. do not sum to 0).</p></dd>
 
 
@@ -141,13 +141,13 @@ be calculated. Otherwise one can directly specify the critical value here.</p></
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>Pinheiro, J. C., Bornkamp, B., and Bretz, F. (2006). Design and
 analysis of dose finding studies combining multiple comparisons and modeling
-procedures, <em>Journal of Biopharmaceutical Statistics</em>, <b>16</b>,
+procedures, <em>Journal of Biopharmaceutical Statistics</em>, <strong>16</strong>,
 639–656</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="sampSize.html">powN</a></code>, <code><a href="sampSize.html">sampSizeMCT</a></code>,
-<code><a href="MCTtest.html">MCTtest</a></code>, <code><a href="optContr.html">optContr</a></code>, <code><a href="Mods.html">Mods</a></code></p></div>
+    <div class="dont-index"><p><code><a href="sampSize.html">powN()</a></code>, <code><a href="sampSize.html">sampSizeMCT()</a></code>,
+<code><a href="MCTtest.html">MCTtest()</a></code>, <code><a href="optContr.html">optContr()</a></code>, <code><a href="Mods.html">Mods()</a></code></p></div>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
@@ -173,7 +173,7 @@ procedures, <em>Journal of Biopharmaceutical Statistics</em>, <b>16</b>,
 <span class="r-in"><span><span class="va">contMat</span> <span class="op">&lt;-</span> <span class="fu"><a href="optContr.html">optContr</a></span><span class="op">(</span><span class="va">fmodels</span>, w <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">powMCT</span><span class="op">(</span><span class="va">contMat</span>, altModels <span class="op">=</span> <span class="va">fmodels</span>, n <span class="op">=</span> <span class="fl">50</span>, alpha <span class="op">=</span> <span class="fl">0.05</span>, sigma <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      linear        emax    logistic exponential    betaMod1    betaMod2 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.7015660   0.6849209   0.8519343   0.6711498   0.7338515   0.6775027 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.7011557   0.6838571   0.8510906   0.6706257   0.7332189   0.6768705 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="co">## power under the Dunnett test</span></span></span>

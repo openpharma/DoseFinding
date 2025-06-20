@@ -7,10 +7,10 @@
   };
 </script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Calculate multiplicity adjusted p-values for multiple contrast test — MCTpval"><meta name="description" content="Calculate multiplicity adjusted p-values for a maximum contrast test corresponding to a set of contrasts and given a
 set of observed test statistics. This function is exported as it may be a useful building block and used in more
-complex testing situations that are not covered by MCTtest. Most users probably don't need to use this
+complex testing situations that are not covered by MCTtest(). Most users probably don't need to use this
 function."><meta property="og:description" content="Calculate multiplicity adjusted p-values for a maximum contrast test corresponding to a set of contrasts and given a
 set of observed test statistics. This function is exported as it may be a useful building block and used in more
-complex testing situations that are not covered by MCTtest. Most users probably don't need to use this
+complex testing situations that are not covered by MCTtest(). Most users probably don't need to use this
 function."><meta property="og:image" content="https://openpharma.github.io/DoseFinding/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
@@ -56,7 +56,7 @@ function."><meta property="og:image" content="https://openpharma.github.io/DoseF
     <div class="ref-description section level2">
     <p>Calculate multiplicity adjusted p-values for a maximum contrast test corresponding to a set of contrasts and given a
 set of observed test statistics. This function is exported as it may be a useful building block and used in more
-complex testing situations that are not covered by <code><a href="MCTtest.html">MCTtest</a></code>. Most users probably don't need to use this
+complex testing situations that are not covered by <code><a href="MCTtest.html">MCTtest()</a></code>. Most users probably don't need to use this
 function.</p>
     </div>
 
@@ -98,7 +98,7 @@ function.</p>
 
 <dt id="arg-control">control<a class="anchor" aria-label="anchor" href="#arg-control"></a></dt>
 <dd><p>A list specifying additional control parameters for the <samp>qmvt</samp> and <samp>pmvt</samp> calls in the code,
-see also <code><a href="mvtnorm-control.html">mvtnorm.control</a></code> for details.</p></dd>
+see also <code><a href="mvtnorm-control.html">mvtnorm.control()</a></code> for details.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -108,12 +108,12 @@ see also <code><a href="mvtnorm-control.html">mvtnorm.control</a></code> for det
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>Pinheiro, J. C., Bornkamp, B., and Bretz, F. (2006). Design and analysis of dose finding studies
-  combining multiple comparisons and modeling procedures, <em>Journal of Biopharmaceutical Statistics</em>, <b>16</b>,
-  639–656</p>
+combining multiple comparisons and modeling procedures, <em>Journal of Biopharmaceutical Statistics</em>, <strong>16</strong>,
+639–656</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="MCTtest.html">MCTtest</a></code>, <code><a href="optContr.html">optContr</a></code></p></div>
+    <div class="dont-index"><p><code><a href="MCTtest.html">MCTtest()</a></code>, <code><a href="optContr.html">optContr()</a></code></p></div>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
@@ -137,11 +137,11 @@ see also <code><a href="mvtnorm-control.html">mvtnorm.control</a></code> for det
 <span class="r-in"><span><span class="va">tStat</span> <span class="op">&lt;-</span> <span class="va">ct</span><span class="op">/</span><span class="va">den</span></span></span>
 <span class="r-in"><span><span class="va">corMat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cov2cor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">contMat</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">vc</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">contMat</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">MCTpval</span><span class="op">(</span><span class="va">contMat</span>, <span class="va">corMat</span>, df<span class="op">=</span><span class="fl">100</span><span class="op">-</span><span class="fl">5</span>, <span class="va">tStat</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.001250101 0.004534531 0.007129837 0.001111040</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.001566885 0.004235790 0.007480728 0.001206962</span>
 <span class="r-in"><span><span class="co">## compare to</span></span></span>
 <span class="r-in"><span><span class="va">test</span> <span class="op">&lt;-</span> <span class="fu"><a href="MCTtest.html">MCTtest</a></span><span class="op">(</span><span class="va">dose</span>, <span class="va">resp</span>, <span class="va">biom</span>, models<span class="op">=</span><span class="va">modlist</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">test</span><span class="op">$</span><span class="va">tStat</span>, <span class="st">"pVal"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.001434951 0.004199712 0.007229986 0.001094310</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.001572649 0.004888976 0.007579961 0.001275986</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

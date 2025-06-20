@@ -6,8 +6,8 @@
     }
   };
 </script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Fit non-linear dose-response model — fitMod"><meta name="description" content='Fits a dose-response model. Built-in dose-response models are "linlog", "linear", "quadratic", "emax", "exponential",
-"sigEmax", "betaMod" and "logistic" (see drmodels).'><meta property="og:description" content='Fits a dose-response model. Built-in dose-response models are "linlog", "linear", "quadratic", "emax", "exponential",
-"sigEmax", "betaMod" and "logistic" (see drmodels).'><meta property="og:image" content="https://openpharma.github.io/DoseFinding/logo.png"></head><body>
+"sigEmax", "betaMod" and "logistic" (see drmodels()).'><meta property="og:description" content='Fits a dose-response model. Built-in dose-response models are "linlog", "linear", "quadratic", "emax", "exponential",
+"sigEmax", "betaMod" and "logistic" (see drmodels()).'><meta property="og:image" content="https://openpharma.github.io/DoseFinding/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -51,7 +51,7 @@
 
     <div class="ref-description section level2">
     <p>Fits a dose-response model. Built-in dose-response models are "linlog", "linear", "quadratic", "emax", "exponential",
-"sigEmax", "betaMod" and "logistic" (see <code><a href="drmodels.html">drmodels</a></code>).</p>
+"sigEmax", "betaMod" and "logistic" (see <code><a href="drmodels.html">drmodels()</a></code>).</p>
     </div>
 
     <div class="section level2">
@@ -149,15 +149,15 @@ directly in <samp>resp</samp>, <samp>S</samp> and <samp>df</samp>. See also the 
 <dt id="arg-placadj">placAdj<a class="anchor" aria-label="anchor" href="#arg-placadj"></a></dt>
 <dd><p>Logical, if true, it is assumed that placebo-adjusted
 estimates are specified in <samp>resp</samp> (only possible for <samp>type =
-"general"</samp>).</p></dd>
+  "general"</samp>).</p></dd>
 
 
 <dt id="arg-bnds">bnds<a class="anchor" aria-label="anchor" href="#arg-bnds"></a></dt>
-<dd><p>Bounds for non-linear parameters. If missing the the default bounds from <code><a href="defBnds.html">defBnds</a></code> is used.</p>
+<dd><p>Bounds for non-linear parameters. If missing the the default bounds from <code><a href="defBnds.html">defBnds()</a></code> is used.</p>
 <p>When the dose-response model has only one non-linear parameter (for example Emax or exponential model), <samp>bnds</samp>
-  needs to be a vector containing upper and lower bound. For models with two non-linear parameters <samp>bnds</samp> needs
-  to be a matrix containing the bounds in the rows, see the Description section of <code><a href="defBnds.html">defBnds</a></code> for details
-  on the formatting of the bounds for the individual models.</p></dd>
+needs to be a vector containing upper and lower bound. For models with two non-linear parameters <samp>bnds</samp> needs
+to be a matrix containing the bounds in the rows, see the Description section of <code><a href="defBnds.html">defBnds()</a></code> for details
+on the formatting of the bounds for the individual models.</p></dd>
 
 
 <dt id="arg-df">df<a class="anchor" aria-label="anchor" href="#arg-df"></a></dt>
@@ -178,11 +178,11 @@ a grid optimization is performed and the best value is used as starting value fo
 <dt id="arg-control">control<a class="anchor" aria-label="anchor" href="#arg-control"></a></dt>
 <dd><p>A list with entries: "nlminbcontrol", "optimizetol" and "gridSize".</p>
 <p>The entry nlminbcontrol needs to be a list and it is passed directly to control argument in the nlminb function,
-  that is used internally for models with 2 nonlinear parameters.</p>
+that is used internally for models with 2 nonlinear parameters.</p>
 <p>The entry optimizetol is passed directly to the tol argument of the optimize function, which is used for models
-  with 1 nonlinear parameters.</p>
+with 1 nonlinear parameters.</p>
 <p>The entry gridSize needs to be a list with entries dim1 and dim2 giving the size of the grid for the gridsearch in
-  1d or 2d models.</p></dd>
+1d or 2d models.</p></dd>
 
 
 <dt id="arg-addargs">addArgs<a class="anchor" aria-label="anchor" href="#arg-addargs"></a></dt>
@@ -205,11 +205,11 @@ ignored.</p></dd>
 
 <dt id="arg-predtype-newdata-doseseq-se-fit">predType, newdata, doseSeq, se.fit<a class="anchor" aria-label="anchor" href="#arg-predtype-newdata-doseseq-se-fit"></a></dt>
 <dd><p>predType determines whether predictions are returned for the full model
- (including potential covariates), the ls-means (SAS type) or the effect curve (difference to placebo).</p>
+(including potential covariates), the ls-means (SAS type) or the effect curve (difference to placebo).</p>
 <p>newdata gives the covariates to use in producing the predictions (for predType = "full-model"), if missing the
- covariates used for fitting are used.</p>
+covariates used for fitting are used.</p>
 <p>doseSeq dose-sequence on where to produce predictions (for predType = "effect-curve" and predType = "ls-means"). If
- missing the doses used for fitting are used.</p>
+missing the doses used for fitting are used.</p>
 <p>se.fit: logical determining, whether the standard error should be calculated.</p></dd>
 
 
@@ -217,7 +217,7 @@ ignored.</p></dd>
 <dd><p>Arguments for plot method: <samp>CI</samp> determines whether confidence
 intervals should be plotted. <samp>level</samp> determines the level of the confidence intervals. <samp>plotData</samp>
 determines how the data are plotted: Either as means or as means with CI, raw data or none. In case of <samp>type =
-"normal"</samp> and covariates the ls-means are displayed, when <samp>type = "general"</samp> the option "raw" is not available.
+ "normal"</samp> and covariates the ls-means are displayed, when <samp>type = "general"</samp> the option "raw" is not available.
 <samp>colMn</samp> and <samp>colFit</samp> determine the colors of fitted model and the raw means.</p></dd>
 
 
@@ -228,7 +228,7 @@ determines how the data are plotted: Either as means or as means with CI, raw da
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>An object of class DRMod. Essentially a list containing information about the fitted model coefficients, the
-  residual sum of squares (or generalized residual sum of squares),</p>
+residual sum of squares (or generalized residual sum of squares),</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -248,8 +248,8 @@ also Pinheiro et al. 2014 for details).</p>
 <p>Details on numerical optimizer for model-fitting:<br> For linear models fitting is done using numerical linear algebra
 based on the QR decomposition.  For nonlinear models numerical optimization is performed only in the nonlinear
 parameters in the model and optimizing over the linear parameters in each iteration (similar as the Golub-Pereyra
-implemented in <code><a href="https://rdrr.io/r/stats/nls.html" class="external-link">nls</a></code>). For models with 1 nonlinear parameter the <code><a href="https://rdrr.io/r/stats/optimize.html" class="external-link">optimize</a></code> function is used
-for 2 nonlinear parameters the <code><a href="https://rdrr.io/r/stats/nlminb.html" class="external-link">nlminb</a></code> function is used. The starting value is generated using a
+implemented in <code><a href="https://rdrr.io/r/stats/nls.html" class="external-link">nls()</a></code>). For models with 1 nonlinear parameter the <code><a href="https://rdrr.io/r/stats/optimize.html" class="external-link">optimize()</a></code> function is used
+for 2 nonlinear parameters the <code><a href="https://rdrr.io/r/stats/nlminb.html" class="external-link">nlminb()</a></code> function is used. The starting value is generated using a
 grid-search (with the grid size specified via <samp>control$gridSize</samp>), or can directly be handed over via
 <samp>start</samp>.</p>
 <p>For details on the asymptotic approximation used for <samp>type = "normal"</samp>, see Seber and Wild (2003, chapter 5).
@@ -259,12 +259,12 @@ For details on the asymptotic approximation used for <samp>type = "general"</sam
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>Pinheiro, J. C., Bornkamp, B., Glimm, E. and Bretz, F. (2014) Model-based dose finding under model
-  uncertainty using general parametric models, <em>Statistics in Medicine</em>, <b>33</b>, 1646–1661</p>
+uncertainty using general parametric models, <em>Statistics in Medicine</em>, <strong>33</strong>, 1646–1661</p>
 <p>Seber, G.A.F. and Wild, C.J. (2003). Nonlinear Regression, Wiley.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="defBnds.html">defBnds</a></code>, <code><a href="drmodels.html">drmodels</a></code></p></div>
+    <div class="dont-index"><p><code><a href="defBnds.html">defBnds()</a></code>, <code><a href="drmodels.html">drmodels()</a></code></p></div>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>

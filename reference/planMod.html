@@ -206,11 +206,11 @@ should be calculated.</p></dd>
 
 <dt id="arg-n-sigma-s">n, sigma, S<a class="anchor" aria-label="anchor" href="#arg-n-sigma-s"></a></dt>
 <dd><p>Either a vector <samp>n</samp> and <samp>sigma</samp> or <samp>S</samp> need to be specified.  When <samp>n</samp> and
-  <samp>sigma</samp> are specified it is assumed computations are made for a normal homoscedastic ANOVA model with group
-  sample sizes given by <samp>n</samp> and residual standard deviation <samp>sigma</samp>, i.e. the covariance matrix used for
-  the estimates is thus <code>sigma^2*diag(1/n)</code> and the degrees of freedom are calculated as
-  <code>sum(n)-nrow(contMat)</code>. When a single number is specified for <samp>n</samp> it is assumed this is the sample size
-  per group and balanced allocations are used.<br></p>
+<samp>sigma</samp> are specified it is assumed computations are made for a normal homoscedastic ANOVA model with group
+sample sizes given by <samp>n</samp> and residual standard deviation <samp>sigma</samp>, i.e. the covariance matrix used for
+the estimates is thus <code>sigma^2*diag(1/n)</code> and the degrees of freedom are calculated as
+<code>sum(n)-nrow(contMat)</code>. When a single number is specified for <samp>n</samp> it is assumed this is the sample size
+per group and balanced allocations are used.<br></p>
 <p>When <samp>S</samp> is specified this will be used as covariance matrix for the estimates.</p></dd>
 
 
@@ -249,12 +249,12 @@ effect Windows, as the mclapply function is used internally.</p></dd>
 
 <dt id="arg-bnds">bnds<a class="anchor" aria-label="anchor" href="#arg-bnds"></a></dt>
 <dd><p>Bounds for non-linear parameters. This needs to be a list with list entries corresponding to the selected
-bounds. The names of the list entries need to correspond to the model names. The <code><a href="defBnds.html">defBnds</a></code> function
+bounds. The names of the list entries need to correspond to the model names. The <code><a href="defBnds.html">defBnds()</a></code> function
 provides the default selection.</p></dd>
 
 
 <dt id="arg-addargs">addArgs<a class="anchor" aria-label="anchor" href="#arg-addargs"></a></dt>
-<dd><p>See the corresponding argument in function <code><a href="fitMod.html">fitMod</a></code>. This argument is directly passed to
+<dd><p>See the corresponding argument in function <code><a href="fitMod.html">fitMod()</a></code>. This argument is directly passed to
 fitMod.</p></dd>
 
 
@@ -307,7 +307,7 @@ placebo-adjusted or original scale</p></dd>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="fitMod.html">fitMod</a></code></p></div>
+    <div class="dont-index"><p><code><a href="fitMod.html">fitMod()</a></code></p></div>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>

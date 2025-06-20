@@ -133,7 +133,7 @@ on longitudinal models, <em>arXiv:2406.19965</em></p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="powMCT.html">powMCT</a></code> <code><a href="MCTtest.html">MCTtest</a></code>, <code><a href="optContr.html">optContr</a></code></p></div>
+    <div class="dont-index"><p><code><a href="powMCT.html">powMCT()</a></code> <code><a href="MCTtest.html">MCTtest()</a></code>, <code><a href="optContr.html">optContr()</a></code></p></div>
     </div>
 
     <div class="section level2">
@@ -164,36 +164,36 @@ on longitudinal models, <em>arXiv:2406.19965</em></p>
 <span class="r-in"><span>  contMat <span class="op">=</span> <span class="va">contMat</span>, S_0t <span class="op">=</span> <span class="va">S_0t</span>, S_01 <span class="op">=</span> <span class="va">S_01</span>, mu_0t <span class="op">=</span> <span class="va">mu_0t</span>,</span></span>
 <span class="r-in"><span>  type <span class="op">=</span> <span class="st">"predictive"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.0006866183</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.6973523</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"error")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2.387509e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.0003906307</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"msg")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Normal Completion"</span>
 <span class="r-in"><span><span class="fu">powMCTInterim</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  contMat <span class="op">=</span> <span class="va">contMat</span>, S_0t <span class="op">=</span> <span class="va">S_0t</span>, S_01 <span class="op">=</span> <span class="va">S_01</span>, mu_0t <span class="op">=</span> <span class="va">mu_0t</span>,</span></span>
 <span class="r-in"><span>  type <span class="op">=</span> <span class="st">"conditional"</span>, mu_assumed <span class="op">=</span> <span class="va">mu_assumed</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.06110965</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.8650528</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"error")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.0008431539</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.0001563329</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"msg")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Normal Completion"</span>
 <span class="r-in"><span><span class="fu">powMCTInterim</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  contMat <span class="op">=</span> <span class="va">contMat</span>, S_0t <span class="op">=</span> <span class="va">S_0t</span>, S_01 <span class="op">=</span> <span class="va">S_01</span>, mu_0t <span class="op">=</span> <span class="va">mu_0t</span>,</span></span>
 <span class="r-in"><span>  type <span class="op">=</span> <span class="st">"predictive"</span>, alternative <span class="op">=</span> <span class="st">"two.sided"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.5590982</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.6959777</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"error")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.0005531084</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.0004569151</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"msg")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Normal Completion"</span>
 <span class="r-in"><span><span class="fu">powMCTInterim</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  contMat <span class="op">=</span> <span class="va">contMat</span>, S_0t <span class="op">=</span> <span class="va">S_0t</span>, S_01 <span class="op">=</span> <span class="va">S_01</span>, mu_0t <span class="op">=</span> <span class="va">mu_0t</span>,</span></span>
 <span class="r-in"><span>  type <span class="op">=</span> <span class="st">"predictive"</span>, control <span class="op">=</span> <span class="fu"><a href="mvtnorm-control.html">mvtnorm.control</a></span><span class="op">(</span>maxpts <span class="op">=</span> <span class="fl">1e5</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.0007878812</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.6974567</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"error")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.000365923</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.0003386685</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"msg")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Normal Completion"</span>
 </code></pre></div>

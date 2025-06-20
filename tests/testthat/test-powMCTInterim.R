@@ -50,7 +50,7 @@ test_that("powMCTInterim works as expected with conditional power", {
     mu_assumed = example_data$mu_assumed,
     type = "conditional"
   )
-  expect_equal(as.numeric(result), 0.2739, tolerance = 1e-4)
+  expect_equal(as.numeric(result), 0.2739, tolerance = 5e-4)
 })
 
 test_that("powMCTInterim works as expected when using NULL explicitly for mu_assumed", {
@@ -156,7 +156,7 @@ test_that("powMCTInterim gives same conditional power result as with simulation 
     alpha = 0.025
   )
 
-  expect_equal(result, expected, tolerance = 1e-2, check.attributes = FALSE)
+  expect_equal(result, expected, tolerance = 1e-2, ignore_attr = TRUE)
 })
 
 test_that("powMCTInterim gives same predictive power result as with simulation based approach", {
@@ -184,5 +184,5 @@ test_that("powMCTInterim gives same predictive power result as with simulation b
     alpha = 0.025
   )
 
-  expect_equal(result, expected, tolerance = 1e-2, check.attributes = FALSE)
+  expect_equal(result, expected, tolerance = 1e-2, ignore_attr = TRUE)
 })

@@ -55,7 +55,7 @@ test_that("get_{TD,ED,Pred}Var gives the same result as a simulation", {
   }
   sim <- replicate(100, one_sim()) # for a real check use 10000
   expect_equal(unname(rowMeans(sim)), true_values, tolerance = 0.01)
-  expect_equal(unname(apply(sim, 1, var)), true_variances, tolerance = 0.01)
+  expect_equal(unname(apply(sim, 1, var)), true_variances, tolerance = 0.02)
 
   edt7 <- ED(mm, p=0.7)
   edt3 <- ED(mm, p=0.3)

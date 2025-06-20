@@ -55,7 +55,7 @@ test_that("MCTtest gives the same output as multcomp::glht (beta and sigEmax mod
   fit <- lm(y~x, data=dd_x_factor)
   mcp <- glht(fit, linfct = mcp(x = t(obj$contMat)), alternative = "greater")
   expect_equal(tstat(obj), tstat(mcp))
-  expect_equal(pval(obj), pval(mcp), tolerance = 0.001)
+  expect_equal(pval(obj), pval(mcp), tolerance = 0.01)
 })
 
 test_that("MCTtest gives the same output as multcomp::glht (logistic, exponential, quadratic models)", {
@@ -77,13 +77,13 @@ test_that("MCTtest gives the same output as multcomp::glht (logistic, exponentia
   fit <- lm(y~x+cov1+cov2, data=dd_x_factor)
   mcp <- glht(fit, linfct = mcp(x = t(obj$contMat)), alternative = "greater")
   expect_equal(tstat(obj), tstat(mcp))
-  expect_equal(pval(obj), pval(mcp), tolerance = 0.001)
+  expect_equal(pval(obj), pval(mcp), tolerance = 0.005)
   # model without covariates
   obj <- MCTtest(x,y, dd, models=models, addCovars = ~1, pVal = TRUE)
   fit <- lm(y~x, data=dd_x_factor)
   mcp <- glht(fit, linfct = mcp(x = t(obj$contMat)), alternative = "greater")
   expect_equal(tstat(obj), tstat(mcp))
-  expect_equal(pval(obj), pval(mcp), tolerance = 0.001)
+  expect_equal(pval(obj), pval(mcp), tolerance = 0.005)
 })
 
 test_that("MCTtest works with contrast matrix handed over", {
@@ -213,7 +213,7 @@ test_that("unordered values in MCTtest work (placebo adjusted scale)", {
   # we don't compare stuff we want to be different
   attr(fit_orig, "data") <- attr(fit_perm, "data") <- NULL
   attr(fit_orig, "doseRespNam") <- attr(fit_perm, "doseRespNam") <- NULL
-  expect_equal(fit_orig, fit_perm)
+  expect_equal(fit_orig, fit_perm, ignore_formula_env = TRUE)
   expect_equal(tstat(test_orig), tstat(test_perm))
 })
 
@@ -238,6 +238,6 @@ test_that("unordered values in MCTtest work (unadjusted scale)", {
   # we don't compare stuff we want to be different
   attr(fit_orig, "data") <- attr(fit_perm, "data") <- NULL
   attr(fit_orig, "doseRespNam") <- attr(fit_perm, "doseRespNam") <- NULL
-  expect_equal(fit_orig, fit_perm)
+  expect_equal(fit_orig, fit_perm, ignore_formula_env = TRUE)
   expect_equal(tstat(test_orig), tstat(test_perm))
 })

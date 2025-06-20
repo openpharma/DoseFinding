@@ -43,7 +43,7 @@ rndDesign(design, n, eps = 1e-04)
 \method{plot}{DRdesign}(x, models, lwdDes = 10, colDes = rgb(0, 0, 0, 0.3), ...)
 }
 \arguments{
-\item{models}{An object of class \samp{c(Mods, fullMod)}, see the \code{\link{Mods}} function for details. When an TD
+\item{models}{An object of class \samp{c(Mods, fullMod)}, see the \code{\link[=Mods]{Mods()}} function for details. When an TD
 optimal design should be calculated, the TD needs to exist for all models. If a D-optimal design should be
 calculated, you need at least as many doses as there are parameters in the specified models.}
 
@@ -68,47 +68,47 @@ standardization this is done in the optimal design literature).}
 situations.}
 
 \item{nold, n}{When calculating an optimal design at an interim analysis, \samp{nold} specifies the vector of sample
-  sizes already allocated to the different doses, and \samp{n} gives sample size for the next cohort.
+sizes already allocated to the different doses, and \samp{n} gives sample size for the next cohort.
 
-  For \samp{optimizer = "exact"} one always needs to specify the total sample size via \samp{n}.}
+For \samp{optimizer = "exact"} one always needs to specify the total sample size via \samp{n}.}
 
 \item{control}{List containing control parameters passed down to numerical optimization algorithms
-  (\code{\link{optim}}, \code{\link{nlminb}} or solnp function).\cr
+(\code{\link[=optim]{optim()}}, \code{\link[=nlminb]{nlminb()}} or solnp function).\cr
 
-  For \samp{type = "exact"} this should be a list with possible entries \samp{maxvls1} and \samp{maxvls2},
-  determining the maximum number of designs allowed for passing to the criterion function (default
-  \samp{maxvls2=1e5}) and for creating the initial unrestricted matrix of designs (default \samp{maxvls1=1e6}). In
-  addition there can be an entry \samp{groupSize} in case the patients are allocated a minimum group size is
-  required.}
+For \samp{type = "exact"} this should be a list with possible entries \samp{maxvls1} and \samp{maxvls2},
+determining the maximum number of designs allowed for passing to the criterion function (default
+\samp{maxvls2=1e5}) and for creating the initial unrestricted matrix of designs (default \samp{maxvls1=1e6}). In
+addition there can be an entry \samp{groupSize} in case the patients are allocated a minimum group size is
+required.}
 
 \item{optimizer}{Algorithm used for calculating the optimal design. Options "Nelder-Mead" and "nlminb" use the
-  \code{\link{optim}} and \code{\link{nlminb}} function and use a trigonometric transformation to turn the
-  constrained optimization problem into an unconstrained one (see Atkinson, Donev and Tobias, 2007, pages 130,131).
+\code{\link[=optim]{optim()}} and \code{\link[=nlminb]{nlminb()}} function and use a trigonometric transformation to turn the
+constrained optimization problem into an unconstrained one (see Atkinson, Donev and Tobias, 2007, pages 130,131).
 
-  Option "solnp" uses the solnp function from the Rsolnp package, which implements an optimizer for non-linear
-  optimization under general constraints.
+Option "solnp" uses the solnp function from the Rsolnp package, which implements an optimizer for non-linear
+optimization under general constraints.
 
-  Option "exact" tries all given combinations of \samp{n} patients to the given dose groups (subject to the bounds
-  specified via \samp{lowbnd} and \samp{uppbnd}) and reports the best design. When patients are only allowed to be
-  allocated in groups of a certain \samp{groupSize}, this can be adjusted via the control argument.
-  \samp{n/groupSize} and \samp{length(doses)} should be rather small for this approach to be feasible.
+Option "exact" tries all given combinations of \samp{n} patients to the given dose groups (subject to the bounds
+specified via \samp{lowbnd} and \samp{uppbnd}) and reports the best design. When patients are only allowed to be
+allocated in groups of a certain \samp{groupSize}, this can be adjusted via the control argument.
+\samp{n/groupSize} and \samp{length(doses)} should be rather small for this approach to be feasible.
 
-  When the number of doses is small (<8) usually \samp{"Nelder-Mead"} and \samp{"nlminb"} are best suited
-  (\samp{"nlminb"} is usually a bit faster but less stable than \samp{"Nelder-Mead"}). For a larger number of doses
-  \samp{"solnp"} is the most reliable option (but also slowest) (\samp{"Nelder-Mead"} and \samp{"nlminb"} often
-  fail). When the sample size is small \samp{"exact"} provides the optimal solution rather quickly.}
+When the number of doses is small (<8) usually \samp{"Nelder-Mead"} and \samp{"nlminb"} are best suited
+(\samp{"nlminb"} is usually a bit faster but less stable than \samp{"Nelder-Mead"}). For a larger number of doses
+\samp{"solnp"} is the most reliable option (but also slowest) (\samp{"Nelder-Mead"} and \samp{"nlminb"} often
+fail). When the sample size is small \samp{"exact"} provides the optimal solution rather quickly.}
 
 \item{lowbnd, uppbnd}{Vectors of the same length as dose vector specifying upper and lower limits for the allocation
 weights. This option is only available when using the "solnp" and "exact" optimizers.}
 
 \item{userCrit}{User defined design criterion, should be a function that given a vector of allocation weights and the
-  doses returns the criterion function. When specified \samp{models} does not need to be handed over.
+doses returns the criterion function. When specified \samp{models} does not need to be handed over.
 
-  The first argument of \samp{userCrit} should be the vector of design weights, while the second argument should be
-  the \samp{doses} argument (see example below). Additional arguments to \samp{userCrit} can be passed via ...}
+The first argument of \samp{userCrit} should be the vector of design weights, while the second argument should be
+the \samp{doses} argument (see example below). Additional arguments to \samp{userCrit} can be passed via ...}
 
 \item{...}{For function \samp{optDesign} these are additional arguments passed to \samp{userCrit}.\cr \cr For
-function \samp{plot.design} these are additional parameters passed to \code{\link{plot.Mods}}.\cr}
+function \samp{plot.design} these are additional parameters passed to \code{\link[=plot.Mods]{plot.Mods()}}.\cr}
 
 \item{design}{Argument for \samp{rndDesign} and \samp{calcCrit} functions: Numeric vector (or matrix) of allocation
 weights for the different doses. The rows of the matrices need to sum to 1. Alternatively also an object of class
@@ -159,8 +159,8 @@ For details on the \samp{rndDesign} function, see Pukelsheim (1993), Chapter 12.
 }
 \note{
 In some cases (particularly when the number of doses is large, e.g. 7 or larger) it might be necessary to allow
-  a larger number of iterations in the algorithm (via the argument \samp{control}), particularly for the Nelder-Mead
-  algorithm. Alternatively one can use the solnp optimizer that is usually the most reliable, but not fastest option.
+a larger number of iterations in the algorithm (via the argument \samp{control}), particularly for the Nelder-Mead
+algorithm. Alternatively one can use the solnp optimizer that is usually the most reliable, but not fastest option.
 }
 \examples{
 
@@ -251,20 +251,20 @@ optDesign(doses = c(0,0.05,0.2,0.6,1),
 }
 \references{
 Atkinson, A.C., Donev, A.N. and Tobias, R.D. (2007). Optimum Experimental Designs, with SAS, Oxford
-  University Press
+University Press
 
-  Dette, H., Bretz, F., Pepelyshev, A. and Pinheiro, J. C. (2008). Optimal
+Dette, H., Bretz, F., Pepelyshev, A. and Pinheiro, J. C. (2008). Optimal
 Designs for Dose Finding Studies, \emph{Journal of the American Statisical
-Association}, \bold{103}, 1225--1237
+Association}, \strong{103}, 1225--1237
 
-  Pinheiro, J.C., Bornkamp, B. (2017) Designing Phase II Dose-Finding Studies: Sample Size, Doses and Dose Allocation
-  Weights, in O'Quigley, J., Iasonos, A. and Bornkamp, B. (eds) Handbook of methods for designing, monitoring, and
-  analyzing dose-finding trials, CRC press
+Pinheiro, J.C., Bornkamp, B. (2017) Designing Phase II Dose-Finding Studies: Sample Size, Doses and Dose Allocation
+Weights, in O'Quigley, J., Iasonos, A. and Bornkamp, B. (eds) Handbook of methods for designing, monitoring, and
+analyzing dose-finding trials, CRC press
 
-  Pukelsheim, F. (1993). Optimal Design of Experiments, Wiley
+Pukelsheim, F. (1993). Optimal Design of Experiments, Wiley
 }
 \seealso{
-\code{\link{Mods}}, \code{\link{drmodels}}
+\code{\link[=Mods]{Mods()}}, \code{\link[=drmodels]{drmodels()}}
 }
 \author{
 Bjoern Bornkamp

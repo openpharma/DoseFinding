@@ -15,13 +15,13 @@
 #'   conditional power should be calculated. For conditional power
 #'   mu_assumed needs to be specified.
 #' @param mu_assumed Mean vector to assume for the second stage (only used when type is
-#'   \samp{conditional}). If \code{NULL} (default), the first stage estimates \code{mu_0t} are used.
+#'   \samp{conditional}). If `NULL` (default), the first stage estimates `mu_0t` are used.
 #' @param control A list specifying additional control parameters for the \samp{pmvnorm} calls in the code, see also
 #' \samp{mvtnorm.control} for details.
 #' @return Numeric containing the calculated power values
-#' @seealso \code{\link{powMCT}} \code{\link{MCTtest}}, \code{\link{optContr}}
+#' @seealso [powMCT()] [MCTtest()], [optContr()]
 #' @references Bornkamp, B., Zhou, J., Xi, D. and Cao W. (2025). Futility analyses for the MCP-Mod methodology based
-#' on longitudinal models, \emph{arXiv:2406.19965}
+#' on longitudinal models, *arXiv:2406.19965*
 #' @examples
 #'
 #' # Setup the scenario.

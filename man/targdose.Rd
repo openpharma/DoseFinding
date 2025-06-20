@@ -4,8 +4,8 @@
 \alias{Target doses}
 \alias{TD}
 \alias{ED}
-\title{Calculate dose estimates for a fitted dose-response model (via \code{\link{fitMod}}, \code{\link{bFitMod}}) 
- or \code{\link{maFitMod}}) or a \code{\link{Mods}} object}
+\title{Calculate dose estimates for a fitted dose-response model (via \code{\link[=fitMod]{fitMod()}}, \code{\link[=bFitMod]{bFitMod()}})
+or \code{\link[=maFitMod]{maFitMod()}}) or a \code{\link[=Mods]{Mods()}} object}
 \usage{
 TD(
   object,
@@ -85,8 +85,8 @@ ED(fmodels, p=0.5, EDtype = "discrete", doses=doses)
 plot(fmodels, plotTD = TRUE, Delta = 0.3)
 }
 \seealso{
-\code{\link{Mods}}, \code{\link{drmodels}},
-\code{\link{fitMod}}, \code{\link{bFitMod}}
+\code{\link[=Mods]{Mods()}}, \code{\link[=drmodels]{drmodels()}},
+\code{\link[=fitMod]{fitMod()}}, \code{\link[=bFitMod]{bFitMod()}}
 }
 \author{
 Bjoern Bornkamp

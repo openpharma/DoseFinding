@@ -8,26 +8,26 @@
 #' method applied to planMod objects. The implemented metrics are \itemize{
 #' \item Root of the mean-squared error to estimate the placebo-adjusted
 #' dose-response averaged over the used dose-levels, i.e. a rather discrete set
-#' (\code{dRMSE}). Available via the print method of planMod objects.  \item
+#' (`dRMSE`). Available via the print method of planMod objects.  \item
 #' Root of the mean-squared error to estimate the placebo-adjusted
-#' dose-response (\code{cRMSE}) averaged over fine (almost continuous) grid at
+#' dose-response (`cRMSE`) averaged over fine (almost continuous) grid at
 #' 101 equally spaced values between placebo and the maximum dose. NOTE:
 #' Available via the summary method applied to planMod objects.  \item Ratio of
 #' the placebo-adjusted mean-squared error (at the observed doses) of
-#' model-based vs ANOVA approach (\code{Eff-vs-ANOVA}). This can be interpreted
+#' model-based vs ANOVA approach (`Eff-vs-ANOVA`). This can be interpreted
 #' on the sample size scale. NOTE: Available via the summary method applied to
 #' planMod objects.  \item Power that the (unadjusted) one-sided \samp{1-alpha}
 #' confidence interval comparing the dose with maximum effect vs placebo is
 #' larger than \samp{tau}. By default \samp{alpha = 0.025} and \samp{tau = 0}
-#' (\code{Pow(maxDose)}). Available via the print method of planMod objects.
-#' \item Probability that the EDp estimate is within the true [EDpLB, EDpUB]
+#' (`Pow(maxDose)`). Available via the print method of planMod objects.
+#' \item Probability that the EDp estimate is within the true \[EDpLB, EDpUB\]
 #' (by default \samp{p=0.5}, \samp{pLB=0.25} and \samp{pUB=0.75}). This metric
 #' gives an idea on the ability to characterize the increasing part of the
-#' dose-response curve (\code{P(EDp)}). Available via the print method of
+#' dose-response curve (`P(EDp)`). Available via the print method of
 #' planMod objects.  \item Length of the quantile range for a target dose (TD
 #' or EDp). This is calculated by taking the difference of the dUB and dLB
 #' quantile of the empirical distribution of the dose estimates.
-#' (\code{lengthTDCI} and \code{lengthEDpCI}). It is NOT calculated by
+#' (`lengthTDCI` and `lengthEDpCI`). It is NOT calculated by
 #' calculating confidence interval lengths in each simulated data-set and
 #' taking the mean. NOTE: Available via the summary method of planMod objects.
 #' }
@@ -38,14 +38,14 @@
 #' @aliases planMod plot.planMod summary.planMod
 #' @param model Character vector determining the dose-response model(s) to be used for fitting the data.  When more than
 #'   one dose-response model is provided the best fitting model is chosen using the AIC. Built-in models are "linlog",
-#'   "linear", "quadratic", "emax", "exponential", "sigEmax", "betaMod" and "logistic" (see \link{drmodels}).
+#'   "linear", "quadratic", "emax", "exponential", "sigEmax", "betaMod" and "logistic" (see [drmodels]).
 #' @param altModels An object of class \samp{Mods}, defining the true mean vectors under which operating characteristics
 #'   should be calculated.
 #' @param n,sigma,S Either a vector \samp{n} and \samp{sigma} or \samp{S} need to be specified.  When \samp{n} and
 #'   \samp{sigma} are specified it is assumed computations are made for a normal homoscedastic ANOVA model with group
 #'   sample sizes given by \samp{n} and residual standard deviation \samp{sigma}, i.e. the covariance matrix used for
-#'   the estimates is thus \code{sigma^2*diag(1/n)} and the degrees of freedom are calculated as
-#'   \code{sum(n)-nrow(contMat)}. When a single number is specified for \samp{n} it is assumed this is the sample size
+#'   the estimates is thus `sigma^2*diag(1/n)` and the degrees of freedom are calculated as
+#'   `sum(n)-nrow(contMat)`. When a single number is specified for \samp{n} it is assumed this is the sample size
 #'   per group and balanced allocations are used.\cr
 #'
 #'   When \samp{S} is specified this will be used as covariance matrix for the estimates.
@@ -62,12 +62,12 @@
 #'   effect Windows, as the mclapply function is used internally.
 #' @param showSimProgress In case of simulations show the progress using a progress-bar.
 #' @param bnds Bounds for non-linear parameters. This needs to be a list with list entries corresponding to the selected
-#'   bounds. The names of the list entries need to correspond to the model names. The \code{\link{defBnds}} function
+#'   bounds. The names of the list entries need to correspond to the model names. The [defBnds()] function
 #'   provides the default selection.
-#' @param addArgs See the corresponding argument in function \code{\link{fitMod}}. This argument is directly passed to
+#' @param addArgs See the corresponding argument in function [fitMod()]. This argument is directly passed to
 #'   fitMod.
 #' @author Bjoern Bornkamp
-#' @seealso \code{\link{fitMod}}
+#' @seealso [fitMod()]
 #' @references TBD
 #' @examples
 #'
@@ -340,8 +340,8 @@ print.planMod <- function(x, digits = 3,...){
 #' @param len Number of equally spaced points to determine the mean-squared error on a grid (cRMSE).
 #' @param Delta Additional arguments determining what dose estimate to plot, when \samp{type = "ED"} or \samp{type =
 #'   "TD"}
-#' @param dLB,dUB Which quantiles to use for calculation of \code{lengthTDCI} and \code{lengthEDpCI}. By default dLB =
-#'   0.05 and dUB = 0.95, so that this corresponds to a 90\% interval.
+#' @param dLB,dUB Which quantiles to use for calculation of `lengthTDCI` and `lengthEDpCI`. By default dLB =
+#'   0.05 and dUB = 0.95, so that this corresponds to a 90% interval.
 #' @param ...  Additional arguments (currently ignored)
 #'
 #' @rdname planMod

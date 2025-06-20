@@ -15,7 +15,7 @@ emax <-  function(dose, e0, eMax, ed50){
 
 #' @rdname drmodels
 #' @param ...  Just included for convenience in the gradient functions, so that
-#' for example \code{quadratic(dose, e0=0, b1=1, b2=3)} will not throw an error
+#' for example `quadratic(dose, e0=0, b1=1, b2=3)` will not throw an error
 #' (although the gradient of the quadratic model is independent of e0, b1 and
 #' b2).
 #' @usage NULL

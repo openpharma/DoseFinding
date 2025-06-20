@@ -36,8 +36,8 @@ mvtnorm.control <- function(maxpts = 30000, abseps = 0.001,
 #' computations are made for a normal homoscedastic ANOVA model with group
 #' sample sizes given by \samp{n} and residual standard deviation \samp{sigma},
 #' i.e. the covariance matrix used for the estimates is thus
-#' \code{sigma^2*diag(1/n)} and the degrees of freedom are calculated as
-#' \code{sum(n)-nrow(contMat)}. When a single number is specified for \samp{n}
+#' `sigma^2*diag(1/n)` and the degrees of freedom are calculated as
+#' `sum(n)-nrow(contMat)`. When a single number is specified for \samp{n}
 #' it is assumed this is the sample size per group and balanced allocations are
 #' used.\cr
 #' 
@@ -46,7 +46,7 @@ mvtnorm.control <- function(maxpts = 30000, abseps = 0.001,
 #' @param placAdj Logical, if true, it is assumed that the standard deviation
 #' or variance matrix of the placebo-adjusted estimates are specified in
 #' \samp{sigma} or \samp{S}, respectively. The contrast matrix has to be
-#' produced on placebo-adjusted scale, see \code{\link{optContr}}, so that the
+#' produced on placebo-adjusted scale, see [optContr()], so that the
 #' coefficients are no longer contrasts (i.e. do not sum to 0).
 #' @param alternative Character determining the alternative for the multiple
 #' contrast trend test.
@@ -60,11 +60,11 @@ mvtnorm.control <- function(maxpts = 30000, abseps = 0.001,
 #' \samp{mvtnorm.control} for details.
 #' @return Numeric containing the calculated power values
 #' @author Bjoern Bornkamp
-#' @seealso \code{\link{powN}}, \code{\link{sampSizeMCT}},
-#' \code{\link{MCTtest}}, \code{\link{optContr}}, \code{\link{Mods}}
+#' @seealso [powN()], [sampSizeMCT()],
+#' [MCTtest()], [optContr()], [Mods()]
 #' @references Pinheiro, J. C., Bornkamp, B., and Bretz, F. (2006). Design and
 #' analysis of dose finding studies combining multiple comparisons and modeling
-#' procedures, \emph{Journal of Biopharmaceutical Statistics}, \bold{16},
+#' procedures, *Journal of Biopharmaceutical Statistics*, **16**,
 #' 639--656
 #' @examples
 #' 

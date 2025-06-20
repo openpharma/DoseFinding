@@ -6,7 +6,7 @@
 #'
 #' Calculates guesstimates for the parameters \eqn{\theta_2}{theta2} of the standardized model function based on the
 #' prior expected percentage of the maximum effect at certain dose levels. Note that this function should be used
-#' together with the \code{\link{plot.Mods}} function to ensure that the guesstimates are reflecting the prior beliefs.
+#' together with the [plot.Mods()] function to ensure that the guesstimates are reflecting the prior beliefs.
 #'
 #' For the logistic and sigmoid emax models at least two pairs (d,p) need to be specified.
 #'
@@ -36,14 +36,14 @@
 #' @param Maxd Maximum dose to be administered in the trial
 #' @param scal Scale parameter, only needed for the beta model
 #' @return Returns a numeric vector containing the guesstimates.
-#' @seealso \code{\link{emax}}, \code{\link{logistic}}, \code{\link{betaMod}}, \code{\link{sigEmax}},
-#'   \code{\link{quadratic}}, \code{\link{exponential}}, \code{\link{plot.Mods}}
+#' @seealso [emax()], [logistic()], [betaMod()], [sigEmax()],
+#'   [quadratic()], [exponential()], [plot.Mods()]
 #' @references Bornkamp B., Pinheiro J. C., and Bretz, F. (2009). MCPMod: An R
-#' Package for the Design and Analysis of Dose-Finding Studies, \emph{Journal
-#' of Statistical Software}, \bold{29}(7), 1--23
+#' Package for the Design and Analysis of Dose-Finding Studies, *Journal
+#' of Statistical Software*, **29**(7), 1--23
 #'
 #'   Pinheiro, J. C., Bretz, F., and Branson, M. (2006). Analysis of dose-response studies - modeling approaches,
-#'   \emph{in} N. Ting (ed.), \emph{Dose Finding in Drug Development}, Springer, New York, pp. 146--171
+#'   *in* N. Ting (ed.), *Dose Finding in Drug Development*, Springer, New York, pp. 146--171
 #' @examples
 #'
 #' ## Emax model

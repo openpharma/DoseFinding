@@ -26,13 +26,13 @@ data frame specified in \samp{data}.}
 \item{data}{Data frame containing the variables referenced in dose and resp if \samp{data} is not specified it is
 assumed that \samp{dose} and \samp{resp} are variables referenced from data (and no vectors)}
 
-\item{models}{An object of class \samp{Mods}, see \code{\link{Mods}} for details}
+\item{models}{An object of class \samp{Mods}, see \code{\link[=Mods]{Mods()}} for details}
 
 \item{S}{The covariance matrix of \samp{resp} when \samp{type = "general"}, see Description.}
 
 \item{type}{Determines whether inference is based on an ANCOVA model under a homoscedastic normality assumption (when
 \samp{type = "normal"}), or estimates at the doses and their covariance matrix and degrees of freedom are specified
-directly in \samp{resp}, \samp{S} and \samp{df}. See also \code{\link{fitMod}} and Pinheiro et al. (2014).}
+directly in \samp{resp}, \samp{S} and \samp{df}. See also \code{\link[=fitMod]{fitMod()}} and Pinheiro et al. (2014).}
 
 \item{prior}{List of length equal to the number of doses with the prior for each arm.  Each element needs to be of
 class \samp{normMix} (See \samp{RBesT} package documentation). It is assumed that the i-th component of the prior
@@ -48,11 +48,11 @@ posterior mixture is part of the result object under "posterior".}
 \item{na.action}{A function which indicates what should happen when the data contain NAs.}
 
 \item{mvtcontrol}{A list specifying additional control parameters for the \samp{qmvt} and \samp{pmvt} calls in the
-code, see also \code{\link{mvtnorm.control}} for details.}
+code, see also \code{\link[=mvtnorm.control]{mvtnorm.control()}} for details.}
 
 \item{contMat}{Contrast matrix to apply to the posterior dose-response estimates. The contrasts need to be in the
 columns of the matrix (i.e. the column sums need to be 0). If not specified optimal contrasts are calculated using
-\code{\link{optContr}}.}
+\code{\link[=optContr]{optContr()}}.}
 
 \item{critV}{Supply a critical value for the maximum posterior probability of the contrasts being greater than zero
 that needs to be surpassed to establish a non-flat dose-response. If this argument is NULL, this will be derived
@@ -64,7 +64,7 @@ An object of class bMCTtest, a list containing the output.
 \description{
 This function performs a Bayesian multiple contrast test using normal mixture priors for the response on each dose,
 as proposed in Fleischer et al. (2022). For a general description of the multiple contrast test see
-\code{\link{MCTtest}}.
+\code{\link[=MCTtest]{MCTtest()}}.
 }
 \details{
 If \samp{type = "normal"}, an ANCOVA model based on a homoscedastic normality assumption is fitted and posteriors for
@@ -80,12 +80,12 @@ values. In the latter case the Bayesian test will give approximately the same re
 contrast test if uninformative priors are used.
 
 For the default calculation of optimal contrasts the prior information is ignored (i.e. contrasts are calculated in
-the same way as in \code{\link{MCTtest}}).  Fleischer et al. (2022) discuss using contrasts that take the prior
+the same way as in \code{\link[=MCTtest]{MCTtest()}}).  Fleischer et al. (2022) discuss using contrasts that take the prior
 effective sample sizes into account, which can be slightly more favourable for the Bayesian MCT test. Such
 alternative contrasts can be directly handed over via the \samp{contMat} argument.
 
 For analysis with covariate adjustment, covariate-adjusted \samp{resp} and \samp{S} can be supplied together with
-using \samp{type = "general"}. See  `vignette("binary_data")` vignette "Design and analysis template MCP-Mod for binary data" for an example
+using \samp{type = "general"}. See  \code{vignette("binary_data")} vignette "Design and analysis template MCP-Mod for binary data" for an example
 on how to obtain covariate adjusted estimates.
 }
 \examples{
@@ -193,10 +193,10 @@ bMCTtest(dose, resp, biom, models=modlist, prior = prior, contMat = cmat)
 }
 \references{
 Fleischer, F., Bossert, S., Deng, Q., Loley, C. and Gierse, J. (2022).  Bayesian MCP-Mod,
-  \emph{Pharmaceutical Statistics}, \bold{21}, 654--670
+\emph{Pharmaceutical Statistics}, \strong{21}, 654--670
 }
 \seealso{
-\code{\link{MCTtest}}, \code{\link{optContr}}
+\code{\link[=MCTtest]{MCTtest()}}, \code{\link[=optContr]{optContr()}}
 }
 \author{
 Marius Thomas

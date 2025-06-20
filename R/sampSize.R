@@ -16,8 +16,8 @@
 #'
 #'
 #' @aliases sampSize sampSizeMCT targN plot.targN powN
-#' @param upperN,lowerN Upper and lower bound for the target sample size. \code{lowerN} defaults to
-#'   \code{floor(upperN/2)}.
+#' @param upperN,lowerN Upper and lower bound for the target sample size. `lowerN` defaults to
+#'   `floor(upperN/2)`.
 #' @param targFunc,target The target function needs to take as an input the vector of sample sizes in the different dose
 #'   groups. For \samp{sampSize} it needs to return a univariate number. For function \samp{targN} it should return a
 #'   numerical vector.\cr \cr Example: \samp{targFunc} could be a function that calculates the power of a test, and
@@ -33,25 +33,25 @@
 #'   size is iterated in bisection search algorithm.
 #' @param verbose Logical value indicating if a trace of the iteration progress of the bisection search algorithm should
 #'   be displayed.
-#' @param ...  Arguments directly passed to the \code{\link{powMCT}} function in the \samp{sampSizeMCT} and \samp{powN}
+#' @param ...  Arguments directly passed to the [powMCT()] function in the \samp{sampSizeMCT} and \samp{powN}
 #'   function.
 #'
 #'   The \samp{placAdj} argument needs to be \samp{FALSE} (which is the default value for this argument). If sample size
 #'   calculations are desired for a placebo-adjusted formulation use \samp{sampSize} or \samp{targN} directly.
 #'
-#'   In case \code{S} is specified, the specified matrix needs to be proportional to the (hypothetical) covariance
+#'   In case `S` is specified, the specified matrix needs to be proportional to the (hypothetical) covariance
 #'   matrix of one single observation. The covariance matrix used for sample size calculation is 1/N*S, where N is the
 #'   total sample size. Hence \samp{Ntype == "total"} needs to be used if
-#' \code{S} is specified. When \code{S} is specified, automatically \samp{df =
+#' `S` is specified. When `S` is specified, automatically \samp{df =
 #' Inf} is assumed in the underlying \samp{powMCT} calls.
 #'
 #'   For a homoscedastic normally distributed response variable only \samp{sigma} needs to be specified, as the sample
 #'   size \samp{n} is iterated in the different \samp{powMCT} calls.
 #'
 #' @author Jose Pinheiro, Bjoern Bornkamp
-#' @seealso \code{\link{powMCT}}
+#' @seealso [powMCT()]
 #' @references Pinheiro, J. C., Bornkamp, B., and Bretz, F. (2006). Design and analysis of dose finding studies
-#'   combining multiple comparisons and modeling procedures, \emph{Journal of Biopharmaceutical Statistics}, \bold{16},
+#'   combining multiple comparisons and modeling procedures, *Journal of Biopharmaceutical Statistics*, **16**,
 #'   639--656
 #'
 #'   Pinheiro, J.C., Bornkamp, B. (2017) Designing Phase II Dose-Finding Studies: Sample Size, Doses and Dose Allocation
@@ -220,7 +220,7 @@ print.sampSize <- function(x, ...){
 
 #' Sample size calculations for multiple contrast tests
 #'
-#' @param ...  Arguments directly passed to the \code{\link{powMCT}} function in the \samp{sampSizeMCT} and \samp{powN}
+#' @param ...  Arguments directly passed to the [powMCT()] function in the \samp{sampSizeMCT} and \samp{powN}
 #'   function.
 #' @param power,sumFct power is a numeric defining the desired summary power to achieve (in \samp{sampSizeMCT}). sumFct
 #'   needs to be a function that combines the power values under the different alternatives into one value (in
@@ -278,7 +278,7 @@ Use sampSize directly in case exact df are required.")
 #' Calculate target function for given sample size
 #'
 #' @param step Only needed for functions \samp{targN} and \samp{powN}. Stepsize for the sample size at which the target
-#'   function is calculated. The steps are calculated via \code{seq(lowerN,upperN,by=step)}.
+#'   function is calculated. The steps are calculated via `seq(lowerN,upperN,by=step)`.
 #' @param power,sumFct power is a numeric defining the desired summary power to achieve (in \samp{sampSizeMCT}).
 #' @rdname sampSize
 #' @export

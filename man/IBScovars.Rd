@@ -6,15 +6,15 @@
 \title{Irritable Bowel Syndrome Dose Response data with covariates}
 \format{
 A data frame with 369 observations on the following 2 variables.
-  \describe{
-    \item{\code{gender}}{a factor specifying the gender}
-    \item{\code{dose}}{a numeric vector}
-    \item{\code{resp}}{a numeric vector}
-  }
+\describe{
+\item{\code{gender}}{a factor specifying the gender}
+\item{\code{dose}}{a numeric vector}
+\item{\code{resp}}{a numeric vector}
+}
 }
 \source{
 Biesheuvel, E. and Hothorn, L. A. (2002). Many-to-one comparisons in
-stratified designs, \emph{Biometrical Journal}, \bold{44}, 101--116
+stratified designs, \emph{Biometrical Journal}, \strong{44}, 101--116
 }
 \usage{
 data(IBScovars)

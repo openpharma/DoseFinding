@@ -81,14 +81,14 @@ directly in \samp{resp}, \samp{S} and \samp{df}. See also the Description above 
 
 \item{placAdj}{Logical, if true, it is assumed that placebo-adjusted
 estimates are specified in \samp{resp} (only possible for \samp{type =
-"general"}).}
+  "general"}).}
 
-\item{bnds}{Bounds for non-linear parameters. If missing the the default bounds from \code{\link{defBnds}} is used.
+\item{bnds}{Bounds for non-linear parameters. If missing the the default bounds from \code{\link[=defBnds]{defBnds()}} is used.
 
-  When the dose-response model has only one non-linear parameter (for example Emax or exponential model), \samp{bnds}
-  needs to be a vector containing upper and lower bound. For models with two non-linear parameters \samp{bnds} needs
-  to be a matrix containing the bounds in the rows, see the Description section of \code{\link{defBnds}} for details
-  on the formatting of the bounds for the individual models.}
+When the dose-response model has only one non-linear parameter (for example Emax or exponential model), \samp{bnds}
+needs to be a vector containing upper and lower bound. For models with two non-linear parameters \samp{bnds} needs
+to be a matrix containing the bounds in the rows, see the Description section of \code{\link[=defBnds]{defBnds()}} for details
+on the formatting of the bounds for the individual models.}
 
 \item{df}{Degrees of freedom to use in case of \samp{type = "general"}. If this argument is missing \samp{df = Inf}
 is used. For \samp{type = "normal"} this argument is ignored as the exact degrees of freedom can be deduced from
@@ -101,14 +101,14 @@ a grid optimization is performed and the best value is used as starting value fo
 
 \item{control}{A list with entries: "nlminbcontrol", "optimizetol" and "gridSize".
 
-  The entry nlminbcontrol needs to be a list and it is passed directly to control argument in the nlminb function,
-  that is used internally for models with 2 nonlinear parameters.
+The entry nlminbcontrol needs to be a list and it is passed directly to control argument in the nlminb function,
+that is used internally for models with 2 nonlinear parameters.
 
-  The entry optimizetol is passed directly to the tol argument of the optimize function, which is used for models
-  with 1 nonlinear parameters.
+The entry optimizetol is passed directly to the tol argument of the optimize function, which is used for models
+with 1 nonlinear parameters.
 
-  The entry gridSize needs to be a list with entries dim1 and dim2 giving the size of the grid for the gridsearch in
-  1d or 2d models.}
+The entry gridSize needs to be a list with entries dim1 and dim2 giving the size of the grid for the gridsearch in
+1d or 2d models.}
 
 \item{addArgs}{List containing two entries named "scal" and "off" for the "betaMod" and "linlog" model. When addArgs
 is NULL the following defaults is used \samp{list(scal = 1.2*max(doses), off = 0.01*max(doses))}.}
@@ -121,31 +121,31 @@ is NULL the following defaults is used \samp{list(scal = 1.2*max(doses), off = 0
 ignored.}
 
 \item{predType, newdata, doseSeq, se.fit}{predType determines whether predictions are returned for the full model
- (including potential covariates), the ls-means (SAS type) or the effect curve (difference to placebo).
+(including potential covariates), the ls-means (SAS type) or the effect curve (difference to placebo).
 
- newdata gives the covariates to use in producing the predictions (for predType = "full-model"), if missing the
- covariates used for fitting are used.
+newdata gives the covariates to use in producing the predictions (for predType = "full-model"), if missing the
+covariates used for fitting are used.
 
- doseSeq dose-sequence on where to produce predictions (for predType = "effect-curve" and predType = "ls-means"). If
- missing the doses used for fitting are used.
+doseSeq dose-sequence on where to produce predictions (for predType = "effect-curve" and predType = "ls-means"). If
+missing the doses used for fitting are used.
 
- se.fit: logical determining, whether the standard error should be calculated.}
+se.fit: logical determining, whether the standard error should be calculated.}
 
 \item{CI, level, plotData, plotGrid, colMn, colFit}{Arguments for plot method: \samp{CI} determines whether confidence
 intervals should be plotted. \samp{level} determines the level of the confidence intervals. \samp{plotData}
 determines how the data are plotted: Either as means or as means with CI, raw data or none. In case of \samp{type =
-"normal"} and covariates the ls-means are displayed, when \samp{type = "general"} the option "raw" is not available.
+ "normal"} and covariates the ls-means are displayed, when \samp{type = "general"} the option "raw" is not available.
 \samp{colMn} and \samp{colFit} determine the colors of fitted model and the raw means.}
 
 \item{k}{Penalty to use for model-selection criterion (AIC uses 2, BIC uses log(n)).}
 }
 \value{
 An object of class DRMod. Essentially a list containing information about the fitted model coefficients, the
-  residual sum of squares (or generalized residual sum of squares),
+residual sum of squares (or generalized residual sum of squares),
 }
 \description{
 Fits a dose-response model. Built-in dose-response models are "linlog", "linear", "quadratic", "emax", "exponential",
-"sigEmax", "betaMod" and "logistic" (see \code{\link{drmodels}}).
+"sigEmax", "betaMod" and "logistic" (see \code{\link[=drmodels]{drmodels()}}).
 }
 \details{
 When \samp{type = "normal"} ordinary least squares is used and additional additive covariates can be specified in
@@ -167,8 +167,8 @@ For details on the implemented numerical optimizer see the Details section below
 Details on numerical optimizer for model-fitting:\cr For linear models fitting is done using numerical linear algebra
 based on the QR decomposition.  For nonlinear models numerical optimization is performed only in the nonlinear
 parameters in the model and optimizing over the linear parameters in each iteration (similar as the Golub-Pereyra
-implemented in \code{\link{nls}}). For models with 1 nonlinear parameter the \code{\link{optimize}} function is used
-for 2 nonlinear parameters the \code{\link{nlminb}} function is used. The starting value is generated using a
+implemented in \code{\link[=nls]{nls()}}). For models with 1 nonlinear parameter the \code{\link[=optimize]{optimize()}} function is used
+for 2 nonlinear parameters the \code{\link[=nlminb]{nlminb()}} function is used. The starting value is generated using a
 grid-search (with the grid size specified via \samp{control$gridSize}), or can directly be handed over via
 \samp{start}.
 
@@ -252,12 +252,12 @@ gAIC(gfit2)
 }
 \references{
 Pinheiro, J. C., Bornkamp, B., Glimm, E. and Bretz, F. (2014) Model-based dose finding under model
-  uncertainty using general parametric models, \emph{Statistics in Medicine}, \bold{33}, 1646--1661
+uncertainty using general parametric models, \emph{Statistics in Medicine}, \strong{33}, 1646--1661
 
-  Seber, G.A.F. and Wild, C.J. (2003). Nonlinear Regression, Wiley.
+Seber, G.A.F. and Wild, C.J. (2003). Nonlinear Regression, Wiley.
 }
 \seealso{
-\code{\link{defBnds}}, \code{\link{drmodels}}
+\code{\link[=defBnds]{defBnds()}}, \code{\link[=drmodels]{drmodels()}}
 }
 \author{
 Bjoern Bornkamp

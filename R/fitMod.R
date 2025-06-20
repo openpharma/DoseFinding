@@ -8,15 +8,15 @@
 #'
 #' For the logistic model the first row corresponds to the ED50 parameter and the second row to the delta parameter. For
 #' the sigmoid Emax model the first row corresponds to the ED50 parameter and the second row to the h parameter, while
-#' for the beta model first and second row correspond to the delta1 and delta2 parameters. See \code{\link{logistic}},
-#' \code{\link{sigEmax}} and \code{\link{betaMod}} for details.
+#' for the beta model first and second row correspond to the delta1 and delta2 parameters. See [logistic()],
+#' [sigEmax()] and [betaMod()] for details.
 #'
 #'
 #' @param mD Maximum dose in the study.
 #' @param emax,exponential,logistic,sigEmax,betaMod values for the nonlinear parameters for these model-functions
 #' @return List containing bounds for the model parameters.
 #' @author Bjoern Bornkamp
-#' @seealso \code{\link{fitMod}}
+#' @seealso [fitMod()]
 #' @examples
 #'
 #'   defBnds(mD = 1)
@@ -34,7 +34,7 @@ defBnds <- function(mD, emax = c(0.001, 1.5)*mD,
 #' Fit non-linear dose-response model
 #'
 #' Fits a dose-response model. Built-in dose-response models are "linlog", "linear", "quadratic", "emax", "exponential",
-#' "sigEmax", "betaMod" and "logistic" (see \code{\link{drmodels}}).
+#' "sigEmax", "betaMod" and "logistic" (see [drmodels()]).
 #'
 #' When \samp{type = "normal"} ordinary least squares is used and additional additive covariates can be specified in
 #' \samp{addCovars}. The underlying assumption is hence normally distributed data and homoscedastic variance.
@@ -55,8 +55,8 @@ defBnds <- function(mD, emax = c(0.001, 1.5)*mD,
 #' Details on numerical optimizer for model-fitting:\cr For linear models fitting is done using numerical linear algebra
 #' based on the QR decomposition.  For nonlinear models numerical optimization is performed only in the nonlinear
 #' parameters in the model and optimizing over the linear parameters in each iteration (similar as the Golub-Pereyra
-#' implemented in \code{\link{nls}}). For models with 1 nonlinear parameter the \code{\link{optimize}} function is used
-#' for 2 nonlinear parameters the \code{\link{nlminb}} function is used. The starting value is generated using a
+#' implemented in [nls()]). For models with 1 nonlinear parameter the [optimize()] function is used
+#' for 2 nonlinear parameters the [nlminb()] function is used. The starting value is generated using a
 #' grid-search (with the grid size specified via \samp{control$gridSize}), or can directly be handed over via
 #' \samp{start}.
 #'
@@ -70,7 +70,7 @@ defBnds <- function(mD, emax = c(0.001, 1.5)*mD,
 #' @param data Data frame containing the variables referenced in dose and resp if \samp{data} is not specified it is
 #'   assumed that \samp{dose} and \samp{resp} are variables referenced from data (and no vectors)
 #' @param model The dose-response model to be used for fitting the data. Built-in models are "linlog", "linear",
-#'   "quadratic", "emax", "exponential", "sigEmax", "betaMod" and "logistic" (see \link{drmodels}).
+#'   "quadratic", "emax", "exponential", "sigEmax", "betaMod" and "logistic" (see [drmodels]).
 #' @param S The inverse weighting matrix used in case, when \samp{type = "general"}, see Description. For later
 #'   inference statements (vcov or predict methods) it is assumed this is the estimated covariance of the estimates in
 #'   the first stage fit.
@@ -81,11 +81,11 @@ defBnds <- function(mD, emax = c(0.001, 1.5)*mD,
 #' @param placAdj Logical, if true, it is assumed that placebo-adjusted
 #'   estimates are specified in \samp{resp} (only possible for \samp{type =
 #'   "general"}).
-#' @param bnds Bounds for non-linear parameters. If missing the the default bounds from \code{\link{defBnds}} is used.
+#' @param bnds Bounds for non-linear parameters. If missing the the default bounds from [defBnds()] is used.
 #'
 #'   When the dose-response model has only one non-linear parameter (for example Emax or exponential model), \samp{bnds}
 #'   needs to be a vector containing upper and lower bound. For models with two non-linear parameters \samp{bnds} needs
-#'   to be a matrix containing the bounds in the rows, see the Description section of \code{\link{defBnds}} for details
+#'   to be a matrix containing the bounds in the rows, see the Description section of [defBnds()] for details
 #'   on the formatting of the bounds for the individual models.
 #' @param df Degrees of freedom to use in case of \samp{type = "general"}. If this argument is missing \samp{df = Inf}
 #'   is used. For \samp{type = "normal"} this argument is ignored as the exact degrees of freedom can be deduced from
@@ -108,9 +108,9 @@ defBnds <- function(mD, emax = c(0.001, 1.5)*mD,
 #' @return An object of class DRMod. Essentially a list containing information about the fitted model coefficients, the
 #'   residual sum of squares (or generalized residual sum of squares),
 #' @author Bjoern Bornkamp
-#' @seealso \code{\link{defBnds}}, \code{\link{drmodels}}
+#' @seealso [defBnds()], [drmodels()]
 #' @references Pinheiro, J. C., Bornkamp, B., Glimm, E. and Bretz, F. (2014) Model-based dose finding under model
-#'   uncertainty using general parametric models, \emph{Statistics in Medicine}, \bold{33}, 1646--1661
+#'   uncertainty using general parametric models, *Statistics in Medicine*, **33**, 1646--1661
 #'
 #'   Seber, G.A.F. and Wild, C.J. (2003). Nonlinear Regression, Wiley.
 #' @examples

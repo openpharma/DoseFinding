@@ -6,12 +6,12 @@
 \title{Migraine Dose Response data}
 \format{
 A data frame with 517 columns corresponding to the patients that
- completed the trial
- \describe{
-   \item{\code{dose}}{a numeric vector containing the dose values}
-   \item{\code{painfree}}{number of treatment responders}
-   \item{\code{ntrt}}{number of subject per treatment group}
- }
+completed the trial
+\describe{
+\item{\code{dose}}{a numeric vector containing the dose values}
+\item{\code{painfree}}{number of treatment responders}
+\item{\code{ntrt}}{number of subject per treatment group}
+}
 }
 \source{
 http://clinicaltrials.gov/ct2/show/results/NCT00712725

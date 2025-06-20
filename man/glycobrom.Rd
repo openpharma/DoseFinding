@@ -6,15 +6,15 @@
 \title{Glycopyrronium Bromide dose-response data}
 \format{
 A data frame with 5 summary estimates (one per dose). Variables:
-  A data frame with 5 summary estimates (one per dose). Variables:
- \describe{
-   \item{\code{dose}}{a numeric vector containing the dose values}
-   \item{\code{fev1}}{a numeric vector containing the least square
-     mean per dose}
-   \item{\code{sdev}}{a numeric vector containing the standard errors
-     of the least square means per dose}
-   \item{\code{n}}{Number of participants analyzed per treatment group}
- }
+A data frame with 5 summary estimates (one per dose). Variables:
+\describe{
+\item{\code{dose}}{a numeric vector containing the dose values}
+\item{\code{fev1}}{a numeric vector containing the least square
+mean per dose}
+\item{\code{sdev}}{a numeric vector containing the standard errors
+of the least square means per dose}
+\item{\code{n}}{Number of participants analyzed per treatment group}
+}
 }
 \source{
 http://clinicaltrials.gov/ct2/show/results/NCT00501852

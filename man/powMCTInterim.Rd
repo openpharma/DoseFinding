@@ -96,5 +96,5 @@ Bornkamp, B., Zhou, J., Xi, D. and Cao W. (2025). Futility analyses for the MCP-
 on longitudinal models, \emph{arXiv:2406.19965}
 }
 \seealso{
-\code{\link{powMCT}} \code{\link{MCTtest}}, \code{\link{optContr}}
+\code{\link[=powMCT]{powMCT()}} \code{\link[=MCTtest]{MCTtest()}}, \code{\link[=optContr]{optContr()}}
 }

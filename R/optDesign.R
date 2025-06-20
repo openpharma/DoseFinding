@@ -37,7 +37,7 @@
 #' For details on the \samp{rndDesign} function, see Pukelsheim (1993), Chapter 12.
 #'
 #' @aliases optDesign plot.DRdesign calcCrit rndDesign
-#' @param models An object of class \samp{c(Mods, fullMod)}, see the \code{\link{Mods}} function for details. When an TD
+#' @param models An object of class \samp{c(Mods, fullMod)}, see the [Mods()] function for details. When an TD
 #'   optimal design should be calculated, the TD needs to exist for all models. If a D-optimal design should be
 #'   calculated, you need at least as many doses as there are parameters in the specified models.
 #' @param probs Vector of model probabilities for the models specified in \samp{models}, assumed in the same order as
@@ -59,7 +59,7 @@
 #'
 #'   For \samp{optimizer = "exact"} one always needs to specify the total sample size via \samp{n}.
 #' @param control List containing control parameters passed down to numerical optimization algorithms
-#'   (\code{\link{optim}}, \code{\link{nlminb}} or solnp function).\cr
+#'   ([optim()], [nlminb()] or solnp function).\cr
 #'
 #'   For \samp{type = "exact"} this should be a list with possible entries \samp{maxvls1} and \samp{maxvls2},
 #'   determining the maximum number of designs allowed for passing to the criterion function (default
@@ -67,7 +67,7 @@
 #'   addition there can be an entry \samp{groupSize} in case the patients are allocated a minimum group size is
 #'   required.
 #' @param optimizer Algorithm used for calculating the optimal design. Options "Nelder-Mead" and "nlminb" use the
-#'   \code{\link{optim}} and \code{\link{nlminb}} function and use a trigonometric transformation to turn the
+#'   [optim()] and [nlminb()] function and use a trigonometric transformation to turn the
 #'   constrained optimization problem into an unconstrained one (see Atkinson, Donev and Tobias, 2007, pages 130,131).
 #'
 #'   Option "solnp" uses the solnp function from the Rsolnp package, which implements an optimizer for non-linear
@@ -90,18 +90,18 @@
 #'   The first argument of \samp{userCrit} should be the vector of design weights, while the second argument should be
 #'   the \samp{doses} argument (see example below). Additional arguments to \samp{userCrit} can be passed via ...
 #' @param ...  For function \samp{optDesign} these are additional arguments passed to \samp{userCrit}.\cr \cr For
-#'   function \samp{plot.design} these are additional parameters passed to \code{\link{plot.Mods}}.\cr
+#'   function \samp{plot.design} these are additional parameters passed to [plot.Mods()].\cr
 #' @note In some cases (particularly when the number of doses is large, e.g. 7 or larger) it might be necessary to allow
 #'   a larger number of iterations in the algorithm (via the argument \samp{control}), particularly for the Nelder-Mead
 #'   algorithm. Alternatively one can use the solnp optimizer that is usually the most reliable, but not fastest option.
 #' @author Bjoern Bornkamp
-#' @seealso \code{\link{Mods}}, \code{\link{drmodels}}
+#' @seealso [Mods()], [drmodels()]
 #' @references Atkinson, A.C., Donev, A.N. and Tobias, R.D. (2007). Optimum Experimental Designs, with SAS, Oxford
 #'   University Press
 #'
 #'   Dette, H., Bretz, F., Pepelyshev, A. and Pinheiro, J. C. (2008). Optimal
-#' Designs for Dose Finding Studies, \emph{Journal of the American Statisical
-#' Association}, \bold{103}, 1225--1237
+#' Designs for Dose Finding Studies, *Journal of the American Statisical
+#' Association*, **103**, 1225--1237
 #'
 #'   Pinheiro, J.C., Bornkamp, B. (2017) Designing Phase II Dose-Finding Studies: Sample Size, Doses and Dose Allocation
 #'   Weights, in O'Quigley, J., Iasonos, A. and Bornkamp, B. (eds) Handbook of methods for designing, monitoring, and
@@ -376,7 +376,7 @@ optDesign <- function(models, probs, doses,
 #' @param design Argument for \samp{rndDesign} and \samp{calcCrit} functions: Numeric vector (or matrix) of allocation
 #'   weights for the different doses. The rows of the matrices need to sum to 1. Alternatively also an object of class
 #'   "DRdesign" can be used for \samp{rndDesign}. Note that there should be at least as many design points available as
-#'   there are parameters in the dose-response models selected in \code{models} (otherwise the code returns an NA).
+#'   there are parameters in the dose-response models selected in `models` (otherwise the code returns an NA).
 #'
 #' @rdname optDesign
 #' @export

@@ -1,5 +1,3 @@
-context("optimal designs")
-
 # TODO
 # * mixed Paper p. 1233, l. 2 (note the off and probably also the scal
 #   parameter were treated as unknown in this example in the paper, hence the

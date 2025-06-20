@@ -1,5 +1,3 @@
-context("planning models")
-
 # TODO
 # * what do we want to do with tests #3-5 (mostly plots)
 # * test #4 crashes in planMod

@@ -1,5 +1,3 @@
-context("Model Fitting")
-
 source("generate_test_datasets.R")
 
 # Generate data sets and compare results of fitDRModel to the result of nls and

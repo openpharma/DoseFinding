@@ -1,5 +1,3 @@
-context("Bayesian multiple contrast test")
-
 # TODO:
 # * maybe define common candidate models outside of test_that() calls?
 # * how do we check for equal p-values (calculated with MC algorighm)?

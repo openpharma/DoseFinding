@@ -1,5 +1,3 @@
-context("Optimal Contrasts")
-
 require_extra_packages <- function() {
   if (!(require("quadprog") && require("Rsolnp"))) {
     skip("packages quadprog and Rsolnp not available")

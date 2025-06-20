@@ -1,5 +1,3 @@
-context("maFitMod")
-
 data(biom)
 anMod <- lm(resp~factor(dose)-1, data=biom)
 drFit <- coef(anMod)

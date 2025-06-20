@@ -1,5 +1,3 @@
-context("power calculation binary and count data")
-
 ## general options
 mvt_control <- DoseFinding:::mvtnorm.control(maxpts=1e5, abseps = 0.0001)
 

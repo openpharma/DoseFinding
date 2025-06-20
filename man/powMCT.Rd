@@ -43,7 +43,7 @@ estimates.}
 \item{placAdj}{Logical, if true, it is assumed that the standard deviation
 or variance matrix of the placebo-adjusted estimates are specified in
 \samp{sigma} or \samp{S}, respectively. The contrast matrix has to be
-produced on placebo-adjusted scale, see \code{\link{optContr}}, so that the
+produced on placebo-adjusted scale, see \code{\link[=optContr]{optContr()}}, so that the
 coefficients are no longer contrasts (i.e. do not sum to 0).}
 
 \item{alternative}{Character determining the alternative for the multiple
@@ -116,12 +116,12 @@ powMCT(linMat, altModels = fmodels, placAdj=TRUE,
 \references{
 Pinheiro, J. C., Bornkamp, B., and Bretz, F. (2006). Design and
 analysis of dose finding studies combining multiple comparisons and modeling
-procedures, \emph{Journal of Biopharmaceutical Statistics}, \bold{16},
+procedures, \emph{Journal of Biopharmaceutical Statistics}, \strong{16},
 639--656
 }
 \seealso{
-\code{\link{powN}}, \code{\link{sampSizeMCT}},
-\code{\link{MCTtest}}, \code{\link{optContr}}, \code{\link{Mods}}
+\code{\link[=powN]{powN()}}, \code{\link[=sampSizeMCT]{sampSizeMCT()}},
+\code{\link[=MCTtest]{MCTtest()}}, \code{\link[=optContr]{optContr()}}, \code{\link[=Mods]{Mods()}}
 }
 \author{
 Bjoern Bornkamp

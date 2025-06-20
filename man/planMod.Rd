@@ -58,13 +58,13 @@ one dose-response model is provided the best fitting model is chosen using the A
 should be calculated.}
 
 \item{n, sigma, S}{Either a vector \samp{n} and \samp{sigma} or \samp{S} need to be specified.  When \samp{n} and
-  \samp{sigma} are specified it is assumed computations are made for a normal homoscedastic ANOVA model with group
-  sample sizes given by \samp{n} and residual standard deviation \samp{sigma}, i.e. the covariance matrix used for
-  the estimates is thus \code{sigma^2*diag(1/n)} and the degrees of freedom are calculated as
-  \code{sum(n)-nrow(contMat)}. When a single number is specified for \samp{n} it is assumed this is the sample size
-  per group and balanced allocations are used.\cr
+\samp{sigma} are specified it is assumed computations are made for a normal homoscedastic ANOVA model with group
+sample sizes given by \samp{n} and residual standard deviation \samp{sigma}, i.e. the covariance matrix used for
+the estimates is thus \code{sigma^2*diag(1/n)} and the degrees of freedom are calculated as
+\code{sum(n)-nrow(contMat)}. When a single number is specified for \samp{n} it is assumed this is the sample size
+per group and balanced allocations are used.\cr
 
-  When \samp{S} is specified this will be used as covariance matrix for the estimates.}
+When \samp{S} is specified this will be used as covariance matrix for the estimates.}
 
 \item{doses}{Doses to use}
 
@@ -86,10 +86,10 @@ effect Windows, as the mclapply function is used internally.}
 \item{showSimProgress}{In case of simulations show the progress using a progress-bar.}
 
 \item{bnds}{Bounds for non-linear parameters. This needs to be a list with list entries corresponding to the selected
-bounds. The names of the list entries need to correspond to the model names. The \code{\link{defBnds}} function
+bounds. The names of the list entries need to correspond to the model names. The \code{\link[=defBnds]{defBnds()}} function
 provides the default selection.}
 
-\item{addArgs}{See the corresponding argument in function \code{\link{fitMod}}. This argument is directly passed to
+\item{addArgs}{See the corresponding argument in function \code{\link[=fitMod]{fitMod()}}. This argument is directly passed to
 fitMod.}
 
 \item{object, digits}{object: A planMod object. digits: Digits in summary output}
@@ -175,7 +175,7 @@ plot(pObj, type = "ED", p = 0.5)
 TBD
 }
 \seealso{
-\code{\link{fitMod}}
+\code{\link[=fitMod]{fitMod()}}
 }
 \author{
 Bjoern Bornkamp

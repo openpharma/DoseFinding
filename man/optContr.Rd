@@ -78,13 +78,13 @@ non-centrality parameter of the underlying contrast test statistic:
 mean vector under the alternative and \eqn{S}{S} the covariance matrix
 associated with the estimate of \eqn{\mu}{mu}.  The optimal contrast is
 given by \deqn{c^{opt} \propto S^{-1}\left(\mu - \frac{\mu^{\prime}S^{-1}1}
-{1^\prime S^{-1} 1}\right),}{c propto S^(-1) (mu - mu'S^(-1)1)/(1'S^(-1)1),} 
+{1^\prime S^{-1} 1}\right),}{c propto S^(-1) (mu - mu'S^(-1)1)/(1'S^(-1)1),}
 see Pinheiro et al. (2014).
 }
 \details{
 Note that the directionality (i.e. whether in "increase" in the response
 variable is beneficial or a "decrease", is inferred from the specified
-\samp{models} object, see \code{\link{Mods}} for details).
+\samp{models} object, see \code{\link[=Mods]{Mods()}} for details).
 
 Constrained contrasts (type = "constrained") add the additional constraint
 in the optimization that the sign of the contrast coefficient for control
@@ -125,14 +125,14 @@ optContr(models, doses=dosPlac, S = S, placAdj = TRUE,
 \references{
 Bretz, F., Pinheiro, J. C., and Branson, M. (2005), Combining
 multiple comparisons and modeling techniques in dose-response studies,
-\emph{Biometrics}, \bold{61}, 738--748
+\emph{Biometrics}, \strong{61}, 738--748
 
 Pinheiro, J. C., Bornkamp, B., Glimm, E. and Bretz, F. (2014) Model-based
 dose finding under model uncertainty using general parametric models,
-\emph{Statistics in Medicine}, \bold{33}, 1646--1661
+\emph{Statistics in Medicine}, \strong{33}, 1646--1661
 }
 \seealso{
-\code{\link{MCTtest}}
+\code{\link[=MCTtest]{MCTtest()}}
 }
 \author{
 Bjoern Bornkamp

@@ -6,17 +6,17 @@
 \title{Neurodegenerative disease simulated longitudinal dose-finding data set}
 \format{
 A data frame with 100 observations on the following 2 variables.
- \describe{
-   \item{\code{resp}}{a numeric vector containing the response values}
-   \item{\code{dose}}{a numeric vector containing the dose values}
-   \item{\code{id}}{Patient ID}    
-   \item{\code{time}}{time of measurement}
- }
+\describe{
+\item{\code{resp}}{a numeric vector containing the response values}
+\item{\code{dose}}{a numeric vector containing the dose values}
+\item{\code{id}}{Patient ID}
+\item{\code{time}}{time of measurement}
+}
 }
 \source{
 Pinheiro, J. C., Bornkamp, B., Glimm, E. and Bretz, F. (2014)
 Model-based dose finding under model uncertainty using general parametric
-models, \emph{Statistics in Medicine}, \bold{33}, 1646--1661
+models, \emph{Statistics in Medicine}, \strong{33}, 1646--1661
 }
 \usage{
 data(neurodeg)

@@ -101,19 +101,19 @@ Dose-response model functions and gradients.
 
 Below are the definitions of the model functions:
 
-\bold{Emax model} \deqn{}{f(d,theta)=E0+Emax d/(ED50 + d).}\deqn{
+\strong{Emax model} \deqn{}{f(d,theta)=E0+Emax d/(ED50 + d).}\deqn{
 f(d,\theta)=E_0+E_{max}\frac{d}{ED_{50}+d}}{f(d,theta)=E0+Emax d/(ED50 +
 d).}
 
-\bold{Sigmoid Emax Model} \deqn{}{f(d,theta)=E0+Emax d^h/(ED50^h +
+\strong{Sigmoid Emax Model} \deqn{}{f(d,theta)=E0+Emax d^h/(ED50^h +
 d^h).}\deqn{
 f(d,\theta)=E_0+E_{max}\frac{d^h}{ED^h_{50}+d^h}}{f(d,theta)=E0+Emax
 d^h/(ED50^h + d^h).}
 
-\bold{Exponential Model} \deqn{}{f(d,theta)=E0+E1 (exp(d/delta)-1).}\deqn{
+\strong{Exponential Model} \deqn{}{f(d,theta)=E0+E1 (exp(d/delta)-1).}\deqn{
 f(d,\theta)=E_0+E_1(\exp(d/\delta)-1)}{f(d,theta)=E0+E1 (exp(d/delta)-1).}
 
-\bold{Beta model} \deqn{}{f(d,theta)=E0+Emax
+\strong{Beta model} \deqn{}{f(d,theta)=E0+Emax
 B(delta1,delta2)(d/scal)^delta1(1-d/scal)^delta2}\deqn{
 f(d,\theta)=E_0+E_{max}B(\delta_1,\delta_2)(d/scal)^{\delta_1}(1-d/scal)^{\delta_2}
 }{f(d,theta)=E0+Emax B(delta1,delta2)(d/scal)^delta1(1-d/scal)^delta2}
@@ -124,49 +124,49 @@ delta2^delta2).}\deqn{
 \delta_2^{\delta_2})}{B(delta1,delta2)=(delta1+delta2)^(delta1+delta2)/(delta1^delta1
 delta2^delta2).} and \eqn{scal}{scal} is a fixed dose scaling parameter.
 
-\bold{Linear Model} \deqn{}{f(d,theta)=E0+delta d.}\deqn{
+\strong{Linear Model} \deqn{}{f(d,theta)=E0+delta d.}\deqn{
 f(d,\theta)=E_0+\delta d}{f(d,theta)=E0+delta d.}
 
-\bold{Linear in log Model} \deqn{}{f(d,theta)=E0+delta log(d + off),}\deqn{
+\strong{Linear in log Model} \deqn{}{f(d,theta)=E0+delta log(d + off),}\deqn{
 f(d,\theta)=E_0+\delta \log(d + off)}{f(d,theta)=E0+delta log(d + off),}
 here \eqn{off}{off} is a fixed offset parameter.
 
-\bold{Logistic Model} \deqn{
+\strong{Logistic Model} \deqn{
 f(d, \theta) = E_0 + E_{\max}/\left\{1 + \exp\left[ \left(ED_{50} - d
 \right)/\delta \right] \right\}}{f(d,theta)=E0+Emax/(1 + exp((ED50-d)/delta)).}
 
-\bold{Quadratic Model} \deqn{}{f(d,theta)=E0+beta1 d+beta2 d^2.}\deqn{
+\strong{Quadratic Model} \deqn{}{f(d,theta)=E0+beta1 d+beta2 d^2.}\deqn{
 f(d,\theta)=E_0+\beta_1d+\beta_2d^2}{f(d,theta)=E0+beta1 d+beta2 d^2.} The
 standardized model equation for the quadratic model is \eqn{d+\delta
 d^2}{d+delta d^2}, with \eqn{\delta=\beta_2/\beta_1}{delta=beta2/beta1}.
 
-\bold{Linear Interpolation model}\cr The linInt model provides linear
+\strong{Linear Interpolation model}\cr The linInt model provides linear
 interpolation at the values defined by the nodes vector. In virtually all
 situations the nodes vector is equal to the doses used in the analysis. For
-example the \code{\link{Mods}} and the \code{\link{fitMod}} function
+example the \code{\link[=Mods]{Mods()}} and the \code{\link[=fitMod]{fitMod()}} function
 automatically use the doses that are used in the context of the function
-call as nodes. The guesstimates specified in the \code{\link{Mods}} function
+call as nodes. The guesstimates specified in the \code{\link[=Mods]{Mods()}} function
 need to be the treatment effects at the active doses standardized to the
-interval [0,1] (see the examples in the \code{\link{Mods}} function).
+interval [0,1] (see the examples in the \code{\link[=Mods]{Mods()}} function).
 }
 \details{
-The \bold{Emax model} is used to represent monotone, concave dose-response
+The \strong{Emax model} is used to represent monotone, concave dose-response
 shapes.  To distinguish it from the more general sigmoid emax model it is
 sometimes also called hyperbolic emax model.
 
-The \bold{sigmoid Emax} model is an extension of the (hyperbolic) Emax model
+The \strong{sigmoid Emax} model is an extension of the (hyperbolic) Emax model
 by introducing an additional parameter h, that determines the steepness of
 the curve at the ed50 value. The sigmoid Emax model describes monotonic,
 sigmoid dose-response relationships. In the toxicology literature this model
 is also called four-parameter log-logistic (4pLL) model.
 
-The \bold{quadratic} model is intended to capture a possible non-monotonic
+The \strong{quadratic} model is intended to capture a possible non-monotonic
 dose-response relationship.
 
-The \bold{exponential model} is intended to capture a possible sub-linear or
+The \strong{exponential model} is intended to capture a possible sub-linear or
 a convex dose-response relationship.
 
-The \bold{beta model} is intended to capture non-monotone dose-response
+The \strong{beta model} is intended to capture non-monotone dose-response
 relationships and is more flexible than the quadratic model.  The kernel of
 the beta model function consists of the kernel of the density function of a
 beta distribution on the interval [0,scal]. The parameter scal is not
@@ -176,19 +176,19 @@ can be set in most functions (\samp{fitMod}, \samp{Mods}) via the
 is used as default, where the maximum dose is inferred from other input to
 the respective function.
 
-The \bold{linear in log-dose} model is intended to capture concave shapes.
+The \strong{linear in log-dose} model is intended to capture concave shapes.
 The parameter \code{off} is not estimated in the code but set to a
 pre-specified value. It can be set in most functions (\samp{fitMod},
 \samp{Mods}) via the \samp{addArgs} argument, when omitted a value of
 \samp{0.01*(maximum dose)} is used as default, where the maximum dose is
 inferred from other input to the respective function.
 
-The \bold{logistic model} is intended to capture general monotone, sigmoid
+The \strong{logistic model} is intended to capture general monotone, sigmoid
 dose-response relationships. The logistic model and the sigmoid Emax model
 are closely related: The sigmoid Emax model is a logistic model in
 log(dose).
 
-The \bold{linInt model} provids linear interpolation of the means at the
+The \strong{linInt model} provids linear interpolation of the means at the
 doses. This can be used as a "nonparametric" estimate of the dose-response
 curve, but is probably most interesting for specifying a "nonparametric"
 truth during planning and assess how well parametric models work under a
@@ -248,5 +248,5 @@ studies - modeling approaches, \emph{in} N. Ting (ed.). \emph{Dose Finding
 in Drug Development}, Springer, New York, pp. 146--171
 }
 \seealso{
-\code{\link{fitMod}}
+\code{\link[=fitMod]{fitMod()}}
 }

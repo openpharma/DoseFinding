@@ -3,11 +3,11 @@
 #' Fit a dose-response model using Bayesian or bootstrap methods.
 #'
 #' For \samp{type = "Bayes"}, MCMC sampling from the posterior distribution of the dose-response model is done. The
-#' function assumes a multivariate normal distribution for \code{resp} with covariance matrix \code{S}, and this is
+#' function assumes a multivariate normal distribution for `resp` with covariance matrix `S`, and this is
 #' taken as likelihood function and combined with the prior distributions specified in prior to form the posterior
 #' distribution.
 #'
-#' For \samp{type = "bootstrap"}, a multivariate normal distribution for \code{resp} with covariance matrix \code{S} is
+#' For \samp{type = "bootstrap"}, a multivariate normal distribution for `resp` with covariance matrix `S` is
 #' assumed, and a large number of samples is drawn from this distribution. For each draw the fitMod function with
 #' \samp{type = "general"} is used to fit the draws from the multivariate normal distribution.
 #'
@@ -15,10 +15,10 @@
 #'
 #' @aliases bFitMod coef.bFitMod predict.bFitMod plot.bFitMod
 #' @param dose Numeric specifying the dose variable.
-#' @param resp Numeric specifying the response estimate corresponding to the doses in \code{dose}
-#' @param S Covariance matrix associated with the dose-response estimate specified via \code{resp}
+#' @param resp Numeric specifying the response estimate corresponding to the doses in `dose`
+#' @param S Covariance matrix associated with the dose-response estimate specified via `resp`
 #' @param model Dose-response model to fit, possible models are "linlog", "linear", "quadratic", "emax", "exponential",
-#'   "sigEmax", "betaMod" and "logistic", see \code{\link{drmodels}}.
+#'   "sigEmax", "betaMod" and "logistic", see [drmodels()].
 #' @param placAdj Whether or not estimates in "placAdj" are placebo-adjusted (note that the linear in log and the
 #'   logistic model cannot be fitted for placebo-adjusted data)
 #' @param type Character with allowed values "Bayes" and "bootstrap", Determining whether samples are drawn from the
@@ -26,26 +26,26 @@
 #' @param start Optional starting values for the dose-response parameters in the MCMC algorithm.
 #' @param prior List containing the information regarding the prior distributions for \samp{type = "Bayes"}.  The list
 #'   needs to have as many entries as there are model parameters. The ordering of the list entries should be the same as
-#'   in the arguments list of the model see (see \code{\link{drmodels}}).  For example for the Emax model the first
+#'   in the arguments list of the model see (see [drmodels()]).  For example for the Emax model the first
 #'   entry determines the prior for e0, the second to eMax and the third to ed50.
 #'
 #'   For each list entry the user has the choice to choose from 4 possible
-#' distributions: \itemize{ \item \code{norm}: Vector of length 2 giving mean
-#' and standard deviation.  \item \code{t}: Vector of length 3 giving median,
-#' scale and degrees of freedom of the t-distribution.  \item \code{lnorm}:
+#' distributions: \itemize{ \item `norm`: Vector of length 2 giving mean
+#' and standard deviation.  \item `t`: Vector of length 3 giving median,
+#' scale and degrees of freedom of the t-distribution.  \item `lnorm`:
 #' Vector of length 2 giving mean and standard deviation on log scale.  \item
-#' \code{beta}: Vector of length 4 giving lower and upper bound of the beta
+#' `beta`: Vector of length 4 giving lower and upper bound of the beta
 #' prior as well as the alpha and beta parameters of the beta distribution }
 #' @param nSim Desired number of samples to produce with the algorithm
 #' @param MCMCcontrol List of control parameters for the MCMC algorithm
-#' \itemize{ \item \code{thin} Thinning rate. Must be a positive integer.
-#' \item \code{w} Numeric of same length as number of parameters in the model,
-#' specifies the width parameters of the slice sampler.  \item \code{adapt}
-#' Logical whether to adapt the \code{w} (width) parameter of the slice sampler
+#' \itemize{ \item `thin` Thinning rate. Must be a positive integer.
+#' \item `w` Numeric of same length as number of parameters in the model,
+#' specifies the width parameters of the slice sampler.  \item `adapt`
+#' Logical whether to adapt the `w` (width) parameter of the slice sampler
 #' in a short trial run. The widths are chosen as IQR/1.3 of the trial run.  }
-#' @param control Same as the control argument in \code{\link{fitMod}}.
+#' @param control Same as the control argument in [fitMod()].
 #' @param bnds Bounds for non-linear parameters, in case \samp{type = "bootstrap"}. If missing the the default bounds
-#'   from \code{\link{defBnds}} is used.
+#'   from [defBnds()] is used.
 #' @param addArgs List containing two entries named "scal" and "off" for the "betaMod" and "linlog" model. When addArgs
 #'   is NULL the following defaults are used \samp{list(scal = 1.2*max(doses), off = 0.01*max(doses))}
 #' @param x,object A bFitMod object
@@ -53,7 +53,7 @@
 #' @return An object of class bFitMod, which is a list containing the matrix of posterior simulations plus some
 #'   additional information on the fitted model.
 #' @author Bjoern Bornkamp
-#' @seealso \code{\link{fitMod}}
+#' @seealso [fitMod()]
 #' @references Neal, R. M. (2003), Slice sampling, Annals of Statistics, 31, 705-767
 #' @examples
 #' data(biom)

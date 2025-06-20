@@ -25,7 +25,7 @@ MCTpval(
 \item{alternative}{Character determining the alternative for the multiple contrast trend test.}
 
 \item{control}{A list specifying additional control parameters for the \samp{qmvt} and \samp{pmvt} calls in the code,
-see also \code{\link{mvtnorm.control}} for details.}
+see also \code{\link[=mvtnorm.control]{mvtnorm.control()}} for details.}
 }
 \value{
 Numeric containing the calculated p-values.
@@ -33,7 +33,7 @@ Numeric containing the calculated p-values.
 \description{
 Calculate multiplicity adjusted p-values for a maximum contrast test corresponding to a set of contrasts and given a
 set of observed test statistics. This function is exported as it may be a useful building block and used in more
-complex testing situations that are not covered by \code{\link{MCTtest}}. Most users probably don't need to use this
+complex testing situations that are not covered by \code{\link[=MCTtest]{MCTtest()}}. Most users probably don't need to use this
 function.
 }
 \examples{
@@ -58,11 +58,11 @@ attr(test$tStat, "pVal")
 }
 \references{
 Pinheiro, J. C., Bornkamp, B., and Bretz, F. (2006). Design and analysis of dose finding studies
-  combining multiple comparisons and modeling procedures, \emph{Journal of Biopharmaceutical Statistics}, \bold{16},
-  639--656
+combining multiple comparisons and modeling procedures, \emph{Journal of Biopharmaceutical Statistics}, \strong{16},
+639--656
 }
 \seealso{
-\code{\link{MCTtest}}, \code{\link{optContr}}
+\code{\link[=MCTtest]{MCTtest()}}, \code{\link[=optContr]{optContr()}}
 }
 \author{
 Bjoern Bornkamp

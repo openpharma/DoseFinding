@@ -3,8 +3,8 @@
 
 #' MCPMod - Multiple Comparisons and Modeling
 #'
-#' Tests for a dose-response effect using a model-based multiple contrast test (see \code{\link{MCTtest}}), selects one
-#' (or several) model(s) from the significant shapes, fits them using \code{\link{fitMod}}.  For details on the method
+#' Tests for a dose-response effect using a model-based multiple contrast test (see [MCTtest()]), selects one
+#' (or several) model(s) from the significant shapes, fits them using [fitMod()].  For details on the method
 #' see Bretz et al. (2005).
 #'
 #'
@@ -12,22 +12,22 @@
 #' @inheritParams MCTtest
 #' @param selModel Optional character vector specifying the model selection
 #'   criterion for dose estimation.  Possible values are \itemize{ \item
-#'   \code{AIC}: Selects model with smallest AIC (this is the default) \item
-#'   \code{maxT}: Selects the model corresponding to the largest t-statistic.
-#'   \item \code{aveAIC}: Uses a weighted average of the models corresponding to
+#'   `AIC`: Selects model with smallest AIC (this is the default) \item
+#'   `maxT`: Selects the model corresponding to the largest t-statistic.
+#'   \item `aveAIC`: Uses a weighted average of the models corresponding to
 #'   the significant contrasts.  The model weights are chosen by the formula:
 #'   \eqn{w_i = \exp(-0.5AIC_i)/\sum_i(\exp(-0.5AIC_i))}{w_i =
 #'   exp(-0.5AIC_i)/sum(exp(-0.5AIC_i))} See Buckland et al. (1997) for details.
 #'   } For \samp{type = "general"} the "gAIC" is used.
 #' @param df Specify the degrees of freedom to use in case \samp{type = "general"}, for the call to
-#'   \code{\link{MCTtest}} and \code{\link{fitMod}}. Infinite degrees of (\samp{df=Inf}) correspond to the multivariate
+#'   [MCTtest()] and [fitMod()]. Infinite degrees of (\samp{df=Inf}) correspond to the multivariate
 #'   normal distribution.  For type = "normal" the degrees of freedom deduced from the AN(C)OVA fit are used and this
 #'   argument is ignored.
-#' @param doseType,Delta,p \samp{doseType} determines the dose to estimate, ED or TD (see also \code{\link{Mods}}), and
+#' @param doseType,Delta,p \samp{doseType} determines the dose to estimate, ED or TD (see also [Mods()]), and
 #'   \samp{Delta} and \samp{p} need to be specified depending on whether TD or ED is to be estimated.  See
-#'   \code{\link{TD}} and \code{\link{ED}} for details.
+#'   [TD()] and [ED()] for details.
 #' @param bnds Bounds for non-linear parameters. This needs to be a list with list entries corresponding to the selected
-#'   bounds. The names of the list entries need to correspond to the model names. The \code{\link{defBnds}} function
+#'   bounds. The names of the list entries need to correspond to the model names. The [defBnds()] function
 #'   provides the default selection.
 #' @param control Control list for the optimization.\cr A list with entries: "nlminbcontrol", "optimizetol" and
 #'   "gridSize".
@@ -43,29 +43,29 @@
 #' @return An object of class \samp{MCPMod}, which contains the fitted \samp{MCTtest} object as well as the \samp{DRMod}
 #'   objects and additional information (model selection criteria, dose estimates, selected models).
 #' @author Bjoern Bornkamp
-#' @seealso \code{\link{MCTtest}}, \code{\link{fitMod}}, \code{\link{drmodels}}
+#' @seealso [MCTtest()], [fitMod()], [drmodels()]
 #' @references Bretz, F., Pinheiro, J. C., and Branson, M. (2005), Combining multiple comparisons and modeling
-#'   techniques in dose-response studies, \emph{Biometrics}, \bold{61}, 738--748
+#'   techniques in dose-response studies, *Biometrics*, **61**, 738--748
 #'
 #'   Pinheiro, J. C., Bornkamp, B., and Bretz, F. (2006). Design and analysis of dose finding studies combining multiple
-#'   comparisons and modeling procedures, \emph{Journal of Biopharmaceutical Statistics}, \bold{16}, 639--656
+#'   comparisons and modeling procedures, *Journal of Biopharmaceutical Statistics*, **16**, 639--656
 #'
 #'   Pinheiro, J. C., Bretz, F., and Branson, M. (2006). Analysis of dose-response studies - modeling approaches,
-#'   \emph{in} N. Ting (ed.). \emph{Dose Finding in Drug Development}, Springer, New York, pp. 146--171
+#'   *in* N. Ting (ed.). *Dose Finding in Drug Development*, Springer, New York, pp. 146--171
 #'
 #'   Pinheiro, J. C., Bornkamp, B., Glimm, E. and Bretz, F. (2014) Model-based dose finding under model uncertainty
-#'   using general parametric models, \emph{Statistics in Medicine}, \bold{33}, 1646--1661
+#'   using general parametric models, *Statistics in Medicine*, **33**, 1646--1661
 #'
 #'   Schorning, K., Bornkamp, B., Bretz, F., & Dette, H. (2016). Model selection
-#' versus model averaging in dose finding studies. \emph{Statistics in
-#' Medicine}, \bold{35}, 4021--4040
+#' versus model averaging in dose finding studies. *Statistics in
+#' Medicine*, **35**, 4021--4040
 #'
 #'   Xun, X. and Bretz, F. (2017) The MCP-Mod methodology: Practical Considerations and The DoseFinding R package, in
 #'   O'Quigley, J., Iasonos, A. and Bornkamp, B. (eds) Handbook of methods for designing, monitoring, and analyzing
 #'   dose-finding trials, CRC press
 #'
 #'   Buckland, S. T., Burnham, K. P. and Augustin, N. H. (1997). Model selection an integral part of inference,
-#'   \emph{Biometrics}, \bold{53}, 603--618
+#'   *Biometrics*, **53**, 603--618
 #'
 #'   Seber, G.A.F. and Wild, C.J. (2003). Nonlinear Regression, Wiley.
 #' @examples

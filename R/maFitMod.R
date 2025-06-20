@@ -12,17 +12,17 @@
 #' @aliases predict.maFit plot.maFit print.maFit
 #' @param dose Numeric specifying the dose variable.
 #' @param resp Numeric specifying the response estimate corresponding
-#'   to the doses in \code{dose}
+#'   to the doses in `dose`
 #' @param S Covariance matrix associated with the dose-response
-#'   estimate specified via \code{resp}
+#'   estimate specified via `resp`
 #' @param models dose-response models to fit
 #' @param nSim Number of bootstrap simulations
 #' @param control Same as the control argument in
-#'   \code{\link{fitMod}}.
+#'   [fitMod()].
 #' @param bnds Bounds for non-linear parameters. This needs to be a
 #'   list with list entries corresponding to the selected bounds. The
 #'   names of the list entries need to correspond to the model
-#'   names. The \code{\link{defBnds}} function provides the default
+#'   names. The [defBnds()] function provides the default
 #'   selection.
 #' @param addArgs List containing two entries named "scal" and "off"
 #'   for the "betaMod" and "linlog" model. When addArgs is NULL the
@@ -32,7 +32,7 @@
 #'   dose-response models \samp{DRMod} objects, information on which model
 #'   was selected in each bootstrap and basic input parameters.
 #' @author Bjoern Bornkamp
-#' @seealso \code{\link{fitMod}}, \code{\link{bFitMod}}, \code{\link{drmodels}}
+#' @seealso [fitMod()], [bFitMod()], [drmodels()]
 #' @references Breiman, L. (1996). Bagging predictors. Machine learning, 24, 123-140.
 #' @examples
 #' data(biom)

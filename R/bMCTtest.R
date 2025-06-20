@@ -2,7 +2,7 @@
 #'
 #' This function performs a Bayesian multiple contrast test using normal mixture priors for the response on each dose,
 #' as proposed in Fleischer et al. (2022). For a general description of the multiple contrast test see
-#' \code{\link{MCTtest}}.
+#' [MCTtest()].
 #'
 #' If \samp{type = "normal"}, an ANCOVA model based on a homoscedastic normality assumption is fitted and posteriors for
 #' dose-response and contrast vectors are obtained assuming a known variance.
@@ -17,7 +17,7 @@
 #' contrast test if uninformative priors are used.
 #'
 #' For the default calculation of optimal contrasts the prior information is ignored (i.e. contrasts are calculated in
-#' the same way as in \code{\link{MCTtest}}).  Fleischer et al. (2022) discuss using contrasts that take the prior
+#' the same way as in [MCTtest()]).  Fleischer et al. (2022) discuss using contrasts that take the prior
 #' effective sample sizes into account, which can be slightly more favourable for the Bayesian MCT test. Such
 #' alternative contrasts can be directly handed over via the \samp{contMat} argument.
 #'
@@ -37,16 +37,16 @@
 #'   \samp{critV} this is used to derive critical values for Bayesian decision rule.
 #' @param contMat Contrast matrix to apply to the posterior dose-response estimates. The contrasts need to be in the
 #'   columns of the matrix (i.e. the column sums need to be 0). If not specified optimal contrasts are calculated using
-#'   \code{\link{optContr}}.
+#'   [optContr()].
 #' @param critV Supply a critical value for the maximum posterior probability of the contrasts being greater than zero
 #'   that needs to be surpassed to establish a non-flat dose-response. If this argument is NULL, this will be derived
 #'   from critical values for frequentist MCP-Mod using the provided \samp{alpha}.
 #' @return An object of class bMCTtest, a list containing the output.
 #' @author Marius Thomas
 #' @export
-#' @seealso \code{\link{MCTtest}}, \code{\link{optContr}}
+#' @seealso [MCTtest()], [optContr()]
 #' @references Fleischer, F., Bossert, S., Deng, Q., Loley, C. and Gierse, J. (2022).  Bayesian MCP-Mod,
-#'   \emph{Pharmaceutical Statistics}, \bold{21}, 654--670
+#'   *Pharmaceutical Statistics*, **21**, 654--670
 #' @examples
 #'
 #'

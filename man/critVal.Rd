@@ -23,7 +23,7 @@ corresponds to the multivariate normal distribution).}
 \item{alternative}{Character determining the alternative for the multiple contrast trend test.}
 
 \item{control}{A list specifying additional control parameters for the \samp{qmvt} and \samp{pmvt} calls in the code,
-see also \code{\link{mvtnorm.control}} for details.}
+see also \code{\link[=mvtnorm.control]{mvtnorm.control()}} for details.}
 }
 \description{
 Calculation of the critical value for a maximum contrast test. This is based on the equicoordinate quantile function
@@ -38,7 +38,7 @@ critVal(R, alpha = 0.05, df = Inf)
 
 }
 \seealso{
-\code{\link{powMCT}}, \code{\link{optContr}}, \code{\link{MCTtest}}
+\code{\link[=powMCT]{powMCT()}}, \code{\link[=optContr]{optContr()}}, \code{\link[=MCTtest]{MCTtest()}}
 }
 \author{
 Bjoern Bornkamp

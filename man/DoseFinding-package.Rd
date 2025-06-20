@@ -12,12 +12,12 @@ normal and general response variable.
 }
 \details{
 The main functions are:\cr
-\bold{MCTtest}: Implements a multiple contrast tests\cr
-\bold{powMCT}: Power calculations for multiple contrast tests\cr
-\bold{fitMod}: Fits non-linear dose-response models\cr
-\bold{optDesign}: Calculates optimal designs for dose-response models\cr
-\bold{MCPMod}: Performs MCPMod methodology\cr
-\bold{sampSize}: General function for sample size calculation\cr
+\strong{MCTtest}: Implements a multiple contrast tests\cr
+\strong{powMCT}: Power calculations for multiple contrast tests\cr
+\strong{fitMod}: Fits non-linear dose-response models\cr
+\strong{optDesign}: Calculates optimal designs for dose-response models\cr
+\strong{MCPMod}: Performs MCPMod methodology\cr
+\strong{sampSize}: General function for sample size calculation\cr
 }
 \examples{
 
@@ -52,19 +52,19 @@ desTD <- optDesign(fmodels, weights, Delta=0.2, designCrit="TD")
 \references{
 Bornkamp, B., Bretz, F., Dette, H. and Pinheiro, J. C. (2011).
 Response-Adaptive Dose-Finding under model uncertainty, \emph{Annals of
-Applied Statistics}, \bold{5}, 1611--1631
+Applied Statistics}, \strong{5}, 1611--1631
 
 Bornkamp B., Pinheiro J. C., and Bretz, F. (2009). MCPMod: An R Package for
 the Design and Analysis of Dose-Finding Studies, \emph{Journal of
-Statistical Software}, \bold{29}(7), 1--23
+Statistical Software}, \strong{29}(7), 1--23
 
 Bretz, F., Pinheiro, J. C., and Branson, M. (2005), Combining multiple
 comparisons and modeling techniques in dose-response studies,
-\emph{Biometrics}, \bold{61}, 738--748
+\emph{Biometrics}, \strong{61}, 738--748
 
 Dette, H., Bretz, F., Pepelyshev, A. and Pinheiro, J. C. (2008). Optimal
 Designs for Dose Finding Studies, \emph{Journal of the American Statisical
-Association}, \bold{103}, 1225--1237
+Association}, \strong{103}, 1225--1237
 
 O'Quigley, J., Iasonos, A. and Bornkamp, B. (2017) Handbook of methods for
 designing, monitoring, and analyzing dose-finding trials, CRC press, Part 3:
@@ -72,11 +72,11 @@ Dose-Finding Studies in Phase II
 
 Pinheiro, J. C., Bornkamp, B., and Bretz, F. (2006). Design and analysis of
 dose finding studies combining multiple comparisons and modeling procedures,
-\emph{Journal of Biopharmaceutical Statistics}, \bold{16}, 639--656
+\emph{Journal of Biopharmaceutical Statistics}, \strong{16}, 639--656
 
 Pinheiro, J. C., Bornkamp, B., Glimm, E. and Bretz, F. (2014) Model-based
 dose finding under model uncertainty using general parametric models,
-\emph{Statistics in Medicine}, \bold{33}, 1646--1661
+\emph{Statistics in Medicine}, \strong{33}, 1646--1661
 
 Seber, G.A.F. and Wild, C.J. (2003). Nonlinear Regression, Wiley
 }

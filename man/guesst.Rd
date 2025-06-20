@@ -45,7 +45,7 @@ Calculates guesstimates for standardized model parameter(s) using the general ap
 \details{
 Calculates guesstimates for the parameters \eqn{\theta_2}{theta2} of the standardized model function based on the
 prior expected percentage of the maximum effect at certain dose levels. Note that this function should be used
-together with the \code{\link{plot.Mods}} function to ensure that the guesstimates are reflecting the prior beliefs.
+together with the \code{\link[=plot.Mods]{plot.Mods()}} function to ensure that the guesstimates are reflecting the prior beliefs.
 
 For the logistic and sigmoid emax models at least two pairs (d,p) need to be specified.
 
@@ -126,12 +126,12 @@ plot(models)
 \references{
 Bornkamp B., Pinheiro J. C., and Bretz, F. (2009). MCPMod: An R
 Package for the Design and Analysis of Dose-Finding Studies, \emph{Journal
-of Statistical Software}, \bold{29}(7), 1--23
+of Statistical Software}, \strong{29}(7), 1--23
 
-  Pinheiro, J. C., Bretz, F., and Branson, M. (2006). Analysis of dose-response studies - modeling approaches,
-  \emph{in} N. Ting (ed.), \emph{Dose Finding in Drug Development}, Springer, New York, pp. 146--171
+Pinheiro, J. C., Bretz, F., and Branson, M. (2006). Analysis of dose-response studies - modeling approaches,
+\emph{in} N. Ting (ed.), \emph{Dose Finding in Drug Development}, Springer, New York, pp. 146--171
 }
 \seealso{
-\code{\link{emax}}, \code{\link{logistic}}, \code{\link{betaMod}}, \code{\link{sigEmax}},
-  \code{\link{quadratic}}, \code{\link{exponential}}, \code{\link{plot.Mods}}
+\code{\link[=emax]{emax()}}, \code{\link[=logistic]{logistic()}}, \code{\link[=betaMod]{betaMod()}}, \code{\link[=sigEmax]{sigEmax()}},
+\code{\link[=quadratic]{quadratic()}}, \code{\link[=exponential]{exponential()}}, \code{\link[=plot.Mods]{plot.Mods()}}
 }

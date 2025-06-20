@@ -77,7 +77,7 @@ size is iterated in bisection search algorithm.}
 \item{verbose}{Logical value indicating if a trace of the iteration progress of the bisection search algorithm should
 be displayed.}
 
-\item{...}{Arguments directly passed to the \code{\link{powMCT}} function in the \samp{sampSizeMCT} and \samp{powN}
+\item{...}{Arguments directly passed to the \code{\link[=powMCT]{powMCT()}} function in the \samp{sampSizeMCT} and \samp{powN}
 function.}
 
 \item{power, sumFct}{power is a numeric defining the desired summary power to achieve (in \samp{sampSizeMCT}).}
@@ -164,15 +164,15 @@ powN(upperN = 100, lowerN=10, step = 10, contMat = contMat,
 }
 \references{
 Pinheiro, J. C., Bornkamp, B., and Bretz, F. (2006). Design and analysis of dose finding studies
-  combining multiple comparisons and modeling procedures, \emph{Journal of Biopharmaceutical Statistics}, \bold{16},
-  639--656
+combining multiple comparisons and modeling procedures, \emph{Journal of Biopharmaceutical Statistics}, \strong{16},
+639--656
 
-  Pinheiro, J.C., Bornkamp, B. (2017) Designing Phase II Dose-Finding Studies: Sample Size, Doses and Dose Allocation
-  Weights, in O'Quigley, J., Iasonos, A. and Bornkamp, B. (eds) Handbook of methods for designing, monitoring, and
-  analyzing dose-finding trials, CRC press
+Pinheiro, J.C., Bornkamp, B. (2017) Designing Phase II Dose-Finding Studies: Sample Size, Doses and Dose Allocation
+Weights, in O'Quigley, J., Iasonos, A. and Bornkamp, B. (eds) Handbook of methods for designing, monitoring, and
+analyzing dose-finding trials, CRC press
 }
 \seealso{
-\code{\link{powMCT}}
+\code{\link[=powMCT]{powMCT()}}
 }
 \author{
 Jose Pinheiro, Bjoern Bornkamp

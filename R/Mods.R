@@ -5,7 +5,7 @@
 #' The Mods functions allows to define a set of dose-response models.  The function is used as input object for a number
 #' of other different functions.
 #'
-#' The dose-response models used in this package (see \code{\link{drmodels}} for details) are of form
+#' The dose-response models used in this package (see [drmodels()] for details) are of form
 #'
 #' \deqn{f(d) = \theta_0+\theta_1 f^0(d,\theta_2)}{f(d) = theta0+theta1
 #' f0(d,theta2)}
@@ -16,8 +16,8 @@
 #' One needs to hand over the effect at placebo and the maximum effect in the dose range, from which
 #' \eqn{\theta_0,\theta_1}{theta0,theta1} are then back-calculated, the output object is of class \samp{"Mods"}. This
 #' object can form the input for other functions to extract the mean response (\samp{getResp}) or target doses
-#' (\code{\link{TD}} and \code{\link{ED}}) corresponding to the models. It is also needed as input to the functions
-#' \code{\link{powMCT}}, \code{\link{optDesign}}
+#' ([TD()] and [ED()]) corresponding to the models. It is also needed as input to the functions
+#' [powMCT()], [optDesign()]
 #'
 #' Some models, for example the beta model (\samp{scal}) and the linlog model (\samp{off}) have parameters that are not
 #' estimated from the data, they need to be specified via the \samp{addArgs} argument.
@@ -32,7 +32,7 @@
 #'
 #' @aliases Mods getResp plot.Mods plotMods
 #' @param ...  In function Mods:\cr Dose-response model names with parameter values specifying the guesstimates for the
-#'   \eqn{\theta_2}{theta2} parameters. See \code{\link{drmodels}} for a complete list of dose-response models
+#'   \eqn{\theta_2}{theta2} parameters. See [drmodels()] for a complete list of dose-response models
 #'   implemented. See below for an example specification.\cr \cr In function plot.Mods:\cr Additional arguments to the
 #'   \samp{xyplot} call.
 #' @param doses Dose levels to be used, this needs to include placebo.
@@ -49,9 +49,9 @@
 #' @return Returns an object of class \samp{"Mods"}. The object contains the specified model parameter values and the
 #'   derived linear parameters (based on \samp{"placEff"} and \samp{"maxEff"}) in a list.
 #' @author Bjoern Bornkamp
-#' @seealso \code{\link{Mods}}, \code{\link{drmodels}}, \code{\link{optDesign}}, \code{\link{powMCT}}
+#' @seealso [Mods()], [drmodels()], [optDesign()], [powMCT()]
 #' @references Pinheiro, J. C., Bornkamp, B., and Bretz, F. (2006). Design and analysis of dose finding studies
-#'   combining multiple comparisons and modeling procedures, \emph{Journal of Biopharmaceutical Statistics}, \bold{16},
+#'   combining multiple comparisons and modeling procedures, *Journal of Biopharmaceutical Statistics*, **16**,
 #'   639--656
 #' @examples
 #'
@@ -309,8 +309,8 @@ plot.Mods <- function(x, nPoints = 200, superpose = FALSE, xlab = "Dose",
 }
 
 
-#' Calculate dose estimates for a fitted dose-response model (via \code{\link{fitMod}}, \code{\link{bFitMod}}) 
-#'  or \code{\link{maFitMod}}) or a \code{\link{Mods}} object
+#' Calculate dose estimates for a fitted dose-response model (via [fitMod()], [bFitMod()]) 
+#'  or [maFitMod()]) or a [Mods()] object
 #'
 #' @description The TD (target dose) is defined as the dose that achieves a target effect of Delta over placebo (if
 #' there are multiple such doses, the smallest is chosen):
@@ -329,7 +329,7 @@ plot.Mods <- function(x, nPoints = 200, superpose = FALSE, xlab = "Dose",
 #' \deqn{ED_p=\min\{x|f(x) > f(0) + p(f(dmax)-f(0))}{ EDp=min{x|f(x) > f(0) + p(f(dmax)-f(0))}}
 #'
 #' Note that this definition of the EDp is different from traditional definition based on the Emax model,
-#' where the EDp is defined relative to the \emph{asymptotic} maximum effect (rather than the maximum effect in the observed dose-range).
+#' where the EDp is defined relative to the *asymptotic* maximum effect (rather than the maximum effect in the observed dose-range).
 #'
 #' ED or TD calculation for bootstrap model averaging (maFit) objects is based on first calculating the pointwise median dose-response curve estimate. Then calculating the dose estimate based on this curve.
 #'
@@ -351,8 +351,8 @@ plot.Mods <- function(x, nPoints = 200, superpose = FALSE, xlab = "Dose",
 #' @return Returns the dose estimate
 #'
 #' @author Bjoern Bornkamp
-#' @seealso \code{\link{Mods}}, \code{\link{drmodels}},
-#' \code{\link{fitMod}}, \code{\link{bFitMod}}
+#' @seealso [Mods()], [drmodels()],
+#' [fitMod()], [bFitMod()]
 #'
 #' @examples
 #' ## example for creating a "full-model" candidate set placebo response

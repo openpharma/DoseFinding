@@ -43,7 +43,7 @@ plotMods(
 }
 \arguments{
 \item{...}{In function Mods:\cr Dose-response model names with parameter values specifying the guesstimates for the
-\eqn{\theta_2}{theta2} parameters. See \code{\link{drmodels}} for a complete list of dose-response models
+\eqn{\theta_2}{theta2} parameters. See \code{\link[=drmodels]{drmodels()}} for a complete list of dose-response models
 implemented. See below for an example specification.\cr \cr In function plot.Mods:\cr Additional arguments to the
 \samp{xyplot} call.}
 
@@ -90,14 +90,14 @@ be plotted. \samp{Delta} is the target effect to estimate for the TD.}
 }
 \value{
 Returns an object of class \samp{"Mods"}. The object contains the specified model parameter values and the
-  derived linear parameters (based on \samp{"placEff"} and \samp{"maxEff"}) in a list.
+derived linear parameters (based on \samp{"placEff"} and \samp{"maxEff"}) in a list.
 }
 \description{
 The Mods functions allows to define a set of dose-response models.  The function is used as input object for a number
 of other different functions.
 }
 \details{
-The dose-response models used in this package (see \code{\link{drmodels}} for details) are of form
+The dose-response models used in this package (see \code{\link[=drmodels]{drmodels()}} for details) are of form
 
 \deqn{f(d) = \theta_0+\theta_1 f^0(d,\theta_2)}{f(d) = theta0+theta1
 f0(d,theta2)}
@@ -108,8 +108,8 @@ depending on the used model.
 One needs to hand over the effect at placebo and the maximum effect in the dose range, from which
 \eqn{\theta_0,\theta_1}{theta0,theta1} are then back-calculated, the output object is of class \samp{"Mods"}. This
 object can form the input for other functions to extract the mean response (\samp{getResp}) or target doses
-(\code{\link{TD}} and \code{\link{ED}}) corresponding to the models. It is also needed as input to the functions
-\code{\link{powMCT}}, \code{\link{optDesign}}
+(\code{\link[=TD]{TD()}} and \code{\link[=ED]{ED()}}) corresponding to the models. It is also needed as input to the functions
+\code{\link[=powMCT]{powMCT()}}, \code{\link[=optDesign]{optDesign()}}
 
 Some models, for example the beta model (\samp{scal}) and the linlog model (\samp{off}) have parameters that are not
 estimated from the data, they need to be specified via the \samp{addArgs} argument.
@@ -210,11 +210,11 @@ plot(fmods)
 }
 \references{
 Pinheiro, J. C., Bornkamp, B., and Bretz, F. (2006). Design and analysis of dose finding studies
-  combining multiple comparisons and modeling procedures, \emph{Journal of Biopharmaceutical Statistics}, \bold{16},
-  639--656
+combining multiple comparisons and modeling procedures, \emph{Journal of Biopharmaceutical Statistics}, \strong{16},
+639--656
 }
 \seealso{
-\code{\link{Mods}}, \code{\link{drmodels}}, \code{\link{optDesign}}, \code{\link{powMCT}}
+\code{\link[=Mods]{Mods()}}, \code{\link[=drmodels]{drmodels()}}, \code{\link[=optDesign]{optDesign()}}, \code{\link[=powMCT]{powMCT()}}
 }
 \author{
 Bjoern Bornkamp

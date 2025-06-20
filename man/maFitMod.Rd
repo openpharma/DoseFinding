@@ -6,7 +6,7 @@
 \alias{plot.maFit}
 \alias{print.maFit}
 \title{Fit dose-response models via bootstrap model
-  averaging (bagging)}
+averaging (bagging)}
 \usage{
 maFitMod(dose, resp, S, models, nSim = 1000, control, bnds, addArgs = NULL)
 
@@ -43,18 +43,18 @@ estimate specified via \code{resp}}
 \item{nSim}{Number of bootstrap simulations}
 
 \item{control}{Same as the control argument in
-\code{\link{fitMod}}.}
+\code{\link[=fitMod]{fitMod()}}.}
 
 \item{bnds}{Bounds for non-linear parameters. This needs to be a
 list with list entries corresponding to the selected bounds. The
 names of the list entries need to correspond to the model
-names. The \code{\link{defBnds}} function provides the default
+names. The \code{\link[=defBnds]{defBnds()}} function provides the default
 selection.}
 
 \item{addArgs}{List containing two entries named "scal" and "off"
 for the "betaMod" and "linlog" model. When addArgs is NULL the
 following defaults are used \samp{list(scal = 1.2*max(doses), off
-= 0.01*max(doses))}}
+  = 0.01*max(doses))}}
 
 \item{object}{Object of class maFit}
 
@@ -91,8 +91,8 @@ scale). The default for \samp{trafo} is the identity function.}
 }
 \value{
 An object of class \samp{maFit}, which contains the fitted
-  dose-response models \samp{DRMod} objects, information on which model
-  was selected in each bootstrap and basic input parameters.
+dose-response models \samp{DRMod} objects, information on which model
+was selected in each bootstrap and basic input parameters.
 }
 \description{
 This function fits dose-response models in a bootstrap model
@@ -120,7 +120,7 @@ ED(mFit, direction = "increasing", p = 0.9)
 Breiman, L. (1996). Bagging predictors. Machine learning, 24, 123-140.
 }
 \seealso{
-\code{\link{fitMod}}, \code{\link{bFitMod}}, \code{\link{drmodels}}
+\code{\link[=fitMod]{fitMod()}}, \code{\link[=bFitMod]{bFitMod()}}, \code{\link[=drmodels]{drmodels()}}
 }
 \author{
 Bjoern Bornkamp

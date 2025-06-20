@@ -241,7 +241,7 @@ plotContr <- function(optContrObj, xlab = "Dose", ylab = "Contrast coefficients"
                      model = factor(rep(mod_nams, each = nD), levels=mod_nams),
                      levels = dimnames(cM)[[2]])
   ggplot2::ggplot(cMtr, ggplot2::aes(.data$dose, .data$resp, col=.data$model))+
-    ggplot2::geom_line(size=1.2)+
+    ggplot2::geom_line(linewidth=1.2)+
     ggplot2::geom_point()+
     ggplot2::theme_bw()+
     ggplot2::geom_point(size=1.8)+

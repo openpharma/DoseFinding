@@ -1,5 +1,3 @@
-context("dose response model functions")
-
 ud <- function(x) unname(drop(x))
 
 test_that("betaMod does not produce NaN for large delta1, delta2", {

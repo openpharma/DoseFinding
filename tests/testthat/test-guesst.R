@@ -1,5 +1,3 @@
-context("guesstimates")
-
 test_that("emax", {
   emx1 <- guesst(d=0.3, p=0.8, model="emax")
   expect_equal(unname(emax(0.3,0,1,emx1)),

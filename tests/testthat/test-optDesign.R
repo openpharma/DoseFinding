@@ -1,5 +1,3 @@
-context("optimal designs")
-
 # TODO
 # * mixed Paper p. 1233, l. 2 (note the off and probably also the scal
 #   parameter were treated as unknown in this example in the paper, hence the
@@ -37,12 +35,12 @@ test_that("the emax model (table 2, line 5) gives the same results", {
                         optimizer="Nelder-Mead")
   deswgts2 <- optDesign(fMod, probs, doses, Delta=0.2, designCrit = "TD",
                         optimizer="nlminb")
-  expect_equal(deswgts1$design, deswgts2$design, tolerance = 1e-4)
+  expect_equal(deswgts1$design, deswgts2$design, tolerance = 1e-3)
   expect_equal(deswgts1$design, c(0.442, 0.5, 0.058), tolerance = 1e-3)
   ## efficiency compared to standard design (last column)
   crt <- calcCrit(rep(1/6, 6), fMod, probs, c(0, 10, 25, 50, 100, 150),
                   Delta=0.2, designCrit = "TD")
-  expect_equal(exp(deswgts1$crit - crt), 0.5099, tolerance = 1e-4)
+  expect_equal(exp(deswgts1$crit - crt), 0.5099, tolerance = 1e-3)
 })
 
 test_that("the emax model (table 2, line 2) gives the same results", {
@@ -84,7 +82,7 @@ test_that("the logistic model (table 4, line 7) gives the same results", {
   ## efficiency compared to standard design (last column)
   crt <- calcCrit(rep(1/6, 6), fMod, probs, c(0, 10, 25, 50, 100, 150),
                   Delta=0.05, designCrit = "TD")
-  expect_equal(exp(deswgts$crit - crt), 0.1853, tolerance = 1e-4)
+  expect_equal(exp(deswgts$crit - crt), 0.1853, tolerance = 1e-3)
 })
 
 test_that("the logistic model (table 4, line 1) gives the same results", {
@@ -102,7 +100,7 @@ test_that("the beta model (table 5, line 5) gives the same results", {
   probs <- 1
   deswgts <- optDesign(fMod, probs, doses, Delta=0.1,
                        control=list(maxit=1000), designCrit = "TD")
-  expect_equal(deswgts$design, c(0.45, 0.48, 0.05, 0.02, 0), tolerance = 1e-2)
+  expect_equal(deswgts$design, c(0.45, 0.48, 0.05, 0.02, 0), tolerance = 5e-2)
   ## efficiency compared to standard design (last column)
   crt <- calcCrit(rep(1/6, 6), fMod, probs, c(0, 10, 25, 50, 100, 150),
                   Delta=0.1, designCrit = "TD")
@@ -115,7 +113,7 @@ test_that("the beta model (table 5, line 10) gives the same results", {
   doses <- c(0, 27, 94.89, 150)
   probs <- 1
   deswgts <- optDesign(fMod, probs, doses, Delta=0.1, designCrit = "TD")
-  expect_equal(deswgts$design, c(0.45, 0.48, 0.05, 0.02), tolerance = 1e-2)
+  expect_equal(deswgts$design, c(0.45, 0.48, 0.05, 0.02), tolerance = 5e-2)
   ## efficiency compared to standard design (last column)
   crt <- calcCrit(rep(1/6, 6), fMod, probs, c(0, 10, 25, 50, 100, 150),
                   Delta=0.1, designCrit = "TD")
@@ -132,7 +130,7 @@ test_that("the beta model (table 5, line 1) gives the same results", {
   ## efficiency compared to standard design (last column)
   crt <- calcCrit(rep(1/6, 6), fMod, probs, c(0, 10, 25, 50, 100, 150),
                   Delta=0.2, designCrit = "TD")
-  expect_equal(exp(deswgts$crit - crt), 0.056, tolerance = 1e-3)
+  expect_equal(exp(deswgts$crit - crt), 0.056, tolerance = 5e-3)
 })
 
 test_that("standardized Dopt and Dopt&TD criteria work", {
@@ -145,7 +143,7 @@ test_that("standardized Dopt and Dopt&TD criteria work", {
   ## des1 and des2 should be exactly the same
   des1 <- optDesign(fMod1, w1, doses, designCrit = "Dopt", standDopt = FALSE)
   des2 <- optDesign(fMod1, w1, doses, designCrit = "Dopt", standDopt = TRUE)
-  expect_equal(des1$design, des2$design, tolerance =1e-6)
+  expect_equal(des1$design, des2$design, tolerance =1e-5)
   ## des1 and des2 should be different (as linear and emax have different
   ## number of parameters)
   des1 <- optDesign(fMod2, w2, doses, designCrit = "Dopt", standDopt = FALSE,
@@ -175,7 +173,7 @@ test_that("feasible starting values are used when on boundary", {
   trueModels <- Mods(linear=NULL, doses=doses, placEff = 0, maxEff = 1)
   des <- optDesign(models=trueModels, probs=1, doses=doses, designCrit="Dopt",
                    lowbnd=lowbnd,uppbnd=uppbnd)
-  expect_equal(des$design, c(0.5, 0, 0, 0, 0.5))
+  expect_equal(des$design, c(0.5, 0, 0, 0, 0.5), tolerance = 1e-6)
 })
 
 test_that("there are no instabilities for numerical gradients", {

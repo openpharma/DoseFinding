@@ -327,7 +327,7 @@ We can use the `powMCTInterim` function to calculate these values. To do so, we 
 
 1. The contrast matrix for the models we want to test, which is provided via the argument `contMat`. 
 1. The covariance matrix at the final analysis, denoted by $S_{[0,1]}$ in @bornkamp2024 and provided via the argument `S_01` here. Here we assume that this matrix is diagonal, with constant entries $\sigma^2 / n$, where $\sigma$ is the residual standard deviation of the model and $n$ is the number of patients in the final analysis.
-1. For the conditional power, we also need to specify the assumed dose group means at the primary analysis time-point. This is provided via the argument `mu_assumed`. Typically, this is based on adding the observed placebo response rateto the originally planned treatment effect (before study start).
+1. For the conditional power, we also need to specify the assumed dose group means at the primary analysis time-point. This is provided via the argument `mu_assumed`. Typically, this is based on adding the observed placebo response rate to the originally planned treatment effect (before study start).
 
 Let's calculate these now for the example interim data from above:
 

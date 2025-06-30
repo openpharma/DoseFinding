@@ -24,12 +24,12 @@ library(DoseFinding)
 
 ## Data Simulation Code
 
-In order to illustrate the methodology, we are going to consider data as simulated in Section~4.1 of @bornkamp2024.
+In order to illustrate the methodology, we are going to consider data as simulated in Section 4.1 of @bornkamp2024.
 We include the corresponding functions here for completeness. This can be helpful for users who want to simulate their own data during trial design.
 
 ### Calculate Mean Response from Emax Model
 
-The `calcMean` function calculates the mean response at each dose and each time point under the Emax model with $\text{E}_0 = 0$ and $\text{ED}_{50} = 1$, and a pre-specified maximum effect at the last visit. 
+The `calcMean` function calculates the mean response at each dose and each time point under the Emax model with $\text{E}_0 = 0$ and $\text{ED}_{50} = 1$ with the $\text{E}_{max}$ parameter gradually increasing so that a pre-specified maximum effect is achieved at the last visit. 
 The function takes three arguments: `dose` is a vector of doses, `times` is a vector of time points, and `maxEff` is the maximum effect at the final analysis (i.e., for the highest dose at the last visit). It returns a matrix of mean responses, where the rows correspond to doses and the columns correspond to time points.
 
 ```{r}
@@ -46,7 +46,7 @@ calcMean <- function(dose, times, maxEff) {
 calcMean(
   dose = c(0, 0.5, 1, 2, 4),
   times = 0:10,
-  maxEff = 0.8
+  maxEff = 0.1
 )
 ```
 
@@ -85,7 +85,7 @@ parGen <- function(times, doses, maxEff, bslMean = 0, errSD = 0.55, rho = 0.9) {
 pars <- parGen(
   times = 0:10,
   doses = c(0, 0.5, 1, 2, 4),
-  maxEff = 0.8,
+  maxEff = 0.1,
   bslMean = 1.5
 )
 pars
@@ -292,7 +292,7 @@ doses <- c(0, 0.5, 1, 2, 4)
 models <- Mods(
   emax = 2,
   sigEmax = c(0.5, 3),
-  quadratic = -0.1,
+  quadratic = -0.2,
   doses = doses
 )
 
@@ -319,8 +319,6 @@ testFinal$tStat
 attr(testFinal$tStat, "pVal")
 ```
 
-So we see that the single critical value, which is multiplicity adjusted, is `r round(testFinal$critV, 3)`, and all test statistics are above this value. Therefore we can conclude that there is a significant dose-response relationship, based on the one-sided test at the 2.5% level.
-
 ### Futility Interim Analysis
 
 Here we show how to apply the futility analysis during the trial, as described in @bornkamp2024.
@@ -328,8 +326,8 @@ The idea is that based on the available interim data, we calculate the predictiv
 We can use the `powMCTInterim` function to calculate these values. To do so, we need two additional ingredients:
 
 1. The contrast matrix for the models we want to test, which is provided via the argument `contMat`. 
-1. The covariance matrix at the final analysis, called $S_{[0,1]}$ @bornkamp2024 and provided via the argument `S_01` here. Here we assume that this matrix is diagonal, with constant entries $\sigma^2 / n$, where $\sigma$ is the residual standard deviation of the model and $n$ is the number of patients in the final analysis.
-1. For the conditional power, we also need to specify the assumed treatment effect at the final analysis, which is the mean response at the highest dose level. This is provided via the argument `mu_assumed`. Typically, this is based on the originally planned treatment effect (before study start).
+1. The covariance matrix at the final analysis, denoted by $S_{[0,1]}$ in @bornkamp2024 and provided via the argument `S_01` here. Here we assume that this matrix is diagonal, with constant entries $\sigma^2 / n$, where $\sigma$ is the residual standard deviation of the model and $n$ is the number of patients in the final analysis.
+1. For the conditional power, we also need to specify the assumed dose group means at the primary analysis time-point. This is provided via the argument `mu_assumed`. Typically, this is based on adding the observed placebo response rateto the originally planned treatment effect (before study start).
 
 Let's calculate these now for the example interim data from above:
 
@@ -353,8 +351,9 @@ predPower <- powMCTInterim(
 predPower
 
 # Conditional power:
-deltaAssumed <- pars$MeanMat[, "Week10"] - pars$bslMean
-mu_assumed <- resultRepeated$mu0t + deltaAssumed
+deltaAssumed <- pars$MeanMat[, "Week10"] - pars$bslMean 
+deltaAssumed <- deltaAssumed - deltaAssumed[1]  # assumed treatment difference vs placebo
+mu_assumed <- resultRepeated$mu0t[1] + deltaAssumed # to obtain group means add observed placebo response
 
 condPower <- powMCTInterim(
   contMat = contMat,
@@ -369,14 +368,13 @@ condPower <- powMCTInterim(
 condPower
 ```
 
-So in this case, both the predictive and conditional power are very high (numerically equal to 1), which means that we would not stop the trial for futility.
 
 ## Simulation study
 
 In practice, it will in most cases be important to run a simulation study to evaluate the performance of the proposed combination of generalized MCP-Mod with MMRM. 
 In particular, in order to calibrate the futility threshold for the interim analysis, it is important to understand the power loss at the final analysis in relation to the futility threshold.
 The following code may serve as the starting point for such a simulation study, and can be adapted as needed.
-We include here the argument documentation in `roxygen2` format for simplicity. The code can also be used to reproduce the simulation study in Section~4.1 of @bornkamp2024.
+We include here the argument documentation in `roxygen2` format for simplicity. The code can also be used to reproduce the simulation study in Section 4.1 of @bornkamp2024.
 
 ```{r}
 ##' @param times Vector assessment times
@@ -564,3 +562,5 @@ scenRes <- run_scen(
   LPFV.t = 50, ia_timing = seq(0.3, 0.8, 0.05), delta_assumed = delta_assumed
 )
 ```
+
+## References

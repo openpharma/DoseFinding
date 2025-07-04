@@ -5,10 +5,11 @@ articles:
   analysis_normal: analysis_normal.html
   binary_data: binary_data.html
   faq: faq.html
+  longitudinal_data: longitudinal_data.html
   mult_regimen: mult_regimen.html
   overview: overview.html
   sample_size: sample_size.html
-last_built: 2025-06-20T15:51Z
+last_built: 2025-07-04T14:09Z
 urls:
   reference: https://openpharma.github.io/DoseFinding/reference
   article: https://openpharma.github.io/DoseFinding/articles

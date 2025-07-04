@@ -49,7 +49,8 @@ Numeric containing the calculated power values
 Calculates the predictive or conditional power for a multiple contrast test based on
 interim data, e.g. for a futility interim analysis. This function can also be applied
 to longitudinal endpoints, where at the time of interim analysis incomplete data is
-available.
+available. For more details see the vignette on longitudinal data analysis with
+MCP-Mod: \code{vignette("Longitudinal Data MCP-Mod", package = "DoseFinding")}.
 }
 \examples{
 

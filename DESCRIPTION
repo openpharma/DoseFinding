@@ -12,17 +12,22 @@ Authors@R: c(
    person(given = "Novartis Pharma AG", role = c("cph", "fnd")))
 Imports: ggplot2, lattice, mvtnorm
 Suggests: 
+    emmeans,
     numDeriv,
     Rsolnp,
     quadprog,
     parallel,
+    mmrm,
     multcomp,
     knitr,
     rmarkdown,
     MASS,
     testthat (>= 3.0.0),
+    tibble,
     RBesT,
-    nlme
+    nlme,
+    dplyr,
+    tidyr
 Maintainer: Marius Thomas <marius.thomas@novartis.com>
 Description: The DoseFinding package provides functions for the design and analysis
 	     of dose-finding experiments (with focus on pharmaceutical Phase

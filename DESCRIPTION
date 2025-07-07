@@ -11,7 +11,7 @@ Authors@R: c(
    person("Ludger", "Sandig", role = "aut"),
    person("Marius", "Thomas", role = c("aut", "cre"), email = "marius.thomas@novartis.com"),
    person("Daniel", "Sabanes Bove", role = "aut", email = "daniel.sabanes_bove@rconis.com",
-           comment = c(ORCID = "0000-0002-0176-9239"))
+           comment = c(ORCID = "0000-0002-0176-9239")),
    person(given = "Novartis Pharma AG", role = c("cph", "fnd")))
 Imports: ggplot2, lattice, mvtnorm
 Suggests: 

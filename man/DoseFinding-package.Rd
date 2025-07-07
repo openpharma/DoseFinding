@@ -98,6 +98,7 @@ Authors:
   \item Jose Pinheiro
   \item Frank Bretz
   \item Ludger Sandig
+  \item Daniel Sabanes Bove \email{daniel.sabanes_bove@rconis.com} (\href{https://orcid.org/0000-0002-0176-9239}{ORCID})
 }
 
 Other contributors:

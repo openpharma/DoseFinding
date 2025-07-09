@@ -1,3 +1,9 @@
+## Resubmission
+This is a resubmission. In this version I have made the following updates to reduce check time
+
+* added skips for long running tests
+* skipped evaluation for long-running vignette code
+
 ## R CMD check results
 
 0 errors | 0 warnings | 0 notes

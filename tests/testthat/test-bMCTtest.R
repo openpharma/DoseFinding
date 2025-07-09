@@ -207,6 +207,9 @@ test_that("unordered values in MCTtest work (unadjusted scale)", {
 })
 
 test_that("bMCTtest gives same results as RBesT two-sample analysis with non-informative prior", {
+  skip_on_cran()
+  skip_on_ci()
+  
   require_rbest()
   set.seed(23)
   dd <- getDFdataSet_testsMCT()
@@ -222,6 +225,9 @@ test_that("bMCTtest gives same results as RBesT two-sample analysis with non-inf
 
 
 test_that("bMCTtest gives same results as RBesT two-sample analysis with informative prior for control", {
+  skip_on_cran()
+  skip_on_ci()
+  
   require_rbest()
   set.seed(23)
   dd <- getDFdataSet_testsMCT()
@@ -238,6 +244,9 @@ test_that("bMCTtest gives same results as RBesT two-sample analysis with informa
 })
 
 test_that("bMCTtest gives same results as RBesT two-sample analysis with informative prior for both arms", {
+  skip_on_cran()
+  skip_on_ci()
+  
   require_rbest()
   set.seed(24)
   dd <- getDFdataSet_testsMCT()

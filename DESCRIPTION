@@ -1,14 +1,17 @@
 Package: DoseFinding
 Type: Package
 Title: Planning and Analyzing Dose Finding Experiments
-Version: 1.3-1.9000
-Date: 2025-03-07
+Version: 1.4-1.9000
+Date: 2025-07-08
 Authors@R: c(
-   person("Bjoern", "Bornkamp", email = "bjoern.bornkamp@novartis.com", comment = c(ORCID = "0000-0002-6294-8185"), role = c("aut")),
+   person("Bjoern", "Bornkamp", email = "bjoern.bornkamp@novartis.com", 
+   comment = c(ORCID = "0000-0002-6294-8185"), role = c("aut")),
    person("Jose", "Pinheiro", role = "aut"),
    person("Frank", "Bretz", role = "aut"),
    person("Ludger", "Sandig", role = "aut"),
    person("Marius", "Thomas", role = c("aut", "cre"), email = "marius.thomas@novartis.com"),
+   person("Daniel", "Sabanes Bove", role = "aut", email = "daniel.sabanes_bove@rconis.com",
+           comment = c(ORCID = "0000-0002-0176-9239")),
    person(given = "Novartis Pharma AG", role = c("cph", "fnd")))
 Imports: ggplot2, lattice, mvtnorm
 Suggests: 

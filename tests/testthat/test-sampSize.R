@@ -17,6 +17,7 @@ tFunc <- function(n) {
 #########################################################
 
 test_that("sampSize and sampSizeMCT work correctly", {
+  skip_on_cran()
   skip_on_ci()
 
   result1 <- sampSize(upperN = 80, targFunc = tFunc, target = 0.8, alRatio = rep(1, 6))
@@ -32,6 +33,7 @@ test_that("sampSize and sampSizeMCT work correctly", {
 })
 
 test_that("sampSize and sampSizeMCT work correctly with Ntype = total", {
+  skip_on_cran()
   skip_on_ci()
 
   result1 <- sampSize(upperN = 80, targFunc = tFunc, target = 0.8, alRatio = rep(1, 6), Ntype = "total")
@@ -47,6 +49,7 @@ test_that("sampSize and sampSizeMCT work correctly with Ntype = total", {
 })
 
 test_that("sampSize and sampSizeMCT work correctly with sumFct = min", {
+  skip_on_cran()
   skip_on_ci()
   
   result1 <- sampSize(upperN = 80, targFunc = tFunc, target = 0.8, alRatio = rep(1, 6), Ntype = "total")

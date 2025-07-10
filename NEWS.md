@@ -1,3 +1,13 @@
+# DoseFinding (development version)
+
+# DoseFinding 1.4-1
+* Added powMCTInterim function to implement conditional/predictive power
+calculations for interim analyses (#10)
+* Added vignette illustrating analysis of longitudinal data (#29, thanks to Daniel Sabanes Bove for work on this and powMCTInterim)
+* replaced uses of ggplot2::qplot, which is deprecated (#22)
+* Minor updates to documentation and testing (#27 and #30) 
+* added hex sticker (#28) 
+
 # DoseFinding 1.3-1
 * Added maFitMod function to implement fitting of dose-response models via
 model averaging (#11, thanks to Björn Bornkamp)

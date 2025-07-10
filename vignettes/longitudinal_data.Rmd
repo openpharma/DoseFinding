@@ -528,7 +528,7 @@ run_scen <- function(n_sim, rho, maxEff,
 
 These functions can be used as follows:
 
-```{r}
+```{r, eval = FALSE}
 doses <- c(0, 0.5, 1, 2, 4, 8) # doses
 alRatio <- c(2, 1, 1, 1, 2, 2) # allocation ratio for doses
 alpha <- 0.025 # for MCTtest

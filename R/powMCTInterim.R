@@ -5,7 +5,7 @@
 #' interim data, e.g. for a futility interim analysis. This function can also be applied
 #' to longitudinal endpoints, where at the time of interim analysis incomplete data is
 #' available. For more details see the vignette on longitudinal data analysis with
-#' MCP-Mod: \code{vignette("Longitudinal Data MCP-Mod", package = "DoseFinding")}.
+#' MCP-Mod: `vignette("Longitudinal Data MCP-Mod", package = "DoseFinding")`.
 #'
 #' @inheritParams powMCT
 #' @param S_0t The covariance matrix for the first stage estimates

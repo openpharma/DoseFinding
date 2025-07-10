@@ -1,3 +1,5 @@
+# DoseFinding (development version)
+
 # DoseFinding 1.4-1
 * Added powMCTInterim function to implement conditional/predictive power
 calculations for interim analyses (#10)

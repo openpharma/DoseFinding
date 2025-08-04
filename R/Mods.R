@@ -630,3 +630,454 @@ ED <- function(object, p, EDtype = c("continuous", "discrete"),
     }
   }
 }
+
+#' Simulate Effective Range Probability (ERP) for Dose-Response Trials
+#' 
+#' The \samp{simERP} function performs a simulation study to assess the precision of 
+#' dose-response curve estimation. More specifically, it assesses the reliability of 
+#' a target dose estimate (e.g. \eqn{ED_{90}}), using the proposed Effective Range 
+#' Probability (ERP) criterion. This function uses bootstrap model fitting for dose estimation.
+#'
+#' @param altModels An object of class \code{Mods} specifying the candidate dose-response models (see \code{DoseFinding::Mods}).
+#' @param ns A list of integer vectors, each indicating the per-arm sample sizes for one scenario.
+#' @param sigma Numeric. The assumed standard deviation of the response.
+#' @param p Numeric in (0,1). The target efficacy fraction for dose estimation (default \code{0.90}, i.e., \eqn{ED_{90}}).
+#' @param models Character vector of model names specifying which candidate models to fit (passed to \code{maFitMod}). 
+#'   If \code{NULL} (default), model names are extracted from \code{altModels}.
+#' @param bnds List or object specifying parameter bounds for the candidate models, as used by \code{\link{maFitMod}}. 
+#'   If \code{NULL} (default), defaults are generated via \code{\link{defBnds}} using the maximum dose. 
+#' @param direction Character. The direction of the effect ("increasing" or "decreasing"); passed to \code{ED()}.
+#' @param parallel Logical. Whether to parallelize the simulation using \code{clustermq::Q_rows} (default \code{TRUE}).
+#' @param nSim Integer. Number of simulation replicates per scenario (default 1000).
+#' @param nBoot Integer. Number of bootstrap samples per fit (default 1000).
+#' @param nJobs Integer. Number of parallel jobs (default 1000).
+#' 
+#' @details
+#' For each combination of true model, sample size, and simulation replicate, the function:
+#' \itemize{
+#'   \item Simulates data under the specified dose-response scenario.
+#'   \item Fits an linear model (with doses as factor) and bootstraps dose-response model fits using \code{maFitMod}.
+#'   \item Estimates \eqn{ED_p} (e.g., \eqn{ED_{90}}) via bootstrapping.
+#' }
+#' ERP is implicitly estimated as the probability the estimated \eqn{ED_p} falls within a
+#' user- or function-defined effective range (e.g., between \eqn{ED_{75}} and \eqn{ED_{97}}).
+#'
+#' Parallelization is enabled with \code{clustermq} for computational speed.
+#'
+#' @return
+#' An object of class \code{sampSizeERP}, a list containing:
+#' \describe{
+#'   \item{altModels}{The candidate model set (\code{Mods}) used.}
+#'   \item{simRes}{A data frame of simulation results: true model, sample size index, replicate, estimated EDp, etc.}
+#' }
+#' See \code{processData()} for functions to summarize and visualize these results.
+#'
+#' @references
+#' \itemize{
+#'   \item Pinheiro, J. and Bornkamp, B. (2017). Designing phase II dose-finding studies: sample size, doses, and dose allocation weights. In \emph{Handbook of Methods for Designing, Monitoring, and Analyzing Dose-Finding Trials}, pp. 229--246. Chapman and Hall/CRC.
+#'   \item Bornkamp, B., Bretz, F., Dmitrienko, A., Enas, G., Gaydos, B., Hsu, C.-H., König, F., Krams, M., Liu, Q., Neuenschwander, B., Parke, T., Pinheiro, J.C., Roy, A., Sax, R. and Shen, F. (2007). Innovative Approaches for Designing and Analyzing Adaptive Dose-Ranging Trials. \emph{Journal of Biopharmaceutical Statistics}, 17, 965--995.
+#'   \item Pinheiro, J., Bornkamp, B. and Bretz, F. (2006). Design and analysis of dose-finding studies combining multiple comparisons and modeling procedures. \emph{Journal of Biopharmaceutical Statistics}, 16(5), 639--656.
+#' }
+#'
+#' @seealso
+#' \code{\link{Mods}}, \code{\link{maFitMod}}, \code{\link{ED}}
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'   library(DoseFinding)
+#'   doses <- c(0, 25, 100, 300)
+#'   candMods <- Mods(emax = c(17, 80, 200), 
+#'                    sigEmax = rbind(c(77,3), c(175,1.5)),
+#'                    doses = doses)
+#'   nList <- list(c(50, 50, 50, 50), c(50, 100, 100, 150))
+#'   res <- simERP(altModels = candMods, ns = nList, sigma = 2.6, nSim = 100, nBoot = 100)
+#'   summary(res)  # summarize simulation output
+#' }
+
+simERP <- function(altModels, ns, sigma, p = 0.90, models = NULL, bnds = NULL, direction = "increasing",
+                   parallel = TRUE, nSim = 1000, nBoot = 1000, nJobs = 1000) {
+  ## Validate input 
+  if (!inherits(altModels, "Mods")) {
+    stop("'altModels' must be a DoseFinding Mods object (see ?DoseFinding::Mods).")
+  }
+  if (!is.list(ns) || length(ns) == 0) {
+    stop("'ns' must be a non-empty list of per-arm sample size vectors.")
+  }
+  doses <- attr(altModels, "doses")
+  if (any(vapply(ns, length, 1L) != length(doses))) {
+    stop("Each element in 'ns' must have the same length as the dose vector (", length(doses), ").")
+  }
+  if (any(unlist(ns) <= 0)) {
+    stop("All sample sizes in 'ns' must be positive.")
+  }
+  if (!is.numeric(sigma) || length(sigma) != 1 || !is.finite(sigma) || sigma <= 0) {
+    stop("'sigma' must be a single positive numeric value.")
+  }
+  if (!is.numeric(p) || length(p) != 1 || is.na(p) || p <= 0 || p >= 1) {
+    stop("'p' must be a single numeric value strictly between 0 and 1.")
+  }
+  if (!is.null(bnds) && !is.list(bnds)) {
+    stop("'bnds' must be a list or NULL.")
+  }
+  if (!is.character(direction) || !(direction %in% c("increasing", "decreasing"))) {
+    stop("'direction' must be one of 'increasing' or 'decreasing'.")
+  }
+  if (!is.logical(parallel) || length(parallel) != 1) {
+    stop("'parallel' must be TRUE or FALSE.")
+  }
+  for (param in c("nSim", "nBoot", "nJobs")) {
+    val <- get(param)
+    if (!is.numeric(val) || length(val) != 1 || is.na(val) || val < 1) {
+      stop(sprintf("'%s' must be a single positive integer.", param))
+    }
+  }
+  
+  ## Define parameters and create grid
+  sampSizeIdx <- 1:length(ns)
+  if (is.null(bnds)) bnds <- defBnds(max(doses))
+  if (is.null(models)) models <- names(altModels)
+  muAll <- getResp(altModels, doses = doses)
+  scenarios <- colnames(muAll)
+  varComb <- expand.grid(sim = 1:nSim, trueModelii = 1:ncol(muAll), sampSizeIdx = sampSizeIdx)
+  
+  ## Function to run one simulation
+  runSim <- function(muAll, doses, sampSizeIdx, bnds = bnds, ns, sim, models = models, 
+                     trueModelii, sigma, p, nBoot, direction) {
+    library("DoseFinding", lib = "~/Documents/projects/MCP-Mod/rlib")
+    n <- ns[[sampSizeIdx]]
+    
+    # Generate data based on dose-response model
+    y <- rep(muAll[, trueModelii], times = n) + rnorm(n = sum(n), mean = 0, sd = sigma)
+    fitlm <- lm(y ~ factor(doses) - 1, data = data.frame(y = y, doses = rep(doses, n)))
+    muHat <- coef(fitlm)
+    SHat <- vcov(fitlm)
+    
+    # From fitted model, generate parametric bootstrap samples
+    boots <- maFitMod(dose = doses, resp = muHat, S = SHat, models = models, nSim = nBoot, bnds = bnds)
+    
+    # Find the estimated EDp from the bootstrapped samples
+    EDp <- ED(boots, p = p, doses = doses, direction = direction)
+    
+    # Create dataframe with results
+    dfSim <- data.frame(trueModel = trueModelii, sim = sim, EDp = EDp, nTotal = sum(n), 
+                        sampSizeIdx = sampSizeIdx)
+    dfSim$n <- list(n)
+    
+    return(dfSim)
+  }
+  
+  ## Parallelization
+  if (parallel) {
+    listSim <- clustermq::Q_rows(fun = runSim,
+                                 df = varComb,
+                                 const = list(muAll = muAll, doses = doses, sigma = sigma, p = p, ns = ns,
+                                              bnds = bnds, models = models, nBoot = nBoot, direction = direction), 
+                                 pkgs = c("mvtnorm"), # eventually, put "DoseFinding" here too
+                                 n_jobs = min(nJobs, nrow(varComb)))
+  } else {
+    listSim <- lapply(1:nrow(varComb), function(idx) {
+      runSim(muAll = muAll, doses = doses, sampSizeIdx = varComb$sampSizeIdx[[idx]], sim = varComb$sim[idx], ns = ns, bnds = bnds,
+             trueModelii = varComb$trueModelii[idx], sigma = sigma, models = models, nBoot = nBoot, direction = direction, p = p)
+    })
+  }
+  
+  ## Clean output data
+  simRes <- do.call(rbind, listSim)
+  
+  out <- list(altModels = altModels, simRes = simRes, p = p, doses = doses, nSim = nSim, nBoot = nBoot)
+  class(out) <- "sampSizeERP"
+  out
+}
+
+processData <- function(results, pLB = 0.75, pUB = 0.97){
+  ## Validate input
+  for (nm in c("pLB", "pUB")) {
+    val <- get(nm)
+    if (!is.numeric(val) || length(val) != 1 || is.na(val) || val <= 0 || val >= 1) {
+      stop(sprintf("'%s' must be a single numeric value strictly between 0 and 1.", nm))
+    }
+  }
+  p <- results$p
+  if (!(pLB < p && p < pUB)) {
+    stop(sprintf("Must have pLB < p < pUB (got pLB = %g, p = %g, pUB = %g).", pLB, p, pUB))
+  }
+  
+  ## Extract simulation output
+  doses <- results$doses
+  altModels <- results$altModels
+  dfRaw <- results$simRes
+  
+  ## Create nice labels for plotting 
+  resp <- getResp(altModels, doses)
+  scenarios <- colnames(resp)
+  labels <- DoseFinding:::getModNams(attr(resp, "parList"))
+  names(labels) <- scenarios 
+  
+  ## True EDps
+  EDlbs <- ED(altModels, p = pLB)
+  EDps <- ED(altModels, p = p)
+  EDubs <- ED(altModels, p = pUB)
+  
+  ## Prepare data
+  dfRaw$trueEDlb <- EDlbs[dfRaw$trueModel]     # Map true EDlb values to rows
+  dfRaw$trueEDp <- EDps[dfRaw$trueModel]       # Map true EDp values to rows
+  dfRaw$trueEDub <- EDubs[dfRaw$trueModel]     # Map true EDub values to rows
+  dfRaw$inRange <- dfRaw$EDp >= dfRaw$trueEDlb & dfRaw$EDp <= dfRaw$trueEDub   # Check if EDp is in true range
+  dfRaw$belowEDlb <- dfRaw$EDp < dfRaw$trueEDlb      # Check if EDp is below true EDlb
+  dfRaw$aboveEDub <- dfRaw$EDp > dfRaw$trueEDub      # Check if EDp is above true EDub
+  dfRaw$missings <- is.na(dfRaw$EDp)
+  dfRaw$scenario <- scenarios[dfRaw$trueModel] 
+  dfRaw$modLabel <- factor(labels[dfRaw$scenario], levels = labels)
+  
+  aggMiss <- aggregate(missings ~ modLabel + sampSizeIdx + nTotal, 
+                       data = dfRaw, FUN = mean)
+  dfAgg <- aggregate(cbind(inRange, belowEDlb, aboveEDub) ~ 
+                       modLabel + sampSizeIdx + nTotal, 
+                     data = dfRaw, FUN = function(x) mean(x, na.rm = TRUE))
+  dfAgg <- merge(dfAgg, aggMiss,
+                 by = c("modLabel", "sampSizeIdx", "nTotal"),
+                 all.x = TRUE, all.y = FALSE, sort = FALSE)
+  
+  names(dfAgg)[names(dfAgg) == "inRange"] <- "pInRange"
+  names(dfAgg)[names(dfAgg) == "belowEDlb"] <- "pUnderLB"
+  names(dfAgg)[names(dfAgg) == "aboveEDub"] <- "pAboveUB"
+  names(dfAgg)[names(dfAgg) == "missings"] <- "pMissings"
+  
+  ord <- order(dfAgg$modLabel, dfAgg$sampSizeIdx, dfAgg$nTotal)
+  dfAgg <- dfAgg[ord, , drop = FALSE]
+  sampSizes <- with(unique(dfRaw[c("sampSizeIdx","n")]),
+                    setNames(n, as.numeric(sampSizeIdx)))
+  dfAgg$n <- sampSizes[dfAgg$sampSizeIdx]
+  
+  return(list(raw = dfRaw,
+              agg = dfAgg))
+}
+
+#' Summarize Simulation Results from `simERP`
+#'
+#' Summarizes the estimation performance from a `simERP` simulation, reporting the probability that the estimated target dose (e.g., \eqn{ED_{90}}) falls within a specified efficacy range. Also reports under- and over-estimation rates and missing results, stratified by candidate model and sample size scenario.
+#'
+#' @param x An object of class \code{sampSizeERP}, as returned by \code{\link{simERP}}.
+#' @param pLB Numeric in (0,1). Lower bound for the effective range (default 0.75).
+#' @param pUB Numeric in (0,1). Upper bound for the effective range (default 0.97).
+#' @param includeMissing Logical. Whether to include information on the proportion of missing EDp estimates (default \code{FALSE}).
+#'
+#' @details
+#' The function calls \code{processData} to aggregate simulation results by model and sample size.
+#' It computes the proportion of estimated EDp values that are within, below, or above the truth-derived effective range (\code{[ED_{lb}, ED_{ub}]}).
+#'
+#' @return
+#' An object of class \code{summary.sampSizeERP}, which is a list containing:
+#' \describe{
+#'   \item{tbl}{A summary data frame with columns by scenario/model: sample size, percentage in-range, underestimated, overestimated, and (optionally) missing.}
+#'   \item{lbl1}{A character string describing the estimation target.}
+#'   \item{lbl2}{A character string describing the bounds.}
+#' }
+#'
+#' @seealso
+#' \code{\link{simERP}}
+#'
+#' @examples
+#' \dontrun{
+#'  library(DoseFinding)
+#'  # Conduct a simulation (see simERP documentation)
+#'  res <- simERP(...your args...)
+#'  summary(res) # get summary
+#'  summary(res, includeMissing = TRUE) # include missing counts
+#' }
+#'
+#' @method summary sampSizeERP
+#' @export
+
+summary.sampSizeERP <- function(x, pLB = 0.75, pUB = 0.97, includeMissing = FALSE){
+  dfProcessed <- processData(x, pLB = pLB, pUB = pUB)
+  agg <- dfProcessed[["agg"]]
+  p <- x$p
+  nSim <- x$nSim
+  nBoot <- x$nBoot
+  
+  tbl <- data.frame(Model = agg$modLabel,
+                    `Sample size` = vapply(agg$n, function(x) paste(x, collapse = ", "), character(1)),
+                    `% In-range` = sprintf("%.1f%%", 100*agg$pInRange),
+                    `% Under` = sprintf("%.1f%%", 100*agg$pUnderLB),
+                    `% Over` = sprintf("%.1f%%", 100*agg$pAboveUB),
+                    `% NA` = sprintf("%.1f%%", 100*agg$pMissings),
+                    stringsAsFactors = FALSE,
+                    check.names = FALSE)
+  
+  if(!includeMissing) tbl[, "% NA"] <- NULL
+  
+  lbl <- paste0("ED", p*100, " Estimation Performance\n",
+                "Based on ", nSim, " simulations (per model/sample size) with ", nBoot, " bootstrapped samples\n",
+                "Lower bound: ED", pLB*100, "\nUpper bound: ED", pUB*100, "\n")
+  
+  out <- list(tbl = tbl, lbl = lbl)
+  class(out) <- "summary.sampSizeERP"
+  out
+}
+
+#' @export
+print.summary.sampSizeERP <- function(x, ...){
+  cat(x$lbl)
+  print(x$tbl, row.names = FALSE, right = TRUE)
+  invisible(x)
+}
+
+#' Plot Dose Estimation Performance from `simERP` Simulations
+#'
+#' Visualizes the distribution of estimated target doses (e.g., ED90) across candidate models and sample size scenarios from a `simERP` simulation. Results are displayed as jittered points (or violin plots) overlaid with true values and summary statistics. The color and panels help identify under-, in-, and over-estimations of the dose, in terms of specified efficacy bounds.
+#'
+#' @param x An object of class \code{sampSizeERP}, as returned by \code{\link{simERP}}.
+#' @param pLB Numeric in (0,1). Lower bound for the effective range (default 0.75).
+#' @param pUB Numeric in (0,1). Upper bound for the effective range (default 0.97).
+#' @param violin Logical; if \code{TRUE}, show violin plots (default \code{FALSE}).
+#' @param nDraws Optional integer. If specified and number of simulation replicates per combination exceeds this, a random subsample of \code{nDraws} is plotted (to avoid overplotting).
+#'
+#' @details
+#' For each candidate model and/or sample size, the function plots the distribution of estimated ED\eqn{_p} values from the simulation, color-coding according to whether estimates fall below, above, or within the true effective range (\eqn{[ED_{lb}, ED_{ub}]}). Dashed lines denote the true ED values for these bounds, as well as for ED\eqn{_p}. Additional annotation provides the proportion of estimates in each category.
+#'
+#' The plot layout adapts depending on how many sample size scenarios are included. With a single scenario, models are on the x-axis; with multiple scenarios, total sample size is shown for each model.
+#'
+#' @return
+#' A \code{\link[ggplot2]{ggplot}} object.
+#'
+#' @seealso
+#' \code{\link{simERP}}, \code{\link{summary.sampSizeERP}}
+#'
+#' @examples
+#' \dontrun{
+#'   library(DoseFinding)
+#'   # ... simulate results ...
+#'   ans <- simERP(...)                           # run simulation
+#'   plot(ans, c(0, 25, 100, 300))                # default plot
+#'   plot(ans, c(0, 25, 100, 300), violin = TRUE) # with violin plots
+#' }
+#'
+#' @method plot sampSizeERP
+#' @export
+
+plot.sampSizeERP <- function(x, pLB = 0.75, pUB = 0.97, violin = FALSE, nDraws = NULL){
+  df <- processData(x, pLB = pLB, pUB = pUB)
+  p <- x$p
+  raw <- df[["raw"]]
+  raw <- raw[!is.na(raw$EDp), ]
+  agg <- df[["agg"]]
+  
+  # to not overload plot, randomly sample datapoints if more than 150 simulations
+  ## MAYBE MAKE THIS OPTIONAL ARGUMENT ? ##
+  if (!is.null(nDraws)){
+    if (any(table(raw$sampSizeIdx, raw$trueModel) > nDraws)){
+      keep <- integer(0)
+      for (si in unique(raw$sampSizeIdx)) {
+        for (tm in unique(raw$trueModel)) {
+          idxs <- which(raw$sampSizeIdx == si & raw$trueModel == tm)
+          if (length(idxs) > nDraws) {
+            idxs <- sample(idxs, nDraws) }
+          keep <- c(keep, idxs) }
+      }
+      raw <- raw[keep, ]
+    }
+  }
+  
+  belowLbl <- paste0("Below ED", pLB*100)
+  aboveLbl <- paste0("Above ED", pUB*100)
+  
+  raw$status <- with(raw, ifelse(belowEDlb, belowLbl,
+                                 ifelse(aboveEDub, aboveLbl,
+                                        ifelse(inRange,   "In range", NA_character_))))
+  dt <- unique(raw[ , c("modLabel","n","nTotal","trueEDlb","trueEDp","trueEDub") ])
+  dt <- merge(dt, agg[ , c("modLabel","n","nTotal", "pUnderLB","pInRange","pAboveUB") ],
+              by = c("modLabel","n","nTotal"), all.x = TRUE, sort = FALSE)
+  
+  dt$pctUnder <- sprintf("%1.0f%%", 100 * dt$pUnderLB) # percent underestimated
+  dt$pctIn <- sprintf("%1.0f%%", 100 * dt$pInRange)    # percent in-range
+  dt$pctAbove <- sprintf("%1.0f%%", 100 * dt$pAboveUB) # percent overestimated
+  
+  # If only one sample size regimen is provided
+  if (length(unique(dt$n)) == 1) {
+    n0 <- dt$nTotal[1]
+    dt$panel   <- paste0("Total sample size = ", n0)
+    
+    dt$model_x <- match(dt$modLabel, unique(dt$modLabel))
+    raw$model_x <- match(raw$modLabel, unique(dt$modLabel))
+    half_w <- 0.3
+    
+    p <- ggplot2::ggplot(raw, ggplot2::aes(x = modLabel, y = EDp, color = status)) +
+      { if (violin)
+        ggplot2::geom_violin(data = raw, mapping = ggplot2::aes(x = modLabel, y = EDp),
+                             fill = "lightgray", alpha = 0.5, inherit.aes = FALSE, color = NA)
+        else NULL } +
+      ggplot2::geom_jitter(width = 0.25, size  = 1.2, alpha = 0.1) +
+      ggplot2::geom_segment(data = dt, inherit.aes = FALSE,
+                            ggplot2::aes(x = model_x - half_w, xend = model_x + half_w,
+                                         y = trueEDlb, yend = trueEDlb), linetype = "dashed") +
+      ggplot2::geom_segment(data = dt, inherit.aes = FALSE,
+                            ggplot2::aes(x = model_x - half_w, xend = model_x + half_w,
+                                         y = trueEDp, yend = trueEDp), linetype = "dashed") +
+      ggplot2::geom_segment(data = dt, inherit.aes = FALSE,
+                            ggplot2::aes(x = model_x - half_w, xend = model_x + half_w,
+                                         y = trueEDub, yend = trueEDub), linetype = "dashed") +
+      
+      ggplot2::geom_text(data = dt, inherit.aes = FALSE, 
+                         ggplot2::aes(x = model_x, y = trueEDlb / 2, label = pctUnder),
+                         color = "darkred", fontface  = "bold") +
+      ggplot2::geom_text(data = dt, inherit.aes = FALSE,
+                         ggplot2::aes(x = model_x, y = trueEDp, label = pctIn),
+                         color = "darkgreen", nudge_y = 5, fontface  = "bold") +
+      ggplot2::geom_text(data = dt, inherit.aes = FALSE,
+                         ggplot2::aes(x = model_x, y = trueEDub + ((max(raw$EDp) - trueEDub)/2),
+                                      label = pctAbove), color = "darkorange", fontface  = "bold") +
+      ggplot2::scale_color_manual(name = paste0("Estimated ED", p*100,  " status"),
+                                  values = setNames(c("darkred","darkgreen","darkorange"), 
+                                                    c(belowLbl, "In range", aboveLbl)) ) +
+      ggplot2::guides(color = ggplot2::guide_legend(override.aes = list(alpha = 1, size = 4),
+                                                    title.position = "top",
+                                                    title.hjust = 0.5)) +
+      ggplot2::facet_wrap(~ panel) +
+      ggplot2::labs(title = "Estimated and True EDp Values by Model",
+                    subtitle = paste0("Points are estimated ED", p*100, "'s; vertical dashed lines represent (from top)\nthe true ED", pUB*100,", ED", p*100,", and ED", pLB*100," for each model"),
+                    x = NULL, y = paste0("Estimated ED", p*100)) +
+      ggplot2::theme_bw(base_size = 14) +
+      ggplot2::theme(plot.title = ggplot2::element_text(face = "bold", hjust = 0.5),
+                     plot.subtitle = ggplot2::element_text(hjust = 0.5), 
+                     legend.position = "bottom", legend.title = ggplot2::element_text(face = "bold"),
+                     axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
+    
+  } else {
+    p <- ggplot2::ggplot(raw, ggplot2::aes(x = factor(nTotal), y = EDp, color = status)) +
+      { if (violin)
+        ggplot2::geom_violin(fill = "lightgray", alpha = 0.5, color = NA)
+        else NULL } +
+      
+      ggplot2::geom_jitter(width = 0.25, size = 1.2, alpha = 0.1) +
+      ggplot2::geom_hline(data = dt, ggplot2::aes(yintercept = trueEDlb), linetype = "dashed", color = "black") +
+      ggplot2::geom_hline(data = dt, ggplot2::aes(yintercept = trueEDp), linetype = "dashed", color = "black") +
+      ggplot2::geom_hline(data = dt, ggplot2::aes(yintercept = trueEDub), linetype = "dashed", color = "black") +
+      
+      ggplot2::geom_text(data = dt, inherit.aes = FALSE, ggplot2::aes(x = factor(nTotal), y = trueEDlb/2, label = pctUnder),
+                         color = "darkred", fontface  = "bold") +
+      ggplot2::geom_text(data = dt, inherit.aes = FALSE, ggplot2::aes(x = factor(nTotal), y = trueEDp, label = pctIn),
+                         color = "darkgreen", nudge_y = 5, fontface  = "bold") +
+      ggplot2::geom_text(data = dt, inherit.aes = FALSE, ggplot2::aes(x = factor(nTotal), y = trueEDub + ((max(raw$EDp) - trueEDub)/2), label = pctAbove),
+                         color = "darkorange", fontface  = "bold") +
+      
+      ggplot2::scale_color_manual(name = paste0("Estimated ED", p*100,  " status"),
+                                  values = setNames(c("darkred","darkgreen","darkorange"), 
+                                                    c(belowLbl, "In range", aboveLbl)) ) +
+      ggplot2::guides(color = ggplot2::guide_legend(override.aes = list(alpha = 1, size = 4),
+                                                    title.position = "top",
+                                                    title.hjust = 0.5)) +
+      ggplot2::facet_wrap(~ modLabel, scales = "free_x") +
+      ggplot2::labs(title = "Estimated and True EDp Values by Model",
+                    subtitle = paste0("Points are estimated ED", p*100, "'s; vertical dashed lines represent (from top)\nthe true ED", pUB*100,", ED", p*100,", and ED", pLB*100," for each model"),
+                    x = "Total sample size", y = paste0("Estimated ED", p*100)) +
+      ggplot2::theme_bw(base_size = 14) +
+      ggplot2::theme(plot.title = ggplot2::element_text(face = "bold", hjust = 0.5),
+                     plot.subtitle = ggplot2::element_text(hjust = 0.5), 
+                     legend.position = "bottom",
+                     legend.title = ggplot2::element_text(face = "bold"))
+  }
+  p
+}

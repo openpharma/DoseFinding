@@ -234,6 +234,7 @@ getResp <- function(fmodels, doses){
 #' @export
 plotMods <- function(ModsObj, nPoints = 200, superpose = FALSE,
                      xlab = "Dose", ylab = "Model means",
+                     plotED = FALSE, p = NULL, pLB = NULL, pUB = NULL,
                      modNams = NULL, trafo = function(x) x){
   ## candidate model plot using ggplot2
   ## check for class Mods
@@ -285,10 +286,45 @@ plotMods <- function(ModsObj, nPoints = 200, superpose = FALSE,
   respdata2 <- data.frame(response = c(resp2), 
                           dose = rep(doses, ncol(resp)),
                           model = modelfact2)
-  pp +
+  pp <- pp +
     ggplot2::geom_point(ggplot2::aes(x=.data$dose, y=.data$response), size=1.8, data=respdata2) +
     ggplot2::xlab(xlab) +
     ggplot2::ylab(ylab)
+  # plot also the EDps
+  if (plotED) {
+    if (is.null(p)) stop("'p' must be provided if plotED is TRUE.")
+    
+    dfED <- function(p, color) {
+      EDp <- as.numeric(ED(ModsObj, p))
+      names(EDp) <- mod_nams
+      EDpResp <- as.numeric(diag(getResp(ModsObj, doses = EDp)))
+      data.frame(model = factor(mod_nams, levels = mod_nams), EDp = EDp, y = EDpResp,
+                 y0 = rep(placEff, nM), color = color, p = p)
+    }
+    plotED <- function(pp, dt) {
+      pp +
+        ggplot2::geom_segment(data = dt, aes(x = 0, y = y, xend = EDp, yend = y), color = dt$color[1], 
+                              linewidth = 0.8, linetype = "dashed", inherit.aes = FALSE) +
+        ggplot2::geom_segment(data = dt, ggplot2::aes(x = EDp, y = y0, xend = EDp, yend = y), color = dt$color[1], 
+                              linewidth = 0.8, linetype = "dashed", inherit.aes = FALSE) +
+        ggplot2::geom_point(data = dt, ggplot2::aes(x = EDp, y = y), color = dt$color[1], size = 1, inherit.aes = FALSE) + 
+        ggplot2::geom_text(data = dt, ggplot2::aes(x = EDp, y = y0, label = paste0("ED", round(p*100))), 
+                           color = dt$color[1],  vjust = 1.3,  fontface = "bold", size = 3, inherit.aes = FALSE)
+    }
+    
+    dt <- dfED(p, "#E69F00")
+    if (!is.null(pLB)) {
+      dtLB <- dfED(pLB, "#0072B2")
+      pp <- plotED(pp, dtLB)
+    }
+    if (!is.null(pUB)) {
+      dtUB <- dfED(pUB, "#0072B2")
+      pp <- plotED(pp, dtUB)
+    }
+    
+    pp <- plotED(pp, dt)
+  }
+  pp
 }
 
 #' Plot dose-response models

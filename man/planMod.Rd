@@ -172,7 +172,9 @@ plot(pObj, type = "ED", p = 0.5)
 }
 }
 \references{
-TBD
+Pinheiro, J.C. and Bornkamp, B. (2017). Designing phase II dose-finding studies: sample size,
+doses, and dose allocation weights.  Handbook of Methods for Designing, Monitoring, and Analyzing Dose-Finding
+Trials, Chapter 13, Chapman and Hall/CRC, 229-246.
 }
 \seealso{
 \code{\link[=fitMod]{fitMod()}}

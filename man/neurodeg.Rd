@@ -14,9 +14,7 @@ A data frame with 100 observations on the following 2 variables.
 }
 }
 \source{
-Pinheiro, J. C., Bornkamp, B., Glimm, E. and Bretz, F. (2014)
-Model-based dose finding under model uncertainty using general parametric
-models, \emph{Statistics in Medicine}, \strong{33}, 1646--1661
+\insertRef{pinheiro2014}{DoseFinding}
 }
 \usage{
 data(neurodeg)

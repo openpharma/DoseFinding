@@ -23,7 +23,7 @@ guesst(
 \item{model}{Character string. Should be one of "emax", "exponential", "quadratic", "betaMod", "sigEmax", "logistic".}
 
 \item{less}{Logical, only needed in case of quadratic model.  Determines if d is smaller (\samp{less=TRUE}) or larger
-(\samp{less=FALSE}) than dopt (see Pinheiro et al. (2006) for details).}
+(\samp{less=FALSE}) than dopt \insertCite{@see @pinheiro2006 for details}{DoseFinding}.}
 
 \item{local}{Logical indicating whether local or asymptotic version of guesstimate should be derived (defaults to
 \samp{FALSE}).  Only needed for emax, logistic and sigEmax model.  When \samp{local=TRUE} the maximum dose must be
@@ -39,8 +39,7 @@ provided via \samp{Maxd}.}
 Returns a numeric vector containing the guesstimates.
 }
 \description{
-Calculates guesstimates for standardized model parameter(s) using the general approach described in Pinheiro et al.
-(2006).
+Calculates guesstimates for standardized model parameter(s) using the general approach described in \insertCite{pinheiro2006;textual}{DoseFinding}.
 }
 \details{
 Calculates guesstimates for the parameters \eqn{\theta_2}{theta2} of the standardized model function based on the
@@ -60,7 +59,7 @@ dose range with this pair.
 For the emax, sigmoid Emax and logistic model one can choose between a local and an asymptotic version. In the local
 version one explicitly forces the standardized model function to pass through the specified points (d,p). For the
 asymptotic version it assumed that the standardized model function is equal to 1 at the largest dose (this is the
-approach described in Pinheiro et al. (2006)). If the local version is used, convergence problems with the underlying
+approach described in \insertCite{pinheiro2006;textual}{DoseFinding}). If the local version is used, convergence problems with the underlying
 nonlinear optimization can occur.
 }
 \examples{
@@ -124,12 +123,9 @@ models <- Mods(exponential = expo, doses=c(0,1))
 plot(models)
 }
 \references{
-Bornkamp B., Pinheiro J. C., and Bretz, F. (2009). MCPMod: An R
-Package for the Design and Analysis of Dose-Finding Studies, \emph{Journal
-of Statistical Software}, \strong{29}(7), 1--23
+\insertRef{bornkamp2009}{DoseFinding}
 
-Pinheiro, J. C., Bretz, F., and Branson, M. (2006). Analysis of dose-response studies - modeling approaches,
-\emph{in} N. Ting (ed.), \emph{Dose Finding in Drug Development}, Springer, New York, pp. 146--171
+\insertRef{pinheiro2006}{DoseFinding}
 }
 \seealso{
 \code{\link[=emax]{emax()}}, \code{\link[=logistic]{logistic()}}, \code{\link[=betaMod]{betaMod()}}, \code{\link[=sigEmax]{sigEmax()}},

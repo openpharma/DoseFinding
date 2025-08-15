@@ -2,8 +2,8 @@
 #'   averaging (bagging)
 #'
 #' This function fits dose-response models in a bootstrap model
-#' averaging approach motivated by the bagging procedure (Breiman
-#' 1996). Given summary estimates for the outcome at each dose, the
+#' averaging approach motivated by the bagging procedure \insertCite{breiman1996}{DoseFinding}. 
+#' Given summary estimates for the outcome at each dose, the
 #' function samples summary data from the multivariate normal
 #' distribution. For each sample dose-response models are fit to these
 #' summary estimates and the best model
@@ -33,7 +33,7 @@
 #'   was selected in each bootstrap and basic input parameters.
 #' @author Bjoern Bornkamp
 #' @seealso [fitMod()], [bFitMod()], [drmodels()]
-#' @references Breiman, L. (1996). Bagging predictors. Machine learning, 24, 123-140.
+#' @references \insertAllCited{}
 #' @examples
 #' data(biom)
 #' ## produce first stage fit (using dose as factor)

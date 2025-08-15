@@ -11,7 +11,8 @@
 #' assumed, and a large number of samples is drawn from this distribution. For each draw the fitMod function with
 #' \samp{type = "general"} is used to fit the draws from the multivariate normal distribution.
 #'
-#' Componentwise univariate slice samplers are implemented (see Neal, 2003) to sample from the posterior distribution.
+#' Componentwise univariate slice samplers are implemented \insertCite{@see @neal2003}{DoseFinding}
+#' to sample from the posterior distribution.
 #'
 #' @aliases bFitMod coef.bFitMod predict.bFitMod plot.bFitMod
 #' @param dose Numeric specifying the dose variable.
@@ -54,7 +55,7 @@
 #'   additional information on the fitted model.
 #' @author Bjoern Bornkamp
 #' @seealso [fitMod()]
-#' @references Neal, R. M. (2003), Slice sampling, Annals of Statistics, 31, 705-767
+#' @references \insertAllCited{}
 #' @examples
 #' data(biom)
 #  ## produce first stage fit (using dose as factor)

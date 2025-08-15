@@ -2,7 +2,7 @@
 title: "Overview DoseFinding package"
 output:
   rmarkdown::html_vignette:
-bibliography: refs.bib
+bibliography: '`r system.file("REFERENCES.bib", package = "DoseFinding")`'
 link-citations: yes
 csl: american-statistical-association.csl
 vignette: >

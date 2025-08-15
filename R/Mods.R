@@ -50,9 +50,7 @@
 #'   derived linear parameters (based on \samp{"placEff"} and \samp{"maxEff"}) in a list.
 #' @author Bjoern Bornkamp
 #' @seealso [Mods()], [drmodels()], [optDesign()], [powMCT()]
-#' @references Pinheiro, J. C., Bornkamp, B., and Bretz, F. (2006). Design and analysis of dose finding studies
-#'   combining multiple comparisons and modeling procedures, *Journal of Biopharmaceutical Statistics*, **16**,
-#'   639--656
+#' @references \insertRef{pinheiro2006b}{DoseFinding}
 #' @examples
 #'
 #' ## Example on how to specify candidate models

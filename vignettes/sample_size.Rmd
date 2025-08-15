@@ -1,7 +1,7 @@
 ---
 title: "Sample size calculations for MCP-Mod"
 output: rmarkdown::html_vignette
-bibliography: refs.bib
+bibliography: '`r system.file("REFERENCES.bib", package = "DoseFinding")`'
 vignette: >
   %\VignetteIndexEntry{Sample size template for MCP-Mod for normally distributed data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -167,7 +167,7 @@ improvement over placebo) is usually several-fold higher than the
 sample size needed to have adequate power for the MCP-part.  This
 should not come as a surprise as dose-estimation is primarily a
 comparison among the investigational doses, while the MCP-part
-establishes an effect versus placebo.  Chapter 12 in @oquigley2017
+establishes an effect versus placebo.  Chapter 12 in @oquigley2017b
 illustrates this with simulations, based on the `planMod` function
 (see `?planMod` for example usage).
 

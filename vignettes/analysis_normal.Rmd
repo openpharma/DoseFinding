@@ -1,7 +1,7 @@
 ---
 title: "Continuous data MCP-Mod"
 output: rmarkdown::html_vignette
-bibliography: refs.bib
+bibliography: '`r system.file("REFERENCES.bib", package = "DoseFinding")`'
 csl: american-statistical-association.csl
 link-citations: yes
 vignette: >

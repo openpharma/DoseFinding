@@ -13,36 +13,23 @@
 #' **MCPMod**: Performs MCPMod methodology\cr
 #' **sampSize**: General function for sample size calculation\cr
 #' 
-#' @references Bornkamp, B., Bretz, F., Dette, H. and Pinheiro, J. C. (2011).
-#' Response-Adaptive Dose-Finding under model uncertainty, *Annals of
-#' Applied Statistics*, **5**, 1611--1631
+#' @references 
+#' \insertRef{bornkamp2011}{DoseFinding}
 #' 
-#' Bornkamp B., Pinheiro J. C., and Bretz, F. (2009). MCPMod: An R Package for
-#' the Design and Analysis of Dose-Finding Studies, *Journal of
-#' Statistical Software*, **29**(7), 1--23
+#' \insertRef{bornkamp2009}{DoseFinding}
 #' 
-#' Bretz, F., Pinheiro, J. C., and Branson, M. (2005), Combining multiple
-#' comparisons and modeling techniques in dose-response studies,
-#' *Biometrics*, **61**, 738--748
+#' \insertRef{bretz2005}{DoseFinding}
 #' 
-#' Dette, H., Bretz, F., Pepelyshev, A. and Pinheiro, J. C. (2008). Optimal
-#' Designs for Dose Finding Studies, *Journal of the American Statisical
-#' Association*, **103**, 1225--1237
+#' \insertRef{dette2008}{DoseFinding}
 #' 
-#' O'Quigley, J., Iasonos, A. and Bornkamp, B. (2017) Handbook of methods for
-#' designing, monitoring, and analyzing dose-finding trials, CRC press, Part 3:
-#' Dose-Finding Studies in Phase II
+#' \insertRef{oquigley2017}{DoseFinding}
 #' 
-#' Pinheiro, J. C., Bornkamp, B., and Bretz, F. (2006). Design and analysis of
-#' dose finding studies combining multiple comparisons and modeling procedures,
-#' *Journal of Biopharmaceutical Statistics*, **16**, 639--656
+#' \insertRef{pinheiro2006}{DoseFinding}
 #' 
-#' Pinheiro, J. C., Bornkamp, B., Glimm, E. and Bretz, F. (2014) Model-based
-#' dose finding under model uncertainty using general parametric models,
-#' *Statistics in Medicine*, **33**, 1646--1661
+#' \insertRef{pinheiro2014}{DoseFinding}
 #' 
-#' Seber, G.A.F. and Wild, C.J. (2003). Nonlinear Regression, Wiley
-#' @keywords internal
+#' \insertRef{seber2003}{DoseFinding}
+#' 
 #' @examples
 #' 
 #' data(IBScovars)
@@ -211,13 +198,11 @@
 #' @return Response value for model functions or matrix containing the gradient
 #' evaluations.
 #' @seealso [fitMod()]
-#' @references MacDougall, J. (2006). Analysis of dose-response studies - Emax
-#' model,*in* N. Ting (ed.), *Dose Finding in Drug Development*,
-#' Springer, New York, pp. 127--145
+#' @references 
+#' \insertRef{macdougall2006}{DoseFinding}
 #' 
-#' Pinheiro, J. C., Bretz, F. and Branson, M. (2006). Analysis of dose-response
-#' studies - modeling approaches, *in* N. Ting (ed.). *Dose Finding
-#' in Drug Development*, Springer, New York, pp. 146--171
+#' \insertRef{pinheiro2006}{DoseFinding}
+#' 
 #' @examples
 #' 
 #' ## some quadratic example shapes
@@ -268,7 +253,7 @@ NULL
 #' Biometrics Dose Response data
 #' 
 #' An example data set for dose response studies. This data set was used in
-#' Bretz et al. (2005) to illustrate the MCPMod methodology.
+#' \insertCite{bretz2005;textual}{DoseFinding} to illustrate the MCPMod methodology.
 #' 
 #' @name biom
 #' @docType data
@@ -278,9 +263,7 @@ NULL
 #'   \item{`resp`}{a numeric vector containing the response values}
 #'   \item{`dose`}{a numeric vector containing the dose values}
 #' }
-#' @source Bretz, F., Pinheiro, J. C., and Branson, M. (2005), Combining
-#' multiple comparisons and modeling techniques in dose-response studies,
-#' *Biometrics*, **61**, 738--748
+#' @source \insertRef{bretz2005}{DoseFinding}
 #' @keywords datasets
 NULL
 
@@ -360,8 +343,7 @@ NULL
 #'     \item{`dose`}{a numeric vector}
 #'     \item{`resp`}{a numeric vector}
 #'   }
-#' @source Biesheuvel, E. and Hothorn, L. A. (2002). Many-to-one comparisons in
-#' stratified designs, *Biometrical Journal*, **44**, 101--116
+#' @source \insertRef{biesheuvel2002}{DoseFinding}
 #' @keywords datasets
 NULL
 
@@ -426,9 +408,7 @@ NULL
 #'    \item{`id`}{Patient ID}    
 #'    \item{`time`}{time of measurement}
 #'  }
-#' @source Pinheiro, J. C., Bornkamp, B., Glimm, E. and Bretz, F. (2014)
-#' Model-based dose finding under model uncertainty using general parametric
-#' models, *Statistics in Medicine*, **33**, 1646--1661
+#' @source \insertRef{pinheiro2014}{DoseFinding}
 #' @keywords datasets
 #' @examples
 #' 

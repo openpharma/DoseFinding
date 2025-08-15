@@ -47,8 +47,8 @@ defBnds <- function(mD, emax = c(0.001, 1.5)*mD,
 #' estimates obtained in a first stage fit, then \samp{resp} contains the estimates and \samp{S} is the estimated
 #' covariance matrix for the estimates in \samp{resp}. Statistical inference (e.g. confidence intervals) rely on
 #' asymptotic normality of the first stage estimates, which makes this method of interest only for sufficiently large
-#' sample size for the first stage fit. A modified model-selection criterion can be applied to these model fits (see
-#' also Pinheiro et al. 2014 for details).
+#' sample size for the first stage fit. A modified model-selection criterion can be applied to these model fits 
+#' \insertCite{@see also @pinheiro2014 for details}{DoseFinding}.
 #'
 #' For details on the implemented numerical optimizer see the Details section below.
 #'
@@ -60,9 +60,8 @@ defBnds <- function(mD, emax = c(0.001, 1.5)*mD,
 #' grid-search (with the grid size specified via \samp{control$gridSize}), or can directly be handed over via
 #' \samp{start}.
 #'
-#' For details on the asymptotic approximation used for \samp{type = "normal"}, see Seber and Wild (2003, chapter 5).
-#' For details on the asymptotic approximation used for \samp{type = "general"}, and the gAIC, see Pinheiro et al.
-#' (2014).
+#' For details on the asymptotic approximation used for \samp{type = "normal"}, see \insertCite{seber2003;textual}{DoseFinding}, Chapter 5.
+#' For details on the asymptotic approximation used for \samp{type = "general"}, and the gAIC, see \insertCite{pinheiro2014;textual}{DoseFinding}.
 #'
 #' @aliases fitMod coef.DRMod vcov.DRMod predict.DRMod plot.DRMod logLik.DRMod AIC.DRMod gAIC gAIC.DRMod
 #' @param dose,resp Either vectors of equal length specifying dose and response values, or names of variables in the
@@ -76,7 +75,7 @@ defBnds <- function(mD, emax = c(0.001, 1.5)*mD,
 #'   the first stage fit.
 #' @param type Determines whether inference is based on an ANCOVA model under a homoscedastic normality assumption (when
 #'   \samp{type = "normal"}), or estimates at the doses and their covariance matrix and degrees of freedom are specified
-#'   directly in \samp{resp}, \samp{S} and \samp{df}. See also the Description above and Pinheiro et al. (2014).
+#'   directly in \samp{resp}, \samp{S} and \samp{df}. See also the Description above and \insertCite{pinheiro2014;textual}{DoseFinding}.
 #' @param addCovars Formula specifying additional additive linear covariates (only for \samp{type = "normal"})
 #' @param placAdj Logical, if true, it is assumed that placebo-adjusted
 #'   estimates are specified in \samp{resp} (only possible for \samp{type =
@@ -109,10 +108,9 @@ defBnds <- function(mD, emax = c(0.001, 1.5)*mD,
 #'   residual sum of squares (or generalized residual sum of squares),
 #' @author Bjoern Bornkamp
 #' @seealso [defBnds()], [drmodels()]
-#' @references Pinheiro, J. C., Bornkamp, B., Glimm, E. and Bretz, F. (2014) Model-based dose finding under model
-#'   uncertainty using general parametric models, *Statistics in Medicine*, **33**, 1646--1661
+#' @references 
+#' \insertAllCited{}
 #'
-#'   Seber, G.A.F. and Wild, C.J. (2003). Nonlinear Regression, Wiley.
 #' @examples
 #'
 #' ## Fit the emax model to the IBScovars data set

@@ -62,10 +62,7 @@ mvtnorm.control <- function(maxpts = 30000, abseps = 0.001,
 #' @author Bjoern Bornkamp
 #' @seealso [powN()], [sampSizeMCT()],
 #' [MCTtest()], [optContr()], [Mods()]
-#' @references Pinheiro, J. C., Bornkamp, B., and Bretz, F. (2006). Design and
-#' analysis of dose finding studies combining multiple comparisons and modeling
-#' procedures, *Journal of Biopharmaceutical Statistics*, **16**,
-#' 639--656
+#' @references \insertRef{pinheiro2006b}{DoseFinding}
 #' @examples
 #' 
 #' ## look at power under some dose-response alternatives

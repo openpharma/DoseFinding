@@ -239,13 +239,9 @@ linIntGrad(dose = (0:4)/4, resp=c(0,0.5,1,1,1), nodes=(0:4)/4)
 
 }
 \references{
-MacDougall, J. (2006). Analysis of dose-response studies - Emax
-model,\emph{in} N. Ting (ed.), \emph{Dose Finding in Drug Development},
-Springer, New York, pp. 127--145
+\insertRef{macdougall2006}{DoseFinding}
 
-Pinheiro, J. C., Bretz, F. and Branson, M. (2006). Analysis of dose-response
-studies - modeling approaches, \emph{in} N. Ting (ed.). \emph{Dose Finding
-in Drug Development}, Springer, New York, pp. 146--171
+\insertRef{pinheiro2006}{DoseFinding}
 }
 \seealso{
 \code{\link[=fitMod]{fitMod()}}

@@ -12,15 +12,13 @@ A data frame with 100 observations on the following 2 variables.
 }
 }
 \source{
-Bretz, F., Pinheiro, J. C., and Branson, M. (2005), Combining
-multiple comparisons and modeling techniques in dose-response studies,
-\emph{Biometrics}, \strong{61}, 738--748
+\insertRef{bretz2005}{DoseFinding}
 }
 \usage{
 data(biom)
 }
 \description{
 An example data set for dose response studies. This data set was used in
-Bretz et al. (2005) to illustrate the MCPMod methodology.
+\insertCite{bretz2005;textual}{DoseFinding} to illustrate the MCPMod methodology.
 }
 \keyword{datasets}

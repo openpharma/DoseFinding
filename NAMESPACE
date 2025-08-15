@@ -7,7 +7,7 @@ importFrom("stats", "AIC", "IQR", "acf", "approx", "as.formula",
            "pnorm", "predict", "qnorm", "qt", "quantile", "quasi",
            "sd", "terms", "uniroot", "var", "vcov")
 importFrom("utils", "setTxtProgressBar", "txtProgressBar", "browseURL")
-
+importFrom(Rdpack,reprompt)
 export(fitMod, defBnds, bFitMod, maFitMod, MCTtest, bMCTtest, MCPMod,
        betaMod, quadratic, emax, exponential,linear, linlog, logistic, sigEmax, linInt,
        betaModGrad, quadraticGrad, emaxGrad, exponentialGrad,

@@ -1,8 +1,7 @@
 
 #' Calculate guesstimates based on prior knowledge
 #'
-#' Calculates guesstimates for standardized model parameter(s) using the general approach described in Pinheiro et al.
-#' (2006).
+#' Calculates guesstimates for standardized model parameter(s) using the general approach described in \insertCite{pinheiro2006;textual}{DoseFinding}.
 #'
 #' Calculates guesstimates for the parameters \eqn{\theta_2}{theta2} of the standardized model function based on the
 #' prior expected percentage of the maximum effect at certain dose levels. Note that this function should be used
@@ -21,14 +20,14 @@
 #' For the emax, sigmoid Emax and logistic model one can choose between a local and an asymptotic version. In the local
 #' version one explicitly forces the standardized model function to pass through the specified points (d,p). For the
 #' asymptotic version it assumed that the standardized model function is equal to 1 at the largest dose (this is the
-#' approach described in Pinheiro et al. (2006)). If the local version is used, convergence problems with the underlying
+#' approach described in \insertCite{pinheiro2006;textual}{DoseFinding}). If the local version is used, convergence problems with the underlying
 #' nonlinear optimization can occur.
 #'
 #' @param d Vector containing dose value(s).
 #' @param p Vector of expected percentages of the maximum effect achieved at d.
 #' @param model Character string. Should be one of "emax", "exponential", "quadratic", "betaMod", "sigEmax", "logistic".
 #' @param less Logical, only needed in case of quadratic model.  Determines if d is smaller (\samp{less=TRUE}) or larger
-#'   (\samp{less=FALSE}) than dopt (see Pinheiro et al. (2006) for details).
+#'   (\samp{less=FALSE}) than dopt \insertCite{@see @pinheiro2006 for details}{DoseFinding}.
 #' @param local Logical indicating whether local or asymptotic version of guesstimate should be derived (defaults to
 #'   \samp{FALSE}).  Only needed for emax, logistic and sigEmax model.  When \samp{local=TRUE} the maximum dose must be
 #'   provided via \samp{Maxd}.
@@ -38,12 +37,11 @@
 #' @return Returns a numeric vector containing the guesstimates.
 #' @seealso [emax()], [logistic()], [betaMod()], [sigEmax()],
 #'   [quadratic()], [exponential()], [plot.Mods()]
-#' @references Bornkamp B., Pinheiro J. C., and Bretz, F. (2009). MCPMod: An R
-#' Package for the Design and Analysis of Dose-Finding Studies, *Journal
-#' of Statistical Software*, **29**(7), 1--23
+#' @references 
+#' \insertRef{bornkamp2009}{DoseFinding}
+#' 
+#' \insertRef{pinheiro2006}{DoseFinding}
 #'
-#'   Pinheiro, J. C., Bretz, F., and Branson, M. (2006). Analysis of dose-response studies - modeling approaches,
-#'   *in* N. Ting (ed.), *Dose Finding in Drug Development*, Springer, New York, pp. 146--171
 #' @examples
 #'
 #' ## Emax model

@@ -32,7 +32,7 @@ assumed that \samp{dose} and \samp{resp} are variables referenced from data (and
 
 \item{type}{Determines whether inference is based on an ANCOVA model under a homoscedastic normality assumption (when
 \samp{type = "normal"}), or estimates at the doses and their covariance matrix and degrees of freedom are specified
-directly in \samp{resp}, \samp{S} and \samp{df}. See also \code{\link[=fitMod]{fitMod()}} and Pinheiro et al. (2014).}
+directly in \samp{resp}, \samp{S} and \samp{df}. See also \code{\link[=fitMod]{fitMod()}} and \insertCite{pinheiro2014}{DoseFinding}.}
 
 \item{prior}{List of length equal to the number of doses with the prior for each arm.  Each element needs to be of
 class \samp{normMix} (See \samp{RBesT} package documentation). It is assumed that the i-th component of the prior
@@ -63,7 +63,7 @@ An object of class bMCTtest, a list containing the output.
 }
 \description{
 This function performs a Bayesian multiple contrast test using normal mixture priors for the response on each dose,
-as proposed in Fleischer et al. (2022). For a general description of the multiple contrast test see
+as proposed in \insertCite{fleischer2022;textual}{DoseFinding}. For a general description of the multiple contrast test see
 \code{\link[=MCTtest]{MCTtest()}}.
 }
 \details{
@@ -71,7 +71,7 @@ If \samp{type = "normal"}, an ANCOVA model based on a homoscedastic normality as
 dose-response and contrast vectors are obtained assuming a known variance.
 
 For \samp{type = "general"} it is assumed multivariate normally distributed estimates are specified in \samp{resp}
-with covariance given by \samp{S}, which define the likelihood.  Posteriors for dose-response and contrast vectors
+with covariance given by \samp{S}, which define the likelihood. Posteriors for dose-response and contrast vectors
 are then obtained assuming a known covariance matrix S
 
 The multiple contrast test decision is based on the maximum posterior probability of a contrast being greater than
@@ -80,7 +80,7 @@ values. In the latter case the Bayesian test will give approximately the same re
 contrast test if uninformative priors are used.
 
 For the default calculation of optimal contrasts the prior information is ignored (i.e. contrasts are calculated in
-the same way as in \code{\link[=MCTtest]{MCTtest()}}).  Fleischer et al. (2022) discuss using contrasts that take the prior
+the same way as in \code{\link[=MCTtest]{MCTtest()}}). \insertCite{fleischer2022;textual}{DoseFinding} discuss using contrasts that take the prior
 effective sample sizes into account, which can be slightly more favourable for the Bayesian MCT test. Such
 alternative contrasts can be directly handed over via the \samp{contMat} argument.
 
@@ -192,8 +192,7 @@ bMCTtest(dose, resp, biom, models=modlist, prior = prior, contMat = cmat)
 
 }
 \references{
-Fleischer, F., Bossert, S., Deng, Q., Loley, C. and Gierse, J. (2022).  Bayesian MCP-Mod,
-\emph{Pharmaceutical Statistics}, \strong{21}, 654--670
+\insertAllCited{}
 }
 \seealso{
 \code{\link[=MCTtest]{MCTtest()}}, \code{\link[=optContr]{optContr()}}

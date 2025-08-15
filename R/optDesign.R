@@ -4,7 +4,7 @@
 #'
 #' Given a set of models (with full parameter values and model probabilities) the \samp{optDesign} function calculates
 #' the optimal design for estimating the dose-response model parameters (D-optimal) or the design for estimating the
-#' target dose (TD-optimal design) (see Dette, Bretz, Pepelyshev and Pinheiro (2008)), or a mixture of these two
+#' target dose (TD-optimal design) \insertCite{@see @dette2008}{DoseFinding}, or a mixture of these two
 #' criteria. The design can be plotted (together with the candidate models) using \samp{plot.design}. \samp{calcCrit}
 #' calculates the design criterion for a discrete set of design(s). \samp{rndDesign} provides efficient rounding for the
 #' calculated continous design to a finite sample size.
@@ -26,7 +26,7 @@
 #' \deqn{\sum_{m}p_m \log(v_m)}{sum_m p_m log(v_m)} where \eqn{p_m}{p_m} is the probability for model m and
 #' \eqn{v_m}{v_m} is proportional to the asymptotic
 #' variance of the TD estimate and given by \eqn{b_m'M_m^{-}b_m}{b_m'Minv_m
-#' b_m} (see Dette et al. (2008), p. 1227 for details).
+#' b_m} \insertCite{@see @dette2008, p. 1227 for details}{DoseFinding}.
 #'
 #' For \samp{designCrit = "Dopt&TD"} the code minimizes the design criterion
 #' \deqn{\sum_{m}p_m(-0.5\log(\det(M_m))/k_m+0.5\log(v_m))}{sum_m
@@ -34,7 +34,7 @@
 #'
 #' Again, for \samp{standDopt = FALSE} the \eqn{k_m}{k_m} are all assumed to be equal to one.
 #'
-#' For details on the \samp{rndDesign} function, see Pukelsheim (1993), Chapter 12.
+#' For details on the \samp{rndDesign} function, see \insertCite{pukelsheim1993;textual}{DoseFinding}, Chapter 12.
 #'
 #' @aliases optDesign plot.DRdesign calcCrit rndDesign
 #' @param models An object of class \samp{c(Mods, fullMod)}, see the [Mods()] function for details. When an TD
@@ -68,7 +68,7 @@
 #'   required.
 #' @param optimizer Algorithm used for calculating the optimal design. Options "Nelder-Mead" and "nlminb" use the
 #'   [optim()] and [nlminb()] function and use a trigonometric transformation to turn the
-#'   constrained optimization problem into an unconstrained one (see Atkinson, Donev and Tobias, 2007, pages 130,131).
+#'   constrained optimization problem into an unconstrained one \insertCite{@see @atkinson2007 pages 130,131}{DoseFinding}.
 #'
 #'   Option "solnp" uses the solnp function from the Rsolnp package, which implements an optimizer for non-linear
 #'   optimization under general constraints.
@@ -96,18 +96,14 @@
 #'   algorithm. Alternatively one can use the solnp optimizer that is usually the most reliable, but not fastest option.
 #' @author Bjoern Bornkamp
 #' @seealso [Mods()], [drmodels()]
-#' @references Atkinson, A.C., Donev, A.N. and Tobias, R.D. (2007). Optimum Experimental Designs, with SAS, Oxford
-#'   University Press
+#' @references 
+#' \insertRef{atkinson2007}{DoseFinding}
+#' 
+#' \insertRef{dette2008}{DoseFinding}
+#' 
+#' \insertRef{pinheiro2017}{DoseFinding}
 #'
-#'   Dette, H., Bretz, F., Pepelyshev, A. and Pinheiro, J. C. (2008). Optimal
-#' Designs for Dose Finding Studies, *Journal of the American Statisical
-#' Association*, **103**, 1225--1237
-#'
-#'   Pinheiro, J.C., Bornkamp, B. (2017) Designing Phase II Dose-Finding Studies: Sample Size, Doses and Dose Allocation
-#'   Weights, in O'Quigley, J., Iasonos, A. and Bornkamp, B. (eds) Handbook of methods for designing, monitoring, and
-#'   analyzing dose-finding trials, CRC press
-#'
-#'   Pukelsheim, F. (1993). Optimal Design of Experiments, Wiley
+#' \insertRef{pukelsheim1993}{DoseFinding}
 #' @examples
 #'
 #' ## calculate designs for Emax model

@@ -3,6 +3,9 @@ template:
   bootstrap: 5
   math-rendering: mathjax
 reference:
+- title: Package
+- contents:
+  - DoseFinding-package
 - title: Design dose-reponse trials
 - contents:
   - Mods

@@ -4,7 +4,7 @@ output:
   rmarkdown::html_vignette:
     toc: true
     toc_depth: 2
-bibliography: refs.bib
+bibliography: '`r system.file("REFERENCES.bib", package = "DoseFinding")`'
 link-citations: yes
 csl: american-statistical-association.csl
 vignette: >
@@ -209,7 +209,7 @@ _Consequence of model misspecification:_ Omission of the “correct”
 dose-response shape from the set of candidate models might not
 necessarily have severe consequences, if other models can pick up the
 omitted shape. This can be evaluated for the MCP part (impact on
-power) using explicit calculations (see @pinheiro2006 and [the
+power) using explicit calculations (see @pinheiro2006b and [the
 vignette on sample size](sample_size.html)). For the Mod part (impact
 on estimation precision for dose-response and dose estimation) using
 simulations see `?planMod`.

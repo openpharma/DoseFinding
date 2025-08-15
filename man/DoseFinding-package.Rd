@@ -50,35 +50,21 @@ desTD <- optDesign(fmodels, weights, Delta=0.2, designCrit="TD")
 
 }
 \references{
-Bornkamp, B., Bretz, F., Dette, H. and Pinheiro, J. C. (2011).
-Response-Adaptive Dose-Finding under model uncertainty, \emph{Annals of
-Applied Statistics}, \strong{5}, 1611--1631
+\insertRef{bornkamp2011}{DoseFinding}
 
-Bornkamp B., Pinheiro J. C., and Bretz, F. (2009). MCPMod: An R Package for
-the Design and Analysis of Dose-Finding Studies, \emph{Journal of
-Statistical Software}, \strong{29}(7), 1--23
+\insertRef{bornkamp2009}{DoseFinding}
 
-Bretz, F., Pinheiro, J. C., and Branson, M. (2005), Combining multiple
-comparisons and modeling techniques in dose-response studies,
-\emph{Biometrics}, \strong{61}, 738--748
+\insertRef{bretz2005}{DoseFinding}
 
-Dette, H., Bretz, F., Pepelyshev, A. and Pinheiro, J. C. (2008). Optimal
-Designs for Dose Finding Studies, \emph{Journal of the American Statisical
-Association}, \strong{103}, 1225--1237
+\insertRef{dette2008}{DoseFinding}
 
-O'Quigley, J., Iasonos, A. and Bornkamp, B. (2017) Handbook of methods for
-designing, monitoring, and analyzing dose-finding trials, CRC press, Part 3:
-Dose-Finding Studies in Phase II
+\insertRef{oquigley2017}{DoseFinding}
 
-Pinheiro, J. C., Bornkamp, B., and Bretz, F. (2006). Design and analysis of
-dose finding studies combining multiple comparisons and modeling procedures,
-\emph{Journal of Biopharmaceutical Statistics}, \strong{16}, 639--656
+\insertRef{pinheiro2006}{DoseFinding}
 
-Pinheiro, J. C., Bornkamp, B., Glimm, E. and Bretz, F. (2014) Model-based
-dose finding under model uncertainty using general parametric models,
-\emph{Statistics in Medicine}, \strong{33}, 1646--1661
+\insertRef{pinheiro2014}{DoseFinding}
 
-Seber, G.A.F. and Wild, C.J. (2003). Nonlinear Regression, Wiley
+\insertRef{seber2003}{DoseFinding}
 }
 \seealso{
 Useful links:
@@ -107,4 +93,3 @@ Other contributors:
 }
 
 }
-\keyword{internal}

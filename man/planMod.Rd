@@ -172,7 +172,7 @@ plot(pObj, type = "ED", p = 0.5)
 }
 }
 \references{
-TBD
+\insertRef{pinheiro2017}{DoseFinding}
 }
 \seealso{
 \code{\link[=fitMod]{fitMod()}}

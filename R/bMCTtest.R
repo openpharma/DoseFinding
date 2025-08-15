@@ -1,14 +1,14 @@
 #' Performs Bayesian multiple contrast test
 #'
 #' This function performs a Bayesian multiple contrast test using normal mixture priors for the response on each dose,
-#' as proposed in Fleischer et al. (2022). For a general description of the multiple contrast test see
+#' as proposed in \insertCite{fleischer2022;textual}{DoseFinding}. For a general description of the multiple contrast test see
 #' [MCTtest()].
 #'
 #' If \samp{type = "normal"}, an ANCOVA model based on a homoscedastic normality assumption is fitted and posteriors for
 #' dose-response and contrast vectors are obtained assuming a known variance.
 #'
 #' For \samp{type = "general"} it is assumed multivariate normally distributed estimates are specified in \samp{resp}
-#' with covariance given by \samp{S}, which define the likelihood.  Posteriors for dose-response and contrast vectors
+#' with covariance given by \samp{S}, which define the likelihood. Posteriors for dose-response and contrast vectors
 #' are then obtained assuming a known covariance matrix S
 #'
 #' The multiple contrast test decision is based on the maximum posterior probability of a contrast being greater than
@@ -17,7 +17,7 @@
 #' contrast test if uninformative priors are used.
 #'
 #' For the default calculation of optimal contrasts the prior information is ignored (i.e. contrasts are calculated in
-#' the same way as in [MCTtest()]).  Fleischer et al. (2022) discuss using contrasts that take the prior
+#' the same way as in [MCTtest()]). \insertCite{fleischer2022;textual}{DoseFinding} discuss using contrasts that take the prior
 #' effective sample sizes into account, which can be slightly more favourable for the Bayesian MCT test. Such
 #' alternative contrasts can be directly handed over via the \samp{contMat} argument.
 #'
@@ -45,8 +45,7 @@
 #' @author Marius Thomas
 #' @export
 #' @seealso [MCTtest()], [optContr()]
-#' @references Fleischer, F., Bossert, S., Deng, Q., Loley, C. and Gierse, J. (2022).  Bayesian MCP-Mod,
-#'   *Pharmaceutical Statistics*, **21**, 654--670
+#' @references \insertAllCited{}
 #' @examples
 #'
 #'
@@ -277,7 +276,7 @@ print.bMCTtest <- function(x, digits = 3, eps = 1e-3, ...){
 #' @return Returns a posterior multivariate normal mixture as a list of length 3, containing mixture weights, mean
 #'   vectors and covariance matrices.
 #' @author Marius Thomas
-#' @references Bernardo, J. M., and Smith, A. F. (1994). Bayesian theory. John Wiley & Sons.
+#' @references \insertRef{bernardo1994}{DoseFinding}
 #' @export
 mvpostmix <- function(priormix, mu_hat, S_hat)
 {

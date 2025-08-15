@@ -163,13 +163,9 @@ powN(upperN = 100, lowerN=10, step = 10, contMat = contMat,
 }
 }
 \references{
-Pinheiro, J. C., Bornkamp, B., and Bretz, F. (2006). Design and analysis of dose finding studies
-combining multiple comparisons and modeling procedures, \emph{Journal of Biopharmaceutical Statistics}, \strong{16},
-639--656
+\insertRef{pinheiro2006b}{DoseFinding}
 
-Pinheiro, J.C., Bornkamp, B. (2017) Designing Phase II Dose-Finding Studies: Sample Size, Doses and Dose Allocation
-Weights, in O'Quigley, J., Iasonos, A. and Bornkamp, B. (eds) Handbook of methods for designing, monitoring, and
-analyzing dose-finding trials, CRC press
+\insertRef{pinheiro2017}{DoseFinding}
 }
 \seealso{
 \code{\link[=powMCT]{powMCT()}}

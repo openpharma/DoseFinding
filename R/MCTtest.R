@@ -25,7 +25,7 @@
 #' @param S The covariance matrix of \samp{resp} when \samp{type = "general"}, see Description.
 #' @param type Determines whether inference is based on an ANCOVA model under a homoscedastic normality assumption (when
 #'   \samp{type = "normal"}), or estimates at the doses and their covariance matrix and degrees of freedom are specified
-#'   directly in \samp{resp}, \samp{S} and \samp{df}. See also [fitMod()] and Pinheiro et al. (2014).
+#'   directly in \samp{resp}, \samp{S} and \samp{df}. See also [fitMod()] and \insertCite{pinheiro2014}{DoseFinding}.
 #' @param addCovars Formula specifying additive linear covariates (for \samp{type = "normal"})
 #' @param placAdj Logical, if true, it is assumed that placebo-adjusted
 #'   estimates are specified in \samp{resp} (only possible for \samp{type =
@@ -46,11 +46,11 @@
 #' @return An object of class MCTtest, a list containing the output.
 #' @author Bjoern Bornkamp
 #' @seealso [powMCT()], [optContr()]
-#' @references Hothorn, T., Bretz, F., and Westfall, P. (2008). Simultaneous Inference in General Parametric Models,
-#'   *Biometrical Journal*, **50**, 346--363
-#'
-#'   Pinheiro, J. C., Bornkamp, B., Glimm, E. and Bretz, F. (2014) Model-based dose finding under model uncertainty
-#'   using general parametric models, *Statistics in Medicine*, **33**, 1646--1661
+#' @references 
+#' \insertRef{hothorn2008}{DoseFinding}
+#'   
+#' \insertRef{pinheiro2014}{DoseFinding}
+#' 
 #' @examples
 #'
 #' ## example without covariates
@@ -278,9 +278,7 @@ critVal <- function(corMat, alpha = 0.025, df = NULL,
 #' @return Numeric containing the calculated p-values.
 #' @author Bjoern Bornkamp
 #' @seealso [MCTtest()], [optContr()]
-#' @references Pinheiro, J. C., Bornkamp, B., and Bretz, F. (2006). Design and analysis of dose finding studies
-#'   combining multiple comparisons and modeling procedures, *Journal of Biopharmaceutical Statistics*, **16**,
-#'   639--656
+#' @references \insertRef{pinheiro2006b}{DoseFinding}
 #' @examples
 #' data(biom)
 #' ## define shapes for which to calculate optimal contrasts

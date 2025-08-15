@@ -140,7 +140,8 @@ the first stage fit.</p></dd>
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
 <dd><p>Determines whether inference is based on an ANCOVA model under a homoscedastic normality assumption (when
 <samp>type = "normal"</samp>), or estimates at the doses and their covariance matrix and degrees of freedom are specified
-directly in <samp>resp</samp>, <samp>S</samp> and <samp>df</samp>. See also the Description above and Pinheiro et al. (2014).</p></dd>
+directly in <samp>resp</samp>, <samp>S</samp> and <samp>df</samp>. See also the Description above and Pinheiro et al. (2014)
+.</p></dd>
 
 
 <dt id="arg-addcovars">addCovars<a class="anchor" aria-label="anchor" href="#arg-addcovars"></a></dt>
@@ -243,8 +244,9 @@ and an inverse weighting matrix is specified in <samp>S</samp>, <samp>type =
 estimates obtained in a first stage fit, then <samp>resp</samp> contains the estimates and <samp>S</samp> is the estimated
 covariance matrix for the estimates in <samp>resp</samp>. Statistical inference (e.g. confidence intervals) rely on
 asymptotic normality of the first stage estimates, which makes this method of interest only for sufficiently large
-sample size for the first stage fit. A modified model-selection criterion can be applied to these model fits (see
-also Pinheiro et al. 2014 for details).</p>
+sample size for the first stage fit. A modified model-selection criterion can be applied to these model fits
+(see also Pinheiro et al. 2014 for details)
+.</p>
 <p>For details on the implemented numerical optimizer see the Details section below.</p>
 <p>Details on numerical optimizer for model-fitting:<br> For linear models fitting is done using numerical linear algebra
 based on the QR decomposition.  For nonlinear models numerical optimization is performed only in the nonlinear
@@ -253,15 +255,20 @@ implemented in <code><a href="https://rdrr.io/r/stats/nls.html" class="external-
 for 2 nonlinear parameters the <code><a href="https://rdrr.io/r/stats/nlminb.html" class="external-link">nlminb()</a></code> function is used. The starting value is generated using a
 grid-search (with the grid size specified via <samp>control$gridSize</samp>), or can directly be handed over via
 <samp>start</samp>.</p>
-<p>For details on the asymptotic approximation used for <samp>type = "normal"</samp>, see Seber and Wild (2003, chapter 5).
-For details on the asymptotic approximation used for <samp>type = "general"</samp>, and the gAIC, see Pinheiro et al.
-(2014).</p>
+<p>For details on the asymptotic approximation used for <samp>type = "normal"</samp>, see Seber and Wild (2003)
+, Chapter 5.
+For details on the asymptotic approximation used for <samp>type = "general"</samp>, and the gAIC, see Pinheiro et al. (2014)
+.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
-    <p>Pinheiro, J. C., Bornkamp, B., Glimm, E. and Bretz, F. (2014) Model-based dose finding under model
-uncertainty using general parametric models, <em>Statistics in Medicine</em>, <strong>33</strong>, 1646–1661</p>
-<p>Seber, G.A.F. and Wild, C.J. (2003). Nonlinear Regression, Wiley.</p>
+    <p>Pinheiro J, Bornkamp B, Glimm E, Bretz F (2014).
+“Model-based dose finding under model uncertainty using general parametric models.”
+<em>Statistics in Medicine</em>, <b>33</b>, 1646-1661.
+<a href="https://doi.org/10.1002/sim.6052" class="external-link">doi:10.1002/sim.6052</a>
+.<br><br> Seber GA, Wild CJ (2003).
+<em>Nonlinear Regression</em>.
+Wiley.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

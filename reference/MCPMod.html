@@ -5,13 +5,13 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="MCPMod - Multiple Comparisons and Modeling — MCPMod"><meta name="description" content="Tests for a dose-response effect using a model-based multiple contrast
-  test (see MCTtest), selects one (or several) model(s)
-  from the significant shapes, fits them using fitMod.
-  For details on the method see Bretz et al. (2005)."><meta property="og:description" content="Tests for a dose-response effect using a model-based multiple contrast
-  test (see MCTtest), selects one (or several) model(s)
-  from the significant shapes, fits them using fitMod.
-  For details on the method see Bretz et al. (2005)."><meta property="og:image" content="https://openpharma.github.io/DoseFinding/logo.png"></head><body>
+</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="MCPMod - Multiple Comparisons and Modeling — MCPMod"><meta name="description" content="Tests for a dose-response effect using a model-based multiple contrast test (see MCTtest()), selects one
+(or several) model(s) from the significant shapes, fits them using fitMod().  For details on the method
+see Bretz et al. (2005)
+."><meta property="og:description" content="Tests for a dose-response effect using a model-based multiple contrast test (see MCTtest()), selects one
+(or several) model(s) from the significant shapes, fits them using fitMod().  For details on the method
+see Bretz et al. (2005)
+."><meta property="og:image" content="https://openpharma.github.io/DoseFinding/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -50,215 +50,253 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>MCPMod - Multiple Comparisons and Modeling</h1>
-
+      <small class="dont-index">Source: <a href="https://github.com/openpharma/DoseFinding/blob/master/R/MCPMod.R" class="external-link"><code>R/MCPMod.R</code></a></small>
       <div class="d-none name"><code>MCPMod.Rd</code></div>
     </div>
 
     <div class="ref-description section level2">
-    <p>Tests for a dose-response effect using a model-based multiple contrast
-  test (see <code><a href="MCTtest.html">MCTtest</a></code>), selects one (or several) model(s)
-  from the significant shapes, fits them using <code><a href="fitMod.html">fitMod</a></code>.
-  For details on the method see Bretz et al. (2005).</p>
+    <p>Tests for a dose-response effect using a model-based multiple contrast test (see <code><a href="MCTtest.html">MCTtest()</a></code>), selects one
+(or several) model(s) from the significant shapes, fits them using <code><a href="fitMod.html">fitMod()</a></code>.  For details on the method
+see Bretz et al. (2005)
+.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">MCPMod</span><span class="op">(</span><span class="va">dose</span>, <span class="va">resp</span>, <span class="va">data</span>, <span class="va">models</span>, S <span class="op">=</span> <span class="cn">NULL</span>, type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"normal"</span>, <span class="st">"general"</span><span class="op">)</span>,</span>
-<span>       addCovars <span class="op">=</span> <span class="op">~</span><span class="fl">1</span>, placAdj <span class="op">=</span> <span class="cn">FALSE</span>, selModel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AIC"</span>, <span class="st">"maxT"</span>, <span class="st">"aveAIC"</span><span class="op">)</span>,</span>
-<span>       alpha <span class="op">=</span> <span class="fl">0.025</span>, df <span class="op">=</span> <span class="cn">NULL</span>, critV <span class="op">=</span> <span class="cn">NULL</span>, doseType <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TD"</span>, <span class="st">"ED"</span><span class="op">)</span>,</span>
-<span>       <span class="va">Delta</span>, <span class="va">p</span>, pVal <span class="op">=</span> <span class="cn">TRUE</span>, alternative <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"one.sided"</span>, <span class="st">"two.sided"</span><span class="op">)</span>,</span>
-<span>       na.action <span class="op">=</span> <span class="va">na.fail</span>, mvtcontrol <span class="op">=</span> <span class="fu"><a href="mvtnorm-control.html">mvtnorm.control</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>       <span class="va">bnds</span>, control <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">MCPMod</span><span class="op">(</span></span>
+<span>  <span class="va">dose</span>,</span>
+<span>  <span class="va">resp</span>,</span>
+<span>  data <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  models <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  S <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"normal"</span>, <span class="st">"general"</span><span class="op">)</span>,</span>
+<span>  addCovars <span class="op">=</span> <span class="op">~</span><span class="fl">1</span>,</span>
+<span>  placAdj <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  selModel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AIC"</span>, <span class="st">"maxT"</span>, <span class="st">"aveAIC"</span><span class="op">)</span>,</span>
+<span>  alpha <span class="op">=</span> <span class="fl">0.025</span>,</span>
+<span>  df <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  critV <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  doseType <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TD"</span>, <span class="st">"ED"</span><span class="op">)</span>,</span>
+<span>  <span class="va">Delta</span>,</span>
+<span>  <span class="va">p</span>,</span>
+<span>  pVal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  alternative <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"one.sided"</span>, <span class="st">"two.sided"</span><span class="op">)</span>,</span>
+<span>  na.action <span class="op">=</span> <span class="va">na.fail</span>,</span>
+<span>  mvtcontrol <span class="op">=</span> <span class="fu"><a href="mvtnorm-control.html">mvtnorm.control</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  <span class="va">bnds</span>,</span>
+<span>  control <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'MCPMod'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">object</span>,</span>
-<span>        predType <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"full-model"</span>, <span class="st">"ls-means"</span>, <span class="st">"effect-curve"</span><span class="op">)</span>,</span>
-<span>        newdata <span class="op">=</span> <span class="cn">NULL</span>, doseSeq <span class="op">=</span> <span class="cn">NULL</span>, se.fit <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span>
-<span></span>
-<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span></span>
+<span>  <span class="va">object</span>,</span>
+<span>  predType <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"full-model"</span>, <span class="st">"ls-means"</span>, <span class="st">"effect-curve"</span><span class="op">)</span>,</span>
+<span>  newdata <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  doseSeq <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  se.fit <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'MCPMod'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, CI <span class="op">=</span> <span class="cn">FALSE</span>, level <span class="op">=</span> <span class="fl">0.95</span>,</span>
-<span>       plotData <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"means"</span>, <span class="st">"meansCI"</span>, <span class="st">"raw"</span>, <span class="st">"none"</span><span class="op">)</span>,</span>
-<span>       plotGrid <span class="op">=</span> <span class="cn">TRUE</span>, colMn <span class="op">=</span> <span class="fl">1</span>, colFit <span class="op">=</span> <span class="fl">1</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  CI <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  level <span class="op">=</span> <span class="fl">0.95</span>,</span>
+<span>  plotData <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"means"</span>, <span class="st">"meansCI"</span>, <span class="st">"raw"</span>, <span class="st">"none"</span><span class="op">)</span>,</span>
+<span>  plotGrid <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  colMn <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  colFit <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <p></p>
+
+
 <dl><dt id="arg-dose-resp">dose, resp<a class="anchor" aria-label="anchor" href="#arg-dose-resp"></a></dt>
-<dd><p>Either vectors of equal length specifying dose and response values,
-    or names of variables in the data frame specified in <samp>data</samp>.</p></dd>
+<dd><p>Either vectors of equal length specifying dose and response values, or names of variables in the
+data frame specified in <samp>data</samp>.</p></dd>
 
-  <dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>Data frame containing the variables referenced in dose and resp if
-    <samp>data</samp> is not specified it is assumed that <samp>dose</samp> and
-    <samp>resp</samp> are variables referenced from data (and no vectors)</p></dd>
 
-  <dt id="arg-models">models<a class="anchor" aria-label="anchor" href="#arg-models"></a></dt>
-<dd><p>An object of class <samp>"Mods"</samp>, see <code><a href="Mods.html">Mods</a></code> for
-    details</p></dd>
+<dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
+<dd><p>Data frame containing the variables referenced in dose and resp if <samp>data</samp> is not specified it is
+assumed that <samp>dose</samp> and <samp>resp</samp> are variables referenced from data (and no vectors)</p></dd>
 
-  <dt id="arg-s">S<a class="anchor" aria-label="anchor" href="#arg-s"></a></dt>
-<dd><p>The covariance matrix of <samp>resp</samp> when <samp>type = "general"</samp>,
-    see Description.</p></dd>
 
-  <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
-<dd><p>Determines whether inference is based on an ANCOVA model under a
-    homoscedastic normality assumption (when <samp>type = "normal"</samp>), or
-    estimates at the doses and their covariance matrix and degrees of
-    freedom are specified directly in <samp>resp</samp>, <samp>S</samp> and
-    <samp>df</samp>. See also <code><a href="fitMod.html">fitMod</a></code> and Pinheiro et al. (2014).</p></dd>
+<dt id="arg-models">models<a class="anchor" aria-label="anchor" href="#arg-models"></a></dt>
+<dd><p>An object of class <samp>Mods</samp>, see <code><a href="Mods.html">Mods()</a></code> for details</p></dd>
 
-  <dt id="arg-addcovars">addCovars<a class="anchor" aria-label="anchor" href="#arg-addcovars"></a></dt>
+
+<dt id="arg-s">S<a class="anchor" aria-label="anchor" href="#arg-s"></a></dt>
+<dd><p>The covariance matrix of <samp>resp</samp> when <samp>type = "general"</samp>, see Description.</p></dd>
+
+
+<dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
+<dd><p>Determines whether inference is based on an ANCOVA model under a homoscedastic normality assumption (when
+<samp>type = "normal"</samp>), or estimates at the doses and their covariance matrix and degrees of freedom are specified
+directly in <samp>resp</samp>, <samp>S</samp> and <samp>df</samp>. See also <code><a href="fitMod.html">fitMod()</a></code> and (Pinheiro et al. 2014)
+.</p></dd>
+
+
+<dt id="arg-addcovars">addCovars<a class="anchor" aria-label="anchor" href="#arg-addcovars"></a></dt>
 <dd><p>Formula specifying additive linear covariates (for <samp>type = "normal"</samp>)</p></dd>
 
+
 <dt id="arg-placadj">placAdj<a class="anchor" aria-label="anchor" href="#arg-placadj"></a></dt>
-<dd><p>Logical, if true, it is assumed that placebo-adjusted estimates are
-  specified in <samp>resp</samp> (only possible for <samp>type = "general"</samp>).</p></dd>
+<dd><p>Logical, if true, it is assumed that placebo-adjusted
+estimates are specified in <samp>resp</samp> (only possible for <samp>type =
+  "general"</samp>).</p></dd>
+
 
 <dt id="arg-selmodel">selModel<a class="anchor" aria-label="anchor" href="#arg-selmodel"></a></dt>
-<dd><p>Optional character vector specifying the model selection criterion for
-  dose estimation.  Possible values are</p><ul><li><p><code>AIC</code>: Selects model with smallest AIC (this is the default)</p></li>
+<dd><p>Optional character vector specifying the model selection
+criterion for dose estimation.  Possible values are</p><ul><li><p><code>AIC</code>: Selects model with smallest AIC (this is the default)</p></li>
 <li><p><code>maxT</code>: Selects the model corresponding to the largest t-statistic.</p></li>
-<li><p><code>aveAIC</code>: Uses a weighted average of the models corresponding to the
-    significant contrasts.  The model weights are chosen by the formula:
-    \(w_i = \exp(-0.5AIC_i)/\sum_i(\exp(-0.5AIC_i))\)
-    See Buckland et al. (1997) for details.</p></li>
+<li><p><code>aveAIC</code>: Uses a weighted average of the models corresponding to
+the significant contrasts.  The model weights are chosen by the formula:
+\(w_i = \exp(-0.5AIC_i)/\sum_i(\exp(-0.5AIC_i))\) See Buckland et al. (1997)
+ for details.</p></li>
 </ul><p>For <samp>type = "general"</samp> the "gAIC" is used.</p></dd>
+
 
 <dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
 <dd><p>Significance level for the multiple contrast test</p></dd>
 
+
 <dt id="arg-df">df<a class="anchor" aria-label="anchor" href="#arg-df"></a></dt>
-<dd><p>Specify the degrees of freedom to use in case <samp>type = "general"</samp>,
-  for the call to <code><a href="MCTtest.html">MCTtest</a></code> and <code><a href="fitMod.html">fitMod</a></code>.
-  Infinite degrees of (<samp>df=Inf</samp>) correspond to the multivariate
-  normal distribution.
-  For type = "normal" the degrees of freedom deduced from the AN(C)OVA fit are
-  used and this argument is ignored.</p></dd>
+<dd><p>Specify the degrees of freedom to use in case <samp>type = "general"</samp>, for the call to
+<code><a href="MCTtest.html">MCTtest()</a></code> and <code><a href="fitMod.html">fitMod()</a></code>. Infinite degrees of (<samp>df=Inf</samp>) correspond to the multivariate
+normal distribution.  For type = "normal" the degrees of freedom deduced from the AN(C)OVA fit are used and this
+argument is ignored.</p></dd>
+
 
 <dt id="arg-critv">critV<a class="anchor" aria-label="anchor" href="#arg-critv"></a></dt>
-<dd><p>Supply a pre-calculated critical value. If this argument is NULL, no
-  critical value will be calculated and the test decision is based on
-  the p-values. If <samp>critV = TRUE</samp> the critical value will be calculated.</p></dd>
+<dd><p>Supply a pre-calculated critical value. If this argument is NULL, no critical value will be calculated
+and the test decision is based on the p-values. If <samp>critV = TRUE</samp> the critical value will be calculated.</p></dd>
 
-  <dt id="arg-dosetype-delta-p">doseType, Delta, p<a class="anchor" aria-label="anchor" href="#arg-dosetype-delta-p"></a></dt>
-<dd><p><samp>doseType</samp> determines the dose to estimate, ED or TD (see also
-    <code><a href="Mods.html">Mods</a></code>), and <samp>Delta</samp> and <samp>p</samp> need to be
-    specified depending on whether TD or ED is to be estimated.
-    See <code><a href="targdose.html">TD</a></code> and <code><a href="targdose.html">ED</a></code> for details.</p></dd>
+
+<dt id="arg-dosetype-delta-p">doseType, Delta, p<a class="anchor" aria-label="anchor" href="#arg-dosetype-delta-p"></a></dt>
+<dd><p><samp>doseType</samp> determines the dose to estimate, ED or TD (see also <code><a href="Mods.html">Mods()</a></code>), and
+<samp>Delta</samp> and <samp>p</samp> need to be specified depending on whether TD or ED is to be estimated.  See
+<code><a href="targdose.html">TD()</a></code> and <code><a href="targdose.html">ED()</a></code> for details.</p></dd>
+
 
 <dt id="arg-pval">pVal<a class="anchor" aria-label="anchor" href="#arg-pval"></a></dt>
 <dd><p>Logical determining, whether p-values should be calculated.</p></dd>
 
+
 <dt id="arg-alternative">alternative<a class="anchor" aria-label="anchor" href="#arg-alternative"></a></dt>
-<dd><p>Character determining the alternative for the multiple contrast
-  trend test.</p></dd>
+<dd><p>Character determining the alternative for the multiple contrast trend test.</p></dd>
+
 
 <dt id="arg-na-action">na.action<a class="anchor" aria-label="anchor" href="#arg-na-action"></a></dt>
-<dd><p>A function which indicates what should happen when
-  the data contain NAs.</p></dd>
+<dd><p>A function which indicates what should happen when the data contain NAs.</p></dd>
+
 
 <dt id="arg-mvtcontrol">mvtcontrol<a class="anchor" aria-label="anchor" href="#arg-mvtcontrol"></a></dt>
-<dd><p>A list specifying additional control parameters for the <samp>qmvt</samp>
-  and <samp>pmvt</samp> calls in the code, see also <code><a href="mvtnorm-control.html">mvtnorm.control</a></code>
-  for details.</p></dd>
+<dd><p>A list specifying additional control parameters for the <samp>qmvt</samp> and <samp>pmvt</samp> calls in the
+code, see also <code><a href="mvtnorm-control.html">mvtnorm.control()</a></code> for details.</p></dd>
+
 
 <dt id="arg-bnds">bnds<a class="anchor" aria-label="anchor" href="#arg-bnds"></a></dt>
-<dd><p>Bounds for non-linear parameters. This needs to be a list with list
-  entries corresponding to the selected bounds. The names of the list
-  entries need to correspond to the model names. The
-  <code><a href="defBnds.html">defBnds</a></code> function provides the default selection.</p></dd>
+<dd><p>Bounds for non-linear parameters. This needs to be a list with list entries corresponding to the selected
+bounds. The names of the list entries need to correspond to the model names. The <code><a href="defBnds.html">defBnds()</a></code> function
+provides the default selection.</p></dd>
+
 
 <dt id="arg-control">control<a class="anchor" aria-label="anchor" href="#arg-control"></a></dt>
-<dd><p>Control list for the optimization.<br>
-  A list with entries: "nlminbcontrol", "optimizetol" and "gridSize".</p>
-<p>The entry nlminbcontrol needs to be a list and is passed directly to
-  control argument in the nlminb function, that is used internally for
-  models with 2 nonlinear parameters (e.g. sigmoid Emax or beta model).</p>
-<p>The entry optimizetol is passed directly to the tol argument of the
-  optimize function, which is used for models with 1 nonlinear
-  parameters (e.g. Emax or exponential model).</p>
-<p>The entry gridSize needs to be a list with entries dim1 and dim2
-  giving the size of the grid for the gridsearch in 1d or 2d models.</p></dd>
+<dd><p>Control list for the optimization.<br> A list with entries: "nlminbcontrol", "optimizetol" and
+"gridSize".</p>
+<p>The entry nlminbcontrol needs to be a list and is passed directly to control argument in the nlminb function, that
+is used internally for models with 2 nonlinear parameters (e.g. sigmoid Emax or beta model).</p>
+<p>The entry optimizetol is passed directly to the tol argument of the optimize function, which is used for models
+with 1 nonlinear parameters (e.g. Emax or exponential model).</p>
+<p>The entry gridSize needs to be a list with entries dim1 and dim2 giving the size of the grid for the gridsearch in
+1d or 2d models.</p></dd>
+
 
 <dt id="arg-object-x">object, x<a class="anchor" aria-label="anchor" href="#arg-object-x"></a></dt>
 <dd><p>MCPMod object</p></dd>
 
+
 <dt id="arg-predtype-newdata-doseseq-se-fit-">predType, newdata, doseSeq, se.fit, ...<a class="anchor" aria-label="anchor" href="#arg-predtype-newdata-doseseq-se-fit-"></a></dt>
-<dd><p>predType determines whether predictions are returned for the full
-  model (including potential covariates), the ls-means (SAS type) or the
-  effect curve (difference to placebo).</p>
-<p>newdata gives the covariates to use in producing the predictions (for
-  <samp>predType = "full-model"</samp>), if missing the covariates used for fitting
-  are used.</p>
-<p>doseSeq dose-sequence on where to produce predictions (for
-  <samp>predType = "effect-curve"</samp> and <samp>predType = "ls-means"</samp>). If
-  missing the doses used for fitting are used.</p>
-<p>se.fit: logical determining, whether the standard error should be
-  calculated.</p>
-<p>...: Additional arguments, for plot.MCPMod these are passed to
-  plot.DRMod.</p></dd>
+<dd><p>predType determines whether predictions are returned for the full model
+(including potential covariates), the ls-means (SAS type) or the effect curve (difference to placebo).</p>
+<p>newdata gives the covariates to use in producing the predictions (for <samp>predType = "full-model"</samp>), if missing
+the covariates used for fitting are used.</p>
+<p>doseSeq dose-sequence on where to produce predictions (for <samp>predType =
+  "effect-curve"</samp> and <samp>predType = "ls-means"</samp>). If missing the doses used
+for fitting are used.</p>
+<p>se.fit: logical determining, whether the standard error should be calculated.</p>
+<p>...: Additional arguments, for plot.MCPMod these are passed to plot.DRMod.</p></dd>
+
 
 <dt id="arg-ci-level-plotdata-plotgrid-colmn-colfit">CI, level, plotData, plotGrid, colMn, colFit<a class="anchor" aria-label="anchor" href="#arg-ci-level-plotdata-plotgrid-colmn-colfit"></a></dt>
 <dd><p>Arguments for plot method: <samp>CI</samp> determines whether confidence
-  intervals should be plotted. <samp>level</samp> determines the level of the
-  confidence intervals. <samp>plotData</samp> determines how the data are plotted:
-  Either as means or as means with CI, raw data or none. In case of
-  <samp>type = "normal"</samp> and covariates the ls-means are displayed, when
-  <samp>type = "general"</samp> the option "raw" is not available.
-  <samp>colMn</samp> and <samp>colFit</samp> determine the colors of fitted model
-  and the raw means.</p></dd>
-
+intervals should be plotted. <samp>level</samp> determines the level of the confidence intervals. <samp>plotData</samp>
+determines how the data are plotted: Either as means or as means with CI, raw data or none. In case of <samp>type =
+  "normal"</samp> and covariates the ls-means are displayed, when <samp>type = "general"</samp> the option "raw" is not
+available.  <samp>colMn</samp> and <samp>colFit</samp> determine the colors of fitted model and the raw means.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>An object of class <samp>MCPMod</samp>, which contains the fitted
-  <samp>MCTtest</samp> object as well as the <samp>DRMod</samp> objects and
-  additional information (model selection criteria, dose estimates,
-  selected models).</p>
+    <p>An object of class <samp>MCPMod</samp>, which contains the fitted <samp>MCTtest</samp> object as well as the <samp>DRMod</samp>
+objects and additional information (model selection criteria, dose estimates, selected models).</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
-    <p>Bretz, F., Pinheiro, J. C., and Branson, M. (2005), Combining
-multiple comparisons and modeling techniques in dose-response
-studies, <em>Biometrics</em>, <b>61</b>, 738–748</p>
-<p>Pinheiro, J. C., Bornkamp, B., and Bretz, F. (2006). Design and analysis of dose finding studies
-combining multiple comparisons and modeling procedures, <em>Journal of Biopharmaceutical
-Statistics</em>, <b>16</b>, 639–656</p>
-<p>Pinheiro, J. C., Bretz, F., and Branson, M. (2006). Analysis of dose-response studies - modeling
-approaches, <em>in</em> N. Ting (ed.). <em>Dose Finding in Drug Development</em>, Springer, New York,
-pp. 146–171</p>
-<p>Pinheiro, J. C., Bornkamp, B., Glimm, E. and Bretz, F. (2014)
-Model-based dose finding under model uncertainty using general
-parametric models, <em>Statistics in Medicine</em>, <b>33</b>,
-1646–1661</p>
-<p>Schorning, K., Bornkamp, B., Bretz, F., &amp; Dette, H. (2016). Model
-selection versus model averaging in dose finding
-studies. <em>Statistics in Medicine</em>, <b>35</b>, 4021–4040</p>
-<p>Xun, X. and Bretz, F. (2017) The MCP-Mod methodology:
-Practical Considerations and The DoseFinding R package,
-in O'Quigley, J., Iasonos, A. and Bornkamp, B. (eds)
-Handbook of methods for designing, monitoring, and analyzing
-dose-finding trials, CRC press</p>
-<p>Buckland, S. T., Burnham, K. P. and Augustin, N. H. (1997). Model selection an integral part
-of inference, <em>Biometrics</em>, <b>53</b>, 603–618</p>
-<p>Seber, G.A.F. and Wild, C.J. (2003). Nonlinear Regression, Wiley.</p>
+    <p>Buckland ST, Burnham KP, Augustin NH (1997).
+“Model selection: an integral part of inference.”
+<em>Biometrics</em>, 603–618.
+<a href="https://doi.org/10.2307/2533961" class="external-link">doi:10.2307/2533961</a>
+.</p>
+<p>Bretz F, Pinheiro JC, Branson M (2005).
+“Combining multiple comparisons and modeling techniques in dose-response studies.”
+<em>Biometrics</em>, <b>61</b>(3), 738–748.
+<a href="https://doi.org/10.1111/j.1541-0420.2005.00344.x" class="external-link">doi:10.1111/j.1541-0420.2005.00344.x</a>
+.</p>
+<p>Pinheiro J, Bornkamp B, Bretz F (2006).
+“Design and Analysis of Dose Finding Studies Combining Multiple Comparisons and Modeling Procedures.”
+<em>Journal of Biopharmaceutical Statistics</em>, <b>16</b>, 639-656.
+<a href="https://doi.org/10.1080/10543400600860428" class="external-link">doi:10.1080/10543400600860428</a>
+.</p>
+<p>Pinheiro JC, Bretz F, Branson M (2006).
+“Analysis of dose–response studies—modeling approaches.”
+In <em>Dose Finding in Drug Development</em>, 146–171.
+Springer.</p>
+<p>Pinheiro J, Bornkamp B, Glimm E, Bretz F (2014).
+“Model-based dose finding under model uncertainty using general parametric models.”
+<em>Statistics in Medicine</em>, <b>33</b>, 1646-1661.
+<a href="https://doi.org/10.1002/sim.6052" class="external-link">doi:10.1002/sim.6052</a>
+.</p>
+<p>Schorning K, Bornkamp B, Bretz F, Dette H (2016).
+“Model  selection  versus  model averaging in dose finding studies.”
+<em>Statistics in Medicine</em>, <b>35</b>(22), 4021-4040.
+<a href="https://doi.org/10.1002/sim.6991" class="external-link">doi:10.1002/sim.6991</a>
+.</p>
+<p>Seber GA, Wild CJ (2003).
+<em>Nonlinear Regression</em>.
+Wiley.</p>
+<p>Xun X, Bretz F (2017).
+“The MCP-Mod methodology: Practical considerations and the DoseFinding R package.”
+In <em>Handbook of Methods for Designing, Monitoring, and Analyzing Dose-Finding Trials</em>, 205–227.
+Chapman and Hall/CRC.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="MCTtest.html">MCTtest()</a></code>, <code><a href="fitMod.html">fitMod()</a></code>, <code><a href="drmodels.html">drmodels()</a></code></p></div>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
     <p>Bjoern Bornkamp</p>
     </div>
-    <div class="section level2">
-    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="MCTtest.html">MCTtest</a></code>, <code><a href="fitMod.html">fitMod</a></code>, <code><a href="drmodels.html">drmodels</a></code></p></div>
-    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">biom</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">biom</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co">## first define candidate model set (only need "standardized" models)</span></span></span>
 <span class="r-in"><span><span class="va">models</span> <span class="op">&lt;-</span> <span class="fu"><a href="Mods.html">Mods</a></span><span class="op">(</span>linear <span class="op">=</span> <span class="cn">NULL</span>, emax<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>,<span class="fl">0.2</span><span class="op">)</span>, linInt<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>               doses<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0.05</span>,<span class="fl">0.2</span>,<span class="fl">0.6</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -426,7 +464,7 @@ of inference, <em>Biometrics</em>, <b>53</b>, 603–618</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.1592893 0.1592893 0.1126345 0.1259292 0.1592893</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span><span class="co">## display all model functions </span></span></span>
+<span class="r-in"><span><span class="co">## display all model functions</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">MM</span>, plotData<span class="op">=</span><span class="st">"meansCI"</span>, CI<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="MCPMod-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>

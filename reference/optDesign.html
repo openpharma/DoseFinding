@@ -7,12 +7,14 @@
   };
 </script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Function to calculate optimal designs — optDesign"><meta name="description" content="Given a set of models (with full parameter values and model probabilities) the optDesign function calculates
 the optimal design for estimating the dose-response model parameters (D-optimal) or the design for estimating the
-target dose (TD-optimal design) (see Dette, Bretz, Pepelyshev and Pinheiro (2008)), or a mixture of these two
+target dose (TD-optimal design) (see Dette et al. 2008)
+, or a mixture of these two
 criteria. The design can be plotted (together with the candidate models) using plot.design. calcCrit
 calculates the design criterion for a discrete set of design(s). rndDesign provides efficient rounding for the
 calculated continous design to a finite sample size."><meta property="og:description" content="Given a set of models (with full parameter values and model probabilities) the optDesign function calculates
 the optimal design for estimating the dose-response model parameters (D-optimal) or the design for estimating the
-target dose (TD-optimal design) (see Dette, Bretz, Pepelyshev and Pinheiro (2008)), or a mixture of these two
+target dose (TD-optimal design) (see Dette et al. 2008)
+, or a mixture of these two
 criteria. The design can be plotted (together with the candidate models) using plot.design. calcCrit
 calculates the design criterion for a discrete set of design(s). rndDesign provides efficient rounding for the
 calculated continous design to a finite sample size."><meta property="og:image" content="https://openpharma.github.io/DoseFinding/logo.png"></head><body>
@@ -61,7 +63,8 @@ calculated continous design to a finite sample size."><meta property="og:image" 
     <div class="ref-description section level2">
     <p>Given a set of models (with full parameter values and model probabilities) the <samp>optDesign</samp> function calculates
 the optimal design for estimating the dose-response model parameters (D-optimal) or the design for estimating the
-target dose (TD-optimal design) (see Dette, Bretz, Pepelyshev and Pinheiro (2008)), or a mixture of these two
+target dose (TD-optimal design) (see Dette et al. 2008)
+, or a mixture of these two
 criteria. The design can be plotted (together with the candidate models) using <samp>plot.design</samp>. <samp>calcCrit</samp>
 calculates the design criterion for a discrete set of design(s). <samp>rndDesign</samp> provides efficient rounding for the
 calculated continous design to a finite sample size.</p>
@@ -167,7 +170,8 @@ required.</p></dd>
 <dt id="arg-optimizer">optimizer<a class="anchor" aria-label="anchor" href="#arg-optimizer"></a></dt>
 <dd><p>Algorithm used for calculating the optimal design. Options "Nelder-Mead" and "nlminb" use the
 <code><a href="https://rdrr.io/r/stats/optim.html" class="external-link">optim()</a></code> and <code><a href="https://rdrr.io/r/stats/nlminb.html" class="external-link">nlminb()</a></code> function and use a trigonometric transformation to turn the
-constrained optimization problem into an unconstrained one (see Atkinson, Donev and Tobias, 2007, pages 130,131).</p>
+constrained optimization problem into an unconstrained one (see Atkinson et al. 2007 pages 130,131)
+.</p>
 <p>Option "solnp" uses the solnp function from the Rsolnp package, which implements an optimizer for non-linear
 optimization under general constraints.</p>
 <p>Option "exact" tries all given combinations of <samp>n</samp> patients to the given dose groups (subject to the bounds
@@ -229,11 +233,13 @@ are all assumed to be equal to one.</p>
 <p>For <samp>designCrit = "TD"</samp> the code minimizes the design criterion</p>
 <p>$$\sum_{m}p_m \log(v_m)$$ where \(p_m\) is the probability for model m and
 \(v_m\) is proportional to the asymptotic
-variance of the TD estimate and given by \(b_m'M_m^{-}b_m\) (see Dette et al. (2008), p. 1227 for details).</p>
+variance of the TD estimate and given by \(b_m'M_m^{-}b_m\) (see Dette et al. 2008, p. 1227 for details)
+.</p>
 <p>For <samp>designCrit = "Dopt&amp;TD"</samp> the code minimizes the design criterion
 $$\sum_{m}p_m(-0.5\log(\det(M_m))/k_m+0.5\log(v_m))$$</p>
 <p>Again, for <samp>standDopt = FALSE</samp> the \(k_m\) are all assumed to be equal to one.</p>
-<p>For details on the <samp>rndDesign</samp> function, see Pukelsheim (1993), Chapter 12.</p>
+<p>For details on the <samp>rndDesign</samp> function, see Pukelsheim (1993)
+, Chapter 12.</p>
     </div>
     <div class="section level2">
     <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
@@ -243,15 +249,21 @@ algorithm. Alternatively one can use the solnp optimizer that is usually the mos
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
-    <p>Atkinson, A.C., Donev, A.N. and Tobias, R.D. (2007). Optimum Experimental Designs, with SAS, Oxford
-University Press</p>
-<p>Dette, H., Bretz, F., Pepelyshev, A. and Pinheiro, J. C. (2008). Optimal
-Designs for Dose Finding Studies, <em>Journal of the American Statisical
-Association</em>, <strong>103</strong>, 1225–1237</p>
-<p>Pinheiro, J.C., Bornkamp, B. (2017) Designing Phase II Dose-Finding Studies: Sample Size, Doses and Dose Allocation
-Weights, in O'Quigley, J., Iasonos, A. and Bornkamp, B. (eds) Handbook of methods for designing, monitoring, and
-analyzing dose-finding trials, CRC press</p>
-<p>Pukelsheim, F. (1993). Optimal Design of Experiments, Wiley</p>
+    <p>Atkinson AC, Donev AN, Tobias RD (2007).
+<em>Optimum Experimental Designs, with SAS</em>.
+Oxford University Press.</p>
+<p>Dette H, Bretz F, Pepelyshev A, Pinheiro J (2008).
+“Optimal designs for dose-finding studies.”
+<em>Journal of the American Statistical Association</em>, <b>103</b>(483), 1225–1237.
+<a href="https://doi.org/10.1198/016214508000000427" class="external-link">doi:10.1198/016214508000000427</a>
+.</p>
+<p>Pinheiro J, Bornkamp B (2017).
+“Designing phase II dose-finding studies: sample size, doses, and dose allocation weights.”
+In <em>Handbook of Methods for Designing, Monitoring, and Analyzing Dose-Finding Trials</em>, 229–246.
+Chapman and Hall/CRC.</p>
+<p>Pukelsheim F (1993).
+<em>Optimal Design of Experiments</em>.
+Wiley.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

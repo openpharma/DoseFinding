@@ -5,31 +5,13 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Performs multiple contrast test — MCTtest"><meta name="description" content='This function performs a multiple contrast test. The contrasts are
-  either directly specified in contMat or optimal contrasts
-  derived from the models argument. The directionality of the
-  data (i.e. whether an increase or decrease in the response variable is
-  beneficial is inferred from the models object, see
-  Mods).
-For type = "normal" an ANCOVA model based on a homoscedastic
-  normality assumption (with additive covariates specified in
-  addCovars) is fitted.
-For type = "general" it is assumed multivariate normally
-  distributed estimates are specified in resp with covariance
-  given by S, and the contrast test statistic is calculated based
-  on this assumption. Degrees of freedom specified in df.'><meta property="og:description" content='This function performs a multiple contrast test. The contrasts are
-  either directly specified in contMat or optimal contrasts
-  derived from the models argument. The directionality of the
-  data (i.e. whether an increase or decrease in the response variable is
-  beneficial is inferred from the models object, see
-  Mods).
-For type = "normal" an ANCOVA model based on a homoscedastic
-  normality assumption (with additive covariates specified in
-  addCovars) is fitted.
-For type = "general" it is assumed multivariate normally
-  distributed estimates are specified in resp with covariance
-  given by S, and the contrast test statistic is calculated based
-  on this assumption. Degrees of freedom specified in df.'><meta property="og:image" content="https://openpharma.github.io/DoseFinding/logo.png"></head><body>
+</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Performs multiple contrast test — MCTtest"><meta name="description" content="This function performs a multiple contrast test. The contrasts are either directly specified in contMat or
+optimal contrasts derived from the models argument. The directionality of the data (i.e. whether an increase
+or decrease in the response variable is beneficial is inferred from the models object, see
+Mods())."><meta property="og:description" content="This function performs a multiple contrast test. The contrasts are either directly specified in contMat or
+optimal contrasts derived from the models argument. The directionality of the data (i.e. whether an increase
+or decrease in the response variable is beneficial is inferred from the models object, see
+Mods())."><meta property="og:image" content="https://openpharma.github.io/DoseFinding/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -68,137 +50,155 @@ For type = "general" it is assumed multivariate normally
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Performs multiple contrast test</h1>
-
+      <small class="dont-index">Source: <a href="https://github.com/openpharma/DoseFinding/blob/master/R/MCTtest.R" class="external-link"><code>R/MCTtest.R</code></a></small>
       <div class="d-none name"><code>MCTtest.Rd</code></div>
     </div>
 
     <div class="ref-description section level2">
-    <p>This function performs a multiple contrast test. The contrasts are
-  either directly specified in <samp>contMat</samp> or optimal contrasts
-  derived from the <samp>models</samp> argument. The directionality of the
-  data (i.e. whether an increase or decrease in the response variable is
-  beneficial is inferred from the <samp>models</samp> object, see
-  <code><a href="Mods.html">Mods</a></code>).</p>
-<p>For <samp>type = "normal"</samp> an ANCOVA model based on a homoscedastic
-  normality assumption (with additive covariates specified in
-  <samp>addCovars</samp>) is fitted.</p>
-<p>For <samp>type = "general"</samp> it is assumed multivariate normally
-  distributed estimates are specified in <samp>resp</samp> with covariance
-  given by <samp>S</samp>, and the contrast test statistic is calculated based
-  on this assumption. Degrees of freedom specified in <samp>df</samp>.</p>
+    <p>This function performs a multiple contrast test. The contrasts are either directly specified in <samp>contMat</samp> or
+optimal contrasts derived from the <samp>models</samp> argument. The directionality of the data (i.e. whether an increase
+or decrease in the response variable is beneficial is inferred from the <samp>models</samp> object, see
+<code><a href="Mods.html">Mods()</a></code>).</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">MCTtest</span><span class="op">(</span><span class="va">dose</span>, <span class="va">resp</span>, data <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">models</span>, S <span class="op">=</span> <span class="cn">NULL</span>, type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"normal"</span>, <span class="st">"general"</span><span class="op">)</span>,</span>
-<span>        addCovars <span class="op">=</span> <span class="op">~</span><span class="fl">1</span>, placAdj <span class="op">=</span> <span class="cn">FALSE</span>, alpha <span class="op">=</span> <span class="fl">0.025</span>, df <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>        critV <span class="op">=</span> <span class="cn">NULL</span>, pVal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>        alternative <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"one.sided"</span>, <span class="st">"two.sided"</span><span class="op">)</span>, na.action <span class="op">=</span> <span class="va">na.fail</span>,</span>
-<span>        mvtcontrol <span class="op">=</span> <span class="fu"><a href="mvtnorm-control.html">mvtnorm.control</a></span><span class="op">(</span><span class="op">)</span>, contMat <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">MCTtest</span><span class="op">(</span></span>
+<span>  <span class="va">dose</span>,</span>
+<span>  <span class="va">resp</span>,</span>
+<span>  data <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">models</span>,</span>
+<span>  S <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"normal"</span>, <span class="st">"general"</span><span class="op">)</span>,</span>
+<span>  addCovars <span class="op">=</span> <span class="op">~</span><span class="fl">1</span>,</span>
+<span>  placAdj <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  alpha <span class="op">=</span> <span class="fl">0.025</span>,</span>
+<span>  df <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  critV <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  pVal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  alternative <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"one.sided"</span>, <span class="st">"two.sided"</span><span class="op">)</span>,</span>
+<span>  na.action <span class="op">=</span> <span class="va">na.fail</span>,</span>
+<span>  mvtcontrol <span class="op">=</span> <span class="fu"><a href="mvtnorm-control.html">mvtnorm.control</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  contMat <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <p></p>
+
+
 <dl><dt id="arg-dose-resp">dose, resp<a class="anchor" aria-label="anchor" href="#arg-dose-resp"></a></dt>
-<dd><p>Either vectors of equal length specifying dose and response values,
-    or names of variables in the data frame specified in <samp>data</samp>.</p></dd>
+<dd><p>Either vectors of equal length specifying dose and response values, or names of variables in the
+data frame specified in <samp>data</samp>.</p></dd>
 
-  <dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>Data frame containing the variables referenced in dose and resp if
-    <samp>data</samp> is not specified it is assumed that <samp>dose</samp> and
-    <samp>resp</samp> are variables referenced from data (and no vectors)</p></dd>
 
-  <dt id="arg-models">models<a class="anchor" aria-label="anchor" href="#arg-models"></a></dt>
-<dd><p>An object of class <samp>Mods</samp>, see <code><a href="Mods.html">Mods</a></code> for
-    details</p></dd>
+<dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
+<dd><p>Data frame containing the variables referenced in dose and resp if <samp>data</samp> is not specified it is
+assumed that <samp>dose</samp> and <samp>resp</samp> are variables referenced from data (and no vectors)</p></dd>
 
-  <dt id="arg-s">S<a class="anchor" aria-label="anchor" href="#arg-s"></a></dt>
-<dd><p>The covariance matrix of <samp>resp</samp> when <samp>type = "general"</samp>,
-    see Description.</p></dd>
 
-  <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
-<dd><p>Determines whether inference is based on an ANCOVA model under a
-    homoscedastic normality assumption (when <samp>type = "normal"</samp>), or
-    estimates at the doses and their covariance matrix and degrees of
-    freedom are specified directly in <samp>resp</samp>, <samp>S</samp> and
-    <samp>df</samp>. See also <code><a href="fitMod.html">fitMod</a></code> and Pinheiro et al. (2014).</p></dd>
+<dt id="arg-models">models<a class="anchor" aria-label="anchor" href="#arg-models"></a></dt>
+<dd><p>An object of class <samp>Mods</samp>, see <code><a href="Mods.html">Mods()</a></code> for details</p></dd>
 
-  <dt id="arg-addcovars">addCovars<a class="anchor" aria-label="anchor" href="#arg-addcovars"></a></dt>
+
+<dt id="arg-s">S<a class="anchor" aria-label="anchor" href="#arg-s"></a></dt>
+<dd><p>The covariance matrix of <samp>resp</samp> when <samp>type = "general"</samp>, see Description.</p></dd>
+
+
+<dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
+<dd><p>Determines whether inference is based on an ANCOVA model under a homoscedastic normality assumption (when
+<samp>type = "normal"</samp>), or estimates at the doses and their covariance matrix and degrees of freedom are specified
+directly in <samp>resp</samp>, <samp>S</samp> and <samp>df</samp>. See also <code><a href="fitMod.html">fitMod()</a></code> and (Pinheiro et al. 2014)
+.</p></dd>
+
+
+<dt id="arg-addcovars">addCovars<a class="anchor" aria-label="anchor" href="#arg-addcovars"></a></dt>
 <dd><p>Formula specifying additive linear covariates (for <samp>type = "normal"</samp>)</p></dd>
 
-<dt id="arg-placadj">placAdj<a class="anchor" aria-label="anchor" href="#arg-placadj"></a></dt>
-<dd><p>Logical, if true, it is assumed that placebo-adjusted estimates are
-  specified in <samp>resp</samp> (only possible for <samp>type = "general"</samp>).</p></dd>
 
-  <dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
+<dt id="arg-placadj">placAdj<a class="anchor" aria-label="anchor" href="#arg-placadj"></a></dt>
+<dd><p>Logical, if true, it is assumed that placebo-adjusted
+estimates are specified in <samp>resp</samp> (only possible for <samp>type =
+  "general"</samp>).</p></dd>
+
+
+<dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
 <dd><p>Significance level for the multiple contrast test</p></dd>
 
+
 <dt id="arg-df">df<a class="anchor" aria-label="anchor" href="#arg-df"></a></dt>
-<dd><p>Specify the degrees of freedom to use in case <samp>type = "general"</samp>.
-  If this argument is missing <samp>df = Inf</samp> is used (which corresponds
-  to the multivariate normal distribution).
-  For type = "normal" the degrees of freedom deduced from the AN(C)OVA fit are
-  used and this argument is ignored.</p></dd>
+<dd><p>Specify the degrees of freedom to use in case <samp>type = "general"</samp>.  If this argument is missing
+<samp>df = Inf</samp> is used (which corresponds to the multivariate normal distribution).  For type = "normal" the
+degrees of freedom deduced from the AN(C)OVA fit are used and this argument is ignored.</p></dd>
+
 
 <dt id="arg-critv">critV<a class="anchor" aria-label="anchor" href="#arg-critv"></a></dt>
-<dd><p>Supply a pre-calculated critical value. If this argument is NULL, no
-  critical value will be calculated and the test decision is based on
-  the p-values. If <samp>critV = TRUE</samp> the critical value will be calculated.</p></dd>
+<dd><p>Supply a pre-calculated critical value. If this argument is NULL, no critical value will be calculated
+and the test decision is based on the p-values. If <samp>critV = TRUE</samp> the critical value will be calculated.</p></dd>
 
-  <dt id="arg-pval">pVal<a class="anchor" aria-label="anchor" href="#arg-pval"></a></dt>
+
+<dt id="arg-pval">pVal<a class="anchor" aria-label="anchor" href="#arg-pval"></a></dt>
 <dd><p>Logical determining, whether p-values should be calculated.</p></dd>
 
+
 <dt id="arg-alternative">alternative<a class="anchor" aria-label="anchor" href="#arg-alternative"></a></dt>
-<dd><p>Character determining the alternative for the multiple contrast
-  trend test.</p></dd>
+<dd><p>Character determining the alternative for the multiple contrast trend test.</p></dd>
+
 
 <dt id="arg-na-action">na.action<a class="anchor" aria-label="anchor" href="#arg-na-action"></a></dt>
-<dd><p>A function which indicates what should happen when
-  the data contain NAs.</p></dd>
+<dd><p>A function which indicates what should happen when the data contain NAs.</p></dd>
+
 
 <dt id="arg-mvtcontrol">mvtcontrol<a class="anchor" aria-label="anchor" href="#arg-mvtcontrol"></a></dt>
-<dd><p>A list specifying additional control parameters for the <samp>qmvt</samp>
-  and <samp>pmvt</samp> calls in the code, see also <code><a href="mvtnorm-control.html">mvtnorm.control</a></code>
-  for details.</p></dd>
+<dd><p>A list specifying additional control parameters for the <samp>qmvt</samp> and <samp>pmvt</samp> calls in the
+code, see also <code><a href="mvtnorm-control.html">mvtnorm.control()</a></code> for details.</p></dd>
+
 
 <dt id="arg-contmat">contMat<a class="anchor" aria-label="anchor" href="#arg-contmat"></a></dt>
-<dd><p>Contrast matrix to apply to the ANCOVA dose-response estimates. The
-  contrasts need to be in the columns of the matrix (i.e. the column
-  sums need to be 0).</p></dd>
+<dd><p>Contrast matrix to apply to the ANCOVA dose-response estimates. The contrasts need to be in the
+columns of the matrix (i.e. the column sums need to be 0).</p></dd>
 
 </dl></div>
-    <div class="section level2">
-    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Integrals over the multivariate t and multivariate normal distribution
-  are calculated using the <samp>mvtnorm</samp> package.</p>
-    </div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>An object of class MCTtest, a list containing the output.</p>
     </div>
     <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>For <samp>type = "normal"</samp> an ANCOVA model based on a homoscedastic normality assumption (with additive covariates
+specified in <samp>addCovars</samp>) is fitted.</p>
+<p>For <samp>type = "general"</samp> it is assumed multivariate normally distributed estimates are specified in <samp>resp</samp>
+with covariance given by <samp>S</samp>, and the contrast test statistic is calculated based on this assumption. Degrees of
+freedom specified in <samp>df</samp>.</p>
+<p>Integrals over the multivariate t and multivariate normal distribution are calculated using the <samp>mvtnorm</samp>
+package.</p>
+    </div>
+    <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
-    <p>Hothorn, T., Bretz, F., and Westfall, P. (2008). Simultaneous
-  Inference in General Parametric Models, <em>Biometrical Journal</em>,
-  <b>50</b>, 346–363</p>
-<p>Pinheiro, J. C., Bornkamp, B., Glimm, E. and Bretz, F. (2014)
-  Model-based dose finding under model uncertainty using general
-  parametric models, <em>Statistics in Medicine</em>, <b>33</b>,
-  1646–1661</p>
+    <p>Hothorn T, Bretz F, Westfall P (2008).
+“Simultaneous inference in general parametric models.”
+<em>Biometrical Journal</em>, <b>50</b>(3), 346–363.
+<a href="https://doi.org/10.1002/bimj.200810425" class="external-link">doi:10.1002/bimj.200810425</a>
+.</p>
+<p>Pinheiro J, Bornkamp B, Glimm E, Bretz F (2014).
+“Model-based dose finding under model uncertainty using general parametric models.”
+<em>Statistics in Medicine</em>, <b>33</b>, 1646-1661.
+<a href="https://doi.org/10.1002/sim.6052" class="external-link">doi:10.1002/sim.6052</a>
+.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="powMCT.html">powMCT()</a></code>, <code><a href="optContr.html">optContr()</a></code></p></div>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
     <p>Bjoern Bornkamp</p>
     </div>
-    <div class="section level2">
-    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="powMCT.html">powMCT</a></code>, <code><a href="optContr.html">optContr</a></code></p></div>
-    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">## example without covariates</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## example without covariates</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">biom</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co">## define shapes for which to calculate optimal contrasts</span></span></span>
 <span class="r-in"><span><span class="va">modlist</span> <span class="op">&lt;-</span> <span class="fu"><a href="Mods.html">Mods</a></span><span class="op">(</span>emax <span class="op">=</span> <span class="fl">0.05</span>, linear <span class="op">=</span> <span class="cn">NULL</span>, logistic <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.1</span><span class="op">)</span>,</span></span>
@@ -343,6 +343,7 @@ For type = "general" it is assumed multivariate normally
 <span class="r-out co"><span class="r-pr">#&gt;</span> D0.6   2.617 0.0178</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> D0.2   2.066 0.0654</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> D0.05  0.497 0.6034</span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

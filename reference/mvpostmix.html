@@ -44,7 +44,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Prior to posterior updating for a multivariate normal mixture</h1>
-
+      <small class="dont-index">Source: <a href="https://github.com/openpharma/DoseFinding/blob/master/R/bMCTtest.R" class="external-link"><code>R/bMCTtest.R</code></a></small>
       <div class="d-none name"><code>mvpostmix.Rd</code></div>
     </div>
 
@@ -59,27 +59,31 @@
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <p></p>
-<dl><dt id="arg-priormix">priormix<a class="anchor" aria-label="anchor" href="#arg-priormix"></a></dt>
-<dd><p>Prior multivariate normal mixture given as a list of length 3. The
-    first list entry contains the mixture weights, the second component
-    the mean vectors and the third component of the list the covariance matrices.</p></dd>
 
-  <dt id="arg-mu-hat">mu_hat<a class="anchor" aria-label="anchor" href="#arg-mu-hat"></a></dt>
+
+<dl><dt id="arg-priormix">priormix<a class="anchor" aria-label="anchor" href="#arg-priormix"></a></dt>
+<dd><p>Prior multivariate normal mixture given as a list of length 3. The first list entry contains the
+mixture weights, the second component the mean vectors and the third component of the list the covariance matrices.</p></dd>
+
+
+<dt id="arg-mu-hat">mu_hat<a class="anchor" aria-label="anchor" href="#arg-mu-hat"></a></dt>
 <dd><p>estimated mean response for each dose</p></dd>
 
-  <dt id="arg-s-hat">S_hat<a class="anchor" aria-label="anchor" href="#arg-s-hat"></a></dt>
+
+<dt id="arg-s-hat">S_hat<a class="anchor" aria-label="anchor" href="#arg-s-hat"></a></dt>
 <dd><p>estimated covariance matrix</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Returns a posterior multivariate normal mixture as a list of length 3,
-  containing mixture weights, mean vectors and covariance matrices.</p>
+    <p>Returns a posterior multivariate normal mixture as a list of length 3, containing mixture weights, mean
+vectors and covariance matrices.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
-    <p>Bernardo, J. M., and Smith, A. F. (1994). Bayesian theory. John Wiley &amp; Sons.</p>
+    <p>Bernardo JM, Smith AF, Berliner M (1994).
+<em>Bayesian theory</em>, volume 586.
+Wiley Online Library.</p>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>

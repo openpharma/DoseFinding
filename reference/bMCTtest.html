@@ -6,9 +6,11 @@
     }
   };
 </script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Performs Bayesian multiple contrast test — bMCTtest"><meta name="description" content="This function performs a Bayesian multiple contrast test using normal mixture priors for the response on each dose,
-as proposed in Fleischer et al. (2022). For a general description of the multiple contrast test see
+as proposed in Fleischer et al. (2022)
+. For a general description of the multiple contrast test see
 MCTtest()."><meta property="og:description" content="This function performs a Bayesian multiple contrast test using normal mixture priors for the response on each dose,
-as proposed in Fleischer et al. (2022). For a general description of the multiple contrast test see
+as proposed in Fleischer et al. (2022)
+. For a general description of the multiple contrast test see
 MCTtest()."><meta property="og:image" content="https://openpharma.github.io/DoseFinding/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
@@ -54,7 +56,8 @@ MCTtest()."><meta property="og:image" content="https://openpharma.github.io/Dose
 
     <div class="ref-description section level2">
     <p>This function performs a Bayesian multiple contrast test using normal mixture priors for the response on each dose,
-as proposed in Fleischer et al. (2022). For a general description of the multiple contrast test see
+as proposed in Fleischer et al. (2022)
+. For a general description of the multiple contrast test see
 <code><a href="MCTtest.html">MCTtest()</a></code>.</p>
     </div>
 
@@ -101,7 +104,8 @@ assumed that <samp>dose</samp> and <samp>resp</samp> are variables referenced fr
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
 <dd><p>Determines whether inference is based on an ANCOVA model under a homoscedastic normality assumption (when
 <samp>type = "normal"</samp>), or estimates at the doses and their covariance matrix and degrees of freedom are specified
-directly in <samp>resp</samp>, <samp>S</samp> and <samp>df</samp>. See also <code><a href="fitMod.html">fitMod()</a></code> and Pinheiro et al. (2014).</p></dd>
+directly in <samp>resp</samp>, <samp>S</samp> and <samp>df</samp>. See also <code><a href="fitMod.html">fitMod()</a></code> and (Pinheiro et al. 2014)
+.</p></dd>
 
 
 <dt id="arg-prior">prior<a class="anchor" aria-label="anchor" href="#arg-prior"></a></dt>
@@ -149,14 +153,15 @@ from critical values for frequentist MCP-Mod using the provided <samp>alpha</sam
     <p>If <samp>type = "normal"</samp>, an ANCOVA model based on a homoscedastic normality assumption is fitted and posteriors for
 dose-response and contrast vectors are obtained assuming a known variance.</p>
 <p>For <samp>type = "general"</samp> it is assumed multivariate normally distributed estimates are specified in <samp>resp</samp>
-with covariance given by <samp>S</samp>, which define the likelihood.  Posteriors for dose-response and contrast vectors
+with covariance given by <samp>S</samp>, which define the likelihood. Posteriors for dose-response and contrast vectors
 are then obtained assuming a known covariance matrix S</p>
 <p>The multiple contrast test decision is based on the maximum posterior probability of a contrast being greater than
 zero. Thresholds for the posterior probability can either be supplied or will be derived from frequentist critical
 values. In the latter case the Bayesian test will give approximately the same results as the frequentist multiple
 contrast test if uninformative priors are used.</p>
 <p>For the default calculation of optimal contrasts the prior information is ignored (i.e. contrasts are calculated in
-the same way as in <code><a href="MCTtest.html">MCTtest()</a></code>).  Fleischer et al. (2022) discuss using contrasts that take the prior
+the same way as in <code><a href="MCTtest.html">MCTtest()</a></code>). Fleischer et al. (2022)
+ discuss using contrasts that take the prior
 effective sample sizes into account, which can be slightly more favourable for the Bayesian MCT test. Such
 alternative contrasts can be directly handed over via the <samp>contMat</samp> argument.</p>
 <p>For analysis with covariate adjustment, covariate-adjusted <samp>resp</samp> and <samp>S</samp> can be supplied together with
@@ -165,8 +170,15 @@ on how to obtain covariate adjusted estimates.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
-    <p>Fleischer, F., Bossert, S., Deng, Q., Loley, C. and Gierse, J. (2022).  Bayesian MCP-Mod,
-<em>Pharmaceutical Statistics</em>, <strong>21</strong>, 654–670</p>
+    <p>Fleischer F, Bossert S, Deng Q, Loley C, Gierse J (2022).
+“Bayesian MCPMod.”
+<em>Pharmaceutical Statistics</em>, <b>21</b>(3), 654–670.
+<a href="https://doi.org/10.1002/pst.2193" class="external-link">doi:10.1002/pst.2193</a>
+.<br><br> Pinheiro J, Bornkamp B, Glimm E, Bretz F (2014).
+“Model-based dose finding under model uncertainty using general parametric models.”
+<em>Statistics in Medicine</em>, <b>33</b>, 1646-1661.
+<a href="https://doi.org/10.1002/sim.6052" class="external-link">doi:10.1002/sim.6052</a>
+.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

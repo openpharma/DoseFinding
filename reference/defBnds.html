@@ -5,23 +5,9 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Calculates default bounds for non-linear parameters in dose-response models — defBnds"><meta name="description" content="Calculates reasonable bounds for non-linear parameters for the
-  built-in non-linear regression model based on the dose range under
-  investigation.
-For the logistic model the first row corresponds to the ED50 parameter and the
-  second row to the delta parameter. For the sigmoid Emax model the
-  first row corresponds to the ED50 parameter and the second row to the
-  h parameter, while for the beta model first and second row correspond
-  to the delta1 and delta2 parameters. See logistic,
-  sigEmax and betaMod for details."><meta property="og:description" content="Calculates reasonable bounds for non-linear parameters for the
-  built-in non-linear regression model based on the dose range under
-  investigation.
-For the logistic model the first row corresponds to the ED50 parameter and the
-  second row to the delta parameter. For the sigmoid Emax model the
-  first row corresponds to the ED50 parameter and the second row to the
-  h parameter, while for the beta model first and second row correspond
-  to the delta1 and delta2 parameters. See logistic,
-  sigEmax and betaMod for details."><meta property="og:image" content="https://openpharma.github.io/DoseFinding/logo.png"></head><body>
+</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Calculates default bounds for non-linear parameters in dose-response models — defBnds"><meta name="description" content="Calculates reasonable bounds for non-linear parameters for the built-in non-linear regression model based on the dose
+range under investigation."><meta property="og:description" content="Calculates reasonable bounds for non-linear parameters for the built-in non-linear regression model based on the dose
+range under investigation."><meta property="og:image" content="https://openpharma.github.io/DoseFinding/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -60,38 +46,36 @@ For the logistic model the first row corresponds to the ED50 parameter and the
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Calculates default bounds for non-linear parameters in dose-response models</h1>
-
+      <small class="dont-index">Source: <a href="https://github.com/openpharma/DoseFinding/blob/master/R/fitMod.R" class="external-link"><code>R/fitMod.R</code></a></small>
       <div class="d-none name"><code>defBnds.Rd</code></div>
     </div>
 
     <div class="ref-description section level2">
-    <p>Calculates reasonable bounds for non-linear parameters for the
-  built-in non-linear regression model based on the dose range under
-  investigation.</p>
-<p>For the logistic model the first row corresponds to the ED50 parameter and the
-  second row to the delta parameter. For the sigmoid Emax model the
-  first row corresponds to the ED50 parameter and the second row to the
-  h parameter, while for the beta model first and second row correspond
-  to the delta1 and delta2 parameters. See <code><a href="drmodels.html">logistic</a></code>,
-  <code><a href="drmodels.html">sigEmax</a></code> and <code><a href="drmodels.html">betaMod</a></code> for details.</p>
+    <p>Calculates reasonable bounds for non-linear parameters for the built-in non-linear regression model based on the dose
+range under investigation.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">defBnds</span><span class="op">(</span><span class="va">mD</span>, emax <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.001</span>, <span class="fl">1.5</span><span class="op">)</span><span class="op">*</span><span class="va">mD</span>,</span>
-<span>           exponential <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">*</span><span class="va">mD</span>, </span>
-<span>           logistic <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.001</span>, <span class="fl">0.01</span>, <span class="fl">1.5</span>, <span class="fl">1</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span><span class="op">*</span><span class="va">mD</span>, <span class="fl">2</span><span class="op">)</span>,</span>
-<span>           sigEmax <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.001</span><span class="op">*</span><span class="va">mD</span>, <span class="fl">0.5</span>, <span class="fl">1.5</span><span class="op">*</span><span class="va">mD</span>, <span class="fl">10</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span>,</span>
-<span>           betaMod <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>,<span class="fl">0.05</span>,<span class="fl">4</span>,<span class="fl">4</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">defBnds</span><span class="op">(</span></span>
+<span>  <span class="va">mD</span>,</span>
+<span>  emax <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.001</span>, <span class="fl">1.5</span><span class="op">)</span> <span class="op">*</span> <span class="va">mD</span>,</span>
+<span>  exponential <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">2</span><span class="op">)</span> <span class="op">*</span> <span class="va">mD</span>,</span>
+<span>  logistic <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.001</span>, <span class="fl">0.01</span>, <span class="fl">1.5</span>, <span class="fl">1</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span> <span class="op">*</span> <span class="va">mD</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>  sigEmax <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.001</span> <span class="op">*</span> <span class="va">mD</span>, <span class="fl">0.5</span>, <span class="fl">1.5</span> <span class="op">*</span> <span class="va">mD</span>, <span class="fl">10</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>  betaMod <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.05</span>, <span class="fl">4</span>, <span class="fl">4</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <p></p>
+
+
 <dl><dt id="arg-md">mD<a class="anchor" aria-label="anchor" href="#arg-md"></a></dt>
 <dd><p>Maximum dose in the study.</p></dd>
 
-  <dt id="arg-emax-exponential-logistic-sigemax-betamod">emax, exponential, logistic, sigEmax, betaMod<a class="anchor" aria-label="anchor" href="#arg-emax-exponential-logistic-sigemax-betamod"></a></dt>
+
+<dt id="arg-emax-exponential-logistic-sigemax-betamod">emax, exponential, logistic, sigEmax, betaMod<a class="anchor" aria-label="anchor" href="#arg-emax-exponential-logistic-sigemax-betamod"></a></dt>
 <dd><p>values for the nonlinear parameters for these model-functions</p></dd>
 
 </dl></div>
@@ -100,17 +84,25 @@ For the logistic model the first row corresponds to the ED50 parameter and the
     <p>List containing bounds for the model parameters.</p>
     </div>
     <div class="section level2">
-    <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
-    <p>Bjoern Bornkamp</p>
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>For the logistic model the first row corresponds to the ED50 parameter and the second row to the delta parameter. For
+the sigmoid Emax model the first row corresponds to the ED50 parameter and the second row to the h parameter, while
+for the beta model first and second row correspond to the delta1 and delta2 parameters. See <code><a href="drmodels.html">logistic()</a></code>,
+<code><a href="drmodels.html">sigEmax()</a></code> and <code><a href="drmodels.html">betaMod()</a></code> for details.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="fitMod.html">fitMod</a></code></p></div>
+    <div class="dont-index"><p><code><a href="fitMod.html">fitMod()</a></code></p></div>
+    </div>
+    <div class="section level2">
+    <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
+    <p>Bjoern Bornkamp</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span>  <span class="fu">defBnds</span><span class="op">(</span>mD <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="fu">defBnds</span><span class="op">(</span>mD <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $emax</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.001 1.500</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>

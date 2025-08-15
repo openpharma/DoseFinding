@@ -5,9 +5,9 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Calculate guesstimates based on prior knowledge — guesst"><meta name="description" content="Calculates guesstimates for standardized model parameter(s) using the general approach described in Pinheiro et al.
-(2006)."><meta property="og:description" content="Calculates guesstimates for standardized model parameter(s) using the general approach described in Pinheiro et al.
-(2006)."><meta property="og:image" content="https://openpharma.github.io/DoseFinding/logo.png"></head><body>
+</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Calculate guesstimates based on prior knowledge — guesst"><meta name="description" content="Calculates guesstimates for standardized model parameter(s) using the general approach described in Pinheiro et al. (2006)
+."><meta property="og:description" content="Calculates guesstimates for standardized model parameter(s) using the general approach described in Pinheiro et al. (2006)
+."><meta property="og:image" content="https://openpharma.github.io/DoseFinding/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -51,8 +51,8 @@
     </div>
 
     <div class="ref-description section level2">
-    <p>Calculates guesstimates for standardized model parameter(s) using the general approach described in Pinheiro et al.
-(2006).</p>
+    <p>Calculates guesstimates for standardized model parameter(s) using the general approach described in Pinheiro et al. (2006)
+.</p>
     </div>
 
     <div class="section level2">
@@ -87,7 +87,8 @@
 
 <dt id="arg-less">less<a class="anchor" aria-label="anchor" href="#arg-less"></a></dt>
 <dd><p>Logical, only needed in case of quadratic model.  Determines if d is smaller (<samp>less=TRUE</samp>) or larger
-(<samp>less=FALSE</samp>) than dopt (see Pinheiro et al. (2006) for details).</p></dd>
+(<samp>less=FALSE</samp>) than dopt (see Pinheiro et al. 2006 for details)
+.</p></dd>
 
 
 <dt id="arg-local">local<a class="anchor" aria-label="anchor" href="#arg-local"></a></dt>
@@ -126,16 +127,21 @@ dose range with this pair.</p>
 <p>For the emax, sigmoid Emax and logistic model one can choose between a local and an asymptotic version. In the local
 version one explicitly forces the standardized model function to pass through the specified points (d,p). For the
 asymptotic version it assumed that the standardized model function is equal to 1 at the largest dose (this is the
-approach described in Pinheiro et al. (2006)). If the local version is used, convergence problems with the underlying
+approach described in Pinheiro et al. (2006)
+). If the local version is used, convergence problems with the underlying
 nonlinear optimization can occur.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
-    <p>Bornkamp B., Pinheiro J. C., and Bretz, F. (2009). MCPMod: An R
-Package for the Design and Analysis of Dose-Finding Studies, <em>Journal
-of Statistical Software</em>, <strong>29</strong>(7), 1–23</p>
-<p>Pinheiro, J. C., Bretz, F., and Branson, M. (2006). Analysis of dose-response studies - modeling approaches,
-<em>in</em> N. Ting (ed.), <em>Dose Finding in Drug Development</em>, Springer, New York, pp. 146–171</p>
+    <p>Bornkamp B, Pinheiro J, Bretz F (2009).
+“MCPMod: An R package for the design and analysis of dose-finding studies.”
+<em>Journal of Statistical Software</em>, <b>29</b>, 1–23.
+<a href="https://doi.org/10.18637/jss.v029.i07" class="external-link">doi:10.18637/jss.v029.i07</a>
+.</p>
+<p>Pinheiro JC, Bretz F, Branson M (2006).
+“Analysis of dose–response studies—modeling approaches.”
+In <em>Dose Finding in Drug Development</em>, 146–171.
+Springer.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

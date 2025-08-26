@@ -1,0 +1,573 @@
+---
+title: "Function needed"
+author: "Carina Miller"
+date: "2025-08-20"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Function needed
+
+```{r}
+#' Extracts the log hazard rates for all doses per defined model
+#'
+#' @param mods  Set of dose-response models; an object of class \samp{Mods}, 
+#' see [Mods()] for details
+#'
+#' @return matrix y with all log hazard rates per dose level and per model
+#'
+#' @export
+log_hazard_rates <- function(mods) {
+  y0 <- getResp(mods, doses = attr(mods, "doses"))
+  y <- y0[1:dim(y0)[1],]
+  return(y)
+}
+#' @examples
+#' ## define 2 models, including the doses, direction decreasing in survival 
+#' contexts, 
+#' placEff is log hazard rate for placebo arm 
+#' and # difference between the response at the highest dose and placEff
+#' mods <- Mods(
+#'  emax = c(1),
+#'  linear = NULL,
+#'  doses = c(0, 1, 1.5, 3),
+#'  direction = c("decreasing"),
+#'  placEff = log(0.6), 
+#'  maxEff = log(0.3) - log(0.6) # difference between the response at the 
+#'  highest dose and placEff
+#'
+#' log_hazard_rates(mods) log hazard rates
+#' exp(log_hazard_rates(mods)) # hazard rates
+```
+
+```{r}
+#' Data generation for Survival Data following exponential or Weibull distribution
+#' 
+#' Simulate survival data using an exponential or Weibull distribution with the 
+#' true hazard rates from one model of \samp{mods}, 
+#' with event driven censoring after \samp{etotal} events happen and with 
+#' staggered study entry.
+#' To implement the staggered study entry, an entry time for each patient is 
+#' computed and added to their event time. Then the event time is given in 
+#' calendar time. Then the data gets censored after the predefined number of 
+#' events and event time is again reduced by entry time to get the event time 
+#' in study time for the output
+#'
+#' @param mods Set of dose-response models; an object of class \samp{Mods}, 
+#' see [Mods()] for details
+#' @param model wither Name or Number of the model from \samp{mods} of which 
+#' the hazards should be taken from
+#' @param ratio Vector of Sample Size allocation ratio, according to doses used 
+#' in \samp{mods}, first number must be 1
+#' @param n sample size
+#' @param etotal number of events after which event driven censoring is 
+#' implemented, time cutoff when etotal of event being observed
+#' @param staggered boolean variable, if true, study entry should be staggered
+#' @param distribution character, either "exponential" or "weibull"
+#' @param shape shape needed if "weibull" is chosen, if shape == 1, then equal 
+#' to exponential function
+#' @param scale scale needed if "weibull" is chosen
+#'
+#' @return list of 
+#' - the data set including the variables \samp{group}, referring to the doses 
+#' (0 for placebo), \samp{hazard}, \samp{time} which is the event time and 
+#' \samp{status} which is 0 if censored and 1 if event was observed
+#' - plot showing the distribution of time to event
+#' @references Rühl 2022 (for staggered study entry and event times using 
+#' Weibull distribution)
+#' @export
+simulate_surv_data <- function(mods,
+                               model,
+                               ratio,
+                               n,
+                               etotal,
+                               staggered = F,
+                               distribution = c("exponential", "weibull"),
+                               shape = 2,
+                               scale = 3) {
+  set.seed(2026)
+  doses <- attr(mods, "doses")
+  y <- log_hazard_rates(mods)
+  mean_resp <- sample(y[, model], n, replace = T, prob = ratio) 
+  # mean resp are log hazard rates
+  lambda0 <- exp(attr(mods, "placEff"))
+  
+  distribution <- match.arg(distribution)
+  if (staggered == T) {
+    if (distribution == "exponential") {
+      entry <- runif(n, 0, qexp(etotal / n, lambda0))
+      event <- entry + rexp(n, exp(mean_resp)) # calendar time, hazard rates
+      text <- "Staggered Study Entry and Exponential Distribution of Event 
+      Times"
+    } else if (distribution == "weibull") {
+      entry <- runif(n, 0, qweibull(etotal / n, shape, scale))
+      event <-
+        entry + c(rweibull(n, shape, (scale / (
+          exp(mean_resp) / lambda0
+        )) ^ (1 / shape)))
+      text <- "Staggered Study Entry and Weibull Distribution of Event Times"
+    }
+  } else if (staggered == F) {
+    entry <- rep(0, n)
+    if (distribution == "exponential") {
+      event <- rexp(n, exp(mean_resp))
+      text <- "NO Staggered Study Entry and Exponential Distribution of Event 
+      Times"
+    } else if (distribution == "weibull") {
+      event <-
+        c(rweibull(n, shape, (scale / (
+          exp(mean_resp) / lambda0
+        )) ^ (1 / shape)))
+      text <- "NO Staggered Study Entry and Weibull Distribution of Event Times"
+    }
+  }
+  t_max_event <- sort(event)[etotal]
+  status <- (event <= t_max_event)
+  censoring <- pmin(event, t_max_event)
+  study_time <- censoring - entry # study time
+  
+  data <- data.frame(
+    group = names(mean_resp),
+    hazard = mean_resp,
+    time = study_time,
+    status = as.numeric(status)
+  )
+  data$group <- factor(data$group, levels = as.character(doses))
+  
+  plot <- ggplot(data, aes(x = time)) +
+    geom_histogram(bins = floor(max(data$time)) * 4,
+                   color = "black",
+                   fill = "white") +
+    ggtitle(paste("Distribution of Time to Event (in Study Time)\n ", text)) +
+    theme(plot.title = element_text(hjust = 0.5))
+    
+  return(list(data, plot))
+}
+#'
+#' @examples
+#' generate some survival data set that follows an exponential distributions 
+#' with hazards from the Emax model
+#' simulation <- simulate_surv_data(
+#'    mods = mods,
+#'    model = 1,
+#'    ratio = c(1, 0.5, 0.5, 1),
+#'    n = 100,
+#'    etotal = 50,
+#'    staggered = T,
+#'    distribution = "exponential")
+#' (data <- simulation[[1]])
+#' (data_plot <- simulation[[2]])
+```
+
+```{r}
+#' Compute the Covariance matrices S and S0
+#' 
+#' Forpower and sample size calculations in MCP-Mod, knowledge of the cavaraince 
+#' matrix for the estimators of the placebo-adjusted mean response among the
+#' dose groups is needed. In survival settings, this can not be derived using 
+#' standard software.
+#' Deng et al. derived an explicit form of the covariance matrix for the 
+#' estimators of the log hazard ratios. Those are needed to evaluate the power 
+#' analytically.
+#' 
+#'
+#' @param mods Set of dose-response models; an object of class \samp{Mods}, 
+#' see [Mods()] for details
+#' @param ratio Vector of Sample Size allocation ratio, according to doses used 
+#' in \samp{mods}, first number must be 1
+#' @param etotal number of events after which event driven censoring is 
+#' implemented, time cutoff when etotal of event being observed 
+#'
+#' @return
+#' - S, the covariance matrix adapted to the survival setting, to calculate the 
+#' optimal contrast coefficients and power
+#' - S0, the covariance matrix adapted to the survival setting under H0, to 
+#' determine the critical value 
+#' @references Deng 2019
+#' @export
+S_and_S0 <- function(mods, ratio, etotal) {
+  y <- log_hazard_rates(mods)
+  # second column of beta / for second model here
+  lambda0 <- attr(mods, "placEff")
+  beta <- y - lambda0 # placebo adjusted log hazard rates
+  nshape <- ncol(beta)
+  ngroup <- nrow(beta) 
+  # 0.5 * beta = intermediate value between 0 and beta:
+  # See paper deng2019power (appendix last sentence)
+  p0 = 1 / apply(exp(0.5 * beta) * ratio, 2, sum) # sum of columns
+  pk = (exp(0.5 * beta) * ratio) %*% diag(p0)
+  
+  # S matrix
+  # Use S for calculating contrast and power
+  # Dimensions are reduced by 1 because the placebo group is excluded
+  # fill with 0s, 3-dimensional as given in c(...)
+  S <- array(0, c(ngroup - 1, ngroup - 1, nshape)) 
+  for (i in 1:nshape) {
+    S[, , i] <- 1 / p0[i]
+    diag(S[, , i]) <- 1 / pk[-1, i] + 1 / p0[i]
+  }
+  S = S / etotal
+  
+  # S0 matrix
+  # use S0 to derive critical value
+  S0 <- diag(sum(ratio) + sum(ratio) / ratio[-1])
+  S0[upper.tri(S0)] <- S0[lower.tri(S0)] <- sum(ratio)
+  S0 <- S0 / etotal
+  
+  return(list(S = S, S0 = S0))
+}
+
+#' @examples
+#' S <- S_and_S0(mods = mods, ratio = c(1, 0.5, 0.5, 1), etotal = 50)$S
+#' S0 <- S_and_S0(mods = mods, ratio = c(1, 0.5, 0.5, 1), etotal = 50)$S0
+```
+
+```{r}
+#' Extract information from the models defined
+#' 
+#' Helper function to derive characteristics from the models defined with  
+#' \samp{Mods}.
+#' Those are needed in following functions.
+#' The functions \samp{log_hazard_rates} and \samp{S_andS0} defined above are 
+#' used here.
+#'
+#' @param mods Set of dose-response models; an object of class \samp{Mods}, 
+#' see [Mods()] for details
+#' @param ratio Vector of Sample Size allocation ratio, according to doses used 
+#' in \samp{mods}, first number must be 1
+#' @param etotal number of events after which event driven censoring is 
+#' implemented, time cutoff when etotal of event being observed 
+#'
+#' @return
+#' - matrix y: all log hazard rates per dose level and per model
+#' - lambda 0: yearly hazard rate for Control/Placebo group
+#' - nshape: number of models defined 
+#' - doses: vector of the doses, starting with 0 for the placebo group
+#' - ngroup: number of dose groups
+#' - S: covariance matrix for the survival setting
+#' - S0: covariance matrix under H0 for the survival setting
+#' - contMat: contrast matrix for all models and all dose groups computed using 
+#' the \samp{optContr} function from the \samp{DoseFinding} package
+#' @export
+model_info <- function(mods, ratio, etotal) {
+  y <- log_hazard_rates(mods)
+  lambda0 <- exp(attr(mods, "placEff"))
+  nshape <- dim(y)[2]
+  doses <- attr(mods, "doses")
+  ngroup <- length(doses)
+  
+  # S and S0
+  sim <- S_and_S0(mods, ratio, etotal)
+  S <- sim$S # one for each model
+  S0 <- sim$S0 # one, independent of the model specifications
+  
+  return(list(y = y, lambda0 = lambda0, nshape = nshape, doses = doses, 
+              ngroup = ngroup, S = S, S0 = S0))
+}
+#' @examples
+#' model_information <- model_info(mods = mods, ratio = c(1, 0.5, 0.5, 1), 
+#' etotal = 50)
+```
+
+```{r}
+#' Compute power
+#'
+#' \samp{powMCT_TTE} is a modification of \samp{powMCT1} of Deng 2019 which is 
+#' a modification of the \samp{pow_MCT} function from the \samp{DoseFinding}
+#' package.
+#' Here, the function computes S and S0 using the subfunction \samp{S_and_S0}. 
+#' They are used as covariance matrix for the estimates.
+#' This happens using S0 for the \samp{critVal} function from the 
+#' \samp{DoseFinding} package. With the critical value and with S, the power is 
+#' then 
+#' computed given a certain amount of events (\samp{etotal}) using the
+#' \samp{powCalc} funciton from the \samp{DoseFinding} package.
+#' \samp{cov2cor()} is used to scale a covariance matrix by its diagonal to 
+#' become the correlation matrix
+#' The test is one sided using the significance level provided.
+#' The calculations are based on the assumption of placebo-adjusted estimates, 
+#' the contrast matrix is
+#' produced on placebo-adjusted scale
+#'
+#' @param mods Set of dose-response models; an object of class \samp{Mods}, 
+#' see [Mods()] for details, defining the mean vectors
+#' under which the power should be calculated
+#' @param alpha Significance level to use
+#' @param ratio Vector of Sample Size allocation ratio, according to doses used 
+#' in \samp{mods}, first number must be 1
+#' @param etotal number of events after which event driven censoring is 
+#' implemented, time cutoff when etotal of event being observed 
+#'
+#' @return Numeric vector containing the calculated power values under each 
+#' candidate model as well as the average
+#' @references Pinheiro, J. C., Bornkamp, B., and Bretz, F. (2006). Design and
+#' analysis of dose finding studies combining multiple comparisons and modeling
+#' procedures, *Journal of Biopharmaceutical Statistics*, **16**,
+#' Deng 2019
+#' @export
+powMCT_TTE <-
+  function(mods,
+           alpha,
+           ratio,
+           etotal) {
+    set.seed(123)
+    model_information <- model_info(mods, ratio, etotal)
+    doses <- model_information$doses
+    nshape <- model_information$nshape
+    S <- model_information$S
+    S0 <- model_information$S0
+    mcpmod_power <- rep(0, nshape)
+    contMat <- optContr(mods,
+             doses = doses[-1],
+             S = S[, , 1],
+             placAdj = T)[[1]]
+    contMat <- contMat[, 1, drop = F]
+    
+  if (nshape > 1) {
+      for (i in 2:nshape) {
+        contrast <-
+          optContr(mods,
+                   doses = doses[-1],
+                   S = S[, , i],
+                   placAdj = T)[[1]]
+        contrast <- contrast[, i, drop = F]
+        contMat <- cbind(contMat, contrast)
+      }
+    }
+    for (j in 1:nshape) {
+      muMat <- getResp(mods)[,j, drop = FALSE]  
+      # responses are expressed relative to the placebo.
+      muMat <- sweep(muMat, 2, muMat[1, ], "-") 
+      muMat <- muMat[-1, , drop = FALSE]
+      deltaMat <- t(contMat) %*% muMat 
+      covMat <- t(contMat) %*% S[, , j] %*% contMat
+      den <- sqrt(diag(covMat))
+      deltaMat <- deltaMat / den
+      corMat <- cov2cor(covMat)
+      covMat0 <- t(contMat) %*% S0 %*% contMat 
+      corMat0 <- cov2cor(covMat0) 
+      critV <- critVal(
+        corMat0,
+        alpha,
+        df = 0,
+        alternative = "one.sided",
+        control = mvtnorm.control()
+      ) 
+      pow <- DoseFinding:::powCalc(
+        alternative = "one.sided",
+        critV,
+        df = 0,
+        corMat,
+        deltaMat,
+        control = mvtnorm.control()
+      )
+      mcpmod_power[j] <- pow
+    }
+    power_av <- round(mean(mcpmod_power), 4)
+    round(mcpmod_power, 5)
+    power_table <- data.frame(model = names(deltaMat[,1]), power = mcpmod_power)
+    # print(list(pow = pow, critV=critV, df=df, corMat=corMat, corMat0=corMat0, 
+    # covMat=covMat, covMat0=covMat0, deltaMat=deltaMat))
+    return(list(power_table = power_table, power_av = power_av))
+  }
+#' @examples
+#' power_calc <- powMCT_TTE(mods = mods, alpha = 0.05, 
+#' ratio = c(1, 0.5, 0.5, 1), etotal = 30)
+#' pow_sep <- power_calc$power_table 
+#' pow_av <- power_calc$power_av 
+#' 
+```
+
+```{r}
+#' compute the number of total events needed given a desired power
+#' 
+#' \samp{no_events_given_pow function} computes the number of total events 
+#' needed given a desired power (\samp{des_pow}, in percent) using 
+#' the \samp{powMCT_TTE} function. It also provides a graph showing the average 
+#' power under the given models until the desired power is reached. 
+#' Starting at one event, the power is calculated. as long as the desired power 
+#' is not reached yet, the number of events gets raised by $1$. When the desired 
+#' power is reached, the loop ends.
+#'
+#' @param mods Set of dose-response models; an object of class \samp{Mods}, 
+#' see [Mods()] for details
+#' @param alpha Significance level to use
+#' @param ratio Vector of Sample Size allocation ratio, according to doses used 
+#' in \samp{mods}, first number must be 1
+#' @param des_pow desired power one wants to achieve
+#'
+#' @return
+#' - number of total events needed given the desired power 
+#' - graph showing the average power under the given models until the desired 
+#' power is reached
+#' @export
+no_events_given_pow <- function(mods, alpha, ratio, des_pow){
+  pow <- 0
+  etotal_col <- c(0)
+  pow_col <- c(0)
+  
+  for (i in 1:1000){
+    etotal <- i
+    pow <- powMCT_TTE(mods, alpha, ratio, etotal)$power_av
+    etotal_col[i] <- i
+    pow_col[i] <- pow
+    if(pow >= des_pow) break
+  }
+  dat <- data.frame(etotal_col, pow_col)
+  graf <- ggplot(data = dat, aes(x = etotal_col, y = pow_col, group = 1)) +
+  geom_line()+
+  geom_point() +
+    xlab("Total Number of Events") + 
+    ylab("Power") +
+    geom_hline(yintercept = des_pow, linetype="dashed") +
+    annotate("text", x = etotal / 6, y = des_pow - 0.02, 
+             label = "Desired Power") +
+    ggtitle("Total Number of Events Needed to Reach the Desired Power")
+  
+  return(list(etotal = etotal, graf = graf))
+}
+#' @examples
+#' test <- no_events_given_pow(mods = mods, alpha = 0.25, 
+#' ratio = c(1, 0.5, 0.5, 1), des_pow = 0.8)
+#' test$etotal
+#' test$graf
+```
+
+```{r}
+#' calculate the number of events given a certain sample size
+#' 
+#' The \samp{no_events_given_samplesize} function calculates the number of 
+#' events given a certain sample size.
+#' Therefore, the formula from Deng 2019 which is derived from equation 26 in 
+#' Lachin 1981 is used.
+#' It is assumed that patients are recruited uniformly over the time period 
+#' $[0, \text{end_rec}]$ and that the survival time for group $k$ follows 
+#' the exponential distribution with hazard $\lambda_k$.
+#' One model has to be chosen to compute the needed $\lambda_k$'s.
+#'
+#' @param ratio Vector of Sample Size allocation ratio, according to doses used 
+#' in \samp{mods}, first number must be 1
+#' @param mods Set of dose-response models; an object of class \samp{Mods}, 
+#' see [Mods()] for details
+#' @param end_rec end of recruitment period in years
+#' @param end_stu endpoint of the study in years
+#' @param model wither Name or Number of the model from \samp{mods} of which the 
+#' hazards should be taken from
+#' @param n sample size
+#'
+#' @return
+#' - total number of events 
+#' - vector with the number of events per group
+#' @references Deng 2019, Lachin 1981
+#' @export
+no_events_given_samplesize <- function(ratio, mods, end_rec, end_stu, model, n){
+  y <- log_hazard_rates(mods)
+  ngroup <- length(ratio)
+  lambda <- exp(y)[,model]
+  rat <- ratio/sum(ratio)
+  D <- rep(0, ngroup)
+  for (i in 1:ngroup){
+    D[i] <- (n * rat[i]) * (1 - ((exp(-lambda[i] * (end_stu - end_rec)) - 
+                                    exp(-lambda[i] * end_stu)) / 
+                                   (lambda[i] * end_rec))) 
+  }
+  return(list(e_vec = D, etotal_samp = sum(D)))
+}
+#' @examples
+#' no_events_given_samplesize(ratio = c(1, 0.5, 0.5, 1), 
+#' mods = mods, end_rec = 1, end_stu = 3, model = 2, n = 100) 
+```
+
+
+```{r}
+#' calculate the total sample size needed to achieve a certain power
+#'
+#' \samp{samplesize_given_power} calculates the total sample size needed to 
+#' achieve a certain power.
+#' Starting with a minimum number of patients (\samp{n_mind}) it computes the 
+#' number of events happening using the sample_size function.
+#' With that number of events (\samp{etotal_int}) it computes the power this 
+#' study would have (\samp{pow}) using the \samp{powMCT_TTE} function.
+#' The function stops when the desired power (\samp{des_pow}) is reached and 
+#' provides a plot showing the power for various sample sizes.
+#' Here, the \samp{no_events_given_samplesize} is used to compute the number of 
+#' events.
+
+#' @param mods Set of dose-response models; an object of class \samp{Mods}, 
+#' see [Mods()] for details
+#' @param alpha Significance level to use
+#' @param ratio Vector of Sample Size allocation ratio, according to doses used 
+#' in \samp{mods}, first number must be 1
+#' @param des_pow desired power one wants to achieve
+#' @param end_rec end of recruitment period in years
+#' @param end_stu endpoint of the study in years
+#' @param model wither Name or Number of the model from \samp{mods} of which the 
+#' hazards should be taken from
+#' @param n_mind minimum number of patients with which the loop starts, should 
+#' not be chosen too small, so meaningful allocaition can be computed and to 
+#' reduce running time
+#'
+#' @return
+#' - number of total sample size needed given the desired power 
+#' - graph showing the average power under the given models until the desired 
+#' power is reached
+#' - text explaining the output
+#' @references Deng 2019, Lachin 1981
+#' @export
+samplesize_given_power <-
+  function(mods,
+           alpha,
+           ratio,
+           des_pow,
+           end_rec,
+           end_stu,
+           model,
+           n_mind = 20) {
+    
+    pow <- 0
+    n_col <- c(0)
+    pow_col <- c(0)
+    
+    for (i in (n_mind:1000)) {
+      n <- i
+      etotal_int <-
+        floor(no_events_given_samplesize(ratio, mods, end_rec, end_stu, model,
+                          n = n)$etotal_samp)
+      pow <-
+        powMCT_TTE(mods, alpha, ratio, etotal = etotal_int)$power_av
+      n_col[i - n_mind] <- i
+      pow_col[i - n_mind] <- pow
+      if (pow >= des_pow)
+        break
+    }
+    
+    dat <- data.frame(n_col, pow_col)
+    graf <-
+      ggplot(data = dat, aes(x = n_col, y = pow_col, group = 1)) +
+      geom_line() +
+      geom_point() +
+      xlab("Total Sample Size") +
+      ylab("Power") +
+      geom_hline(yintercept = des_pow, linetype = "dashed")  +
+      annotate("text", x = etotal / 2, y = des_pow - 0.02, 
+             label = "Desired Power") +
+      ggtitle("Total Sample Size Needed to Reach the Desired Power")
+    
+    text <- paste("To reach the desired power of", des_pow * 100, "%, ", n, 
+                  "patients are needed and", etotal_int, "events are expected.")
+    
+    return(list(
+      n = n,
+      etotal = etotal_int,
+      graf = graf,
+      data = dat, 
+      text = text
+    ))
+  }
+#' @examples
+#' samplesize_given_power(mods = mods, alpha = 0.025, ratio, des_pow = 0.8, 
+#' end_rec = 1, end_stu = 3, model = 2, n_mind = 10)
+```

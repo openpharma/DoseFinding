@@ -1,0 +1,137 @@
+---
+title: "LaTEX"
+author: "Carina Miller"
+date: "2025-08-19"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Underlying model for normally distributed data
+$$
+\begin{aligned}
+y_{ij} = f(d_i, \theta) + \epsilon_{ij}, \epsilon_{ij} \sim \mathcal{N}(0, \sigma^2)
+\end{aligned}
+$$
+with\
+- $y_{ij}$ response of the $j^{th}$ patient on dose $d_i$,\
+- $d_0, \ldots, d_k$ dose levels including placebo ($0$) with $n_i$ patients allocated to dose $d_i$,\
+- $k$ number of dose levels,\
+- $f(d_i, \theta)$ is a candidate dose-response model that represents the mean response $\mu(d_i)$ at dose $d_i$,\
+- $\theta$ vector of model parameters and\
+- $\epsilon_{ij}$ independent error terms.
+
+For general parametric models
+$$
+\begin{aligned}
+y_{ij} = F(\mu(d_i), z, \eta) 
+\end{aligned}
+$$
+with\
+- $z$ are possible covariates,\
+- $\eta$ contains the nuisance parameters (e.g., $\eta = \sigma^2$ if $F$ is the normal distribution) and\
+- $\mu(d_i)$ dose-response parameter at different doses $i$ related through the dose-response model
+$$
+\begin{aligned}
+\mu(d_i) &= f(x, \theta) = \theta_0 + \theta_1f^0(d_i, \theta^0)
+\end{aligned}
+$$
+with\
+- $f^0$ standardized model function and\
+- $\theta^0$ parameter vector of $f^0$\
+
+
+with $ED_{50}$ = the dose at which half of the maximum effect is achieved\
+
+optimal contrasts:\
+
+$$
+c^{\textrm{opt}} \propto
+S^{-1}\biggl(\mu^0_m - \frac{(\mu^0_m)^T S^{-1}1_K}{1_K^T S^{-1} 1_K}\biggr)
+$$
+with\
+$K$ number of doses,\
+$1_K$ all-ones vector of length $K$ and\
+$S$ covariance matrix of the estimates at the doses\
+
+\newpage
+
+Matrix containing the optimal contrasts:
+$$
+C^{\textrm{opt}} = \left[c_1^{\textrm{opt}} \cdots c_M^{\textrm{opt}}\right]
+$$
+Contrast estimates:
+$$
+(C^{\textrm{opt}})' \hat{\mu}
+$$
+are asymptotically normally distributed with mean:
+$$
+(C^{\textrm{opt}})' \mu 
+$$
+and covariance matrix:
+$$
+(C^{\textrm{opt}})'\hat{S}C^{\textrm{opt}}
+$$
+
+Test:\
+
+$$
+H_0 : (c_m^{\textrm{opt}})'\mu = 0 \,\textrm{  vs.  }\,  H_1 : (c_m^{\textrm{opt}})'\mu > 0
+$$
+
+$$
+z_m = \frac{(c_m^{\textrm{opt}})'\hat{\mu}}{\left[(C^{\textrm{opt}})'\hat{S}C^{\textrm{opt}}\right]_{m,m}^{1/2}}
+$$
+
+
+with\
+- $\hat{\mu}$ vector of estimated dose-response parameters (e.g., means, log-odds, log-hazard ratios)\
+- $S$ estimated covariance matrix of $\hat{\mu}$\
+- $c_m^{\textrm{opt}}$ optimal contrast vector for model $m$\
+- $C^{\textrm{opt}} = \left[c_1^{\textrm{opt}} \cdots c_M^{\textrm{opt}}\right]$ matrix containing all optimal contrasts\
+- Contrast estimates $(C^{\textrm{opt}})' \hat{\mu} \sim \mathcal{N}((C^{\textrm{opt}})' \mu \,\,, (C^{\textrm{opt}})'\hat{S}C^{\textrm{opt}})$
+
+
+$$
+\mu_{d_i}, \,\,\,\,\,\,i = 1, \ldots, K
+$$
+
+
+$$
+d_i
+$$
+
+$$
+\hat{\mu}
+$$
+
+$$
+\hat{\mu} \sim \mathcal{N}(\mu, S)
+$$
+
+
+Formula Deng to compute sample size
+$$
+n_k = D_k \bigg/ \left(1-\frac{\exp(-\lambda_k(\tau - R))\exp(-\lambda_k\tau)}{\lambda_kR}\right)
+$$
+
+with\
+$n_k$ patients needed per group $k$\
+$R$ end of recruiting period\
+$\tau$ total years of study duration\
+$D_k$ number of events in group $k$<
+$\lambda_k$ hazard $\lambda$ in group $k$
+
+
+The power to detect the presence of dose response under candidate model $m$ is
+$$
+\begin{aligned}
+\pi_m &= 1 - \mathbb{P}\left(Z_i < cV, ..., Z_M < cV \,|\,\text{model }m\text{ is true}\right)
+\end{aligned}
+$$
+
+with\
+- $Z_i, \ldots, Z_M$ contrast test statistics, asymptotically normal and\
+- $cV$ critical value\

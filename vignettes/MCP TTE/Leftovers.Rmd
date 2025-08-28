@@ -1,0 +1,83 @@
+---
+title: "Leftovers"
+author: "Carina Miller"
+date: "2025-08-06"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# # here: for only one model
+# S_and_S0_one <- function(y, lambda0, model, ratio, ngroup, etotal){
+# # second column of beta / for second model here
+# beta <- (y - log(lambda0))[ ,model] # placebo adjusted log hazard rates
+# 
+# # 0.5 * beta = intermediate value between 0 and beta: 
+# # See paper deng2019power (appendix last sentence)
+# p0 = 1 / sum(exp(0.5 * beta) * ratio) 
+# pk = (exp(0.5 * beta[-1]) * ratio[-1]) * p0
+# 
+# # S matrix
+# # Use S for calculating contrast and power
+# # Dimensions are reduced by 1 because the placebo group is excluded
+# S <- array(1 / p0, c(ngroup - 1, ngroup - 1)) 
+# diag(S) <- 1 / pk + 1 / p0
+# S <- S / etotal
+# S
+# 
+# # S0 matrix
+# # use S0 to derive critical value
+# S0 <- diag(sum(ratio) + sum(ratio) / ratio[-1])
+# S0[upper.tri(S0)] <- S0[lower.tri(S0)] <- sum(ratio)
+# S0 <- S0 / etotal
+# 
+# return(list(S = S, S0 = S0))
+# }
+```
+
+
+old data generation:
+Simulate survival data using an exponential distribution with the true hazard rates (here from second $\text{E}_{max}$ model)
+```{r}
+sim <- function(mods, model, doses, ratio, n, etotal) {
+  set.seed(2026)
+  y0 <- getResp(mods, doses = doses) # responses for each dose level
+  y <- y0[1:dim(y0)[1], ] # only relevant part of y0
+  mean_resp <- sample(y[, model], n, replace = T, prob = ratio) # y are log hazard rates
+
+  t <- rexp(length(mean_resp), exp(mean_resp)) # Simulate survival data from exponential
+  t_max_event <- sort(t)[etotal] # time cutoff when etotal of event being observed
+  cens <- rep(t_max_event, length(mean_resp)) # censor after etotal events
+  u <- pmin(cens, t) # time is minimum of event time and censoring time
+  status <- (t <= cens) # status 1 if person had event, 0 if person git censored
+  data <- data.frame(
+    group = names(mean_resp), # doses
+    hazard = mean_resp,
+    time = u,
+    status = as.numeric(status)
+  )
+  data$group <- factor(data$group, levels = as.character(doses))
+  return(data)
+}
+```
+
+um die Gruppen dem Ratio anzupassen:
+```{r}
+group_max <- etotal * 1 / ratio
+etotal_int <- sum(ceiling(ratio * max(group_max)))
+```
+
+
+```{r}
+# # define a model separately again:
+# model1 <- Mods(
+#   emax = c(1),
+#   doses = doses,
+#   direction = c("decreasing"), # decreasing in survival contexts
+#   placEff = log(lambda0), # log hazard rate for placebo arm
+#   maxEff = log(lambda3) - log(lambda0) # difference between the response at the highest dose and placEff
+# )
+```

@@ -1,0 +1,24 @@
+---
+title: "Info Hazards"
+author: "Marius"
+date: "2025-06-24"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(DoseFinding)
+```
+
+Hi Carina, hier ist ein Beispiel Code wie du mit der getResp die (log) Hazard ratios für bestimmte angenommene Dose-Response Modelle bekommen kannst. Hier als Beispiel für ein Emax und ein sigEmax Modell
+
+
+```{r}
+## Emax and SigEmax models for hazard ratio (placEff = 0), maximum hazard ratio 0.6
+models <- Mods(emax = 8, sigEmax = c(22, 3), 
+               doses = c(0, 5, 10, 30), placEff = 0, maxEff = log(0.6))
+plot(models)
+getResp(models, doses = c(0, 5, 10, 30))
+```
+
+Diese Hazard ratios kannst du dann verwenden um unter der Annahme eines bestimmten Modells Daten zu simulieren, zusätzlich zu der angenommenen placebo hazard rate

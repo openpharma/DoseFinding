@@ -1,0 +1,286 @@
+---
+title: "Novartis functions"
+author: "Carina Miller"
+date: "2025-07-16"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Calculation of the critical value for a maximum contrast test. This is based on the equicoordinate quantile function of the multivariate normal or t distribution as implemented in the qmvt function from the mvtnorm package. (from: Help)
+```{r}
+critVal
+```
+
+```{r}
+function (corMat, alpha = 0.025, df = NULL, alternative = c("one.sided", 
+    "two.sided"), control = mvtnorm.control()) 
+{
+    alternative <- match.arg(alternative)
+    if (missing(corMat)) 
+        stop("corMat needs to be specified")
+    if (is.null(df)) 
+        stop("degrees of freedom need to be specified")
+    tail <- ifelse(alternative[1] == "two.sided", "both.tails", 
+        "lower.tail")
+    if (!missing(control)) {
+        if (!is.list(control)) {
+            stop("when specified, 'control' must be a list")
+        }
+        ctrl <- do.call("mvtnorm.control", control)
+    }
+    else {
+        ctrl <- control
+    }
+    if (!is.finite(df)) 
+        df <- 0
+    qmvtCall <- c(list(1 - alpha, tail = tail, df = df, corr = corMat, 
+        algorithm = ctrl, interval = ctrl$interval))
+    do.call(mvtnorm::qmvt, qmvtCall)$quantile
+}
+```
+
+Given the contrast matrix, the sample size and a certain `alternative' (i.e. a mean vector and sigma), the function calculates the power to detect this alternative. See Pinheiro et al. (2006) for details. (from: https://www.rdocumentation.org/packages/DoseFinding/versions/0.6-3/topics/powCalc)
+```{r}
+DoseFinding:::powCalc
+```
+
+```{r}
+function (alternative, critV, df, corMat, deltaMat, control) 
+{
+    nC <- nrow(corMat)
+    if (alternative[1] == "two.sided") {
+        lower <- rep(-critV, nC)
+    }
+    else {
+        lower <- rep(-Inf, nC)
+    }
+    upper <- rep(critV, nC)
+    if (!missing(control)) {
+        if (!is.list(control)) {
+            stop("when specified, 'control' must be a list")
+        }
+        ctrl <- do.call("mvtnorm.control", control)
+    }
+    else {
+        ctrl <- control
+    }
+    ctrl$interval <- NULL
+    nScen <- ncol(deltaMat)
+    res <- numeric(nScen)
+    for (i in 1:nScen) {
+        pmvtCall <- c(list(lower, upper, df = df, corr = corMat, 
+            delta = deltaMat[, i], algorithm = ctrl))
+        res[i] <- as.vector(1 - do.call(mvtnorm::pmvt, pmvtCall))
+    }
+    names(res) <- colnames(deltaMat)
+    res
+}
+```
+
+Calculate power for a multiple contrast test for a set of specified alternatives.
+```{r}
+powMCT
+```
+
+```{r}
+function (contMat, alpha = 0.025, altModels, n, sigma, S, placAdj = FALSE, 
+    alternative = c("one.sided", "two.sided"), df, critV = TRUE, 
+    control = mvtnorm.control()) 
+{
+    alternative <- match.arg(alternative)
+    if (inherits(contMat, "optContr")) {
+        if (attr(contMat, "placAdj") != placAdj) {
+            message("using \"placAdj\" specification from contMat object")
+            placAdj <- attr(contMat, "placAdj")
+        }
+        contMat <- contMat$contMat
+    }
+    if (!is.matrix(contMat)) 
+        stop("contMat needs to be a matrix")
+    nD <- nrow(contMat)
+    nC <- ncol(contMat)
+    if (missing(S)) {
+        if (missing(n) | missing(sigma)) 
+            stop("Either S or both n and sigma need to be specified")
+        if (length(n) == 1) 
+            n <- rep(n, nD)
+        if (length(n) != nD) 
+            stop("n needs to be of length nrow(contMat)")
+        S <- sigma^2 * diag(1/n)
+        df <- sum(n) - nD
+        if (df == 0)                                                                # diese Abfrage nur hier, nicht in powMCT1
+            stop("cannot compute power: specified \"n\" and dose vector result in df = 0")
+    }
+    else {
+        if (!missing(n) | !missing(sigma)) 
+            stop("Need to specify either \"S\" or both \"n\" and \"sigma\"")
+        if (nrow(S) != ncol(S)) 
+            stop("S needs to be a square matrix")
+        if (nrow(S) != nD) 
+            stop("S needs to have as many rows&cols as there are doses")
+        if (missing(df)) 
+            stop("need to specify degrees of freedom in \"df\", when specifying \"S\"")
+    }
+    if (missing(altModels)) 
+        stop("altModels argument needs to be specified")
+    muMat <- getResp(altModels)
+    if (placAdj) {
+        muMat <- sweep(muMat, 2, muMat[1, ], "-")
+        muMat <- muMat[-1, , drop = FALSE]
+    }
+    if (nrow(muMat) != nD) 
+        stop("Incompatible contMat and muMat")
+    deltaMat <- t(contMat) %*% muMat
+    covMat <- t(contMat) %*% S %*% contMat
+    den <- sqrt(diag(covMat))
+    deltaMat <- deltaMat/den
+    if (alternative == "two.sided") {
+        deltaMat <- abs(deltaMat)
+    }
+    corMat <- cov2cor(covMat)
+    if (!is.finite(df)) 
+        df <- 0
+    if (is.logical(critV) & critV == TRUE) {
+        critV <- critVal(corMat, alpha, df, alternative, control)
+    }
+    res <- powCalc(alternative, critV, df, corMat, deltaMat, 
+        control)
+    res
+}
+```
+
+```{r}
+sampSize
+```
+
+```{r}
+function (upperN, lowerN = floor(upperN/2), targFunc, target, 
+    tol = 0.001, alRatio, Ntype = c("arm", "total"), verbose = FALSE) 
+{
+    func <- function(n) {
+        targFunc(n) - target
+    }
+    Ntype <- match.arg(Ntype)
+    if (!missing(alRatio)) {
+        if (any(alRatio <= 0)) {
+            stop("all entries of alRatio need to be positive")
+        }
+        else {
+            alRatio <- alRatio/sum(alRatio)
+        }
+        if (Ntype == "arm") {
+            alRatio <- alRatio/min(alRatio)
+        }
+    }
+    else {
+        stop("allocation ratios need to be specified")
+    }
+    upper <- func(round(upperN * alRatio))
+    if (length(upper) > 1) 
+        stop("targFunc(n) needs to evaluate to a vector of length 1.")
+    if (!is.numeric(upper)) 
+        stop("targFunc(n) needs to evaluate to a numeric.")
+    if (upper < 0) 
+        message("upper limit for sample size is raised")
+    while (upper < 0) {
+        upperN <- 2 * upperN
+        upper <- func(round(upperN * alRatio))
+    }
+    lower <- func(round(lowerN * alRatio))
+    if (lower > 0) 
+        message("lower limit for sample size is decreased")
+    while (lower > 0) {
+        lowerN <- round(lowerN/2)
+        if (lowerN == 0) 
+            stop("cannot find lower limit on n")
+        lower <- func(round(lowerN * alRatio))
+    }
+    if (verbose) {
+        cat("Upper N:", upperN, "Upper value", round(upper + 
+            target, 4), "\n")
+        cat("Lower N:", lowerN, "Lower value", round(lower + 
+            target, 4), "\n\n")
+    }
+    current <- tol + 1
+    niter <- 0
+    while (abs(current) > tol & (upperN > lowerN + 1)) {
+        currN <- round((upperN + lowerN)/2)
+        current <- func(round(currN * alRatio))
+        if (current > 0) {
+            upperN <- currN
+        }
+        else {
+            lowerN <- currN
+        }
+        niter <- niter + 1
+        if (verbose) {
+            cat("Iter: ", niter, ", N = ", currN, ", current value = ", 
+                round(current + target, 4), "\n", sep = "")
+        }
+    }
+    while (current < 0) {
+        currN <- currN + 1
+        current <- func(round(currN * alRatio))
+    }
+    res <- list(samp.size = round(currN * alRatio), target = round(current + 
+        target, 4))
+    attr(res, "alRatio") <- round(alRatio/min(alRatio), 4)
+    attr(res, "target") <- target
+    attr(res, "Ntype") <- Ntype
+    class(res) <- "sampSize"
+    res
+}
+```
+
+
+```{r}
+sampSizeMCT
+```
+
+```{r}
+function (upperN, lowerN = floor(upperN/2), ..., power, sumFct = mean, 
+    tol = 0.001, alRatio, Ntype = c("arm", "total"), verbose = FALSE) 
+{
+    Ntype <- match.arg(Ntype)
+    args <- list(...)
+    namargs <- names(args)
+    if (is.element("placAdj", namargs)) {
+        if (args$placAdj) 
+            stop("placAdj needs to be FALSE for sampSizeMCT.\n  Use sampSize directly in placebo-adjusted case.")
+    }
+    if (is.element("S", namargs)) {
+        S <- args[["S"]]
+        if (Ntype == "arm") {
+            Ntype <- "total"
+            message("Only Ntype == \"total\" possible if S is specified")
+        }
+        if (is.element("df", namargs)) {
+            if (is.finite(args$df)) 
+                message("df argument set to Inf, if S is specified.\nUse sampSize directly in case exact df are required.")
+        }
+        args$df <- Inf
+        tFunc <- function(n) {
+            N <- sum(n)
+            Sn <- 1/N * S
+            args$S <- Sn
+            powVals <- do.call("powMCT", args)
+            sumFct(powVals)
+        }
+    }
+    else {
+        if (is.element("n", namargs)) 
+            stop("n is not allowed to be specified for sample size calculation")
+        if (!is.element("sigma", namargs)) 
+            stop("need sigma if S is not specified")
+        tFunc <- function(n) {
+            powVals <- powMCT(n = n, ...)
+            sumFct(powVals)
+        }
+    }
+    sampSize(upperN, lowerN, targFunc = tFunc, target = power, 
+        alRatio = alRatio, Ntype = Ntype, verbose = verbose)
+}
+```

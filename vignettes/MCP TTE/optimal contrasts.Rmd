@@ -1,0 +1,34 @@
+---
+title: "optimal contrasts"
+author: "Carina Miller"
+date: "2025-08-05"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Optimal Contrasts
+(see vignette binary)
+
+The formula for the optimal contrasts is given by
+$$
+\begin{aligned}
+c^{\textrm{opt}} \propto
+S^{-1}\biggl(\mu^0_m - \frac{(\mu^0_m)^T S^{-1}1_K}{1_K^T S^{-1} 1_K}\biggr)
+\end{aligned}
+$$
+where $\mu^0_m$ is the standardized mean response,
+$K$ is the number doses,
+and $1_K$ is an all-ones vector of length $K$ and $S$ is the
+covariance matrix of the estimates at the doses
+[see @pinheiro2014].\
+(from Vignette binary)\
+
+"For each candidate model, an optimal contrast $c^{\textrm{opt}}$ that maximizes the probability of rejecting the hypothesis of non-signal dose-response is derived assuming that the candidate model is correct" (aus: Improved inference... Diniz)
+```{r, fig.width = 6.9, out.width = '100%'}
+contr <- optContr(mods, doses = doses_treat, S = cov, placAdj = T)
+contr # is no longer a contrast matrix (columns do not sum to 0) 
+plotContr(contr, xlab = "Dose", ylab = "Contrast coefficients")
+```

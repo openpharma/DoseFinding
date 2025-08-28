@@ -1,0 +1,148 @@
+---
+title: "Part 1 - Before Data Generation"
+author: "Carina Miller"
+date: "2025-07-04"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(truncnorm)
+library(dplyr)
+library(survival)
+library(ggsurvfit)
+library(DoseFinding, lib.loc = "~/RStudio/packages")
+library(ggplot2)
+```
+
+
+# Candidate models
+
+We will use the following candidate set of models for the mean response:
+```{r, setup, fig.width = 8, out.width = '100%'}
+# Baseline Hazard Rates
+lambda0 <- 0.623 # yearly hazard rate for Control/Placebo group
+HR_treat <- 0.6 # hazard ratio for treatment effect on the 30 mg/kg dose
+lambda1 <- lambda0 * HR_treat #  hazard rate for Treatment group
+
+# placebo or group 5, 10 or 30 mg/kg according to predefined shares (see later: ratio)
+doses <- c(0, 5, 10, 30)
+# ngroups <- length(doses) 
+
+mods <- Mods(
+  emax = c(1, 8),
+  sigEmax = rbind(c(10, 3), c(22.5, 4)),
+  doses = doses,
+  direction = c("decreasing"), # decreasing in survival contexts, alternative:  specifying a negative "maxEff" argument
+  placEff = log(lambda0), # log hazard rate for placebo arm
+  maxEff = log(lambda1) - log(lambda0) # fix the maximum effect size within the dose-range
+)
+# use log hazard rates because dose-response models in the DoseFinding package assume additive effects when specifying responses
+plotMods(mods,superpose = T, ylab = 'log (hazard rates)')
+# plot(mods,superpose = T) # geht auch, aber nicht so ausführliche Beschriftungen der Modelle
+## plot candidate models on probability scale.
+# plotMods(mods, trafo = inv_logit)
+```
+
+
+```{r}
+## Get the model set ups and plot them
+# wie man mit der getResp die (log) Hazard rates für bestimmte angenommene Dose-Response Modelle bekommen kann
+y0 <- getResp(mods, doses = doses) # responses for each dose level based on a dose-response model (mods)
+# matrix of predicted responses for each dose level under each model
+y <- y0[1:dim(y0)[1], ] # only relevant part of y0
+y # log hazard rates
+
+# exp(y) gives the hazard rates corresponding to predicted responses, Survival times are then computed based on the hazards
+lambda <- exp(y) # Hazard RATES
+# Diese Hazard RATES kann man dann verwenden, um unter der Annahme eines bestimmten Modells Daten zu simulieren, zusätzlich zu der angenommenen placebo hazard rate
+
+## plot the dose response curve using median survival time
+med_surv <- log(2) / lambda # Convert Predicted Responses to Median Survival Times
+# TODO: diese Berechnng zeigen!
+med_surv # response and median survival times
+```
+
+Dose response curve:
+```{r}
+plot(
+  doses,
+  med_surv[, 1],
+  type = 'l',
+  ylab = 'Median Survival (Years)',
+  xlab = 'Dose in mg/kg',
+  main = 'Dose-Response Curve
+     using median survival time',
+  col = "blue"
+)
+# for (i in 2:nshape) lines(doses,med_surv[,i])
+lines(doses, med_surv[, 2], col = "lightblue")
+lines(doses, med_surv[, 3], col = "darkgreen")
+lines(doses, med_surv[, 4], col = "green")
+legend(
+  "bottomright",
+  legend = c("Emax1", "Emax8", "sigEmax10/3", "sigEmax22.5/4"),
+  fill = c("blue", "lightblue", "darkgreen", "green")
+)
+
+plotDoseResponse
+```
+Power and sample size/
+Contrasts help assess whether a dose-response relationship exists by comparing the effects of different doses in the trial.
+```{r}
+# contrasts, the first number is always 1
+ratio <- c(1, 0.5, 0.5, 1.5)
+contMat <- optContr(mods, w = ratio) # w=1 denotes homoscedastic residuals with equal group sizes; not the case here!
+summary(contMat) # cols add up to ~0 
+# plot(contMat)
+plotContr(contMat) # display contrasts using ggplot2
+```
+
+
+```{r}
+# see description of Help on sampSize:
+
+## sample size calculation
+# sampSizeMCT calculates the required sample size to achieve a target power
+## sampSizeMCT calculates the power under each model and then returns
+## the average power under all models
+## assume we want to achieve 80% average power over the selected shapes
+## and want to use allocations with respect to ratio
+sampsize <- sampSizeMCT( # wrapper of sampSize for multiple contrast tests
+  upperN = 500, # Upper and lower bound for the target sample size
+  lowerN = 10,
+  contMat = contMat, # optimal contrasts
+  sigma = 1, # The standard deviation of the observations. It indicates variability in the responses of individuals in the study.
+  altModels = mods,
+  power = 0.8, # desired statistical power, probability of correctly rejecting H_0, uses the power as target function
+  alRatio = ratio,
+  alpha = 0.05
+)
+sampsize
+# calculates the group sample sizes needed in order to attain a specific power 
+# The powers under each alternative model are combined with sumFct. Here we look at the minimum power, other potential choices are mean or max
+
+#  calculate a general target function for different given sample sizes
+# powNevaluates the statistical power of a dose-response study for a range of sample sizes
+# see also vignette 'sample size':
+powerN <- powN( # wrapper of targN for multiple contrast tests using the power as target function
+  upperN = 80,
+  lowerN = 10,
+  step = 10,
+  contMat = contMat, # see above
+  sigma = 1, # residual standard deviation, standard deviation of the observations, assumption about variability in measurement outcomes
+  altModels = mods,
+  alpha = 0.05, # one-sided test level
+  alRatio = ratio, # size of groups
+  sumFct = 'mean'
+  )
+
+plot(powerN)
+# This shows the power values of the maximum contrast test assuming each of the different candidate models to be true. 
+# The mean power over the candidate models are also included in the plot.
+```
+Says how many patients across all dose groups for detecting the specified dose-response trend/
+Percentage of power to detect the specified dose-response trend.

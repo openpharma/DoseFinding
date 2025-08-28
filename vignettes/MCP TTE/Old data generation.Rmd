@@ -1,0 +1,96 @@
+---
+title: "Old Data generation"
+author: "Carina Miller"
+date: "2025-06-26"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Create data set
+```{r}
+set.seed(2026)
+# approx. 340 participants with at least 150 in naSPMS and in PPMS each
+n <- 340 # total number of participants
+m <- 150 # minimum number of participants in each group
+rest <- n - 2*m # here: 40 participants can be splitted randomly
+
+# MS type: as a factor (SPMS = 1, PPMS = 2)
+rand <- floor(runif(1, 0, rest)) # random number between 0 and 40
+numberSPMS <- m + rand # number of SPMS patients
+numberPPMS <- m + (rest - rand)  # number of PPMS patients
+vec <- c(rep(1, numberSPMS), rep(2, numberPPMS)) # create a vector with 1s and 2s
+MStype <- sample(vec) # shuffle the vector to create a random order
+
+
+# time to composite endpoint / censoring time in months
+time <- rep(0, n)
+# censoring indicator
+status <- rep(0, n) 
+
+# baseline EDSS Score (must be between 2.5 and 6.0 according to inclusion criteria)
+EDSS <- rtruncnorm(n, a = 2.5, b = 6, mean = 4, sd = 2) # Generate truncated normal data
+EDSS <- round_to_half(EDSS) # round to full or half numbers
+
+
+group <- sample(doses, n, replace = TRUE, prob = c(2/7, 1/7, 1/7, 3/7))
+table(group) # control
+
+data <- data.frame(time, status, group, MStype, EDSS)
+
+# time
+# let's assume the drug is helping and that higher doses help better
+for (i in 1:n) {
+  if (data$group[i] == 30) {
+    data$time[i] <- rexp(1, rate = 1/200)
+  } else if (data$group[i] == 10) {
+    data$time[i] <- rexp(1, rate = 1/160)
+  } else if (data$group[i] == 5) {
+    data$time[i] <- rexp(1, rate = 1/120)
+  } else if (data$group[i] == 0) {
+    data$time[i] <- rexp(1, rate = 1/80)
+  } 
+}
+# use exponential (maybe weibull) distribution 
+# check it:
+hist(data$time, breaks = 20, main = "Simulated Survival Times",
+     xlab = "Survival Time", col = "skyblue")
+
+
+plot(y = data$time, x = data$group)
+
+# assume that patients in PP have a higher time until endpoint, about 20 weeks
+add <- rnorm(n, 50, 20)
+for (i in 1:n) {
+  if (data$MStype[i] == "PP") {
+    data$time[i] <- data$time[i] + add
+  }
+}
+
+# assume that the lower the EDDS Score, the higher the time until event
+data <- mutate(data, time = time + 100/EDSS - 20)
+
+# set negative time or time 0 to 0.1
+data <- mutate(data, time = ifelse(time <= 0, 0.1, time))
+
+# add some random censoring, say, 10% of all patients get censored
+cen <- 0.1
+number <- floor(n*cen)
+vec <- c(rep(1, n - number), rep(0, number)) # create a vector with ones and zeros
+data$status <- sample(vec)
+
+# say, the study lasted all in all 3.5 years, so 182 weeks. All patients living longer will get censored as well at that point
+for (i in 1:n) {
+  if (data$time[i] > 182) {
+    data$time[i] <- 182
+    data$status[i] <- 0
+  }
+}
+
+# change to factors
+data$MStype <- as.factor(data$MStype)
+# data$group <- factor(data$group, ordered = T, levels = c("0", "5", "10", "30"))
+data$group <- as.factor(data$group)
+```

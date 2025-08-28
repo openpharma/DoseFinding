@@ -1,0 +1,115 @@
+---
+title: "nSurvival"
+author: "Carina Miller"
+date: "2025-08-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(gsDesign)
+```
+
+```{r}
+nSurvival()
+```
+
+```{r}
+function (lambda1 = 1/12, lambda2 = 1/24, Ts = 24, Tr = 12, eta = 0, 
+    ratio = 1, alpha = 0.025, beta = 0.1, sided = 1, approx = FALSE, 
+    type = c("rr", "rd"), entry = c("unif", "expo"), gamma = NA) 
+{
+    type <- match.arg(type)
+    entry <- match.arg(entry)
+    method <- match(type, c("rr", "rd"))
+    accrual <- match(entry, c("unif", "expo")) == 1
+    xi0 <- 1/(1 + ratio)
+    xi1 <- 1 - xi0
+    if (is.na(method)) {
+        stop("Only rr (risk ratio) or rd (risk difference) is valid!")
+    }
+    ave.haz <- lambda1 * xi0 + lambda2 * xi1
+    haz <- c(lambda1, lambda2, ave.haz)
+    prob.e <- sapply(haz, pe, eta = eta, Ts = Ts, Tr = Tr, gamma = gamma, 
+        unif = accrual)
+    zalpha <- stats::qnorm(1 - alpha/sided)
+    zbeta <- stats::qnorm(1 - beta)
+    haz.ratio <- log(lambda1/lambda2)
+    haz.diff <- lambda1 - lambda2
+    if (method == 1) {
+        power <- zalpha/sqrt(prob.e[3] * xi0 * xi1) + zbeta * 
+            sqrt((xi0 * prob.e[1])^(-1) + (xi1 * prob.e[2])^(-1))
+        N <- (power/haz.ratio)^2
+        E <- N * (xi0 * prob.e[1] + xi1 * prob.e[2])
+    }
+    else {
+        if (approx) {
+            power <- (zalpha + zbeta) * sqrt((lambda1^2 * (xi0 * 
+                prob.e[1])^(-1) + lambda2^2 * (xi1 * prob.e[2])^(-1)))
+        }
+        else {
+            power <- zalpha * (xi0 * xi1 * prob.e[3]/ave.haz^2)^(-1/2) + 
+                zbeta * sqrt((lambda1^2 * (xi0 * prob.e[1])^(-1) + 
+                  lambda2^2 * (xi1 * prob.e[2])^(-1)))
+        }
+        N <- (power/haz.diff)^2
+        E <- N * (xi0 * prob.e[1] + xi1 * prob.e[2])
+    }
+    outd <- list(type = type, entry = entry, n = N, nEvents = E, 
+        lambda1 = lambda1, lambda2 = lambda2, eta = eta, ratio = ratio, 
+        gamma = gamma, alpha = alpha, beta = beta, sided = sided, 
+        Ts = Ts, Tr = Tr, approx = approx)
+    class(outd) <- "nSurvival"
+    outd
+}
+```
+
+
+########################
+Annahmen = one-sided test (sided = 1), approx = F, type = rr, method = 1, entry = unif, accrual = T, gamma = NA
+```{r}
+function (lambda1 = 1/12, lambda2 = 1/24, Ts = 24, Tr = 12, eta = 0, 
+    ratio = 1, alpha = 0.025, beta = 0.1) 
+{
+    
+    xi0 <- 1/(1 + ratio) # percentage of patients in placebo group
+    xi1 <- 1 - xi0 # percentage of patients in treatment group
+    ave.haz <- lambda1 * xi0 + lambda2 * xi1 # aveage hazard
+    haz <- c(lambda1, lambda2, ave.haz) # all hazards including average hazard
+    prob.e <- sapply(haz, pe, eta = eta, Ts = Ts, Tr = Tr, gamma = gamma, 
+        unif = accrual)
+    zalpha <- stats::qnorm(1 - alpha)
+    zbeta <- stats::qnorm(1 - beta)
+    haz.ratio <- log(lambda1/lambda2)
+
+    # because type = rr
+        power <- zalpha/sqrt(prob.e[3] * xi0 * xi1) + zbeta * 
+            sqrt((xi0 * prob.e[1])^(-1) + (xi1 * prob.e[2])^(-1))
+        N <- (power/haz.ratio)^2
+        E <- N * (xi0 * prob.e[1] + xi1 * prob.e[2])
+  
+    outd <- list(type = type, entry = entry, n = N, nEvents = E, 
+        lambda1 = lambda1, lambda2 = lambda2, eta = eta, ratio = ratio, 
+        alpha = alpha, beta = beta, 
+        Ts = Ts, Tr = Tr)
+    class(outd) <- "nSurvival"
+    outd
+}
+
+gamma = NA
+accrual = T
+```
+
+
+
+```{r}
+a <- match.arg("c", c("hello", "ciau", "miau"))
+match(a, c("hello", "ciau", "miau")) == 2
+type = "rr"
+method <- match(type, c("rr", "rd"))
+method
+```
+

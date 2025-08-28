@@ -1,0 +1,541 @@
+---
+title: "Time-to-Event Data MCP-Mod"
+author: "Carina Miller"
+date: "2025-06-17"
+output: rmarkdown::html_vignette
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+rmarkdown.html_vignette.check_title = FALSE
+```
+
+```{r, echo=T, results='hide'}
+library(DoseFinding, lib.loc = "~/RStudio/packages")
+library(truncnorm)
+library(dplyr)
+library(survival)
+library(ggsurvfit)
+library(ggplot2)
+```
+
+In this vignette we illustrate how to use the DoseFinding package with survival endpoints.
+
+# Background and Data Set
+Assume a dose-finding study is planned for an hypothetical investigational treatment. The endpoint of interest is time to a certain event. The treatment is tested with doses $0$, $5$, $10$ and $30$. with a ratio of $2:1:1:3$. It is assumed that the yearly hazard rate for the placebo group is $\lambda_0 = 0.623$ and that the hazard ratio for the treatment effect on the highest dose, here $\text{HR} = 30 \frac{\text{mg}}{\text{kg}}$, is provided.\
+For calculations we need $\lambda_1$, the hazard rate for the treatment group on $30 \frac{\text{mg}}{\text{kg}}$. This can be derived by multiplication:
+$$
+\begin{aligned}
+\text{HR} = \frac{\lambda_1}{\lambda_0} 
+\Leftrightarrow \text{HR} \cdot \lambda_0 = \lambda_1 
+\end{aligned}
+$$
+In case median survival time $T_{0.5}$ is given, this can be transformed to a hazard rate using:
+$$
+\begin{aligned}
+\lambda = \frac{\ln(2)}{T_{0.5}}
+\end{aligned}
+$$
+
+This can be derived from the definition of the survival function:
+$$
+\begin{aligned}
+S(T_{0.5}) &= 0.5 \\
+\Leftrightarrow \exp(-\lambda T_{0.5}) &= 0.5\\
+\Leftrightarrow \ln(\exp(-\lambda T_{0.5})) &= \ln(0.5)\\
+\Leftrightarrow -\lambda T_{0.5} &= \ln(0.5)\\
+\Leftrightarrow \lambda T_{0.5} &= - \ln(0.5)\\
+\Leftrightarrow \lambda T_{0.5} &= \ln(2)\\
+\Leftrightarrow T_{0.5} &= \frac{\ln(2)}{\lambda}\\
+\Leftrightarrow T_{0.5} \cdot \lambda &= \ln(2)\\
+\Leftrightarrow \lambda &= \frac{\ln(2)}{T_{0.5}}\\
+\end{aligned}
+$$
+
+We generate some example data in the setting just described:
+```{r}
+# Baseline Hazard Rates
+lambda0 <- 0.623 # yearly hazard rate for Control/Placebo group
+HR_treat <- 0.6 # hazard ratio for treatment effect on the 30 mg/kg dose
+lambda1 <- lambda0 * HR_treat #  hazard rate for Treatment group
+doses <- c(0, 5, 10, 30) # placebo or group 5, 10 or 30 mg/kg according to predefined shares
+ratio <- c(1, 0.5, 0.5, 1.5)  # the first number is always 1
+doses <- c(0, 5, 10, 30)
+ngroup <- length(doses) 
+n <- 1000 # number of patients
+etotal <- 500 # predefined total number of events
+```
+
+
+## Candidate models
+We will use the following candidate set of models for the mean response: Two Emax and two sigmoidal
+Emax dose response models. For the Emax models, ED50 (the dose at
+which half of the maximum effect is reached) of $1$ and $8$ will be used as "guesstimates". For the
+sigmoidal Emax, ED50 will be $10$ and $22.5$ and hill parameter will be $3$ for both models.\
+In survival contextx, it is important to remeber that `direction` is `decreasing`. Alternatively, one can specify a negative `maxEff`argument.\
+placEff is expecting the log hazard rate of the placebo arm, so $\log\left(\lambda_0\right)$.\
+maxEff is the maximum effect size within the dose-rangeIt is expecting the difference between the response at the highest dose and `placEff`, the log(HR):
+
+$$
+\begin{aligned}
+\text{HR} = \frac{\lambda_1}{\lambda_0} 
+\Leftrightarrow \log(\text{HR}) = \log\left(\lambda_1\right) - \log\left(\lambda_0\right)
+\end{aligned}
+$$
+We use log hazard rates here because dose-response models in the DoseFinding package assume additive effects when specifying responses.
+
+```{r, fig.width = 6.9, out.width = '100%'}
+mods <- Mods(
+  emax = c(1, 8),
+  sigEmax = rbind(c(10, 3), c(22.5, 4)),
+  doses = doses,
+  direction = c("decreasing"), # decreasing in survival contexts
+  placEff = log(lambda0), # log hazard rate for placebo arm
+  maxEff = log(lambda1) - log(lambda0) # difference between the response at the highest dose and placEff
+)
+
+plotMods(mods,superpose = T, ylab = 'log (hazard rates)')
+# plot(mods,superpose = T) # geht auch, aber nicht so ausführliche Beschriftungen der Modelle
+## plot candidate models on probability scale.
+# plotMods(mods, trafo = inv_logit)
+```
+
+Extract the log hazard rates for all doses per model
+```{r}
+## Get the model set ups and plot them
+# wie man mit der getResp die (log) Hazard rates für bestimmte angenommene Dose-Response Modelle bekommen kann
+y0 <- getResp(mods, doses = doses) # responses for each dose level 
+# based on a dose-response model (mods)
+# matrix of predicted responses for each dose level under each model
+y <- y0[1:dim(y0)[1], ] # only relevant part of y0
+y # log hazard rates
+nshape <- dim(y0)[2] # number of models 
+# exp(y) gives the hazard rates corresponding to predicted responses, Survival times are then computed based on the hazards
+# lambda <- exp(y) # Hazard RATES
+# Diese Hazard RATES kann man dann verwenden, um unter der Annahme eines bestimmten Modells Daten zu simulieren, zusätzlich zu der angenommenen placebo hazard rate
+
+## plot the dose response curve using median survival time
+# med_surv <- log(2) / lambda # Convert Predicted Responses to Median Survival Times
+# TODO: diese Berechnng zeigen!
+# med_surv # response and median survival times
+```
+
+
+```{r}
+# # Dose response curve:
+# plot(
+#   doses,
+#   med_surv[, 1],
+#   type = 'l',
+#   ylab = 'Median Survival (Years)',
+#   xlab = 'Dose in mg/kg',
+#   main = 'Dose-Response Curve
+#      using median survival time',
+#   col = "blue"
+# )
+# # for (i in 2:nshape) lines(doses,med_surv[,i])
+# lines(doses, med_surv[, 2], col = "lightblue")
+# lines(doses, med_surv[, 3], col = "darkgreen")
+# lines(doses, med_surv[, 4], col = "green")
+# legend(
+#   "bottomright",
+#   legend = c("Emax1", "Emax8", "sigEmax10/3", "sigEmax22.5/4"),
+#   fill = c("blue", "lightblue", "darkgreen", "green")
+# )
+
+```
+
+## Data generation
+Simulate survival data using an exponential distribution with the true hazard rates (here from second Emax model)
+```{r}
+# mean_resp <- sample(y[, 2], n, replace = T, prob = c(1, 0.5, 0.5, 1.5))
+
+sim <- function(y, doses, ratio, n, etotal) {
+  set.seed(2026)
+  mean_resp <-
+    sample(y[, 2], n, replace = T, prob = ratio) # y are log hazard rates
+  # table(mean_resp) # control
+  # ms_type <- sample(c(1, 2), n, replace = T, prob = c(0.45, 0.55)) # 1 = PPMS, 2 = SPMS # here: does not influence survival time
+  
+  
+  # Simulate survival data using an exponential distribution with the true hazard rates (mean_resp)
+  t <- rexp(length(mean_resp), exp(mean_resp)) # Simulate survival data from exponential
+  # plot(t) # control
+  t_max_event <- sort(t)[etotal] # time cutoff when etotal of event being observed
+  cens <- rep(t_max_event, length(mean_resp)) # censor after etotal events
+  u <- pmin(cens, t) # time is minimum of event time and censoring time
+  status <- (t <= cens) # status 1 if person had event, 0 if person git censored
+  data <- data.frame(
+    group = names(mean_resp),
+    # doses
+    hazard = mean_resp,
+    time = u,
+    status = as.numeric(status)
+  )
+  # table(data$group)
+  # table(data$status)
+  data$group <- factor(data$group, levels = as.character(doses))
+  return(data)
+}
+```
+
+
+```{r}
+data <- sim(y,
+    doses,
+    ratio,
+    n,
+    etotal) 
+```
+
+Look at the survival data with a Kaplan-Meier plot:
+```{r, fig.width = 5, out.width = '100%'}
+survfit2(Surv(time, status) ~ group, data = data) %>%
+  ggsurvfit() +
+  labs(x = "Years",
+       y = "Survival Probability",
+       title = "Kaplan-Meier Estimator by Dose",
+       ) +
+  theme(plot.title = element_text(hjust = 0.5)) 
+```
+
+## Cox's Semiparametric Regression Model
+
+The Cox's semiparametric regression model expresses the hazard rate like this
+$$
+\begin{aligned}
+\lambda \left(t|x_1,\ldots, x_p\right) = \lambda_0\left(t\right)\exp\left(\beta_1x_1+ \ldots \beta_px_p\right)
+\end{aligned}
+$$
+
+with\
+$\lambda_0\left(t\right)$ baseline hazard,\
+$x_1,\ldots, x_p$ covariates,\
+$\beta_1,\ldots\beta_p$ regression coefficients (effects) of the covariates\
+$\exp\left(\beta_1x_1+ \ldots \beta_px_p\right)$ and hazard ratio\
+(Book ABG)\
+here: $x$ refers to the doses, so\
+$$
+\begin{aligned}
+\lambda \left(t|\text{doses}\right) &= \lambda_0\left(t\right)\exp\left(\beta_1 \cdot 0 \frac{\text{mg}}{\text{kg}} + \beta_2 \cdot 5 \frac{\text{mg}}{\text{kg}} + \beta_3 \cdot 10 \frac{\text{mg}}{\text{kg}} + \beta_4 \cdot 30 \frac{\text{mg}}{\text{kg}}\right) \\
+\end{aligned}
+$$
+# Run Cox PH Model
+Fit the Cox Proportional Hazards model to the survival data. Evaluate whether the treatment has a significant effect on survival:
+```{r}
+cox <- coxph(Surv(time, status) ~ group, data = data)
+summary(cox)
+
+# surv_fit <- survfit(cox)
+# plot(surv_fit, xlab = "Time (years)", ylab = "Survival Probability", 
+     # main = "Survival Curves")
+# When predictors are significant and negative, this suggests a linear decreasing trend across dose.
+```
+
+Coefficients are estimates. Contain the estimated log hazard ratios for each dose group relative to the reference group, typically placebo: 
+```{r}
+# Covariance matrix of the Cox model:
+# 1st column of summary:
+coef <- cox$coef
+```
+
+Variance-covariance matrix of the estimated coefficients from the Cox Proportional Hazards Model
+```{r}
+cov <- cox$var 
+# same with
+# cov <- vcov(cox)
+```
+
+# Analysis
+The Cox's regression model provides the estimated coefficients and their estimated covariance matrix. This is used for some analyses.\
+NOW: Everything placAdj = TRUE !!!
+```{r}
+doses_treat <- doses[-1] # remove placebo, everything placebo adjusted!
+```
+
+## Optimal Contrasts
+(see vignette binary)
+
+The formula for the optimal contrasts is given by
+$$
+\begin{aligned}
+c^{\textrm{opt}} \propto
+S^{-1}\biggl(\mu^0_m - \frac{(\mu^0_m)^T S^{-1}1_K}{1_K^T S^{-1} 1_K}\biggr)
+\end{aligned}
+$$
+where $\mu^0_m$ is the standardized mean response,
+$K$ is the number doses,
+and $1_K$ is an all-ones vector of length $K$ and $S$ is the
+covariance matrix of the estimates at the doses
+[see @pinheiro2014].\
+
+For calculating the optimal contrast for the generalized MCP step the
+covariance matrix $S$ of the estimator $\hat\mu$ can be re-estimated
+once the trial data are available.
+In the case of time-to-event data,...
+
+
+
+```{r, fig.width = 6.9, out.width = '100%'}
+contr <- optContr(mods, doses = doses_treat, S = cov, placAdj = T)
+contr # is no longer a contrast matrix (columns do not sum to 0) 
+# (see help of optContr)
+plotContr(contr, xlab = "Dose", ylab = "Contrast coefficients")
+```
+
+## Multiple Contrast Test
+How well do the different potential dose-response models fit the data compared to the null hypothesis $H_0$: "No dose-response relationship"?\
+Evaluate dose-response relationships using the MCPMod approach. Tests for significant differences across doses
+```{r}
+mct <-
+  MCTtest(
+    dose = doses_treat,
+    resp = coef,
+    S = cov,
+    models = mods,
+    type = 'general',
+    alternative = "one.sided",
+    placAdj = TRUE # placebo-adjusted estimates are specified in ‘⁠resp⁠’
+  )
+mct
+```
+
+The first table shows the same matrix as `optContr` containing optimal contrasts for candidate shapes. It shows how much weight each dose contributes to the test for each hypothesized model.\
+(like book p.220 Table 12.3)
+
+The second table contains result of the contrast test. It shows how similar or related the estimated contrasts for each model are.\
+High correlations (near 1) between models (e.g., emax1 and emax2) suggest these models produce similar dose-response patterns.\
+(like book p.220 Table 12.4 or p.222 Table 12.6).\
+
+The third table gives the t-statistics and adjusted p-values for each model.\
+It shows how strong the evidence for the corresponding model is.\
+A higher t-statistic suggests better compatibility between the model and the observed data.\
+Small adjusted p-values ($< 0.05$) indicate strong evidence for the model fitting better than the null hypothesis ("no dose-response relationship"). Here, all adjusted p-values are small, so this gives a strong evidence for the existence of a dose-response effect.\
+
+The model with smallest p-value and highest t-statistic is considered the best model, with the strongest statistical evidence for detecting the dose-response pattern. Here, this would be emax2 which makes sense as this is the distribution used for data generation.
+
+## Find the best model (see book p. 219)
+Plot of estimated dose-response curve (book p. 220)\
+Like plot in book p.221, Fig 12.2
+
+```{r, fig.width = 6.9, out.width = '100%'}
+fitEmax <- fitMod(
+  dose = doses_treat,
+  resp = coef,
+  S = cov,
+  model = 'emax',
+  type = 'general',
+  placAdj = TRUE
+)
+# TODO: Warum ist es wichtig, dass man placebo adjusted wählt? Was macht das für einen Unterschied?
+plot(fitEmax)
+# plot(fitEmax, plotData = 'meansCI', CI = T, level = 0.95) ?
+aic_emax <- gAIC(fitEmax)
+# TODO: Bei AIC erhält man einen Error: use method gAIC for type == "general" --> Begründen, warum man hier also gAIC braucht!!!
+
+fitSigEmax <- fitMod(
+  dose = doses_treat,
+  resp = coef,
+  S = cov,
+  model = 'sigEmax',
+  type = 'general',
+  placAdj = TRUE
+)
+
+plot(fitSigEmax)
+# plot(fitSigEmax, plotData = 'meansCI', CI = T, level = 0.95)
+aic_sigemax <- gAIC(fitSigEmax) 
+
+ifelse(aic_emax <= aic_sigemax, 
+       paste('Emax model fits better than SigEmax regarding the gAIC values of the models.'),
+       paste('SigEmax model fits better than Emax regarding the gAIC values of the models.'))
+```
+Preferred model is the one with the minimum AIC value.\
+
+## Find the best dose (see book p. 220)
+Here, decreasing response is beneficial (as before).\ 
+Find a dose that achieves a certain percentage of the full effect size over placebo, usually $0.9$ as it is close to the plateau.
+```{r}
+percentage_dose_emax <- ED(fitEmax, p = 0.9, direction = 'decreasing')
+percentage_dose_emax
+
+percentage_dose_sigemax <- ED(fitSigEmax, p = 0.9, direction = 'decreasing')
+percentage_dose_sigemax
+```
+
+
+Predict the effect of more doses, e.g. $20$ and $40$ (book p. 220)
+```{r}
+pred_emax <- predict(fitEmax, doseSeq = c(20, 40), predType = 'effect-curve', se.fit = T)
+pred_emax
+
+pred_sigemax <- predict(fitSigEmax, doseSeq = c(20, 40), predType = 'effect-curve', se.fit = T)
+pred_sigemax 
+
+# TODO: explain why setting effect-curve is needed!!
+```
+
+
+# Power and sample size
+Contrasts help assess whether a dose-response relationship exists by comparing the effects of different doses in the trial.\
+Use $w = 1$ if homoscedastic residuals with equal group sizes, which is not the case here.\
+```{r, fig.width = 6.9, out.width = '100%'}
+# contrasts
+contMat <- optContr(mods, w = ratio) 
+summary(contMat) # cols add up to ~0 
+# plot(contMat)
+plotContr(contMat) # display contrasts using ggplot2
+```
+
+For the functions `sampSizeMCT` and `powN` there is `sigma` needed which we have to derive like in deng2019power for survival settings.\
+They derived the covariance matrix $S$ of $\hat{\beta}$:
+$$
+\begin{aligned}
+S \approx D^{-1}
+\begin{pmatrix}{}
+p_0^{-1} + p_1^{-1} & p_0^{-1} & \ldots & p_0^{-1} \\
+p_0^{-1} & p_0^{-1} + p_2^{-1} & \ldots & p_0^{-1} \\
+\vdots  & \vdots  & \vdots  & \vdots\\
+p_0^{-1} & p_0^{-1} & \ldots  & p_0^{-1} + p_K^{-1} \\
+\end{pmatrix}
+\end{aligned}
+$$
+with 
+$$
+\begin{aligned}
+p_k = \frac{\frac{n_k}{n_0}\exp(\beta_k)}{1 + \sum_{i = 1}^{K}\frac{n_i}{n_0}\exp(\beta_i)},
+\end{aligned}
+$$
+$n_k$ the number of patients in dose group $k$ for $k = 0, 1, \ldots, K$, $k = 0$ placebo,\
+$n = n_0 + n_1 + \ldots + n_k$,\
+$\beta_0 = 0$\
+
+Under $H_0$, $S$, say, $S_0$ has the following structure:\
+$$
+\begin{aligned}
+S_0 \approx \frac{n}{D}
+\begin{pmatrix}{}
+n_0^{-1} + n_1^{-1} & n_0^{-1} & \ldots & n_0^{-1} \\
+n_0^{-1} & n_0^{-1} + n_2^{-1} & \ldots & n_0^{-1} \\
+\vdots  & \vdots  & \vdots  & \vdots\\
+n_0^{-1} & n_0^{-1} & \ldots  & n_0^{-1} + n_K^{-1} \\
+\end{pmatrix}
+\end{aligned}
+$$
+
+with $D =$ total number of events (before named `etotal`)\
+
+(see everything paper deng2019power)
+
+```{r}
+# for only one model
+
+# second column of beta
+beta <- (y - log(lambda0))[ ,2] # log hazard rates - placEff -> placebo adjusted log hazard rates
+
+# 0.5 intermediate value between 0 and 0.5: See paper (appendix last sentence)
+p0 = 1 / sum(exp(0.5 * beta) * ratio) # inverse of the weights of hazard rates across all doses for each model
+pk = (exp(0.5 * beta[-1]) * ratio[-1]) * p0
+
+#  S matrix
+S = array(1/p0, c(ngroup-1,ngroup-1)) # Dimensions are reduced by 1 because the placebo group is excluded
+diag(S)=1/pk+1/p0
+S=S/etotal
+S
+
+# S_0 matrix
+S0=diag(sum(ratio)+sum(ratio)/ratio[-1])
+S0[upper.tri(S0)]=S0[lower.tri(S0)]=sum(ratio)
+S0=S0/etotal
+S0
+```
+
+
+```{r}
+#contrast1 <- optContr(model1, doses=dosPlac, S=S, placAdj=T)$contMat
+```
+
+
+
+```{r, fig.width = 5, out.width = '100%'}
+# see description of Help on sampSize:
+
+## sample size calculation
+# sampSizeMCT calculates the required sample size to achieve a target power
+## sampSizeMCT calculates the  power under each model and then returns
+## the average power under all models
+## assume we want to achieve 80% average power over the selected shapes
+## and want to use allocations with respect to ratio
+sampsize <- sampSizeMCT( # wrapper of sampSize for multiple contrast tests
+  upperN = 500, # Upper and lower bound for the target sample size
+  lowerN = 10,
+  contMat = contMat, # optimal contrasts
+  sigma = 1, # The standard deviation of the observations. It indicates variability in the responses of individuals in the study.
+  altModels = mods,
+  power = 0.8, # desired statistical power, probability of correctly rejecting H_0, uses the power as target function
+  alRatio = ratio,
+  alpha = 0.05
+)
+sampsize
+# calculates the group sample sizes needed in order to attain a specific power 
+# The powers under each alternative model are combined with sumFct. Here we look at the minimum power, other potential choices are mean or max
+
+#  calculate a general target function for different given sample sizes
+# powNevaluates the statistical power of a dose-response study for a range of sample sizes
+# see also vignette 'sample size':
+powerN <- powN( # wrapper of targN for multiple contrast tests using the power as target function
+  upperN = 80,
+  lowerN = 10,
+  step = 10,
+  contMat = contMat, # see above
+  sigma = 1, # residual standard deviation, standard deviation of the observations, assumption about variability in measurement outcomes
+  altModels = mods,
+  alpha = 0.05, # one-sided test level
+  alRatio = ratio, # size of groups
+  sumFct = 'mean'
+  )
+
+plot(powerN, ylab = 'Power', main = 'Power of the Maximum Contrast Test')
+# This shows the power values of the maximum contrast test assuming each of the different candidate models to be true. 
+# The mean power over the candidate models are also included in the plot.
+```
+Says how many patients across all dose groups for detecting the specified dose-response trend\
+Percentage of power to detect the specified dose-response trend
+
+
+
+
+
+
+```{r}
+# addidional survival plots:
+# fit <- survfit(Surv(time, status) ~ 1, data = data)
+# plot(
+#   fit,
+#   conf.int = T,
+#   main = "Kaplan-Meier Estimator with CI",
+#   xlab = "Time (years)",
+#   ylab = "Survival",
+#   col = "blue"
+# )
+
+# survfit2(Surv(time, status) ~ 1, data = data) %>%
+#   ggsurvfit() +
+#   labs(x = "Years",
+#        y = "Probability",
+#        title = "Kaplan-Meier Estimator") +
+#   add_confidence_interval() +
+#   add_risktable() +
+#   theme(plot.title = element_text(hjust = 0.5))
+
+
+# survfit2(Surv(time, status) ~ ms_type, data = data) %>%
+#   ggsurvfit() +
+#   labs(
+#     x = "Years",
+#     y = "Probability",
+#     title = "Kaplan-Meier Estimator by Illness Type"
+#     ) +
+#   theme(plot.title=element_text(hjust=0.5))
+```
+

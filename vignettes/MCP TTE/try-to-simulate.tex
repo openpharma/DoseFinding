@@ -1,0 +1,793 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Clinical Trial Protocol Phase 2},
+  pdfauthor={Carina Miller},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Clinical Trial Protocol Phase 2}
+\author{Carina Miller}
+\date{2025-06-17}
+
+\begin{document}
+\maketitle
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(truncnorm)}
+\FunctionTok{library}\NormalTok{(dplyr)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'dplyr'
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(survival)}
+\FunctionTok{library}\NormalTok{(ggsurvfit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Loading required package: ggplot2
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(DoseFinding, }\AttributeTok{lib.loc =} \StringTok{"\textasciitilde{}/RStudio/packages"}\NormalTok{)}
+\FunctionTok{library}\NormalTok{(ggplot2)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{candidate-models}{%
+\section{Candidate models}\label{candidate-models}}
+
+We will use the following candidate set of models for the mean response:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Baseline Hazard Rates}
+\NormalTok{lambda0 }\OtherTok{\textless{}{-}} \FloatTok{0.623} \CommentTok{\# yearly hazard rate for Control/Placebo group}
+\NormalTok{HR\_treat }\OtherTok{\textless{}{-}} \FloatTok{0.6} \CommentTok{\# hazard ratio for treatment effect on the 30 mg/kg dose}
+\NormalTok{lambda1 }\OtherTok{\textless{}{-}}\NormalTok{ lambda0 }\SpecialCharTok{*}\NormalTok{ HR\_treat }\CommentTok{\#  hazard rate for Treatment group}
+
+\CommentTok{\# placebo or group 5, 10 or 30 mg/kg according to predefined shares (see later: ratio)}
+\NormalTok{doses }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{10}\NormalTok{, }\DecValTok{30}\NormalTok{)}
+\CommentTok{\# ngroups \textless{}{-} length(doses) }
+
+\NormalTok{mods }\OtherTok{\textless{}{-}} \FunctionTok{Mods}\NormalTok{(}
+  \AttributeTok{emax =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{8}\NormalTok{),}
+  \AttributeTok{sigEmax =} \FunctionTok{rbind}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{10}\NormalTok{, }\DecValTok{3}\NormalTok{), }\FunctionTok{c}\NormalTok{(}\FloatTok{22.5}\NormalTok{, }\DecValTok{4}\NormalTok{)),}
+  \AttributeTok{doses =}\NormalTok{ doses,}
+  \AttributeTok{direction =} \FunctionTok{c}\NormalTok{(}\StringTok{"decreasing"}\NormalTok{), }\CommentTok{\# decreasing in survival contexts, alternative:  specifying a negative "maxEff" argument}
+  \AttributeTok{placEff =} \FunctionTok{log}\NormalTok{(lambda0), }\CommentTok{\# log hazard rate for placebo arm}
+  \AttributeTok{maxEff =} \FunctionTok{log}\NormalTok{(lambda1) }\SpecialCharTok{{-}} \FunctionTok{log}\NormalTok{(lambda0) }\CommentTok{\# fix the maximum effect size within the dose{-}range, difference between the response at the highest dose and placEff}
+\NormalTok{)}
+\CommentTok{\# use log hazard rates because dose{-}response models in the DoseFinding package assume additive effects when specifying responses}
+
+\FunctionTok{plotMods}\NormalTok{(mods,}\AttributeTok{superpose =}\NormalTok{ T, }\AttributeTok{ylab =} \StringTok{\textquotesingle{}log (hazard rates)\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics[width=1\linewidth]{try-to-simulate_files/figure-latex/unnamed-chunk-2-1}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# plot(mods,superpose = T) \# geht auch, aber nicht so ausführliche Beschriftungen der Modelle}
+\DocumentationTok{\#\# plot candidate models on probability scale.}
+\CommentTok{\# plotMods(mods, trafo = inv\_logit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\# Get the model set ups and plot them}
+\CommentTok{\# wie man mit der getResp die (log) Hazard rates für bestimmte angenommene Dose{-}Response Modelle bekommen kann}
+\NormalTok{y0 }\OtherTok{\textless{}{-}} \FunctionTok{getResp}\NormalTok{(mods, }\AttributeTok{doses =}\NormalTok{ doses) }\CommentTok{\# responses for each dose level based on a dose{-}response model (mods)}
+\CommentTok{\# matrix of predicted responses for each dose level under each model}
+\NormalTok{y }\OtherTok{\textless{}{-}}\NormalTok{ y0[}\DecValTok{1}\SpecialCharTok{:}\FunctionTok{dim}\NormalTok{(y0)[}\DecValTok{1}\NormalTok{], ] }\CommentTok{\# only relevant part of y0}
+\NormalTok{y }\CommentTok{\# log hazard rates}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##         emax1      emax2   sigEmax1   sigEmax2
+## 0  -0.4732088 -0.4732088 -0.4732088 -0.4732088
+## 5  -0.9130864 -0.7220725 -0.5320693 -0.4748447
+## 10 -0.9530753 -0.8326786 -0.7380813 -0.4984615
+## 30 -0.9840344 -0.9840344 -0.9840344 -0.9840344
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# exp(y) gives the hazard rates corresponding to predicted responses, Survival times are then computed based on the hazards}
+\NormalTok{lambda }\OtherTok{\textless{}{-}} \FunctionTok{exp}\NormalTok{(y) }\CommentTok{\# Hazard RATES}
+\CommentTok{\# Diese Hazard RATES kann man dann verwenden, um unter der Annahme eines bestimmten Modells Daten zu simulieren, zusätzlich zu der angenommenen placebo hazard rate}
+
+\DocumentationTok{\#\# plot the dose response curve using median survival time}
+\NormalTok{med\_surv }\OtherTok{\textless{}{-}} \FunctionTok{log}\NormalTok{(}\DecValTok{2}\NormalTok{) }\SpecialCharTok{/}\NormalTok{ lambda }\CommentTok{\# Convert Predicted Responses to Median Survival Times}
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: diese Berechnng zeigen!}
+\NormalTok{med\_surv }\CommentTok{\# response and median survival times}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       emax1    emax2 sigEmax1 sigEmax2
+## 0  1.112596 1.112596 1.112596 1.112596
+## 5  1.727324 1.426979 1.180050 1.114417
+## 10 1.797798 1.593871 1.450007 1.141050
+## 30 1.854326 1.854326 1.854326 1.854326
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# \# Dose response curve:}
+\CommentTok{\# plot(}
+\CommentTok{\#   doses,}
+\CommentTok{\#   med\_surv[, 1],}
+\CommentTok{\#   type = \textquotesingle{}l\textquotesingle{},}
+\CommentTok{\#   ylab = \textquotesingle{}Median Survival (Years)\textquotesingle{},}
+\CommentTok{\#   xlab = \textquotesingle{}Dose in mg/kg\textquotesingle{},}
+\CommentTok{\#   main = \textquotesingle{}Dose{-}Response Curve}
+\CommentTok{\#      using median survival time\textquotesingle{},}
+\CommentTok{\#   col = "blue"}
+\CommentTok{\# )}
+\CommentTok{\# \# for (i in 2:nshape) lines(doses,med\_surv[,i])}
+\CommentTok{\# lines(doses, med\_surv[, 2], col = "lightblue")}
+\CommentTok{\# lines(doses, med\_surv[, 3], col = "darkgreen")}
+\CommentTok{\# lines(doses, med\_surv[, 4], col = "green")}
+\CommentTok{\# legend(}
+\CommentTok{\#   "bottomright",}
+\CommentTok{\#   legend = c("Emax1", "Emax8", "sigEmax10/3", "sigEmax22.5/4"),}
+\CommentTok{\#   fill = c("blue", "lightblue", "darkgreen", "green")}
+\CommentTok{\# )}
+\end{Highlighting}
+\end{Shaded}
+
+Power and sample size/ Contrasts help assess whether a dose-response
+relationship exists by comparing the effects of different doses in the
+trial.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# contrasts, the first number is always 1}
+\NormalTok{ratio }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\FloatTok{0.5}\NormalTok{, }\FloatTok{0.5}\NormalTok{, }\FloatTok{1.5}\NormalTok{)}
+\NormalTok{contMat }\OtherTok{\textless{}{-}} \FunctionTok{optContr}\NormalTok{(mods, }\AttributeTok{w =}\NormalTok{ ratio) }\CommentTok{\# w=1 denotes homoscedastic residuals with equal group sizes; not the case here!}
+\FunctionTok{summary}\NormalTok{(contMat) }\CommentTok{\# cols add up to \textasciitilde{}0 }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Optimal contrasts
+## 
+## Optimal Contrasts:
+##     emax1  emax2 sigEmax1 sigEmax2
+## 0   0.810  0.702    0.570    0.438
+## 5  -0.104  0.065    0.222    0.218
+## 10 -0.150 -0.062    0.000    0.194
+## 30 -0.557 -0.706   -0.791   -0.850
+## 
+## Contrast Correlation Matrix:
+##          emax1 emax2 sigEmax1 sigEmax2
+## emax1    1.000 0.945    0.803    0.641
+## emax2    0.945 1.000    0.953    0.845
+## sigEmax1 0.803 0.953    1.000    0.944
+## sigEmax2 0.641 0.845    0.944    1.000
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# plot(contMat)}
+\FunctionTok{plotContr}\NormalTok{(contMat) }\CommentTok{\# display contrasts using ggplot2}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{try-to-simulate_files/figure-latex/unnamed-chunk-5-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# see description of Help on sampSize:}
+
+\DocumentationTok{\#\# sample size calculation}
+\CommentTok{\# sampSizeMCT calculates the required sample size to achieve a target power}
+\DocumentationTok{\#\# sampSizeMCT calculates the power under each model and then returns}
+\DocumentationTok{\#\# the average power under all models}
+\DocumentationTok{\#\# assume we want to achieve 80\% average power over the selected shapes}
+\DocumentationTok{\#\# and want to use allocations with respect to ratio}
+\NormalTok{sampsize }\OtherTok{\textless{}{-}} \FunctionTok{sampSizeMCT}\NormalTok{( }\CommentTok{\# wrapper of sampSize for multiple contrast tests}
+  \AttributeTok{upperN =} \DecValTok{500}\NormalTok{, }\CommentTok{\# Upper and lower bound for the target sample size}
+  \AttributeTok{lowerN =} \DecValTok{10}\NormalTok{,}
+  \AttributeTok{contMat =}\NormalTok{ contMat, }\CommentTok{\# optimal contrasts}
+  \AttributeTok{sigma =} \DecValTok{1}\NormalTok{, }\CommentTok{\# The standard deviation of the observations. It indicates variability in the responses of individuals in the study.}
+  \AttributeTok{altModels =}\NormalTok{ mods,}
+  \AttributeTok{power =} \FloatTok{0.8}\NormalTok{, }\CommentTok{\# desired statistical power, probability of correctly rejecting H\_0, uses the power as target function}
+  \AttributeTok{alRatio =}\NormalTok{ ratio,}
+  \AttributeTok{alpha =} \FloatTok{0.05}
+\NormalTok{)}
+\NormalTok{sampsize}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Sample size calculation
+## 
+## alRatio: 2 1 1 3 
+## Total sample size: 140 
+## Sample size per arm: 40 20 20 60 
+## targFunc: 0.8142
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# calculates the group sample sizes needed in order to attain a specific power }
+\CommentTok{\# The powers under each alternative model are combined with sumFct. Here we look at the minimum power, other potential choices are mean or max}
+
+\CommentTok{\#  calculate a general target function for different given sample sizes}
+\CommentTok{\# powNevaluates the statistical power of a dose{-}response study for a range of sample sizes}
+\CommentTok{\# see also vignette \textquotesingle{}sample size\textquotesingle{}:}
+\NormalTok{powerN }\OtherTok{\textless{}{-}} \FunctionTok{powN}\NormalTok{( }\CommentTok{\# wrapper of targN for multiple contrast tests using the power as target function}
+  \AttributeTok{upperN =} \DecValTok{80}\NormalTok{,}
+  \AttributeTok{lowerN =} \DecValTok{10}\NormalTok{,}
+  \AttributeTok{step =} \DecValTok{10}\NormalTok{,}
+  \AttributeTok{contMat =}\NormalTok{ contMat, }\CommentTok{\# see above}
+  \AttributeTok{sigma =} \DecValTok{1}\NormalTok{, }\CommentTok{\# residual standard deviation, standard deviation of the observations, assumption about variability in measurement outcomes}
+  \AttributeTok{altModels =}\NormalTok{ mods,}
+  \AttributeTok{alpha =} \FloatTok{0.05}\NormalTok{, }\CommentTok{\# one{-}sided test level}
+  \AttributeTok{alRatio =}\NormalTok{ ratio, }\CommentTok{\# size of groups}
+  \AttributeTok{sumFct =} \StringTok{\textquotesingle{}mean\textquotesingle{}}
+\NormalTok{  )}
+
+\FunctionTok{plot}\NormalTok{(powerN, }\AttributeTok{ylab =} \StringTok{\textquotesingle{}Power\textquotesingle{}}\NormalTok{, }\AttributeTok{main =} \StringTok{\textquotesingle{}Power of the Maximum Contrast Test\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{try-to-simulate_files/figure-latex/unnamed-chunk-6-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# This shows the power values of the maximum contrast test assuming each of the different candidate models to be true. }
+\CommentTok{\# The mean power over the candidate models are also included in the plot.}
+\end{Highlighting}
+\end{Shaded}
+
+Says how many patients across all dose groups for detecting the
+specified dose-response trend/ Percentage of power to detect the
+specified dose-response trend
+
+\hypertarget{data-generation}{%
+\section{Data generation}\label{data-generation}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# simulate data based on the hazards of the second Emax model}
+\CommentTok{\# mean\_resp \textless{}{-} sample(y[, 2], n, replace = T, prob = c(1, 0.5, 0.5, 1.5))}
+
+\NormalTok{sim }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(y, doses, ratio, n, etotal) \{}
+  \FunctionTok{set.seed}\NormalTok{(}\DecValTok{2026}\NormalTok{)}
+\NormalTok{  mean\_resp }\OtherTok{\textless{}{-}}
+    \FunctionTok{sample}\NormalTok{(y[, }\DecValTok{2}\NormalTok{], n, }\AttributeTok{replace =}\NormalTok{ T, }\AttributeTok{prob =}\NormalTok{ ratio) }\CommentTok{\# y = log hazard rates}
+  \CommentTok{\# table(mean\_resp) \# control}
+  \CommentTok{\# ms\_type \textless{}{-} sample(c(1, 2), n, replace = T, prob = c(0.45, 0.55)) \# 1 = PPMS, 2 = SPMS \# here: does not influence survival time}
+  
+  
+  \CommentTok{\# Simulate survival data using an exponential distribution with the true hazard rates (mean\_resp)}
+\NormalTok{  t }\OtherTok{\textless{}{-}} \FunctionTok{rexp}\NormalTok{(}\FunctionTok{length}\NormalTok{(mean\_resp), }\FunctionTok{exp}\NormalTok{(mean\_resp)) }\CommentTok{\# Simulate survival data from exponential with some beta\textquotesingle{}s}
+  \CommentTok{\# plot(t) \# control}
+\NormalTok{  t\_max\_event }\OtherTok{\textless{}{-}} \FunctionTok{sort}\NormalTok{(t)[etotal] }\CommentTok{\# this is the time cutoff when etotal of event being observed}
+\NormalTok{  cens }\OtherTok{\textless{}{-}} \FunctionTok{rep}\NormalTok{(t\_max\_event, }\FunctionTok{length}\NormalTok{(mean\_resp)) }\CommentTok{\# censor after etotal events}
+\NormalTok{  u }\OtherTok{\textless{}{-}} \FunctionTok{pmin}\NormalTok{(cens, t) }\CommentTok{\# time is minimum of event time and censoring time}
+\NormalTok{  status }\OtherTok{\textless{}{-}}\NormalTok{ (t }\SpecialCharTok{\textless{}=}\NormalTok{ cens) }\CommentTok{\# status 1 if person had event, 0 if person git censored}
+\NormalTok{  data }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+    \AttributeTok{group =} \FunctionTok{names}\NormalTok{(mean\_resp),}
+    \CommentTok{\# doses}
+    \AttributeTok{hazard =}\NormalTok{ mean\_resp,}
+    \AttributeTok{time =}\NormalTok{ u,}
+    \AttributeTok{status =} \FunctionTok{as.numeric}\NormalTok{(status)}
+\NormalTok{  )}
+  \CommentTok{\# table(data$group)}
+  \CommentTok{\# table(data$status)}
+\NormalTok{  data}\SpecialCharTok{$}\NormalTok{group }\OtherTok{\textless{}{-}} \FunctionTok{factor}\NormalTok{(data}\SpecialCharTok{$}\NormalTok{group, }\AttributeTok{levels =} \FunctionTok{as.character}\NormalTok{(doses))}
+  \FunctionTok{return}\NormalTok{(data)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data }\OtherTok{\textless{}{-}} \FunctionTok{sim}\NormalTok{(y,}
+\NormalTok{    doses,}
+\NormalTok{    ratio,}
+\NormalTok{    n }\OtherTok{\textless{}{-}} \DecValTok{10000}\NormalTok{, }\CommentTok{\# number of patients}
+\NormalTok{    etotal }\OtherTok{\textless{}{-}} \DecValTok{5000}\NormalTok{) }\CommentTok{\# predefined number of events}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{survfit2}\NormalTok{(}\FunctionTok{Surv}\NormalTok{(time, status) }\SpecialCharTok{\textasciitilde{}}\NormalTok{ group, }\AttributeTok{data =}\NormalTok{ data) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{ggsurvfit}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{"Years"}\NormalTok{,}
+       \AttributeTok{y =} \StringTok{"Survival Probability"}\NormalTok{,}
+       \AttributeTok{title =} \StringTok{"Kaplan{-}Meier Estimator by Dose"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{plot.title =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{hjust =} \FloatTok{0.5}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{try-to-simulate_files/figure-latex/unnamed-chunk-9-1.pdf}
+Cox's semiparametric regression model:\\
+Hazard rate =
+\(\lambda \left(t|x_1,\ldots, x_p\right) = \lambda_0\left(t\right)\exp\left(\beta_1x_1+ \ldots \beta_px_p\right)\)\\
+with baseline hazard \(\lambda_0\left(t\right)\),\\
+covariates \(x_1,\ldots, x_p\),\\
+regression coefficients (effects) of the covariates
+\(\beta_1,\ldots\beta_p\)\\
+and hazard ratio \(\exp\left(\beta_1x_1+ \ldots \beta_px_p\right)\)\\
+(Book ABG)\\
+here: x = doses, so\\
+\(\lambda \left(t|\text{doses}\right) = \lambda_0\left(t)\exp\left(\beta_1 \cdot 0 \frac{\text{mg}}{\text{kg}} + \beta_2 \cdot 5 \frac{\text{mg}}{\text{kg}} + \beta_3 \cdot 10 \frac{\text{mg}}{\text{kg}} + \beta_4 \cdot 30 \frac{\text{mg}}{\text{kg}}\right)\)\\
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# run Cox PH Model}
+\CommentTok{\# Fit the Cox Proportional Hazards model to the survival data. Evaluate whether the treatment has a significant effect on survival:}
+\NormalTok{cox }\OtherTok{\textless{}{-}} \FunctionTok{coxph}\NormalTok{(}\FunctionTok{Surv}\NormalTok{(time, status) }\SpecialCharTok{\textasciitilde{}}\NormalTok{ group, }\AttributeTok{data =}\NormalTok{ data)}
+\FunctionTok{summary}\NormalTok{(cox)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Call:
+## coxph(formula = Surv(time, status) ~ group, data = data)
+## 
+##   n= 10000, number of events= 5000 
+## 
+##             coef exp(coef) se(coef)       z Pr(>|z|)    
+## group5  -0.17649   0.83820  0.04312  -4.094 4.25e-05 ***
+## group10 -0.30694   0.73570  0.04588  -6.690 2.23e-11 ***
+## group30 -0.49063   0.61224  0.03355 -14.622  < 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+##         exp(coef) exp(-coef) lower .95 upper .95
+## group5     0.8382      1.193    0.7703    0.9121
+## group10    0.7357      1.359    0.6724    0.8049
+## group30    0.6122      1.633    0.5733    0.6539
+## 
+## Concordance= 0.557  (se = 0.004 )
+## Likelihood ratio test= 218.7  on 3 df,   p=<2e-16
+## Wald test            = 220.2  on 3 df,   p=<2e-16
+## Score (logrank) test = 223.7  on 3 df,   p=<2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# surv\_fit \textless{}{-} survfit(cox)}
+\CommentTok{\# plot(surv\_fit, xlab = "Time (years)", ylab = "Survival Probability", }
+     \CommentTok{\# main = "Survival Curves")}
+\CommentTok{\# When predictors are significant and negative, this suggests a linear decreasing trend across dose.}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Covariance matrix of the Cox model:}
+\NormalTok{coef }\OtherTok{\textless{}{-}}\NormalTok{ cox}\SpecialCharTok{$}\NormalTok{coef }\CommentTok{\# 1st column of summary; Contains the estimated log hazard ratios for each dose group (relative to the reference group, typically placebo); estimates}
+\NormalTok{cov }\OtherTok{\textless{}{-}}\NormalTok{ cox}\SpecialCharTok{$}\NormalTok{var }\CommentTok{\# variance{-}covariance matrix of the estimated coefficients from the Cox Proportional Hazards Model}
+\CommentTok{\# same with}
+\CommentTok{\# cov \textless{}{-} vcov(cox)}
+\NormalTok{coef}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##     group5    group10    group30 
+## -0.1764947 -0.3069378 -0.4906277
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cov}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##              [,1]         [,2]         [,3]
+## [1,] 0.0018589175 0.0005803135 0.0005805953
+## [2,] 0.0005803135 0.0021049594 0.0005809679
+## [3,] 0.0005805953 0.0005809679 0.0011259304
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Multiple Contrast Test}
+\NormalTok{doses\_treat }\OtherTok{\textless{}{-}}\NormalTok{ doses[}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{] }\CommentTok{\# remove placebo, everything placebo adjusted!}
+\CommentTok{\# Evaluate dose{-}response relationships using the MCPMod approach. Tests for significant differences across doses}
+\NormalTok{mct }\OtherTok{\textless{}{-}}
+  \FunctionTok{MCTtest}\NormalTok{(}
+    \AttributeTok{dose =}\NormalTok{ doses\_treat,}
+    \AttributeTok{resp =}\NormalTok{ coef,}
+    \AttributeTok{S =}\NormalTok{ cov,}
+    \AttributeTok{models =}\NormalTok{ mods,}
+    \AttributeTok{type =} \StringTok{\textquotesingle{}general\textquotesingle{}}\NormalTok{,}
+    \AttributeTok{alternative =} \StringTok{"one.sided"}\NormalTok{,}
+    \AttributeTok{placAdj =} \ConstantTok{TRUE} \CommentTok{\# placebo{-}adjusted estimates are specified in ‘⁠resp⁠’}
+\NormalTok{  )}
+\NormalTok{mct}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Multiple Contrast Test
+## 
+## Contrasts:
+##     emax1  emax2 sigEmax1 sigEmax2
+## 5  -0.249  0.044    0.255    0.241
+## 10 -0.278 -0.128   -0.041    0.177
+## 30 -0.928 -0.991   -0.966   -0.954
+## 
+## Contrast Correlation:
+##          emax1 emax2 sigEmax1 sigEmax2
+## emax1    1.000 0.948    0.802    0.642
+## emax2    0.948 1.000    0.950    0.842
+## sigEmax1 0.802 0.950    1.000    0.944
+## sigEmax2 0.642 0.842    0.944    1.000
+## 
+## Multiple Contrast Test:
+##          t-Stat  adj-p
+## emax2    14.739 <0.001
+## sigEmax1 14.534 <0.001
+## emax1    13.424 <0.001
+## sigEmax2 13.245 <0.001
+\end{verbatim}
+
+How well do the different potential dose-response models fit the data
+compared to the null hypothesis \(H_0\): ``no dose-response
+relationship''?/
+
+First table: how much weight does each dose contribute to the test for
+each hypothesized model?/ (like book p.220 Table 12.3) contains optimal
+contrasts for candidate shapes./
+
+Second table: how similar or related are the estimated contrasts for
+each model?/ High correlations (near 1) between models (e.g., emax1 and
+emax2) suggest these models produce similar dose-response patterns./
+(like book p.220 Table 12.4 or p.222 Table 12.6) contains result of the
+contrast test. Here, all adjusted p-values are small, so this gives a
+strong evidence for the existence of a dose-response effect./
+
+Third table: t-statistics and adjusted p-values for each model/ how
+strong is the evidence for the corresponding model?/ A higher
+t-statistic suggests better compatibility between the model and the
+observed data./ Smaller adjusted p-values (\(< 0.05\)) indicate strong
+evidence for the model fitting better than the null hypothesis (``no
+dose-response relationship'')./
+
+Model with smallest p-value and highest t-stat is the best model, with
+the strongest statistical evidence for detecting the dose-response
+pattern
+
+\hypertarget{optimal-contrasts}{%
+\section{Optimal Contrasts}\label{optimal-contrasts}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{contr }\OtherTok{\textless{}{-}} \FunctionTok{optContr}\NormalTok{(mods, }\AttributeTok{doses =}\NormalTok{ doses\_treat, }\AttributeTok{S =}\NormalTok{ cov, }\AttributeTok{placAdj =}\NormalTok{ T)}
+\NormalTok{contr }\DocumentationTok{\#\# {-}\textgreater{} contMat0 is no longer a contrast matrix (columns do not sum to 0) (see help of optContr)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Optimal contrasts
+##     emax1  emax2 sigEmax1 sigEmax2
+## 5  -0.249  0.044    0.255    0.241
+## 10 -0.278 -0.128   -0.041    0.177
+## 30 -0.928 -0.991   -0.966   -0.954
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plotContr}\NormalTok{(contr, }\AttributeTok{xlab =} \StringTok{"Dose"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"Contrast coefficients"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{try-to-simulate_files/figure-latex/unnamed-chunk-13-1.pdf}
+
+\hypertarget{find-the-best-model-see-book-p.-219}{%
+\section{Find the best model (see book
+p.~219)}\label{find-the-best-model-see-book-p.-219}}
+
+Plot of estimated dose-response curve (book p.~220)/ Like plot in book
+p.221, Fig 12.2
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fitEmax }\OtherTok{\textless{}{-}} \FunctionTok{fitMod}\NormalTok{(}
+  \AttributeTok{dose =}\NormalTok{ doses\_treat,}
+  \AttributeTok{resp =}\NormalTok{ coef,}
+  \AttributeTok{S =}\NormalTok{ cov,}
+  \AttributeTok{model =} \StringTok{\textquotesingle{}emax\textquotesingle{}}\NormalTok{,}
+  \AttributeTok{type =} \StringTok{\textquotesingle{}general\textquotesingle{}}\NormalTok{,}
+  \AttributeTok{placAdj =} \ConstantTok{TRUE}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Message: Need bounds in "bnds" for nonlinear models, using default bounds from "defBnds".
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: Warum ist es wichtig, dass man placebo adjusted wählt? Was macht das für einen Unterschied?}
+\FunctionTok{plot}\NormalTok{(fitEmax)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{try-to-simulate_files/figure-latex/unnamed-chunk-14-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# plot(fitEmax, plotData = \textquotesingle{}meansCI\textquotesingle{}, CI = T, level = 0.95) ?}
+\NormalTok{aic\_emax }\OtherTok{\textless{}{-}} \FunctionTok{gAIC}\NormalTok{(fitEmax)}
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: Bei AIC erhält man einen Error: use method gAIC for type == "general" {-}{-}\textgreater{} Begründen, warum man hier also gAIC braucht!!!}
+
+\NormalTok{fitSigEmax }\OtherTok{\textless{}{-}} \FunctionTok{fitMod}\NormalTok{(}
+  \AttributeTok{dose =}\NormalTok{ doses\_treat,}
+  \AttributeTok{resp =}\NormalTok{ coef,}
+  \AttributeTok{S =}\NormalTok{ cov,}
+  \AttributeTok{model =} \StringTok{\textquotesingle{}sigEmax\textquotesingle{}}\NormalTok{,}
+  \AttributeTok{type =} \StringTok{\textquotesingle{}general\textquotesingle{}}\NormalTok{,}
+  \AttributeTok{placAdj =} \ConstantTok{TRUE}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Message: Need bounds in "bnds" for nonlinear models, using default bounds from "defBnds".
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot}\NormalTok{(fitSigEmax)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{try-to-simulate_files/figure-latex/unnamed-chunk-14-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# plot(fitSigEmax, plotData = \textquotesingle{}meansCI\textquotesingle{}, CI = T, level = 0.95)}
+\NormalTok{aic\_sigemax }\OtherTok{\textless{}{-}} \FunctionTok{gAIC}\NormalTok{(fitSigEmax) }
+
+\FunctionTok{ifelse}\NormalTok{(aic\_emax }\SpecialCharTok{\textless{}=}\NormalTok{ aic\_sigemax, }
+       \FunctionTok{paste}\NormalTok{(}\StringTok{\textquotesingle{}Emax model fits better than SigEmax regarding the gAIC values of the models.\textquotesingle{}}\NormalTok{),}
+       \FunctionTok{paste}\NormalTok{(}\StringTok{\textquotesingle{}SigEmax model fits better than Emax regarding the gAIC values of the models.\textquotesingle{}}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Emax model fits better than SigEmax regarding the gAIC values of the models."
+\end{verbatim}
+
+Preferred model is the one with the minimum AIC value./
+
+\hypertarget{find-the-best-dose-see-book-p.-220}{%
+\section{Find the best dose (see book
+p.~220)}\label{find-the-best-dose-see-book-p.-220}}
+
+Here, decreasing response is beneficial (as before)./ Find a dose that
+achieves a certain percentage of the full effect size over placebo,
+usually \(0.9\) as it is close to the plateau.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{percentage\_dose\_emax }\OtherTok{\textless{}{-}} \FunctionTok{ED}\NormalTok{(fitEmax, }\AttributeTok{p =} \FloatTok{0.9}\NormalTok{, }\AttributeTok{direction =} \StringTok{\textquotesingle{}decreasing\textquotesingle{}}\NormalTok{)}
+\NormalTok{percentage\_dose\_emax}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 22.41106
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{percentage\_dose\_sigemax }\OtherTok{\textless{}{-}} \FunctionTok{ED}\NormalTok{(fitSigEmax, }\AttributeTok{p =} \FloatTok{0.9}\NormalTok{, }\AttributeTok{direction =} \StringTok{\textquotesingle{}decreasing\textquotesingle{}}\NormalTok{)}
+\NormalTok{percentage\_dose\_sigemax}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 20.91959
+\end{verbatim}
+
+Predict the effect of more doses, e.g.~\(20\) and \(40\) (book p.~220)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pred\_emax }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(fitEmax, }\AttributeTok{doseSeq =} \FunctionTok{c}\NormalTok{(}\DecValTok{20}\NormalTok{, }\DecValTok{40}\NormalTok{), }\AttributeTok{predType =} \StringTok{\textquotesingle{}effect{-}curve\textquotesingle{}}\NormalTok{, }\AttributeTok{se.fit =}\NormalTok{ T)}
+\NormalTok{pred\_emax}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## $fit
+## [1] -0.4230039 -0.5364048
+## 
+## $se.fit
+## [1] 0.03318529 0.03796724
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pred\_sigemax }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(fitSigEmax, }\AttributeTok{doseSeq =} \FunctionTok{c}\NormalTok{(}\DecValTok{20}\NormalTok{, }\DecValTok{40}\NormalTok{), }\AttributeTok{predType =} \StringTok{\textquotesingle{}effect{-}curve\textquotesingle{}}\NormalTok{, }\AttributeTok{se.fit =}\NormalTok{ T)}
+\NormalTok{pred\_sigemax }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## $fit
+## [1] -0.4345336 -0.5204961
+## 
+## $se.fit
+## [1] 0.04255250 0.05092693
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: explain why setting effect{-}curve is needed!!}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# addidional survival plots:}
+\CommentTok{\# fit \textless{}{-} survfit(Surv(time, status) \textasciitilde{} 1, data = data)}
+\CommentTok{\# plot(}
+\CommentTok{\#   fit,}
+\CommentTok{\#   conf.int = T,}
+\CommentTok{\#   main = "Kaplan{-}Meier Estimator with CI",}
+\CommentTok{\#   xlab = "Time (years)",}
+\CommentTok{\#   ylab = "Survival",}
+\CommentTok{\#   col = "blue"}
+\CommentTok{\# )}
+
+\CommentTok{\# survfit2(Surv(time, status) \textasciitilde{} 1, data = data) \%\textgreater{}\%}
+\CommentTok{\#   ggsurvfit() +}
+\CommentTok{\#   labs(x = "Years",}
+\CommentTok{\#        y = "Probability",}
+\CommentTok{\#        title = "Kaplan{-}Meier Estimator") +}
+\CommentTok{\#   add\_confidence\_interval() +}
+\CommentTok{\#   add\_risktable() +}
+\CommentTok{\#   theme(plot.title = element\_text(hjust = 0.5))}
+
+
+\CommentTok{\# survfit2(Surv(time, status) \textasciitilde{} ms\_type, data = data) \%\textgreater{}\%}
+\CommentTok{\#   ggsurvfit() +}
+\CommentTok{\#   labs(}
+\CommentTok{\#     x = "Years",}
+\CommentTok{\#     y = "Probability",}
+\CommentTok{\#     title = "Kaplan{-}Meier Estimator by Illness Type"}
+\CommentTok{\#     ) +}
+\CommentTok{\#   theme(plot.title=element\_text(hjust=0.5))}
+\end{Highlighting}
+\end{Shaded}
+
+
+\end{document}

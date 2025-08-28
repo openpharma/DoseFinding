@@ -1,0 +1,233 @@
+---
+title: "Simulation Part"
+author: "Xiaofei Bai"
+date: "2025-06-25"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+rm(list=ls())
+
+library(DoseFinding, lib.loc = "~/RStudio/packages")
+library(survival)
+```
+
+
+```{r}
+#----------------------------------------------
+# Generate data from exponential distribution 
+# 6 scenarios of true beta:
+#      linear, Emax 1, Emax 2, Emax 3, 
+#      exponential, logistic
+#----------------------------------------------
+
+# lambda: hazard rate
+# beta: log hazard rate
+
+
+dose = c(0, 5, 25, 50, 100) # 4 doses + placebo
+ngrp=length(dose)
+surv0=0.5   ## Median survival for control; years (median survival time for the control group).
+
+
+sim.all <- function(HR, n, n.run, etotal)
+  
+{
+  set.seed(834)
+  # Baseline Hazard Rates
+  surv1=surv0/HR  # surv 1 =  Median survival for Treatment arm = Median survival for Control arm  / HR = 0.6 for optimal dose here
+  lambda0=log(2)/surv0 #  hazard rate for Control/Placebo group
+  lambda1=log(2)/surv1 #  hazard rate for Treatment group
+  # log(lambda0) and log(lambda1) are the mean responses of placebo and the optimal dose within the dose range
+  #  log(lambda0) - log(lambda1) = treatment difference
+  
+  # Define Dose-Response Models
+  emax1 <- guesst(d=dose[4],p=0.5,model="emax")
+  emax2 <- guesst(d=dose[3],p=0.8,model="emax")
+  exp <- guesst(d=dose[4],p=0.1,model="exponential",Maxd=dose[ngrp])
+  logit <- guesst(d=c(dose[3],dose[4]),p=c(0.1,0.8),"logistic",Maxd=dose[ngrp])
+  betam1 <- guesst(d=dose[2],p=0.3,"betaMod", scal=120, dMax=50, Maxd=dose[ngrp])
+  
+  # Combine Models into One Object
+  models1 <- Mods(emax=c(emax1, emax2),
+                  linear=NULL,
+                  exponential=c(exp),
+                  logistic=c(logit),
+                  betaMod=c(betam1), # non-monotone dose-response relationship
+                  doses=dose,direction=c("decreasing"), # because longer survival times corresponds to lower hazards
+                  placEff=log(lambda0), maxEff=(log(lambda1)-log(lambda0))) 
+  
+  plot(models1)
+  
+  
+  y0=getResp(models1, doses=dose) # mean responses for each dose level based on a dose-response model (Mods)
+  y=y0[1:dim(y0)[1],] # matrix of predicted responses for each dose level under each model
+  y # log hazard rates
+  
+  # exp(y0) gives the hazard rates corresponding to predicted responses, Survival times are then computed based on the hazards
+  survtall=log(2)/exp(y0[1:dim(y0)[1],]) # Convert Predicted Responses to Median Survival Times
+  survtall # response and median survival times 
+  lambda=exp(y0[1:dim(y0)[1],]) # hazard rates
+  
+  nshape=dim(y0)[2]
+  plot(dose, survtall[,1], type='l', ylab='median survival (years)')
+  for (i in 2:nshape) lines(dose,survtall[,i])
+  
+  # log hazard rates for different models at each dose group
+  beta0 <- rep(log(lambda0), ngrp)
+  beta1 <- log(lambda[, 1]) # == erste Spalte aus y
+  beta2 <- log(lambda[, 2])
+  beta3 <- log(lambda[, 3])
+  beta4 <- log(lambda[, 4])
+  beta5 <- log(lambda[, 5])
+  beta6 <- log(lambda[, 6]) # log hazard rates
+
+  
+  ########################################################################
+  #########  Power vs sample size plot under different models  ###########
+  ########################################################################
+  
+  
+  ## table 3
+  beta.all=rbind(beta0, beta1, beta2, beta3, beta4, beta5, beta6)
+  ##Simulate data from exp(beta), different beta for different dose group and set up null and
+  ##alternate hypothesis in terms of coefficient of cox model
+  ##Fit Cox PH model, obtain coeff for each dose group(placebo adjusted) and Var-cov matrix
+  ##Run MCPMod analysis
+  ##Repeat 10,000 times per case, calculate Type I, II error
+  
+  
+  # Power Evaluation
+  sim.mcpmod=function(beta, model, dose, n, n.run, etotal) 
+  {
+    
+    doses = rep(dose,n) #doses
+    test.beta = rep(beta, n) # true mean response for each dose, true beta for expo, log hazard rates
+    out.cox = numeric(n.run) 
+    out.mcpmod = numeric(n.run)
+    coef.out<- matrix(0, ncol=(ngrp-1), nrow=n.run)
+    cov.out<- array(dim=c(n.run, (ngrp-1), (ngrp-1)))
+    n.observe.event <- matrix(NA, ngrp, n.run)
+    for (i in 1:n.run) 
+    {
+      # Simulate survival data using an exponential distribution with the true hazard rates (test.beta)
+      # no drop out
+      t <- rexp(length(test.beta), exp(test.beta)) # Simulate survival data from exponential with some beta's
+      t.cut <- sort(t)[etotal] # this is the time cutoff when etotal of event being observed
+      c <- rep(t.cut, length(test.beta))
+      u <- pmin(c, t)
+      delta <- (t <= c)
+      test.data <- data.frame(doses=doses, u=u, delta=delta)
+      n.observe.event[, i] <- aggregate(test.data, by=list(doses), FUN="sum")[,'delta']
+      
+      # run Cox PH Model
+      # Fit the Cox Proportional Hazards model to the survival data. Evaluates whether the treatment has a significant effect on survival
+      cox <- coxph(Surv(u, delta)~factor(doses)) 
+      coef <- cox$coefficients # to get beta hat
+      cov <- cox$var # to get S hat
+      if ((summary(cox)$logtest)['pvalue'] < 0.1) out.cox[i]=1
+      
+      dose_adj <- dose[-1]
+      
+      #    dfe <- MCPMod(dose_adj, coef, S = cov, models= models1, type = 'general', 
+      #                  selModel = "aveAIC", placAdj = TRUE ) # MCPMod with general option
+      
+      # no model selection, just multiple comparison test only
+      # Evaluate dose-response relationships using the MCPMod approach. Tests for significant differences across doses
+      dfe <- MCTtest(dose_adj, coef, S = cov, models= models1, type = 'general',
+                     alternative = "one.sided", placAdj = TRUE ) # MCPMod with general option
+      
+      if (min(attr(dfe$tStat,"pVal")) <= 0.05) out.mcpmod[i]=1 # Indicator of positive or negative trial
+      
+      # if (i%%1000==0) print(i)
+      coef.out[i,]<- as.vector(coef)
+      cov.out[i,,] <- as.vector(cov)
+    }
+    
+    power.cox <- sum(out.cox/n.run)  # Proportion of trials where Cox PH model detects a difference
+    power.mcpmod <- sum(out.mcpmod/n.run) # Proportion of trials where MCPMod detects a difference
+    
+    
+    
+    out <- list(power.cox = power.cox, power.mcpmod = power.mcpmod, 
+                n.observe.event = n.observe.event, coef.out=coef.out,
+                cov.out=cov.out, out.mcpmod = out.mcpmod)
+    return(out)
+  }
+
+  
+  o.Null=sim.mcpmod(beta=beta.all[1, ], model=models1, dose, n, n.run, etotal)
+  o.emax1=sim.mcpmod(beta=beta.all[2, ], model=models1, dose, n, n.run, etotal)
+  o.emax2=sim.mcpmod(beta=beta.all[3, ], model=models1, dose, n, n.run, etotal)
+  o.linear=sim.mcpmod(beta=beta.all[4, ], model=models1, dose, n, n.run, etotal)
+  o.exponential=sim.mcpmod(beta=beta.all[5, ], model=models1, dose, n, n.run, etotal)
+  o.logistic=sim.mcpmod(beta=beta.all[6, ], model=models1, dose, n, n.run, etotal)
+  o.betaMod=sim.mcpmod(beta=beta.all[7, ], model=models1, dose, n, n.run, etotal)
+  
+  
+  
+  out.all=cbind(o.Null, o.emax1, o.emax2, o.linear, o.exponential, o.logistic, o.betaMod)
+  
+  
+  return(list(out.all = out.all, avg.power = mean(as.numeric(out.all[2,-1])), 
+              emp.cov.null = var((out.all[4, 'o.Null'])[[1]]),
+              avg.cov.null = apply(((out.all[5, 'o.Null'])[[1]]), c(2,3), mean),
+              emp.cov.emax1 = var((out.all[4, 'o.emax1'])[[1]]),
+              avg.cov.emax1 = apply(((out.all[5, 'o.emax1'])[[1]]), c(2,3), mean),
+              emp.cov.emax2 = var((out.all[4, 'o.emax2'])[[1]]),
+              avg.cov.emax2 = apply(((out.all[5, 'o.emax2'])[[1]]), c(2,3), mean),
+              emp.cov.linear = var((out.all[4, 'o.linear'])[[1]]),
+              avg.cov.linear = apply(((out.all[5, 'o.linear'])[[1]]), c(2,3), mean),
+              emp.cov.exponential = var((out.all[4, 'o.exponential'])[[1]]),
+              avg.cov.exponential = apply(((out.all[5, 'o.exponential'])[[1]]), c(2,3), mean),
+              emp.cov.logistic = var((out.all[4, 'o.logistic'])[[1]]),
+              avg.cov.logistic = apply(((out.all[5, 'o.logistic'])[[1]]), c(2,3), mean),
+              emp.cov.betaMod = var((out.all[4, 'o.betaMod'])[[1]]),
+              avg.cov.betaMod = apply(((out.all[5, 'o.betaMod'])[[1]]), c(2,3), mean)
+  ))
+  # emp.cov: empirical covariance
+  # avg.cov: average over covariance matrix across n.run simulations
+}
+```
+
+
+```{r}
+# res.test <- sim.all(HR = 0.6, n = 72, n.run = 10, etotal = 235)
+# res.test
+
+# HR: hazard reduced by treatment
+
+res.3 <- sim.all(HR = 0.3, n = 18, n.run = 100, etotal = 47) # small number of individuals per dose group
+res.3
+
+res.4 <- sim.all(HR = 0.4, n = 27, n.run = 10000, etotal = 79) # in paper
+res.4 
+
+res.5 <- sim.all(HR = 0.5, n = 43, n.run = 10000, etotal = 134)
+res.5
+
+res.6 <- sim.all(HR = 0.6, n = 75, n.run = 10000, etotal = 242) # example from the paper!!!!
+res.6
+# 75 patients in each dose group
+# required 242 total number of events 
+
+res.7 <- sim.all(HR = 0.7, n = 145, n.run = 10000, etotal = 490)
+res.7
+
+res.8 <- sim.all(HR = 0.8, n = 357, n.run = 10000, etotal = 1240) # in paper
+res.8
+
+res.62 <- sim.all(HR = 0.6, n = 75, n.run = 100, etotal = 242) # example from the paper!!!!
+res.62
+
+```
+
+```{r}
+res.mine <- sim.all(HR = 0.3, n = 18, n.run = 100, etotal = 47)
+res.mine
+```
+

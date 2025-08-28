@@ -1,0 +1,533 @@
+---
+title: "Performance Metrics for Sample Size Calculation in Dose-Response Studies"
+format: html
+bibliography: references.bib
+editor: visual
+---
+
+```{r Setup, echo = FALSE, warning = FALSE, message = FALSE}
+# Load packages
+library("DoseFinding")
+library("dplyr")
+library("ggplot2")
+library("here")
+```
+
+In this vignette, we propose a performance metric (<span style="color:red; font-weight:bold;">insert name of metric here</span>) that accounts for the precision of the estimated dose-response curve, specifically focusing on the reliability of target dose estimation (e.g., $ED_{90}$). Incorporating this metric into sample size calculations for Phase II trials can ensure accurate dose selection for subsequent phases, allowing to balance efficacy and safety considerations.
+
+## Motivation
+
+Traditionally, sample size determination for dose-finding trials to be analysed with the MCP-Mod methodology are based on the MCP-part of MCP-Mod (that is, the dose-response trend test vs. placebo). This approach enables selecting a sample size that ensures a specific power (e.g., 90%) is achieved under defined alternatives, given a specified Type I error rate [@pinheiro2006design]. The [corresponding vignette describes this sample size calculation method more in detail](https://cran.r-project.org/web/packages/DoseFinding/vignettes/sample_size.html).
+
+The purpose of dose-finding trials, however, is not only to assess whether any dose achieves a better response over the placebo group. In case an effect can be established, it is important to estimate the dose-response curve precisely, to be able to make informed decisions about dose-selection for Phase III. The sample size required for adequate accuracy of estimation of a target dose (e.g. the smallest dose achieving a relevant improvement over placebo) is usually several-fold higher than the sample size needed to have adequate power for the MCP-part. This should not come as a surprise, as dose-estimation is primarily a comparison among the investigational doses, while the MCP-part establishes an effect versus placebo.
+
+Here, we propose a metric that assesses the reliability of the estimated dose of interest. This criterion is described in Chapter 12 of [@pinheiro2017designing]). <span style="color:red; font-weight:bold;">maybe be more specific here</span>
+
+## Background on dose-response models
+
+A dose-response model, $f(x)$, represents the relationship between the dose $x$ of a drug and the magnitude of its efficacy response, typically assumed to follow a monotonic trend. In these models, $x = 0$ usually corresponds to the placebo dose, with $f(0)$ representing the placebo effect. The term $f(d_{max}) - f(0)$ captures the maximum effect observed *within the studied dose range*, where $d_{max}$ is the dose yielding the highest efficacy in the study. For monotonic dose-response models, $d_{max}$ is simply the highest dose used in the study design.
+
+### Definition of $ED_p$
+
+$ED_p$ is defined the same as in the R package [DoseFinding](https://cran.r-project.org/web//packages/DoseFinding/DoseFinding.pdf). Specifically, it represents the dose that achieves a certain percentage $p$ of the full effect size (*within the observed dose-range*) relative to placebo. If multiple doses meet this criterion, the smallest is chosen.
+
+Mathematically, this is defined as:
+
+$$EDp = min\{x|f(x) > f(0) + p(f(d_{max}) − f(0))\}, \; p\in(0,1)$$
+
+where $f(x)$ is the dose-response function, $f(0)$ is the placebo effect, and $f(d_{max})$ is the maximum observed effect within the dose range.
+
+It is important to note that this definition differs from the traditional definition based on the Emax model, where $ED_p$ is calculated relative to the asymptotic maximum effect rather than the maximum effect within the observed dose-range.
+
+<span style="color:red; font-weight:bold;">explain that % will thus be sensitive to the doses that were picked. maybe also explain that we use this definition since some models do not have an asymptotic emax (eg expoential) and thus we need a definition that can be applicable accross all models.</span>
+
+The figure below compares the asymptotic Emax to the dose-range Emax:
+
+```{r Plot-EDp_doserange, fig.height=6, fig.width=13, echo = FALSE, warning = FALSE, message = FALSE}
+source(here::here("vignette_plots.R"))
+EDp_doserange_plot
+```
+
+Both plots use an Emax model with $ED_{50}$ = 10, but the left plot has a maximal dose of 100, and the right plot a maximal dose of 30. The asymptotic Emax and $ED_{90}$ (purple) are the same in both, since the underlying model does not change. However, the dose-range Emax and $ED_{90}$ (blue) differ because the maximum observed dose is different. This highlights the importance of choosing doses that span both the lower and upper parts of the dose-response curve.
+
+### Dose selection - $ED_{90}$
+
+In practice, a dose-response curve for safety also exists, and it is typically monotonic. However, Phase II trials may not be capable of observing all key safety events due to the rarity of certain occurrences. As a result, there is often a preference for selecting a dose that nearly achieves maximum efficacy while avoiding unnecessary risk or excessively high doses. For instance, one might choose the dose corresponding to 90% of maximum efficacy within the observed dose range ($ED_{90}$).
+
+## Proposed criterion: Efficacy range probability (ERP) (name of criterion can be changed)
+
+### Definition of ERP
+
+To assess the reliability of $ED_{90}$ estimation, it is useful to examine how frequently the dose identified as $\widehat{ED_{90}}$ produces reasonable efficacy (not substantially below maximum) without being unnecessarily high. One metric for this is the **probability that the estimated** $ED_{90}$ falls within the range of doses achieving between 75% and 97% of maximum efficacy in truth:
+
+$$P(ED_{75} \leq \widehat{ED_{90}} \leq ED_{97})$$
+
+<span style="color:red; font-weight:bold;">here add additional justification as to why $ED_{75}$ and $ED_{97}$ could be appropriate and maybe cases in which a different range could be appropriate. (1) why $ED_{90}$?, (2) Why the $ED_{75}$-$ED_{97}$ range and when/why/how to change these limits?, (3) How to interpret?, (4) What values do we want and why? .</span>
+
+### Plot & interpretation of the criterion
+
+The figure below illustrates the ERP criterion for various dose-response models. The red curve is the true dose-response function, with black dots marking the dose levels. Blue lines indicate the true $ED_{75}$ and $ED_{97}$ (within the dose range), and the purple line shows the true $ED_{90}$. The ERP is the probability that, if the model is correct, the estimated $ED_{90}$ lies between the true $ED_{75}$ and $ED_{97}$:
+
+<span style="color:red; font-weight:bold;">note to myself: need to check the code, the range for the beta model is wrong. also maybe make the red curve that goes beyond the maximal dose more transparent, like was done in the earlier plots. </span>
+
+```{r Plot-EDp_difmodels, fig.height=25, fig.width=15, echo = FALSE, warning = FALSE, message = FALSE}
+source(here::here("vignette_plots.R"))
+plot_theoretical_ped
+```
+
+It is interesting to note that this probability depends on the steepness of the curve. Steep models, like sigEmax or exponential, have narrower ranges and increase the chance that the estimated $ED_{90}$ falls outside the target interval.
+
+### Calculation of ERP via simulations
+
+The ERP is calculated using simulations rather than asymptotic approximations, which can be unreliable for accurately estimating performance metrics.
+
+<span style="color:red; font-weight:bold;">not sure i've super well understood why simulation methods are better than asymptotic approximations.</span>
+
+For a chosen model, power, and sample size, we simulate data assuming the model is correct. We then fit the model to each simulated dataset and estimate the $ED_{90}$. The ERP is the percentage of simulations where the estimated $ED_{90}$ falls between the true $ED_{75}$ and $ED_{97}$.
+
+The next section provides more details on the simulation procedure.
+
+<span style="color:red; font-weight:bold;">add more details? maybe here justify why parametric bootstrapping is used? </span>
+
+### Impact of curve steepness
+
+As mentioned earlier, the steepness of the dose-response curve affects the ERP by influencing the width of the true $ED_{75}$–$ED_{97}$ range.
+
+The figure below demonstrates this effect. Both panels use the same doses, sample size, standard deviation, and effect sizes, but they differ in the underlying model: the left shows an Emax model, the right a steeper sigmoid Emax model. Gray lines represent estimated dose-response curves from simulations, and gray dots show the estimated $ED_{90}$ values:
+
+<span style="color:red; font-weight:bold;">in the figure add info on the doses used.</span>
+
+```{r Plot-EDp_steepness, fig.height=6, fig.width=15, echo = FALSE, warning = FALSE, message = FALSE}
+source(here::here("vignette_plots.R"))
+plot_ped_steepness
+```
+
+Although the variability in the responses is equal, 80% of Emax simulations produced an $ED_{90}$ within the target range, compared to only 54% for the sigmoid Emax model.
+
+### Other practical considerations
+
+<span style="color:red; font-weight:bold;">Potential things to mention:</span>
+
+<span style="color:red; font-weight:bold;">-   since we consider the observed dose range and not the maximum effect based on that model (in case we have non asymptotic models), the doses should be chosen such that they cover a wide enough range of responses (some in the plateau, some at the beginning/close to placebo)</span>
+
+<span style="color:red; font-weight:bold;">-   maybe say that instead of $ED_{75}$, $ED_{90}$, and $ED_{97}$, it would be possible to have $ED_{25}$, $ED_{50}$, $ED_{75}$ (to characterize accurately the increasing part of the dose-response function) -\> if the middle part of the dose-response function is accurate then we can assume that the rest of the dose-response curve is also quite accurate (this was written in the big)</span>
+
+<span style="color:red; font-weight:bold;">-   Maybe mention different types of outcomes, e.g. not only with the outcome being a response but also toxicity. When focusing on efficacy -\> lower bound of interval is of greater importance. When focusing on safety -\> upper bound is more important. Thus it is also important to quantify the tendency of the model to over or underestimate the true effect.</span>
+
+## Evaluation with continuous outcome
+
+### Background on simulation method
+
+<span style="color:red; font-weight:bold;">maybe here explain the bootstrapping thing, the general steps in the simulation. Maybe this should go more into the theory. point to cover: (1) this is a parametric simulation, (2) define the true models of interest and the doses and power of interest, (3) based on the power of interest and candidate models, calculate the sample size required, (4) determine the true response according to each candidate model, (5) for each simulation, generate data based on the model and extract the estimated mean response and standard deviation from the model, (6) from these estimated parameters, generate 1000 bootstrapped samples. for each of these samples, candidate models are fitted and the one with lowest AIC is chosen. then, median is taken over these 1000 samples to get a prediction for that simulation.</span>
+
+### Simulation set-up and functions
+
+The following parameters are required for the simulation:
+
+- `cand_mod_list` List of candidate models, compatible with `DoseFinding::Mods`
+- `doses` Doses to use
+- `powers` Powers of interest for test
+- `alpha` Type 1 error for test
+- `sd` Assumed standard deviation of response
+- `max_eff` Maximum response
+- `plac_eff` Response at placebo
+- `models` Type of models to try to fit generated data to (maybe get rid of this?)
+
+Optional parameters include:
+
+- `parallel` If simulation should be carried out via parallelization (by default TRUE)
+- `nsim` Number of simulations (by default 1000)
+- `nboot` Number of bootstrap samples (per simulation, by default 1000)
+- `n_jobs` Number of jobs for parallelization (by default 1000)
+
+The code below implements the simulation and ERP assessment. It can be adapted for different scenarios:
+
+<span style="color:red; font-weight:bold;">figure out how to print the code from a different R file. for now I just copy pasted =)</span>
+
+```{r Functions-simulation-continuous, echo = TRUE, warning = FALSE, message = FALSE}
+##--------------------------------------------------##
+##  Running simulation + processing resulting data
+##--------------------------------------------------##
+run_simulation <- function(doses, cand_mod_list, models, powers, max_eff, plac_eff, sd, alpha, 
+                           parallel = TRUE, nsim = 1000, nboot = 1000, n_jobs = 1000) {
+  
+  cal_Edx <- function(mu_all, doses, n, sim, models = models, trueModelii, sd, nboot) {
+    library("DoseFinding", lib = "~/Documents/projects/MCP-Mod/rlib")
+    
+    # Generate data based on dose-response model
+    set.seed(2024 + sim * trueModelii * n)
+    y <- rep(mu_all[, trueModelii], n) + rnorm(n = n * length(doses), mean = 0, sd = sd)
+    fitlm <- lm(y ~ factor(doses) - 1, data = data.frame(y = y, doses = rep(doses, n)))
+    mu_hat <- coef(fitlm)
+    S_hat <- vcov(fitlm)
+    
+    # From fitted model, generate parametric bootstrap samples
+    boots <- maFitMod(dose = doses, resp = mu_hat, S = S_hat, models = models, nSim = nboot, bnds = defBnds(max(doses)))
+    
+    # Find the estimated ED90 from the bootstrapped samples
+    ED90 <- ED(boots, p = 0.90, doses = doses, direction = "increasing")
+    
+    # Create dataframe with results
+    data.frame(true_model = trueModelii, sim = sim, ED90 = ED90, n = n)
+  }
+  
+  ## Setup doses, models, and grid 
+  allocation <- rep(1, length(doses))  # Equal allocation between doses
+  addArgs <- list(off = 3, scal = 360) # Offset/scaling arguments for models
+  mvt_control <- mvtnorm.control(maxpts = 30000, abseps = 0.001, releps = 0) # Numerical integration control
+  
+  ## Define candidate dose-response models and create grid
+  mods <- do.call(Mods, append(cand_mod_list, list(maxEff = max_eff, doses = doses, placEff = plac_eff, addArgs = addArgs)))
+  cont_mat <- optContr(mods, w = allocation)
+  grd <- expand.grid(max_eff = max_eff, sd = sd, target_power = powers)
+  
+  ## Sample size calculation
+  samp_size_list <- vector("list", nrow(grd))
+  for (i in 1:nrow(grd)) {
+    alt_mods <- do.call(Mods, append(cand_mod_list, list(maxEff = grd$max_eff[i], doses = doses, placEff = plac_eff, addArgs = addArgs)))
+    tryCatch({
+      ### CHANGE THE UPPER N THING?????? !!! ###
+      tmp <- sampSizeMCT(upperN = 80, contMat = cont_mat, sigma = grd$sd[i], altModels = alt_mods,
+                         power = grd$target_power[i], alRatio = allocation, alpha = alpha, control = mvt_control, sumFct = min)
+      dat_size <- tmp$samp.size
+      names(dat_size) <- paste0("D", doses)
+      samp_size_list[[i]] <- data.frame(as.list(c(max_eff = grd$max_eff[i], sd = grd$sd[i], 
+                                                  target_power = grd$target_power[i], actual_power = tmp$target, dat_size)))
+    },
+    error = function(e) {
+      message(sprintf('Input parameters caused an error, maxEff = %.3f, sd = %.3f, targetPower = %.2f.', grd$max_eff[i], grd$sd[i], grd$target_power[i]))
+    })
+  }
+  samp_size <- as.data.frame(do.call("rbind", samp_size_list))
+  samp_size$n_total <- rowSums(samp_size[, grep("D", colnames(samp_size))])
+  
+  ns <- samp_size$D0
+  mu_all <- getResp(mods, doses = doses)
+  
+  var_comb <- expand.grid(sim = 1:nsim, trueModelii = 1:ncol(mu_all), n = ns)
+  
+  ## Parallelization
+  if (parallel) {
+    res <- clustermq::Q_rows(fun = cal_Edx,
+                             df = var_comb,
+                             const = list(mu_all = mu_all, doses = doses, sd = sd, models = models, nboot = nboot), 
+                             export = list(ns = ns),
+                             pkgs = c("mvtnorm"),
+                             n_jobs = min(n_jobs, nrow(var_comb)))
+  } else {
+    ### MAYBE DO A FOR LOOP HERE !!! ###
+    res <- lapply(1:nrow(var_comb), function(idx) {
+      cal_Edx(mu_all = mu_all, doses = doses, n = var_comb$n[idx], sim = var_comb$sim[idx], 
+              trueModelii = var_comb$trueModelii[idx], sd = sd, models = models, nboot = nboot)
+    })
+    res <- do.call(rbind, res)
+  }
+  
+  list(mods = mods, sample_sizes = samp_size, edx_results = res)
+}
+process_data <- function(res, doses, EDp = 0.90, EDlb = 0.75, EDub = 0.97){
+  ## Extract simulation output
+  mods <- results$mods
+  ns <- results$sample_sizes
+  df <- results$edx_results
+  
+  ## Create nice labels for plotting 
+  scenarios <- colnames(getResp(mods, doses))
+  labels <- DoseFinding:::getModNams(attr(getResp(mods, doses), "parList"))
+  names(labels) <- scenarios 
+  
+  ## True EDps
+  ED75s <- ED(mods, p = EDlb)
+  ED90s <- ED(mods, p = EDp)
+  ED97s <- ED(mods, p = EDub)
+  
+  ## Prepare data
+  df_raw <- df %>% bind_rows() %>%
+    mutate(true_ED75 = ED75s[true_model],    # Map true ED75 values to rows
+           true_ED90 = ED90s[true_model],    # Map true ED90 values to rows
+           true_ED97 = ED97s[true_model],    # Map true ED97 values to rows
+           in_range = ED90 >= true_ED75 & ED90 <= true_ED97,  # Check if ED90 is in true range
+           below_ED75 = ED90 < true_ED75,    # Check if ED90 is below true ED75
+           above_ED97 = ED90 > true_ED97,    # Check if ED90 is above true ED97
+           na = is.na(ED90),
+           
+           scenario = scenarios[true_model], 
+           model_label = factor(labels[scenario], levels = labels)) %>%
+    
+    left_join(ns %>% dplyr::select(n = D0, target_power, actual_power),
+              by = "n") # Add information on power achieved at each sample size
+  
+  ## Summarize data by type of model and sample size
+  df_aggregated <- df_raw %>%
+    group_by(model_label, n, target_power, actual_power) %>%
+    summarize(p_in_range = mean(in_range, na.rm = TRUE), # IGNORE THE NAS FOR NOW
+              p_under75 = mean(below_ED75, na.rm = TRUE),
+              p_above97 = mean(above_ED97, na.rm = TRUE),
+              missings = mean(na),
+              .groups = "drop") %>%
+    arrange(model_label, n)
+  
+  return(list(raw = df_raw,
+              agg = df_aggregated))
+}
+
+##--------------------------------------------------##
+##  Tables
+##--------------------------------------------------##
+make_tbls <- function(df, include_missing = FALSE){
+  raw_df <- df[["raw"]]
+  agg_df <- df[["agg"]]
+  
+  df1 <- agg_df %>%
+    mutate(`Target power` = sprintf("%.1f%%", 100*target_power),
+           `Actual power` = sprintf("%.1f%%", 100*actual_power),
+           `% In-range` = sprintf("%.1f%%", 100*p_in_range),
+           `% Underestimated` = sprintf("%.1f%%", 100*p_under75),
+           `% Overestimated` = sprintf("%.1f%%", 100*p_above97),
+           `% Missings` = sprintf("%.1f%%", 100*missings))
+  # Table with information on P(ED90)/ and over/under-estimation
+  tbl1 <- df1 %>%
+    dplyr::select(Model = model_label, `Target power`, `Actual power`,
+                  `Sample size (per arm)` = n, `% In-range`, `% Underestimated`, 
+                  `% Overestimated`, `% Missings`) %>%
+    gt() %>%
+    # If include_missing argument is true, add information on missing values 
+    # (ED90s that were not able to be estimated since the curve was not estimated 
+    # correctly as increasing or decreasing)
+    { if(!include_missing) cols_hide(., columns = "% Missings") else . } %>%
+    cols_align(align = "center", columns = -Model) %>%
+    tab_header(title = md("**ED90 Estimation Performance**"),
+               subtitle = md( "By model, target vs. actual power, and sample size"))
+
+  tbl2 <- raw_df %>%
+    select(Model = model_label,
+           `True ED75` = true_ED75,
+           `True ED90` = true_ED90,
+           `True ED97` = true_ED97) %>%
+    distinct() %>%
+    gt() %>%
+    cols_align(align   = "center", columns = everything()) %>%
+    fmt_number(columns = c(`True ED75`, `True ED90`, `True ED97`),
+      decimals = 2) %>%
+    tab_header(title    = md("**Theoretical EDp Values**"),
+      subtitle = md("Unique true ED75, ED90, and ED97 per model"))
+  
+  return(list(t_range = tbl1,
+         t_theoretical = tbl2))
+}
+
+##--------------------------------------------------##
+##  Plots
+##--------------------------------------------------##
+make_plts <- function(df) {
+  raw_data <- df[["raw"]]
+  agg_data <- df[["agg"]]
+  
+  p1_df <- agg_data %>%
+    dplyr::select(model_label, n, p_in_range, actual_power) %>%
+    pivot_longer(c(p_in_range, actual_power),
+                 names_to  = "metric",
+                 values_to = "prob") %>%
+    mutate(type = if_else(metric == "actual_power", "Power of detection",
+                          "ED90 in [ED75,ED97]"),
+           label = if_else(metric == "actual_power", "Actual power",
+                           as.character(model_label)))
+  scenarios <- unique(p1_df$label[p1_df$label != "Actual power"])
+  mycol <- setNames(hue_pal()(length(scenarios)), scenarios)
+  mycol["Actual power"] <- "black"
+  p1 <- ggplot(p1_df, aes(n, prob, color = label, linetype = type, group = label)) +
+    geom_line(linewidth = 1.2) +
+    scale_colour_manual(name = "Model", values = mycol, breaks = scenarios) +
+    scale_linetype_discrete(name = "Metric") +
+    scale_y_continuous(labels = percent_format(accuracy = 1)) +
+    labs(x = "Sample size per arm", y = "Percentage (%)", color = "Model", linetype = "Metric",
+         title = "P(ED90) vs. Sample Size") +
+    theme_bw(base_size = 14) +
+    theme(plot.title = element_text(face = "bold", hjust = 0.5),
+          legend.position = "bottom",
+          legend.title = element_text(face = "bold", hjust = 0.5),
+          legend.text = element_text(size = 10)) +
+    guides(color = guide_legend(title.position = "top", title.hjust = 0.5, ncol = 2),
+           linetype = guide_legend(title.position = "top", title.hjust = 0.5, ncol = 1))
+  
+  p2_df <- raw_data %>%
+    mutate(panel_txt = paste0("n = ", n, ", power = ", percent(actual_power, accuracy = 1)),
+           panel = factor(panel_txt, levels = unique(panel_txt[order(n)])))
+  seg_df <- p2_df %>%
+    dplyr::select(model_label, n, panel, true_ED75, true_ED97, true_ED90) %>%
+    distinct()  %>%
+    left_join(agg_data %>% select(model_label, n, p_in_range), 
+              by = c("model_label","n")) %>%
+    mutate(pct_in = sprintf("%1.0f%%", 100*p_in_range))
+  p2 <- ggplot(p2_df, aes(x = model_label, y = ED90)) +
+    #geom_beeswarm(size = 1.2, alpha = 0.5, show.legend = FALSE, color = "gray") +
+    geom_jitter(width = 0.25, size = 1.2, alpha = 0.1, show.legend = FALSE, color = "gray") +
+    geom_errorbar(data = seg_df, aes(x = model_label, ymin = true_ED75, ymax = true_ED97),
+                  inherit.aes = FALSE, width = 0.3, color = "black", linewidth = 1) + 
+    geom_point(data = seg_df, aes(x = model_label, y = true_ED90), color = "red", 
+               size = 3, show.legend = FALSE) + 
+    geom_text(data = seg_df, inherit.aes = FALSE,
+              aes(x = model_label, y = true_ED90, label = pct_in),
+              nudge_x = 0.35, nudge_y = -0.9, vjust = 0.5, size = 3, color = "darkred") +
+    facet_wrap(~ panel) + 
+    labs(title = "Distribution of Estimated ED90 by Model",
+         x = "Model",
+         y = "Estimated ED90") +
+    theme_bw(base_size = 14) +
+    theme(plot.title = element_text(face = "bold", hjust = 0.5),
+          strip.text = element_text(face = "bold"),
+          axis.text.x = element_text(angle = 45, hjust = 1))
+  
+  p3_df <- p2_df %>%
+    mutate(category = case_when(ED90 < true_ED75 ~ "< ED75",
+                                ED90 <= true_ED97 ~ "ED75–ED97",
+                                TRUE ~ "> ED97"),
+           category = factor(category, levels = rev(c("< ED75", "ED75–ED97", "> ED97"))))  %>%
+    group_by(panel, model_label, category) %>%
+    summarize(count = n(), .groups = "drop_last") %>%
+    mutate(prop = count / sum(count)) %>%
+    ungroup()
+  p3 <- ggplot(p3_df, aes(x = model_label, y = prop, fill = category)) +
+    geom_col(position = "stack", color = "grey20") +
+    geom_text(aes(label = percent(prop, 1)),
+              position = position_stack(vjust = 0.5),
+              size = 3, color = "white") +
+    facet_wrap(~ panel) + 
+    scale_y_continuous(labels = percent_format(1)) +
+    scale_fill_manual(name = "True range", values = c(`< ED75` = "#cb181d",
+                                                      `ED75–ED97` = "#74c476",
+                                                      `> ED97` = "#d95f0e")) +
+    labs(title = "Proportion of ED90 Estimates Relative to True Bounds",
+         x = NULL,
+         y = "Percent of simulations") +
+    theme_bw(base_size = 14) +
+    theme(plot.title = element_text(face = "bold", hjust = 0.5),
+          strip.text = element_text(face = "bold"),
+          axis.text.x = element_text(angle = 45, hjust = 1),
+          legend.position = "bottom",
+          legend.title = element_text(face = "bold", hjust = 0.5)) + 
+    guides(fill = guide_legend(title.position = "top"))
+  
+  
+  list(inrange_vs_power = p1,
+       ed90_distribution = p2,
+       categorical_props = p3)
+}
+```
+
+### Example usage
+
+<span style="color:red; font-weight:bold;">Should I explain the figures in great detail?</span>
+
+These functions can be used as follows:
+
+```{r Load-packages, echo = FALSE, warning = FALSE, message = FALSE}
+library("tidyr")
+library("dplyr")
+library("mvtnorm")
+library("gt")
+library("scales")
+library("stringr")
+library("ggplot2")
+library("DoseFinding", lib = "~/Documents/projects/MCP-Mod/rlib")
+```
+
+```{r Example-continuous, echo = TRUE, message  = FALSE, warning = FALSE, cache = TRUE}
+library("DoseFinding", lib = "~/Documents/projects/MCP-Mod/rlib")
+library("tidyr")
+library("dplyr")
+library("mvtnorm")
+library("gt")
+library("scales")
+library("stringr")
+library("ggplot2")
+
+## Define parameters
+cand_mod_list <- list(emax = c(17, 80, 200), sigEmax = rbind(c(77, 3), c(175, 1.5)))
+doses <- c(0, 25, 100, 300)
+powers <- c(0.6, 0.7, 0.8, 0.9)
+alpha <- 0.025
+sd <- 2.6
+max_eff <- 1
+plac_eff <- 0
+models <- c("emax", "sigEmax") # ?replace/remove this argument?
+
+## Run the simulation
+results <- run_simulation(doses = doses, cand_mod_list = cand_mod_list, models = models, 
+                          power = powers, max_eff = max_eff, plac_eff = plac_eff, sd = sd, 
+                          alpha = alpha)
+
+## Get clean data with summary statistics
+clean_df <- process_data(results, doses)
+
+## Create tables and plots
+tbls <- make_tbls(clean_df)
+# if only want to select specific powers
+#tbl_filt <- make_tbls(clean_df %>% filter(target_power %in% c(0.7, 0.9))) ## adapt this so the filtering is applied to all datasets
+plts <- make_plts(clean_df)
+```
+
+<span style="color:red; font-weight:bold;">list in detail what is in the output of these functions? To update/finish this once all the figures are created/finalized. </span>
+
+The `clean_df` object is a list that includes the raw simulation results and an aggregated summary by model and power/sample size, showing $ED_{90}$ estimation reliability.
+
+The `tbls` object contains two tables.
+
+The first table contains theoretical values for each model (true EDps):
+
+```{r Table-missing, echo = TRUE}
+tbls$t_theoretical
+```
+
+The second table summarizes the aggregated results. If the argument `include_missing` is set to true, the table also includes information on ED90 values that were not able to be estimated: <span style="color:red; font-weight:bold;">explain further why there could be NAs.</span>
+
+```{r Table-summary, echo = TRUE}
+tbls$t_range ## to see full table
+#tbl_filt <- tbls(clean_df$agg %>% filter(target_power %in% c(0.7, 0.9)))
+```
+
+The `plts` object is a list of plots that visualize the simulation results.
+
+The first plot is a line graph showing how the ERP changes with sample size for each model. The dashed line indicates the power to detect a dose-response signal across sample sizes:
+
+```{r Figure-lineplot, fig.width = 7, fig.height = 5, echo = TRUE, out.width = "80%"}
+plts$inrange_vs_power
+```
+
+The second plot displays the distribution of estimated ED90 values by model and sample size or power. Gray dots show the estimated ED90s, and the interval marks the model's true ED75–ED97 range:
+
+```{r Figure-scatterplot, fig.width = 7, fig.height = 7, echo = TRUE}
+plts$ed90_distribution
+```
+
+<span style="color:red; font-weight:bold;">add confidence intervals to this plot. maybe mention that for example that one sig emax model, the percentage is not gonna go up very much. </span>
+
+The third plot shows the percentage of simulations with ED90 estimates within the target range, as well as the proportions below and above that range:
+
+```{r Figure-barplot, fig.width = 7, fig.height = 7, echo = TRUE}
+plts$categorical_props
+```
+
+<span style="color:red; font-weight:bold;">still need to include this plot below inside the plotting function.</span>
+
+```{r Figure-theoretical-curves, fig.width = 13, fig.height = 13, echo = FALSE}
+## include this code inside the function !!!
+# one‐liner: build each single‐model plot with lapply(), then stitch in 2 columns
+wrap_plots(c(lapply(cand_mod_list$emax, function(e)
+            plot_drf_theoretical(models = list(emax = e),
+                                 doses = doses,
+                                 maxEff = max_eff)),
+        lapply(asplit(cand_mod_list$sigEmax, 1), function(p)
+            plot_drf_theoretical(models = list(sigEmax = p),
+                                 doses = doses,
+                                 maxEff = max_eff))),
+        ncol = 2)
+```
+
+## Example evaluation with binary outcome
+
+```{r, message  = FALSE, warning = FALSE}
+
+```
+
+## References

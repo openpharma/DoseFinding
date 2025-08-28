@@ -1,0 +1,98 @@
+---
+title: "Try to simulate  - binary"
+author: "Carina Miller"
+date: "2025-06-23"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(truncnorm)
+library(dplyr)
+library(survival)
+library(ggsurvfit)
+library(DoseFinding, lib.loc = "~/RStudio/packages")
+library(ggplot2)
+```
+
+```{r}
+round_to_half <- function(x) {
+  round(x * 2) / 2  # Multiply with 2, round, and divide again by 2
+}
+```
+
+
+# Create data set
+```{r}
+set.seed(2026)
+# approx. 340 participants with at least 150 in naSPMS and in PPMS each
+n <- 340 # total number of participants
+m <- 150 # minimum number of participants in each group
+rest <- n - 2*m # here: 40 participants can be splitted randomly
+
+# MS type: as a factor (SPMS = 1, PPMS = 2)
+rand <- floor(runif(1, 0, rest)) # random number between 0 and 40
+numberSPMS <- m + rand # number of SPMS patients
+numberPPMS <- m + (rest - rand)  # number of PPMS patients
+vec <- c(rep(1, numberSPMS), rep(2, numberPPMS)) # create a vector with 1s and 2s
+MStype <- sample(vec) # shuffle the vector to create a random order
+
+# baseline EDSS Score (must be between 2.5 and 6.0 according to inclusion criteria)
+EDSS <- rtruncnorm(n, a = 2.5, b = 6, mean = 4, sd = 2) # Generate truncated normal data
+EDSS <- round_to_half(EDSS) # round to full or half numbers
+
+# group 30, 10 or 5 mg/kg or placebo according to predefined shares
+doses <- c(0, 5, 10, 30)
+group <- sample(doses, n, replace = TRUE, prob = c(2/7, 1/7, 1/7, 3/7))
+table(group) # control
+
+# binary endpoint
+endpoint <- rep(0, n)
+
+data <- data.frame(endpoint, group, MStype, EDSS)
+
+# time
+# let's assume the drug is helping and that higher doses help better
+# 1 = got healthy, 0 = did not get healthy
+for (i in 1:n) {
+  if (data$group[i] == 30) {
+    data$endpoint[i] <- sample(c(0, 1), size = 1, prob = c(0.1, 0.9))
+  } else if (data$group[i] == 10) {
+    data$endpoint[i] <- sample(c(0, 1), size = 1, prob = c(0.4, 0.6))
+  } else if (data$group[i] == 5) {
+    data$endpoint[i] <- sample(c(0, 1), size = 1, prob = c(0.6, 0.4))
+  } else if (data$group[i] == 0) {
+    data$endpoint[i] <- sample(c(0, 1), size = 1, prob = c(0.9, 0.1))
+  } 
+}
+
+
+
+# change some to factors
+data$MStype <- as.factor(data$MStype)
+# data$group <- factor(data$group, ordered = T, levels = c("0", "5", "10", "30"))
+data$group <- as.factor(data$group)
+```
+
+```{r}
+# Zusammenfassung der Daten: Zähle Häufigkeiten für jede Kombination von `group` und `endpoint`
+summary_data <- as.data.frame(table(data$group, data$endpoint))
+colnames(summary_data) <- c("group", "endpoint", "frequency")
+
+# Visualisierung mit ggplot2: Erstelle den Barplot
+ggplot(data = summary_data, aes(x = group, y = frequency, fill = as.factor(endpoint))) +
+  geom_bar(stat = "identity", position = "stack") +  # Dodge-Layout für nebeneinanderliegende Balken
+  scale_fill_manual(values = c("orange", "lightblue"), name = "Endpoint", labels = c("0", "1")) +
+  labs(title = "Frequency of the binary endpoint in the different groups",
+       x = "Group",
+       y = "Frequency") +
+  theme_minimal()  # Saubere Visualisierung mit Minimal-Theme
+```
+
+```{r}
+
+```
+

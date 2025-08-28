@@ -1,0 +1,24 @@
+---
+title: "Pinheiro - Model-based doe finding under..."
+author: "Carina Miller"
+date: "2025-06-16"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 4. Applications
+```{r}
+library(DoseFinding)
+library(nlme)
+data(neurodeg)
+```
+## 4.1. Longitudinal modeling of neurodegenerative disease
+```{r}
+fm <- lme(resp ~ as.factor(dose):time, neurodeg, ~time|id)
+muH <- fixef(fm)[-1] # extract estimates
+covH <- vcov(fm)[-1,-1]
+```
+

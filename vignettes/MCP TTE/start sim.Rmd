@@ -1,0 +1,198 @@
+---
+title: "Simulations"
+author: "Carina Miller"
+date: "2025-07-07"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+sim <- function(lambda0 = 0.623, HR_treat = 0.6, doses = c(0, 5, 10, 30), ratio = c(1, 0.5, 0.5, 1.5), upperN = 500, lowerN = 10, power = 0.8, alpha = 0.05, n = 10000, etotal = 5000, nrun = 1) {
+  
+  # vectors for output 
+  #...
+  
+  
+  lambda1 <- lambda0 * HR_treat
+  nshape <- length(doses)
+  
+  mods <- Mods(
+    emax = c(1, 8),
+    sigEmax = rbind(c(10, 3), c(22.5, 4)),
+    doses = doses,
+    direction = c("decreasing"),
+    placEff = log(lambda0),
+    maxEff = log(lambda1) - log(lambda0)
+  )
+  
+  plotMods(mods, superpose = T, ylab = 'log (hazard rates)')
+  
+  y0 <- getResp(mods, doses = doses)
+  y <- y0[1:dim(y0)[1],]
+  lambda <- exp(y)
+  med_surv <- log(2) / lambda
+  
+  plot(
+    doses,
+    med_surv[, 1],
+    type = 'l',
+    ylab = 'Median Survival (Years)',
+    xlab = 'Dose in mg/kg',
+    main = 'Dose-Response Curve
+     using median survival time'
+  )
+  
+  for (i in 2:nshape)
+    lines(doses, med_surv[, i])
+  
+  contMat <- optContr(mods, w = ratio)
+  plotContr(contMat)
+  
+  sampsize <- sampSizeMCT(
+    upperN = upperN,
+    lowerN = lowerN,
+    contMat = contMat,
+    sigma = 1,
+    altModels = mods,
+    power = power,
+    alRatio = ratio,
+    alpha = alpha
+  )
+ out <- capture.output(print(sampsize))
+ totalSampleSize <- as.numeric(gsub("Total sample size: ", "", out[grep("Total sample size", out)]))
+ cat('A total sample size of ', totalSampleSize, ' would be appropriate to get a power of ', power * 100, '%.')
+  
+  
+  powerN <- powN(
+    upperN = upperN,
+    lowerN = lowerN,
+    step = 10,
+    contMat = contMat,
+    sigma = 1,
+    altModels = mods,
+    alpha = alpha,
+    alRatio = ratio,
+    sumFct = 'mean'
+  )
+  
+  plot(powerN)
+  
+  for (i in 1:nrun){
+  mean_resp <- sample(y[, 2], n, replace = T, prob = ratio)
+  t <- rexp(length(mean_resp), exp(mean_resp))
+  t_max_event <- sort(t)[etotal]
+  cens <- rep(t_max_event, length(mean_resp))
+  u <- pmin(cens, t)
+  status <- (t <= cens)
+  data <- data.frame(
+    group = names(mean_resp),
+    hazard = mean_resp,
+    time = u,
+    status = as.numeric(status)
+  )
+  
+  if (i ==  1) {
+  survfit2(Surv(time, status) ~ group, data = data) %>%
+    ggsurvfit() +
+    labs(x = "Years",
+         y = "Probability",
+         title = "Kaplan-Meier Estimator by Dose") +
+    theme(plot.title = element_text(hjust = 0.5))
+  }
+  
+  cox <- coxph(Surv(time, status) ~ group, data = data)
+  
+  coef <- cox$coef
+  cov <- cox$var
+  
+  doses_treat <- doses[-1]
+  mct <-
+    MCTtest(
+      dose = doses_treat,
+      resp = coef,
+      S = cov,
+      models = mods,
+      type = 'general',
+      alternative = "one.sided",
+      placAdj = TRUE
+    )
+  
+  fitEmax <- fitMod(
+    dose = doses_treat,
+    resp = coef,
+    S = cov,
+    model = 'emax',
+    type = 'general',
+    placAdj = TRUE
+  )
+  
+  plot(fitEmax)
+  aic_emax <- gAIC(fitEmax)
+  
+  fitSigEmax <- fitMod(
+    dose = doses_treat,
+    resp = coef,
+    S = cov,
+    model = 'sigEmax',
+    type = 'general',
+    placAdj = TRUE
+  )
+  
+  plot(fitSigEmax)
+  aic_sigemax <- gAIC(fitSigEmax)
+  
+  ifelse(
+    aic_emax <= aic_sigemax,
+    paste(
+      'Emax model fits better than SigEmax regarding the gAIC values of the models.'
+    ),
+    paste(
+      'SigEmax model fits better than Emax regarding the gAIC values of the models.'
+    )
+  )
+  # find a dose that achieves 90% of the full effect size
+  percentage_dose_emax <-
+    ED(fitEmax, p = 0.9, direction = 'decreasing')
+  percentage_dose_sigemax <-
+    ED(fitSigEmax, p = 0.9, direction = 'decreasing')
+  }
+  
+  
+  
+  }
+```
+
+```{r}
+lambda0 <- 0.623
+HR_treat <- 0.6
+doses <- c(0, 5, 10, 30)
+ratio <- c(1, 0.5, 0.5, 1.5)
+upperN <- 200
+lowerN <- 10
+power <- 0.8
+alpha <- 0.05
+n <- 10000 # number of patients
+etotal <- 5000 # predefined number of events
+nrun <- 5
+
+sim(lambda0,
+    HR_treat,
+    doses,
+    ratio,
+    upperN,
+    lowerN,
+    power,
+    alpha,
+    n,
+    etotal,
+    nrun)
+sim()
+```
+
+```{r}
+numeric()
+```
+

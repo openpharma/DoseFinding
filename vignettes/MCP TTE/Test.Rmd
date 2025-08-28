@@ -1,0 +1,140 @@
+---
+title: "12.4 DoseFinding R Package"
+author: "Carina Miller"
+date: "2025-06-10"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(DoseFinding, lib.loc = "~/RStudio/packages")
+```
+
+# normally distributed endpoint
+```{r}
+data(biom)
+summary(biom)
+```
+Candidate Model set / Candidate Shapes:
+```{r}
+candMod <- Mods(emax = c(0.05, 0.2), 
+                exponential = 0.3, 
+                linear = NULL, 
+                quadratic = -0.8, 
+                sigEmax = c(0.2, 3), 
+                doses = c(0, 0.05, 0.2, 0.6, 1))
+plot(candMod)
+```
+
+MCP Step at the analysis stage:/
+First table: Optimal contrasts for the candidate shapes for the biom data/
+Second table: Results of the contrast test for the biom data
+```{r}
+MCTtest(dose, resp, data = biom, models = candMod)
+```
+
+Mod step, find the best model using AIC criterion:/
+AIC values of th fitted models for the biom data/
+(smaller AIC better)
+```{r}
+fitEmax <- fitMod(dose, resp, data = biom, model = "emax", bnds = c(0.001, 1.5))
+AIC(fitEmax)
+
+fitExp <- fitMod(dose, resp, data = biom, model = "exponential", bnds = c(0.001, 1.5))
+AIC(fitExp)
+
+fitLin <- fitMod(dose, resp, data = biom, model = "linear", bnds = c(0.001, 1.5))
+AIC(fitLin)
+
+fitQuad <- fitMod(dose, resp, data = biom, model = "quadratic", bnds = c(0.001, 1.5))
+AIC(fitQuad)
+
+fitSigE <- fitMod(dose, resp, data = biom, model = "sigEmax", bnds = rbind(c(0.001, 1.5), c(3, 3))) 
+AIC(fitSigE)                                                                       
+```
+
+To find dose that achieves the target effect over placebo based on a fitted model:/
+(Alternatively using function ED to find a dose that achieves a certain percentage of the full effect size within the observed dose range over placebo)
+```{r}
+TD(fitEmax, Delta = 0.4, direction = "increasing")
+TD(fitExp, Delta = 0.4, direction = "increasing")
+TD(fitLin, Delta = 0.4, direction = "increasing")
+TD(fitQuad, Delta = 0.4, direction = "increasing")
+TD(fitSigE, Delta = 0.4, direction = "increasing")
+
+```
+Estimated dose-response curves for the biom data:
+```{r}
+# par(mfrow = c(2, 3))
+plot(fitEmax, plotData = "meansCI", CI = T, level = 0.95)
+plot(fitExp, plotData = "meansCI", CI = T, level = 0.95)
+plot(fitLin, plotData = "meansCI", CI = T, level = 0.95)
+plot(fitQuad, plotData = "meansCI", CI = T, level = 0.95)
+plot(fitSigE, plotData = "meansCI", CI = T, level = 0.95)
+#  par(mfrow = c(1, 1))
+```
+Predict the effect of more doses:
+```{r}
+pred <- predict(fitEmax, doseSeq = c(0.1, 0.5), predType = "ls", se.fit = T)
+pred
+```
+# Generalized MCP-Mod
+```{r}
+data("neurodeg")
+library(nlme) # for lme function
+```
+
+Contrast test in neureodeg data:/
+Start with the linear mixed-effects model: lme(fixed, data, random, ...)/
+fixed: response variable resp is modeled as a function of the interaction between as.factor(dose) and time; how does dose influence the relationship between time and the response variable resp?/
+random: time allows individual trajectories; id grouping factor
+```{r}
+fm <- lme(resp ~ as.factor(dose) : time, neurodeg, ~ time|id) #??????????????????????????????????? 
+muH <- fixef(fm)[-1]
+covH <- vcov(fm)[-1, 1]
+doses <- c(0, 1, 3, 10, 30)
+mod <- Mods(emax = 1.11, quadratic = -0.022, exponential = 8.867, linear = NULL, doses = doses)
+contMat = optContr(mod. S = covH)
+MCTtest(doses, muH, S = covH, type = "general", critV = T, contMat = contMat)
+```
+
+Bootstrapped dose-response curve for the neurodeg data:
+```{r}
+set.seed(10000)
+nSim <- 5000
+sims <- rmvnorm(nSim, muH, covH)
+results <- apply(sims, 1, function(x){
+  fit <- vector("list", 4)
+  fit[[1]] <- fitMod(doses, x, type = "general", model = "emax", 
+                     bnds = defBnds(30)$emax, S = covH)
+  fit[[2]] <- fitMod(doses, x, type = "general", model = "quadratic", S = covH)
+  fit[[3]] <- fitMod(doses, x, type = "general", model = "exponential", bnds = defBnds(30)$exponential, S = covH)
+  fit[[4]] <- fitMod(doses, x, type = "general", model = "linear", S = covH)
+  aics <- sapply(fit, gAIC)
+  sel <- which.min(aics)
+  fitsel <- fit[[sel]]
+  pred <- predict(fitsel, doseSeq = c(0, 1, 3, 10, 30), predType = "ls-means")
+  c(sel, pred, pred-pred[1])
+})
+```
+
+# 13.2.3
+```{r}
+## define candidate sets of models
+mods <- Mods(emax = c(2.6, 12.5),
+             sigEmax = c(30.5, 3.5),
+             quadratic = -0.00776,
+             placEff = 0, 
+             maxEff = 0.15,
+             doses = c(0, 100))
+
+## calculate optimal design
+doses <- c(0, 12.5, 25, 37.5, 50, 62.5, 75, 100)
+optD <- optDesign(mods, doses = doses, probs = rep(1/4, 4))
+optD
+sum(optD$design)
+```
+

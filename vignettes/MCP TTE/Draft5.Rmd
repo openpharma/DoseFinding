@@ -265,7 +265,7 @@ data_plot <- simulation[[2]]
 ```
 
 
-```{r, fig.width = 5, out.width = '100%', echo=FALSE}
+```{r, fig.width = 5, out.width = '90%', echo=FALSE}
 model <- 1
 ratio <- c(1, 0.2, 0.5, 1)
 n <- 100

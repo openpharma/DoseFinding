@@ -30,7 +30,7 @@ You can install the development version of DoseFinding from [GitHub](https://git
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("bbnkmp/DoseFinding")
+devtools::install_github("openpharma/DoseFinding")
 ```
 
 ## Examples

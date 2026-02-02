@@ -24,7 +24,7 @@ You can install the development version of DoseFinding from
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("bbnkmp/DoseFinding")
+devtools::install_github("openpharma/DoseFinding")
 ```
 
 ## Examples

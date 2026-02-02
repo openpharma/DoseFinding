@@ -6,7 +6,7 @@ output:
     toc_depth: 2
 bibliography: '`r system.file("REFERENCES.bib", package = "DoseFinding")`'
 link-citations: yes
-csl: american-statistical-association.csl
+csl: '`r system.file("american-statistical-association.csl", package = "DoseFinding")`'
 vignette: >
   %\VignetteIndexEntry{Frequently Asked Questions for MCP-Mod}
   %\VignetteEngine{knitr::rmarkdown}

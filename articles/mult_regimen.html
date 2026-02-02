@@ -165,7 +165,7 @@ scale.</p>
 <span></span>
 <span><span class="va">est</span> <span class="op">&lt;-</span> <span class="fu">example_estimates</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu">plot_estimates</span><span class="op">(</span><span class="va">est</span><span class="op">)</span></span></code></pre></div>
-<p><img src="mult_regimen_files/figure-html/data-1.png" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="mult_regimen_files/figure-html/data-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="candidate-models">Candidate models<a class="anchor" aria-label="anchor" href="#candidate-models"></a>
@@ -184,10 +184,10 @@ candidate models for both regimen here.</p>
 <span>             doses<span class="op">=</span><span class="va">est</span><span class="op">$</span><span class="va">daily_dose</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">est</span><span class="op">$</span><span class="va">index</span><span class="op">$</span><span class="va">placebo</span>, <span class="va">est</span><span class="op">$</span><span class="va">index</span><span class="op">$</span><span class="va">bid</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/Mods.html">plotMods</a></span><span class="op">(</span><span class="va">mods</span><span class="op">$</span><span class="va">od</span>, superpose <span class="op">=</span> <span class="cn">TRUE</span>, xlab <span class="op">=</span> <span class="st">"daily dose"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="mult_regimen_files/figure-html/candidate_models-1.png" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="mult_regimen_files/figure-html/candidate_models-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/Mods.html">plotMods</a></span><span class="op">(</span><span class="va">mods</span><span class="op">$</span><span class="va">bid</span>, superpose <span class="op">=</span> <span class="cn">TRUE</span>, xlab <span class="op">=</span> <span class="st">"daily dose"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="mult_regimen_files/figure-html/candidate_models-2.png" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="mult_regimen_files/figure-html/candidate_models-2.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="multiple-contrast-test">Multiple contrast test<a class="anchor" aria-label="anchor" href="#multiple-contrast-test"></a>
@@ -378,7 +378,7 @@ analysis of continuous data</a>.</p>
 <span>       subtitle <span class="op">=</span> <span class="st">"Least squares estimates plus 50% and 95% confidence bands"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"daily dose"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"percent body weigh change"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_cartesian.html" class="external-link">coord_cartesian</a></span><span class="op">(</span>ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">6</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="mult_regimen_files/figure-html/estimation_3-1.png" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="mult_regimen_files/figure-html/estimation_3-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
@@ -409,7 +409,7 @@ parametric models,”</span> <em>Statistics in Medicine</em>, 33,
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

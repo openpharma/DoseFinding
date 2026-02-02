@@ -89,7 +89,7 @@ normally distributed data</a>.</p>
 <span><span class="va">guess</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>emax <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2.6</span>, <span class="fl">12.5</span><span class="op">)</span>, sigEmax <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30.5</span>, <span class="fl">3.5</span><span class="op">)</span>, quadratic <span class="op">=</span> <span class="op">-</span><span class="fl">0.00776</span><span class="op">)</span></span>
 <span><span class="va">mods</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">Mods</span>, <span class="fu"><a href="https://rdrr.io/r/base/append.html" class="external-link">append</a></span><span class="op">(</span><span class="va">guess</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>placEff <span class="op">=</span> <span class="fl">1.25</span>, maxEff <span class="op">=</span> <span class="fl">0.15</span>, doses <span class="op">=</span> <span class="va">doses</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/Mods.html">plotMods</a></span><span class="op">(</span><span class="va">mods</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sample_size_files/figure-html/setup-1.png" width="50%" style="display: block; margin: auto;"></p>
+<p><img src="sample_size_files/figure-html/setup-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
 <div class="section level2">
 <h2 id="power-for-multiple-contrast-test-versus-group-sample-size">Power for multiple contrast test versus group sample size<a class="anchor" aria-label="anchor" href="#power-for-multiple-contrast-test-versus-group-sample-size"></a>
 </h2>
@@ -109,7 +109,7 @@ test at level 0.05.</p>
 <span><span class="va">pows</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sampSize.html">powN</a></span><span class="op">(</span>upperN <span class="op">=</span> <span class="fl">100</span>, lowerN <span class="op">=</span> <span class="fl">10</span>, step <span class="op">=</span> <span class="fl">10</span>, contMat <span class="op">=</span> <span class="va">contMat</span>,</span>
 <span>             sigma <span class="op">=</span> <span class="fl">0.34</span>, altModels <span class="op">=</span> <span class="va">mods</span>, alpha <span class="op">=</span> <span class="fl">0.05</span>, alRatio <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pows</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sample_size_files/figure-html/power_sample_size_1-1.png" width="85%" style="display: block; margin: auto;">
+<p><img src="sample_size_files/figure-html/power_sample_size_1-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;">
 This shows the power values of the maximum contrast test assuming each
 of the different candidate models to be true. The minimum, mean and
 maximum power over the candidate models are also included in the
@@ -163,7 +163,7 @@ assume a higher residual standard deviation.</p>
 <span><span class="fu">plot_power_vs_treatment_effect</span><span class="op">(</span><span class="va">guess</span>, <span class="va">doses</span>, group_size <span class="op">=</span> <span class="fl">90</span>, placEff <span class="op">=</span> <span class="fl">1.25</span>,</span>
 <span>                               maxEffs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.01</span>, <span class="fl">0.3</span>, length.out <span class="op">=</span> <span class="fl">15</span><span class="op">)</span>,</span>
 <span>                               sigma_low <span class="op">=</span> <span class="fl">0.3</span>, sigma_mid <span class="op">=</span> <span class="fl">0.34</span>, sigma_high <span class="op">=</span> <span class="fl">0.4</span>, alpha <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sample_size_files/figure-html/power_effect_size-1.png" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="sample_size_files/figure-html/power_effect_size-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="power-under-mis-specification">Power under mis-specification<a class="anchor" aria-label="anchor" href="#power-under-mis-specification"></a>
@@ -181,7 +181,7 @@ other shapes included in the candidate set.</p>
 <code class="sourceCode R"><span><span class="va">guess_miss</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>exponential <span class="op">=</span> <span class="fu"><a href="../reference/guesst.html">guesst</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">0.2</span>, <span class="st">"exponential"</span>, Maxd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">doses</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">mods_miss</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">Mods</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">guess</span>, <span class="va">guess_miss</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>placEff <span class="op">=</span> <span class="fl">1.25</span>, maxEff <span class="op">=</span> <span class="fl">0.15</span>, doses <span class="op">=</span> <span class="va">doses</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">mods_miss</span>, superpose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sample_size_files/figure-html/power_miss_1-1.png" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="sample_size_files/figure-html/power_miss_1-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 <p>Now we compare the power calculation under the exponential model with
 those based on the original candidate set, in both cases only the
 contrasts from the original candidate set are used.</p>
@@ -212,7 +212,7 @@ contrasts from the original candidate set are used.</p>
 <span></span>
 <span><span class="fu">plot_power_misspec</span><span class="op">(</span><span class="va">guess</span>, <span class="va">guess_miss</span>, placEff <span class="op">=</span> <span class="fl">1.25</span>, maxEff <span class="op">=</span> <span class="fl">0.15</span>, doses <span class="op">=</span> <span class="va">doses</span>,</span>
 <span>                   upperN <span class="op">=</span> <span class="fl">100</span>, lowerN <span class="op">=</span> <span class="fl">10</span>, step <span class="op">=</span> <span class="fl">10</span>, sigma <span class="op">=</span> <span class="fl">0.34</span>, alpha <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sample_size_files/figure-html/power_miss_2-1.png" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="sample_size_files/figure-html/power_miss_2-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 <p>As expected, the power decreases as the assumed underlying
 exponential model shape differs substantially from the shapes included
 in the candidate set. However, the power loss is only in the range of
@@ -325,7 +325,7 @@ Dose-Finding Trials</em>. CRC press.
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

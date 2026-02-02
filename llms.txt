@@ -1,0 +1,254 @@
+# DoseFinding
+
+The DoseFinding package provides functions for the design and analysis
+of dose-finding experiments (for example pharmaceutical Phase II
+clinical trials). It provides functions for: multiple contrast tests,
+fitting non-linear dose-response models, a combination of testing and
+dose-response modelling and calculating optimal designs, both for normal
+and general response variable.
+
+## Installation
+
+You can install the development version of DoseFinding from
+[GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("openpharma/DoseFinding")
+```
+
+## Examples
+
+### Performing multiple contrast tests
+
+``` r
+library(DoseFinding)
+data(IBScovars)
+
+## set random seed to ensure reproducible adj. p-values for multiple contrast test
+set.seed(12)
+
+## perform (model based) multiple contrast test
+## define candidate dose-response shapes
+models <- Mods(linear = NULL, emax = 0.2, quadratic = -0.17,
+               doses = c(0, 1, 2, 3, 4))
+## plot models
+plot(models)
+```
+
+![](reference/figures/README-example1-1.png)
+
+``` r
+## perform multiple contrast test
+MCTtest(dose, resp, IBScovars, models=models,
+                addCovars = ~ gender)
+#> Multiple Contrast Test
+#> 
+#> Contrasts:
+#>   linear   emax quadratic
+#> 0 -0.616 -0.889    -0.815
+#> 1 -0.338  0.135    -0.140
+#> 2  0.002  0.226     0.294
+#> 3  0.315  0.252     0.407
+#> 4  0.638  0.276     0.254
+#> 
+#> Contrast Correlation:
+#>           linear  emax quadratic
+#> linear     1.000 0.768     0.843
+#> emax       0.768 1.000     0.948
+#> quadratic  0.843 0.948     1.000
+#> 
+#> Multiple Contrast Test:
+#>           t-Stat   adj-p
+#> emax       3.208 0.00128
+#> quadratic  3.083 0.00228
+#> linear     2.640 0.00848
+```
+
+### Fitting non-linear dose-response model
+
+``` r
+## fit non-linear emax dose-response model
+fitemax <- fitMod(dose, resp, data=IBScovars, model="emax",
+                  bnds = c(0.01,5))
+## display fitted dose-effect curve
+plot(fitemax, CI=TRUE, plotData="meansCI")
+```
+
+![](reference/figures/README-example2-1.png)
+
+### Optimal designs for dose estimation
+
+``` r
+## Calculate optimal designs for target dose (TD) estimation
+doses <- c(0, 10, 25, 50, 100, 150)
+fmodels <- Mods(linear = NULL, emax = 25, exponential = 85,
+                logistic = c(50, 10.8811),
+                doses = doses, placEff=0, maxEff=0.4)
+plot(fmodels, plotTD = TRUE, Delta = 0.2)
+```
+
+![](reference/figures/README-example3-1.png)
+
+``` r
+weights <- rep(1/4, 4)
+optDesign(fmodels, weights, Delta=0.2, designCrit="TD")
+#> Calculated TD - optimal design:
+#>       0      10      25      50     100     150 
+#> 0.34960 0.09252 0.00366 0.26760 0.13342 0.15319
+```
+
+# Package index
+
+## Package
+
+- [`DoseFinding`](https://openpharma.github.io/DoseFinding/reference/DoseFinding-package.md)
+  [`DoseFinding-package`](https://openpharma.github.io/DoseFinding/reference/DoseFinding-package.md)
+  : DoseFinding: Planning and Analyzing Dose Finding Experiments
+
+## Design dose-reponse trials
+
+- [`Mods()`](https://openpharma.github.io/DoseFinding/reference/Mods.md)
+  [`getResp()`](https://openpharma.github.io/DoseFinding/reference/Mods.md)
+  [`plotMods()`](https://openpharma.github.io/DoseFinding/reference/Mods.md)
+  [`plot(`*`<Mods>`*`)`](https://openpharma.github.io/DoseFinding/reference/Mods.md)
+  : Define dose-response models
+- [`guesst()`](https://openpharma.github.io/DoseFinding/reference/guesst.md)
+  : Calculate guesstimates based on prior knowledge
+- [`optContr()`](https://openpharma.github.io/DoseFinding/reference/optContr.md)
+  [`plot(`*`<optContr>`*`)`](https://openpharma.github.io/DoseFinding/reference/optContr.md)
+  [`plotContr()`](https://openpharma.github.io/DoseFinding/reference/optContr.md)
+  : Calculate optimal contrasts
+- [`optDesign()`](https://openpharma.github.io/DoseFinding/reference/optDesign.md)
+  [`calcCrit()`](https://openpharma.github.io/DoseFinding/reference/optDesign.md)
+  [`rndDesign()`](https://openpharma.github.io/DoseFinding/reference/optDesign.md)
+  [`plot(`*`<DRdesign>`*`)`](https://openpharma.github.io/DoseFinding/reference/optDesign.md)
+  : Function to calculate optimal designs
+- [`planMod()`](https://openpharma.github.io/DoseFinding/reference/planMod.md)
+  [`summary(`*`<planMod>`*`)`](https://openpharma.github.io/DoseFinding/reference/planMod.md)
+  [`plot(`*`<planMod>`*`)`](https://openpharma.github.io/DoseFinding/reference/planMod.md)
+  : Evaluate performance metrics for fitting dose-response models
+- [`powMCT()`](https://openpharma.github.io/DoseFinding/reference/powMCT.md)
+  : Calculate power for multiple contrast test
+- [`sampSize()`](https://openpharma.github.io/DoseFinding/reference/sampSize.md)
+  [`sampSizeMCT()`](https://openpharma.github.io/DoseFinding/reference/sampSize.md)
+  [`targN()`](https://openpharma.github.io/DoseFinding/reference/sampSize.md)
+  [`powN()`](https://openpharma.github.io/DoseFinding/reference/sampSize.md)
+  [`plot(`*`<targN>`*`)`](https://openpharma.github.io/DoseFinding/reference/sampSize.md)
+  : Sample size calculations
+- [`DesignMCPModApp()`](https://openpharma.github.io/DoseFinding/reference/DesignMCPModApp.md)
+  : Start externally hosted DesignMCPMod Shiny App
+
+## Analyze dose-response trials
+
+- [`MCPMod()`](https://openpharma.github.io/DoseFinding/reference/MCPMod.md)
+  [`predict(`*`<MCPMod>`*`)`](https://openpharma.github.io/DoseFinding/reference/MCPMod.md)
+  [`plot(`*`<MCPMod>`*`)`](https://openpharma.github.io/DoseFinding/reference/MCPMod.md)
+  : MCPMod - Multiple Comparisons and Modeling
+- [`MCTpval()`](https://openpharma.github.io/DoseFinding/reference/MCTpval.md)
+  : Calculate multiplicity adjusted p-values for multiple contrast test
+- [`MCTtest()`](https://openpharma.github.io/DoseFinding/reference/MCTtest.md)
+  : Performs multiple contrast test
+- [`bMCTtest()`](https://openpharma.github.io/DoseFinding/reference/bMCTtest.md)
+  : Performs Bayesian multiple contrast test
+- [`powMCTInterim()`](https://openpharma.github.io/DoseFinding/reference/powMCTInterim.md)
+  : Calculate Conditional or Predictive Power for Multiple Contrast Test
+- [`critVal()`](https://openpharma.github.io/DoseFinding/reference/critVal.md)
+  : Calculate critical value for multiple contrast test
+- [`mvpostmix()`](https://openpharma.github.io/DoseFinding/reference/mvpostmix.md)
+  : Prior to posterior updating for a multivariate normal mixture
+- [`mvtnorm.control()`](https://openpharma.github.io/DoseFinding/reference/mvtnorm-control.md)
+  : Control options for pmvt and qmvt functions
+
+## Fit dose-response model
+
+- [`bFitMod()`](https://openpharma.github.io/DoseFinding/reference/bFitMod.md)
+  [`predict(`*`<bFitMod>`*`)`](https://openpharma.github.io/DoseFinding/reference/bFitMod.md)
+  [`plot(`*`<bFitMod>`*`)`](https://openpharma.github.io/DoseFinding/reference/bFitMod.md)
+  [`coef(`*`<bFitMod>`*`)`](https://openpharma.github.io/DoseFinding/reference/bFitMod.md)
+  : Fit a dose-response model using Bayesian or bootstrap methods.
+
+- [`defBnds()`](https://openpharma.github.io/DoseFinding/reference/defBnds.md)
+  : Calculates default bounds for non-linear parameters in dose-response
+  models
+
+- [`emax()`](https://openpharma.github.io/DoseFinding/reference/drmodels.md)
+  [`emaxGrad()`](https://openpharma.github.io/DoseFinding/reference/drmodels.md)
+  [`sigEmax()`](https://openpharma.github.io/DoseFinding/reference/drmodels.md)
+  [`sigEmaxGrad()`](https://openpharma.github.io/DoseFinding/reference/drmodels.md)
+  [`exponential()`](https://openpharma.github.io/DoseFinding/reference/drmodels.md)
+  [`exponentialGrad()`](https://openpharma.github.io/DoseFinding/reference/drmodels.md)
+  [`quadratic()`](https://openpharma.github.io/DoseFinding/reference/drmodels.md)
+  [`quadraticGrad()`](https://openpharma.github.io/DoseFinding/reference/drmodels.md)
+  [`betaMod()`](https://openpharma.github.io/DoseFinding/reference/drmodels.md)
+  [`betaModGrad()`](https://openpharma.github.io/DoseFinding/reference/drmodels.md)
+  [`linear()`](https://openpharma.github.io/DoseFinding/reference/drmodels.md)
+  [`linearGrad()`](https://openpharma.github.io/DoseFinding/reference/drmodels.md)
+  [`linlog()`](https://openpharma.github.io/DoseFinding/reference/drmodels.md)
+  [`linlogGrad()`](https://openpharma.github.io/DoseFinding/reference/drmodels.md)
+  [`logistic()`](https://openpharma.github.io/DoseFinding/reference/drmodels.md)
+  [`logisticGrad()`](https://openpharma.github.io/DoseFinding/reference/drmodels.md)
+  [`linInt()`](https://openpharma.github.io/DoseFinding/reference/drmodels.md)
+  [`linIntGrad()`](https://openpharma.github.io/DoseFinding/reference/drmodels.md)
+  : Built-in dose-response models in DoseFinding
+
+- [`fitMod()`](https://openpharma.github.io/DoseFinding/reference/fitMod.md)
+  [`coef(`*`<DRMod>`*`)`](https://openpharma.github.io/DoseFinding/reference/fitMod.md)
+  [`vcov(`*`<DRMod>`*`)`](https://openpharma.github.io/DoseFinding/reference/fitMod.md)
+  [`predict(`*`<DRMod>`*`)`](https://openpharma.github.io/DoseFinding/reference/fitMod.md)
+  [`plot(`*`<DRMod>`*`)`](https://openpharma.github.io/DoseFinding/reference/fitMod.md)
+  [`logLik(`*`<DRMod>`*`)`](https://openpharma.github.io/DoseFinding/reference/fitMod.md)
+  [`AIC(`*`<DRMod>`*`)`](https://openpharma.github.io/DoseFinding/reference/fitMod.md)
+  [`gAIC(`*`<DRMod>`*`)`](https://openpharma.github.io/DoseFinding/reference/fitMod.md)
+  : Fit non-linear dose-response model
+
+- [`maFitMod()`](https://openpharma.github.io/DoseFinding/reference/maFitMod.md)
+  [`predict(`*`<maFit>`*`)`](https://openpharma.github.io/DoseFinding/reference/maFitMod.md)
+  [`plot(`*`<maFit>`*`)`](https://openpharma.github.io/DoseFinding/reference/maFitMod.md)
+  : Fit dose-response models via bootstrap model averaging (bagging)
+
+- [`TD()`](https://openpharma.github.io/DoseFinding/reference/targdose.md)
+  [`ED()`](https://openpharma.github.io/DoseFinding/reference/targdose.md)
+  :
+
+  Calculate dose estimates for a fitted dose-response model (via
+  [`fitMod()`](https://openpharma.github.io/DoseFinding/reference/fitMod.md),
+  [`bFitMod()`](https://openpharma.github.io/DoseFinding/reference/bFitMod.md))
+  or
+  [`maFitMod()`](https://openpharma.github.io/DoseFinding/reference/maFitMod.md))
+  or a
+  [`Mods()`](https://openpharma.github.io/DoseFinding/reference/Mods.md)
+  object
+
+## Datasets
+
+- [`biom`](https://openpharma.github.io/DoseFinding/reference/biom.md) :
+  Biometrics Dose Response data
+- [`glycobrom`](https://openpharma.github.io/DoseFinding/reference/glycobrom.md)
+  : Glycopyrronium Bromide dose-response data
+- [`IBScovars`](https://openpharma.github.io/DoseFinding/reference/IBScovars.md)
+  : Irritable Bowel Syndrome Dose Response data with covariates
+- [`migraine`](https://openpharma.github.io/DoseFinding/reference/migraine.md)
+  : Migraine Dose Response data
+- [`neurodeg`](https://openpharma.github.io/DoseFinding/reference/neurodeg.md)
+  : Neurodegenerative disease simulated longitudinal dose-finding data
+  set
+
+# Articles
+
+### All vignettes
+
+- [Continuous data
+  MCP-Mod](https://openpharma.github.io/DoseFinding/articles/analysis_normal.md):
+- [Binary Data
+  MCP-Mod](https://openpharma.github.io/DoseFinding/articles/binary_data.md):
+- [MCP-Mod
+  FAQ](https://openpharma.github.io/DoseFinding/articles/faq.md):
+- [Longitudinal Data
+  MCP-Mod](https://openpharma.github.io/DoseFinding/articles/longitudinal_data.md):
+- [Multiple Regimen
+  MCP-Mod](https://openpharma.github.io/DoseFinding/articles/mult_regimen.md):
+- [Overview DoseFinding
+  package](https://openpharma.github.io/DoseFinding/articles/overview.md):
+- [Sample size calculations for
+  MCP-Mod](https://openpharma.github.io/DoseFinding/articles/sample_size.md):

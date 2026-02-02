@@ -127,11 +127,11 @@ response on the logit scale:</p>
 <span>             placEff <span class="op">=</span> <span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/lodds.html" class="external-link">logit</a></span><span class="op">(</span><span class="fl">0.1</span><span class="op">)</span>, maxEff <span class="op">=</span> <span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/lodds.html" class="external-link">logit</a></span><span class="op">(</span><span class="fl">0.35</span><span class="op">)</span><span class="op">-</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/lodds.html" class="external-link">logit</a></span><span class="op">(</span><span class="fl">0.1</span><span class="op">)</span>,</span>
 <span>             doses <span class="op">=</span> <span class="va">doses</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/Mods.html">plotMods</a></span><span class="op">(</span><span class="va">mods</span><span class="op">)</span></span></code></pre></div>
-<p><img src="binary_data_files/figure-html/setup-1.png" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="binary_data_files/figure-html/setup-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## plot candidate models on probability scale</span></span>
 <span><span class="fu"><a href="../reference/Mods.html">plotMods</a></span><span class="op">(</span><span class="va">mods</span>, trafo <span class="op">=</span> <span class="va">inv_logit</span><span class="op">)</span></span></code></pre></div>
-<p><img src="binary_data_files/figure-html/setup-2.png" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="binary_data_files/figure-html/setup-2.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="analysis-without-covariates">Analysis without covariates<a class="anchor" aria-label="anchor" href="#analysis-without-covariates"></a>
@@ -190,7 +190,7 @@ fit back to the probability scale.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit_mod_av</span>, plotData <span class="op">=</span> <span class="st">"meansCI"</span>,</span>
 <span>     title <span class="op">=</span> <span class="st">"Bootstrap estimates for population response probability"</span>,</span>
 <span>     trafo <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fl">1</span><span class="op">/</span><span class="op">(</span><span class="fl">1</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="binary_data_files/figure-html/estimate_no_covariates-1.png" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="binary_data_files/figure-html/estimate_no_covariates-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="analysis-with-covariates">Analysis with covariates<a class="anchor" aria-label="anchor" href="#analysis-with-covariates"></a>
@@ -280,7 +280,7 @@ Adjusting for covariates gives slightly lower variance estimates.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">dose</span>, <span class="va">est</span>, color <span class="op">=</span> <span class="va">a</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_colour_discrete.html" class="external-link">scale_color_discrete</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"adjusted"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">name</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">""</span><span class="op">)</span></span></code></pre></div>
-<p><img src="binary_data_files/figure-html/compare-1.png" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="binary_data_files/figure-html/compare-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 <p>Dose-response modelling proceeds in the same way as before, but now
 on the adjusted estimates.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
@@ -290,7 +290,7 @@ on the adjusted estimates.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit_cov_adj</span>, plotData <span class="op">=</span> <span class="st">"meansCI"</span>,</span>
 <span>     title <span class="op">=</span> <span class="st">"Bootstrap estimates for population response probability"</span>,</span>
 <span>     trafo <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fl">1</span><span class="op">/</span><span class="op">(</span><span class="fl">1</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="binary_data_files/figure-html/estimate_covariates-1.png" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="binary_data_files/figure-html/estimate_covariates-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="avoiding-problems-with-complete-seperation-and-0-responders">Avoiding problems with complete seperation and 0 responders<a class="anchor" aria-label="anchor" href="#avoiding-problems-with-complete-seperation-and-0-responders"></a>
@@ -429,7 +429,7 @@ calculation</a>.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span>,by<span class="op">=</span><span class="fl">0.1</span><span class="op">)</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Min. Power over candidate set"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="binary_data_files/figure-html/sample_size-1.png" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="binary_data_files/figure-html/sample_size-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
@@ -459,7 +459,7 @@ parametric models,”</span> <em>Statistics in Medicine</em>, 33,
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

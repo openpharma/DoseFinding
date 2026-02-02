@@ -130,7 +130,7 @@ specified <em>sample</em> mean and sd.</p>
 <span><span class="fu">ggplot</span><span class="op">(</span><span class="va">NVA</span><span class="op">)</span> <span class="op">+</span> <span class="fu">geom_jitter</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span><span class="va">dose</span>, <span class="va">FEV1</span><span class="op">)</span>, height <span class="op">=</span> <span class="fl">0</span>, width <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">labs</span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Simulated FEV1 by dose (jittered horizontally)"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">xlab</span><span class="op">(</span><span class="st">"dose [μg]"</span><span class="op">)</span> <span class="op">+</span> <span class="fu">ylab</span><span class="op">(</span><span class="st">"FEV1 [l]"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analysis_normal_files/figure-html/simulate_dataset-1.png" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="analysis_normal_files/figure-html/simulate_dataset-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="design-stage">Design stage<a class="anchor" aria-label="anchor" href="#design-stage"></a>
@@ -175,7 +175,7 @@ Emax model.</p>
 functional relationships implied by the guesstimates.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/Mods.html">plotMods</a></span><span class="op">(</span><span class="va">mods</span>, ylab <span class="op">=</span> <span class="st">"FEV1"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analysis_normal_files/figure-html/plot_models-1.png" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="analysis_normal_files/figure-html/plot_models-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 <p>This concludes the design phase.</p>
 <p>We can also take a look at the calculated optimal contrasts. Each
 contrast has maximum power to detect a non-flat effect profile in the
@@ -193,7 +193,7 @@ value.</p>
 100   0.294  0.452   0.597     0.236</code></pre>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">optC</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analysis_normal_files/figure-html/contrasts-1.png" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="analysis_normal_files/figure-html/contrasts-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 <p>It can be seen that in the balanced sample size case and equal
 variance assumed for each dose group, the optimal contrasts reflect the
 underlying assumed mean dose-response shape. This is no surprise, given
@@ -324,7 +324,7 @@ smallest AIC or BIC):</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit_single</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitMod.html">fitMod</a></span><span class="op">(</span><span class="va">dose</span>, <span class="va">FEV1</span>, <span class="va">NVA</span>, model <span class="op">=</span> <span class="st">"emax"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit_single</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analysis_normal_files/figure-html/fit_single-1.png" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="analysis_normal_files/figure-html/fit_single-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 <p>But actually we want to use a more robust approach that combines
 bootstrapping with model averaging in the generalized MCP-Mod
 framework.</p>
@@ -375,7 +375,7 @@ possible see <code><a href="../reference/maFitMod.html">?plot.maFit</a></code>).
 <span><span class="co"># plotting can be done via</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit_mod_av</span>, plotData <span class="op">=</span> <span class="st">"meansCI"</span>,</span>
 <span>     ylab <span class="op">=</span> <span class="st">"Model averaging estimate with 95% CI"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analysis_normal_files/figure-html/bootstrap_summarize-1.png" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="analysis_normal_files/figure-html/bootstrap_summarize-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="how-to-adjust-for-covariates">How to adjust for covariates?<a class="anchor" aria-label="anchor" href="#how-to-adjust-for-covariates"></a>
@@ -437,7 +437,7 @@ patients,”</span> <em>Respiratory Medicine</em>, 104, 1482–1489. <a href="ht
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

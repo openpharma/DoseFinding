@@ -3,7 +3,7 @@ title: "Binary Data MCP-Mod"
 output: rmarkdown::html_vignette
 bibliography: '`r system.file("REFERENCES.bib", package = "DoseFinding")`'
 link-citations: yes
-csl: american-statistical-association.csl
+csl: '`r system.file("american-statistical-association.csl", package = "DoseFinding")`'
 vignette: >
   %\VignetteIndexEntry{Design and analysis template MCP-Mod for binary data}
   %\VignetteEngine{knitr::rmarkdown}

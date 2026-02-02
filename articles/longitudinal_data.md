@@ -567,7 +567,7 @@ S01 <- diag(resultRepeated$sigma^2 / n_final)
 
 # Predictive power:
 predPower <- powMCTInterim(
-  contMat = contMat,,
+  contMat = contMat,
   mu_0t = resultRepeated$mu0t,
   S_0t = resultRepeated$S0t,
   S_01 = S01,

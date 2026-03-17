@@ -284,7 +284,6 @@ NULL
 #' @docType data
 #' @usage data(glycobrom)
 #' @format A data frame with 5 summary estimates (one per dose). Variables:
-#'   A data frame with 5 summary estimates (one per dose). Variables:
 #'  \describe{
 #'    \item{`dose`}{a numeric vector containing the dose values}
 #'    \item{`fev1`}{a numeric vector containing the least square
@@ -337,7 +336,7 @@ NULL
 #' @docType data
 #' @usage data(IBScovars)
 #' @format 
-#'   A data frame with 369 observations on the following 2 variables.
+#'   A data frame with 369 observations on the following 3 variables.
 #'   \describe{
 #'     \item{`gender`}{a factor specifying the gender}
 #'     \item{`dose`}{a numeric vector}
@@ -360,7 +359,7 @@ NULL
 #' @docType data
 #' @usage data(migraine)
 #' @format 
-#'  A data frame with 517 columns corresponding to the patients that
+#'  A data frame with 8 rows (one per dose group) summarizing 517 patients that
 #'  completed the trial
 #'  \describe{
 #'    \item{`dose`}{a numeric vector containing the dose values}

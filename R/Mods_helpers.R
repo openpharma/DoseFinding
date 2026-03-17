@@ -66,8 +66,8 @@ checkEntries <- function(modL, doses, fullMod){
       stop("For model ", nam, ", model entry needs to be equal to NULL")
     if((nam %in% c("emax", "sigEmax", "betaMod", "logistic", "exponential")) & any(pars <= 0))
       stop("For model ", nam, " model entries needs to be positive")
-    if((nam %in% c("emax", "exponential", "quadratic")) & is.matrix(nam))
-      stop("For model ", nam, " parameters need to specified in a vector")
+    if((nam %in% c("emax", "exponential", "quadratic")) & is.matrix(pars))
+      stop("For model ", nam, " parameters need to be specified in a vector")
     if((nam %in% c("sigEmax", "betaMod", "logistic"))){
       if(is.matrix(pars)){
         if(ncol(pars) != 2)

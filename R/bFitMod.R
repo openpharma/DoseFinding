@@ -122,7 +122,7 @@ bFitMod <- function(dose, resp, model, S, placAdj = FALSE,
                     MCMCcontrol = list(), control = NULL, bnds, 
                     addArgs = NULL){
   if(placAdj & model %in% c("linlog", "logistic"))
-    stop("logistic and linlog models can only be fitted with placAdj")
+    stop("logistic and linlog models cannot be fitted to placebo adjusted data")
   nD <- length(dose)
   if (length(resp) != nD) 
     stop("dose and resp need to be of the same size")

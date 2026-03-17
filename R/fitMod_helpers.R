@@ -20,7 +20,7 @@ fit.control <- function(control){
       if(ind){
         stop("gridSize list needs to have names dim1 and dim2")
       } else {
-        if(!is.numeric(control$gridSize$dim1) | !is.numeric(control$gridSize$dim1))
+        if(!is.numeric(control$gridSize$dim1) | !is.numeric(control$gridSize$dim2))
           stop("gridSize$dim1 and gridSize$dim2 need to be numeric")
       }
     }

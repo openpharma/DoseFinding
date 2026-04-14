@@ -126,7 +126,7 @@ plot(fmodels)
 contMat <- optContr(fmodels, w = 1)
 powMCT(contMat, altModels = fmodels, n = 50, alpha = 0.05, sigma = 1)
 #>      linear        emax    logistic exponential    betaMod1    betaMod2 
-#>   0.7011557   0.6838571   0.8510906   0.6706257   0.7332189   0.6768705 
+#>   0.7015660   0.6849209   0.8519343   0.6711498   0.7338515   0.6775027 
 
 if (FALSE) { # \dontrun{
 ## power under the Dunnett test

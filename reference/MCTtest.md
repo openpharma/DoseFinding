@@ -193,10 +193,10 @@ MCTtest(dose, resp, IBScovars, models = modlist, addCovars = ~gender)
 #> 
 #> Multiple Contrast Test:
 #>          t-Stat   adj-p
-#> emax      3.178 0.00213
-#> logistic  3.164 0.00227
-#> linear    2.640 0.00990
-#> linInt    2.247 0.02756
+#> emax      3.178 0.00187
+#> logistic  3.164 0.00210
+#> linear    2.640 0.01035
+#> linInt    2.247 0.02764
 
 ## example using general approach (fitted on placebo-adjusted scale)
 ancMod <- lm(resp~factor(dose)+gender, data=IBScovars)
@@ -224,9 +224,9 @@ MCTtest(doses, drEst, S = vc, models = modlist, placAdj = TRUE,
 #> 
 #> Multiple Contrast Test:
 #>          t-Stat   adj-p
-#> emax      3.178 0.00182
+#> emax      3.178 0.00187
 #> logistic  3.164 0.00203
-#> linear    2.640 0.00965
+#> linear    2.640 0.00988
 #> linInt    2.247 0.02681
 
 ## example with general alternatives handed over

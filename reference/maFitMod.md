@@ -188,5 +188,5 @@ mFit
 plot(mFit, plotData = "meansCI")
 
 ED(mFit, direction = "increasing", p = 0.9)
-#> [1] 0.638
+#> [1] 0.45
 ```

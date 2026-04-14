@@ -91,9 +91,9 @@ den <- sqrt(diag(covMat))
 tStat <- ct/den
 corMat <- cov2cor(t(contMat) %*% vc %*% contMat)
 MCTpval(contMat, corMat, df=100-5, tStat)
-#> [1] 0.001566885 0.004235790 0.007480728 0.001206962
+#> [1] 0.001250101 0.004534531 0.007129837 0.001111040
 ## compare to
 test <- MCTtest(dose, resp, biom, models=modlist)
 attr(test$tStat, "pVal")
-#> [1] 0.001572649 0.004888976 0.007579961 0.001275986
+#> [1] 0.001434951 0.004199712 0.007229986 0.001094310
 ```

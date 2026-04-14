@@ -140,11 +140,11 @@ see also <code><a href="mvtnorm-control.html">mvtnorm.control()</a></code> for d
 <span class="r-in"><span><span class="va">tStat</span> <span class="op">&lt;-</span> <span class="va">ct</span><span class="op">/</span><span class="va">den</span></span></span>
 <span class="r-in"><span><span class="va">corMat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cov2cor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">contMat</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">vc</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">contMat</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">MCTpval</span><span class="op">(</span><span class="va">contMat</span>, <span class="va">corMat</span>, df<span class="op">=</span><span class="fl">100</span><span class="op">-</span><span class="fl">5</span>, <span class="va">tStat</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.001566885 0.004235790 0.007480728 0.001206962</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.001250101 0.004534531 0.007129837 0.001111040</span>
 <span class="r-in"><span><span class="co">## compare to</span></span></span>
 <span class="r-in"><span><span class="va">test</span> <span class="op">&lt;-</span> <span class="fu"><a href="MCTtest.html">MCTtest</a></span><span class="op">(</span><span class="va">dose</span>, <span class="va">resp</span>, <span class="va">biom</span>, models<span class="op">=</span><span class="va">modlist</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">test</span><span class="op">$</span><span class="va">tStat</span>, <span class="st">"pVal"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.001572649 0.004888976 0.007579961 0.001275986</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.001434951 0.004199712 0.007229986 0.001094310</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

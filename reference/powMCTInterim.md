@@ -112,36 +112,36 @@ powMCTInterim(
   contMat = contMat, S_0t = S_0t, S_01 = S_01, mu_0t = mu_0t,
   type = "predictive"
 )
-#> [1] 0.6973523
+#> [1] 0.0006866183
 #> attr(,"error")
-#> [1] 0.0003906307
+#> [1] 2.387509e-06
 #> attr(,"msg")
 #> [1] "Normal Completion"
 powMCTInterim(
   contMat = contMat, S_0t = S_0t, S_01 = S_01, mu_0t = mu_0t,
   type = "conditional", mu_assumed = mu_assumed
 )
-#> [1] 0.8650528
+#> [1] 0.06110965
 #> attr(,"error")
-#> [1] 0.0001563329
+#> [1] 0.0008431539
 #> attr(,"msg")
 #> [1] "Normal Completion"
 powMCTInterim(
   contMat = contMat, S_0t = S_0t, S_01 = S_01, mu_0t = mu_0t,
   type = "predictive", alternative = "two.sided"
 )
-#> [1] 0.6959777
+#> [1] 0.5590982
 #> attr(,"error")
-#> [1] 0.0004569151
+#> [1] 0.0005531084
 #> attr(,"msg")
 #> [1] "Normal Completion"
 powMCTInterim(
   contMat = contMat, S_0t = S_0t, S_01 = S_01, mu_0t = mu_0t,
   type = "predictive", control = mvtnorm.control(maxpts = 1e5)
 )
-#> [1] 0.6974567
+#> [1] 0.0007878812
 #> attr(,"error")
-#> [1] 0.0003386685
+#> [1] 0.000365923
 #> attr(,"msg")
 #> [1] "Normal Completion"
 ```

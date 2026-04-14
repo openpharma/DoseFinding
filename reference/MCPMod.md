@@ -302,7 +302,7 @@ MM # print method provides basic information
 #> emax2   3.464 < 0.001
 #> emax1   3.339 0.00150
 #> linear  2.972 0.00402
-#> linInt  2.486 0.01639
+#> linInt  2.486 0.01632
 #> 
 #> Estimated Dose Response Models:
 #> linear model
@@ -350,7 +350,7 @@ summary(MM) # more information
 #> emax2   3.464 < 0.001
 #> emax1   3.339 0.00150
 #> linear  2.972 0.00402
-#> linInt  2.486 0.01639
+#> linInt  2.486 0.01632
 #> 
 #> ***************************************
 #> Mod part 

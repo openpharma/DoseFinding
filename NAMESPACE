@@ -44,7 +44,6 @@ S3method(plot, Mods)
 S3method(AIC, DRMod)
 S3method(gAIC, DRMod)
 S3method(logLik, DRMod)
-S3method(gAIC, DRMod)
 
 S3method(predict, bFitMod)
 S3method(plot, bFitMod)

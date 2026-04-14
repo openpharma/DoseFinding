@@ -148,6 +148,8 @@ guesst <- function(d, p, model = c("emax", "exponential", "logistic", "quadratic
              (logistic(Maxd,0,1,par[1],par[2])-e0)-p)^2)
       }
       res <- try(optim(par=res, fn=foolog, d=d, p=p, Maxd=Maxd))
+      if(inherits(res, "try-error"))
+        stop("cannot find guesstimates for specified values")
       if(res$convergence > 0)
         stop("cannot find guesstimates for specified values")
       else res <- res$par
@@ -196,6 +198,8 @@ guesst <- function(d, p, model = c("emax", "exponential", "logistic", "quadratic
              sigEmax(Maxd,0,1,par[1],par[2])-p)^2)
       }
       res <- try(optim(par=res, fn=fooSE, d=d, p=p, Maxd=Maxd))
+      if(inherits(res, "try-error"))
+        stop("cannot find guesstimates for specified values")
       if(res$convergence > 0)
         stop("cannot find guesstimates for specified values")
       else res <- res$par

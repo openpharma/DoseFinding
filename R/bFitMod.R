@@ -152,6 +152,8 @@ bFitMod <- function(dose, resp, model, S, placAdj = FALSE,
     nodes <- dose
   
   ## model number
+  ## NB: this ordering is coupled to the C code (modNr is passed to
+  ## bFitMod.Bayes) and therefore differs from builtInMods on purpose.
   builtIn <- c("linear", "linlog", "quadratic", "linInt", "emax",
                "logistic", "exponential", "sigEmax", "betaMod")
   modNr <- match(model, builtIn)
@@ -329,7 +331,7 @@ plot.bFitMod <- function (x, plotType = c("dr-curve", "effect-curve"),
         sdev <- sqrt(diag(attr(x, "data")$S))
         q <- qnorm(1 - (1 - level)/2)
         LBm <- UBm <- numeric(length(dose))
-        for (i in 1:length(dose)) {
+        for (i in seq_along(dose)) {
           LBm[i] <- resp[i] - q * sdev[i]
           UBm[i] <- resp[i] + q * sdev[i]
         }
@@ -350,7 +352,7 @@ plot.bFitMod <- function (x, plotType = c("dr-curve", "effect-curve"),
       sdev <- sqrt(diag(attr(x, "data")$S))
       q <- qnorm(1 - (1 - level)/2)
       LBm <- UBm <- numeric(length(dose))
-      for (i in 1:length(dose)) {
+      for (i in seq_along(dose)) {
         LBm[i] <- resp[i] - q * sdev[i]
         UBm[i] <- resp[i] + q * sdev[i]
       }
@@ -373,7 +375,7 @@ plot.bFitMod <- function (x, plotType = c("dr-curve", "effect-curve"),
       points(dose, resp, pch = 19, cex = 0.75)
     if (plotData == "meansCI") {
       points(dose, resp, pch = 19, cex = 0.75)
-      for (i in 1:length(dose)) {
+      for (i in seq_along(dose)) {
         lines(c(dose[i], dose[i]), c(LBm[i], UBm[i]), 
               lty = 2)
       }

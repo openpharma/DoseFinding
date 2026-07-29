@@ -326,7 +326,7 @@ MCTpval <- function(contMat, corMat, df, tStat,
                   one.sided = matrix(rep(tStat, each = nMod), nrow = nMod),
                   two.sided = matrix(rep(tStat, each = nMod), nrow = nMod))
   pVals <- numeric(nMod)
-  for(i in 1:nMod){
+  for(i in seq_len(nMod)){
     tmp <- 1 - mvtnorm::pmvt(lower[,i], upper[,i], df = df,
                     corr = corMat, algorithm = ctrl)
     pVals[i] <- tmp

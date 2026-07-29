@@ -154,7 +154,7 @@ planMod <- function(model, altModels, n, sigma, S, doses,
                    linInt = length(doses),
                    nPars(model))
     bestPar <- matrix(nrow = ncol(muMat), ncol = npar) ## best fit by model to models in altModels
-    for(i in 1:ncol(muMat)){
+    for(i in seq_len(ncol(muMat))){
       ## if other model-class approximate best fit
       nam <- gsub("[0-9]", "", nams[i]) # model name (number removed)
       if(nam == model){
@@ -205,7 +205,7 @@ planMod <- function(model, altModels, n, sigma, S, doses,
   if(simulation){
     cat("Running simulations\n")
     requireNamespace("parallel", quietly = TRUE)
-    sim <- parallel::mclapply(1:ncol(muMat), function(i){
+    sim <- parallel::mclapply(seq_len(ncol(muMat)), function(i){
       if(showSimProgress){
         if(cores == 1){
           cat(sprintf("Scenario %d/%d\n", i, ncol(muMat)))
@@ -219,7 +219,7 @@ planMod <- function(model, altModels, n, sigma, S, doses,
       mse <- LBmn <- edpred <- resp <- numeric(nSim)
       coefs <- vector("list", length = nSim)
       modelSel <- character(nSim)
-      for(j in 1:nSim){
+      for(j in seq_len(nSim)){
         if(showSimProgress & cores == 1)
           setTxtProgressBar(pb, j/nSim)
         fit <- vector("list", length = length(model))
@@ -279,7 +279,7 @@ planMod <- function(model, altModels, n, sigma, S, doses,
     coefs <- lapply(sim, function(x) attr(x, "coefs"))
     modelSel <- sapply(sim, function(x) attr(x, "model"))
     names(NAind) <- colnames(modelSel) <- names(coefs) <- nams
-    rownames(modelSel) <- 1:nSim
+    rownames(modelSel) <- seq_len(nSim)
     sim <- do.call("rbind", sim)
     colnames(sim) <- c("dRMSE", "Pow(maxDose)", "P(EDp)")
     rownames(sim) <- nams
@@ -390,7 +390,7 @@ print.summary.planMod <- function(x, digits = 3, len = 101,
   if(!is.null(p)){
     eds <- getSimEst(x, "ED", p=p)
   }
-  for(i in 1:ncol(muMat)){
+  for(i in seq_len(ncol(muMat))){
     out[i,1] <- mseANOVA/x$sim[i,1]^2
     ## calculate mse of estimating the plac-adj dose-response at fine grid
     ## first calculate placebo-adjusted predictions

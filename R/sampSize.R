@@ -308,7 +308,7 @@ targN <- function(upperN, lowerN, step, targFunc,
     colnames(out) <- ""
   }
   out2 <- out
-  for(i in 1:length(sumFct)){
+  for(i in seq_along(sumFct)){
     out2 <- cbind(out2, apply(out, 1, sumFct[i]))
   }
   dimnames(out2) <- list(nseq, c(colnames(out), sumFct))

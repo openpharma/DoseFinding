@@ -190,7 +190,7 @@ guesst <- function(d, p, model = c("emax", "exponential", "logistic", "quadratic
       x <- log(d)
       par <- coef(lm(y~x))
       names(par) <- NULL
-      res <- c(ed50 = exp(par[1]/-par[2]), delta = -par[2])
+      res <- c(ed50 = exp(par[1]/-par[2]), h = -par[2])
     }
     if(local) {
       fooSE <- function(par, d, p, Maxd) {

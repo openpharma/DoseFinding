@@ -53,7 +53,7 @@ aprCov <- function(doses, model, cf, S, off, scal){
 tableMatch <- function(x, match){
   ## like "table", but also returns categories with 0 counts
   out <- numeric(length(match))
-  for(i in 1:length(match)){
+  for(i in seq_along(match)){
     out[i] <- sum(x == match[i], na.rm=TRUE)
   }
   names(out) <- match
@@ -81,13 +81,13 @@ getSimEst <- function(x, type = c("dose-response", "ED", "TD"),
       stop("\"Delta\" needs to be > 0")
   }
   out <- vector("list", nAlt)
-  for(i in 1:nAlt){
+  for(i in seq_len(nAlt)){
     ind <- matrix(ncol = length(model), nrow = nSim)
     if(type == "dose-response"){
       resMat <- matrix(nrow = nSim, ncol = length(doseSeq))
       colnames(resMat) <- doseSeq
-      rownames(resMat) <- 1:nSim
-      for(j in 1:length(model)){
+      rownames(resMat) <- seq_len(nSim)
+      for(j in seq_along(model)){
         ind[,j] <- modelSel[,i] == model[j]
         if(any(ind[,j])){
           cf <- do.call("rbind", (coefs[[i]])[ind[,j]])
@@ -101,7 +101,7 @@ getSimEst <- function(x, type = c("dose-response", "ED", "TD"),
     }
     if(is.element(type, c("TD", "ED"))){
       resVec <- numeric(nSim)
-      for(j in 1:length(model)){
+      for(j in seq_along(model)){
         ind[,j] <- modelSel[,i] == model[j]
         if(any(ind[,j])){
           cf <- do.call("rbind", (coefs[[i]])[ind[,j]])
@@ -139,7 +139,7 @@ plotDoseSims <- function(x, type = c("ED", "TD"), p, Delta, xlab){
   }
   ## write plotting data frame
   nams <- names(out)
-  group <- factor(rep(1:length(nams), each=length(out[[1]])), labels=nams)
+  group <- factor(rep(seq_along(nams), each=length(out[[1]])), labels=nams)
   pdat <- data.frame(est = do.call("c", out),
                      group = group)
   ## determine limits for x-axis

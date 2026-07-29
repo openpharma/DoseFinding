@@ -2,7 +2,7 @@
 
 checkPrior <- function(prior){
   z <- 1
-  for(z in 1:length(prior)){
+  for(z in seq_along(prior)){
     prvec <- prior[[z]]
     nam <- names(prior)[z]
     if(!all(is.numeric(prvec)))
@@ -32,7 +32,7 @@ checkPrior <- function(prior){
 
 getPrBnds <- function(prior){
   prbnds <- matrix(ncol = 2, nrow = length(prior))
-  for(z in 1:length(prior)){
+  for(z in seq_along(prior)){
     prvec <- prior[[z]]
     nam <- names(prior)[z]
     if(nam %in% c("norm", "t"))
@@ -104,11 +104,11 @@ bFitMod.Bayes <- function(dose, resp, S, model, placAdj,
                    placAdj = placAdj, addArgs=list(off = off, scal = scal))
     if(is.null(start)){
       start <- coef(gfit)
-      for(i in 1:length(start)){
+      for(i in seq_along(start)){
         start[i] <- projPrBnds(start[i], prBnds[i,1], prBnds[i,2])
       }
     } else {
-      for(i in 1:length(start)){
+      for(i in seq_along(start)){
         if((start[i] < prBnds[i,1]) | (start[i] > prBnds[i,2]))
           stop("specified start value not consistent with bounds on prior distribution")
       }

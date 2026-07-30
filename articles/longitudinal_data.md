@@ -8,6 +8,7 @@ futility analyses during the trial, following Bornkamp et al.
 ([2024](#ref-bornkamp2024)).
 
 ``` r
+
 library(DoseFinding)
 ```
 
@@ -32,6 +33,7 @@ visit). It returns a matrix of mean responses, where the rows correspond
 to doses and the columns correspond to time points.
 
 ``` r
+
 calcMean <- function(dose, times, maxEff) {
   emaxLastVisit <- Mods(emax = 1, doses = dose, maxEff = maxEff)$emax["eMax"]
   maxTime <- max(times)
@@ -70,6 +72,7 @@ for `calcMean` above, plus the baseline mean `bslMean`, and the standard
 deviation `errSD` and constant correlation `rho` of the residuals:
 
 ``` r
+
 parGen <- function(times, doses, maxEff, bslMean = 0, errSD = 0.55, rho = 0.9) {
   times <- sort(times)
   ndim <- length(times)
@@ -178,6 +181,7 @@ distribution of the recruitment time can be specified by `RecrDist` and
     N\\.
 
 ``` r
+
 datGen <- function(N = 300, pars, doses, alRatio, LPFV.t, RecrDist = "Quad", RandRecr = TRUE) {
   K <- length(doses)
   nt <- length(pars$visit)
@@ -284,6 +288,7 @@ distribution of the last visit `dist` (i.e., the number of patients with
 their last visit at each time point).
 
 ``` r
+
 intDat <- function(data, pct = 0.5) {
   N <- max(data$SUBJID)
   tmax <- max(data$week)
@@ -359,6 +364,7 @@ Let’s code these in two corresponding functions:
 ### Completers Analysis
 
 ``` r
+
 analyzeCompleters <- function(dat, eval.time = "Week12") {
   complDat <- dat |> 
     dplyr::filter(Visit == eval.time)
@@ -398,6 +404,7 @@ resultCompleters
 ### Repeated Measures Analysis
 
 ``` r
+
 analyzeRepeated <- function(dat, eval.time = "Week12") {
   form <- "response ~  Visit + Dose + base + Dose*Visit + base*Visit"
   postBaselineDat <- dat |>
@@ -456,6 +463,7 @@ levels and the models we want to test: Here we just use three models, it
 could be more in practice.
 
 ``` r
+
 doses <- c(0, 0.5, 1, 2, 4)
 models <- Mods(
   emax = 2,
@@ -509,6 +517,7 @@ testFinal
     Critical value: 2.18 (alpha = 0.025, one-sided)
 
 ``` r
+
 testFinal$critV
 ```
 
@@ -517,6 +526,7 @@ testFinal$critV
     [1] TRUE
 
 ``` r
+
 testFinal$tStat
 ```
 
@@ -526,6 +536,7 @@ testFinal$tStat
     [1] 3.940677e-05 2.383234e-04 2.215375e-04
 
 ``` r
+
 attr(testFinal$tStat, "pVal")
 ```
 
@@ -559,6 +570,7 @@ ingredients:
 Let’s calculate these now for the example interim data from above:
 
 ``` r
+
 w <- rep(1, length(doses))
 contMat <- optContr(models = models, w = w)$contMat
 
@@ -585,6 +597,7 @@ predPower
     [1] "Normal Completion"
 
 ``` r
+
 # Conditional power:
 deltaAssumed <- pars$MeanMat[, "Week10"] - pars$bslMean 
 deltaAssumed <- deltaAssumed - deltaAssumed[1]  # assumed treatment difference vs placebo
@@ -623,6 +636,7 @@ code can also be used to reproduce the simulation study in Section 4.1
 of Bornkamp et al. ([2024](#ref-bornkamp2024)).
 
 ``` r
+
 ##' @param times Vector assessment times
 ##' @param bslMean Mean at baseline
 ##' @param errSD Residual standard deviation (on absolute scale)
@@ -775,6 +789,7 @@ run_scen <- function(n_sim, rho, maxEff,
 These functions can be used as follows:
 
 ``` r
+
 doses <- c(0, 0.5, 1, 2, 4, 8) # doses
 alRatio <- c(2, 1, 1, 1, 2, 2) # allocation ratio for doses
 alpha <- 0.025 # for MCTtest

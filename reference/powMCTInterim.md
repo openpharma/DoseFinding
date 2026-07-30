@@ -87,6 +87,7 @@ MCP-Mod methodology based on longitudinal models.” 2406.19965,
 ## Examples
 
 ``` r
+
 # Setup the scenario.
 doses <- c(0, 0.5, 1, 2, 4, 8)
 mods <- Mods(

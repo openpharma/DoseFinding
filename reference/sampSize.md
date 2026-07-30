@@ -155,6 +155,7 @@ Jose Pinheiro, Bjoern Bornkamp
 ## Examples
 
 ``` r
+
 ## sampSize examples
 
 ## first define the target function

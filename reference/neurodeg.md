@@ -59,6 +59,7 @@ generalized MCPMod methodology.
 ## Examples
 
 ``` r
+
 if (FALSE) { # \dontrun{
 ## reproduce analysis from Pinheiro et al. (2014)
 data(neurodeg)

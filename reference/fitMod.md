@@ -277,6 +277,7 @@ Bjoern Bornkamp
 ## Examples
 
 ``` r
+
 ## Fit the emax model to the IBScovars data set
 data(IBScovars)
 fitemax <- fitMod(dose, resp, data=IBScovars, model="emax",

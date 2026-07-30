@@ -166,6 +166,7 @@ Marius Thomas
 
 ``` r
 
+
 if (require("RBesT")) {
 
 ###############################
@@ -265,7 +266,7 @@ cmat <- optContr(modlist, w = weights)
 bMCTtest(dose, resp, biom, models=modlist, prior = prior, contMat = cmat)
 }
 #> Loading required package: RBesT
-#> This is RBesT version 1.9.0 (released 2026-03-13, git-sha 30cf4cd)
+#> This is RBesT version 1.10.0 (released 2026-07-01, git-sha 6d43b8e)
 #> Using default prior reference scale 0.7
 #> Using default prior reference scale 0.7
 #> Using default prior reference scale 0.7

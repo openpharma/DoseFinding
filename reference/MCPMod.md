@@ -285,6 +285,7 @@ Bjoern Bornkamp
 ## Examples
 
 ``` r
+
 data(biom)
 ## first define candidate model set (only need "standardized" models)
 models <- Mods(linear = NULL, emax=c(0.05,0.2), linInt=c(1, 1, 1, 1),

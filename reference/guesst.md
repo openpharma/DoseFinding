@@ -118,6 +118,7 @@ studies—modeling approaches.” In *Dose Finding in Drug Development*,
 ## Examples
 
 ``` r
+
 ## Emax model
 ## Expected percentage of maximum effect: 0.8 is associated with
 ## dose 0.3 (d,p)=(0.3, 0.8), dose range [0,1]

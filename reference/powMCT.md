@@ -110,6 +110,7 @@ Bjoern Bornkamp
 ## Examples
 
 ``` r
+
 ## look at power under some dose-response alternatives
 ## first the candidate models used for the contrasts
 doses <- c(0,10,25,50,100,150)

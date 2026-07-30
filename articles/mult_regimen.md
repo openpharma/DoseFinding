@@ -57,6 +57,7 @@ Also as discussed above everything is modeled on the total daily dose
 scale.
 
 ``` r
+
 library(DoseFinding)
 library(ggplot2)
 ## collect estimates and dosage information in one place
@@ -105,6 +106,7 @@ Even though not necessary and not always desired we will use the same
 candidate models for both regimen here.
 
 ``` r
+
 mods <- list(
   od = Mods(emax = c(5, 50),
             sigEmax = rbind(c(75, 3.5), c(25, 0.7)),
@@ -121,6 +123,7 @@ plotMods(mods$od, superpose = TRUE, xlab = "daily dose")
 ![](mult_regimen_files/figure-html/candidate_models-1.png)
 
 ``` r
+
 plotMods(mods$bid, superpose = TRUE, xlab = "daily dose")
 ```
 
@@ -134,6 +137,7 @@ regimen. We stick them together in such a way that we compare
 common placebo response estimate \\\hat\mu\_{\mathrm{placebo}}\\.
 
 ``` r
+
 calculate_contrasts <- function(est, mods) {
   S_hat <- est$S_hat
   i <- est$index
@@ -184,6 +188,7 @@ print(round(cont_mat, 2))
 We also need to calculate the test statistics by hand.
 
 ``` r
+
 mct_test <- function(cont_mat, est) {
   cont_cov <- t(cont_mat) %*% est$S_hat %*% cont_mat
   t_stat <- drop(est$mu_hat %*% cont_mat) / sqrt(diag(cont_cov))
@@ -220,6 +225,7 @@ The following function calculates the responses given dose values and a
 model family.
 
 ``` r
+
 ## calculate response under `model` for od/bid with common e0, but separate remaining parameters
 ## arguments:
 ## - model: as a string like "emax",
@@ -241,6 +247,7 @@ i.e. generalized least squares with the estimated covariance matrix
 \\\hat S\\ ([Pinheiro et al. 2014](#ref-pinheiro2014)).
 
 ``` r
+
 ## find sensible starting values for `fit_model_shared_e0` by fitting separate models,
 ## index:  list of vectors named "placebo", "od", "bid", used for indexing `dose`
 ## bounds: passed through to `fitMod`
@@ -278,6 +285,7 @@ analysis of continuous
 data](https://openpharma.github.io/DoseFinding/articles/analysis_normal.html#dose-response-estimation).
 
 ``` r
+
 ## predict population response in each regimen for dose_seq_*
 ## note: both dose_seq_* vectors should contain a 0 if response at placebo is of interest
 one_bootstrap_sample <- function(est, dose_seq_od, dose_seq_bid) {

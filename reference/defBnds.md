@@ -54,6 +54,7 @@ Bjoern Bornkamp
 ## Examples
 
 ``` r
+
   defBnds(mD = 1)
 #> $emax
 #> [1] 0.001 1.500

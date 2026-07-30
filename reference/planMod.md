@@ -235,6 +235,7 @@ Bjoern Bornkamp
 ## Examples
 
 ``` r
+
 if (FALSE) { # \dontrun{
 doses <- c(0,10,25,50,100,150)
 fmodels <- Mods(linear = NULL, emax = 25,

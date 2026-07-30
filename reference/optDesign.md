@@ -266,6 +266,7 @@ Bjoern Bornkamp
 ## Examples
 
 ``` r
+
 ## calculate designs for Emax model
 doses <- c(0, 10, 100)
 emodel <- Mods(emax = 15, doses=doses, placEff = 0, maxEff = 1)

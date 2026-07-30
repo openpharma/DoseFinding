@@ -9,6 +9,7 @@ in the [vignette for analysis of normally distributed
 data](https://openpharma.github.io/DoseFinding/articles/analysis_normal.md).
 
 ``` r
+
 library(DoseFinding)
 library(ggplot2)
 doses <- c(0, 12.5, 25, 50, 100)
@@ -35,6 +36,7 @@ the residual standard deviation with `sigma = 0.34`, and calculate the
 power for a one-sided test at level 0.05.
 
 ``` r
+
 contMat <- optContr(mods, w=1)
 pows <- powN(upperN = 100, lowerN = 10, step = 10, contMat = contMat,
              sigma = 0.34, altModels = mods, alpha = 0.05, alRatio = rep(1, 5))
@@ -52,6 +54,7 @@ alternative model are combined with `sumFct`. Here we look at the
 minimum power, other potential choices are `mean` or `max`.
 
 ``` r
+
 sampSizeMCT(upperN = 150, contMat = contMat, sigma = 0.34, altModels = mods,
             power = 0.9, alRatio = rep(1, 5), alpha = 0.05, sumFct = min)
 ```
@@ -70,6 +73,7 @@ treatment Effect `maxEff`. Note how power decreases if we assume a
 higher residual standard deviation.
 
 ``` r
+
 plot_power_vs_treatment_effect <- function(guess, doses, group_size, placEff, maxEffs,
                                            sigma_low, sigma_mid, sigma_high, alpha) {
   mods_args_fixed <- append(guess, list(placEff = placEff, doses = doses))
@@ -114,6 +118,7 @@ achieved for the 50μg dose, so this shape is quite different from all
 other shapes included in the candidate set.
 
 ``` r
+
 guess_miss <- list(exponential = guesst(50, 0.2, "exponential", Maxd = max(doses)))
 mods_miss <- do.call(Mods, c(guess, guess_miss, list(placEff = 1.25, maxEff = 0.15, doses = doses)))
 plot(mods_miss, superpose = TRUE)
@@ -126,6 +131,7 @@ those based on the original candidate set, in both cases only the
 contrasts from the original candidate set are used.
 
 ``` r
+
 plot_power_misspec <- function(guess, guess_miss, placEff, maxEff, doses,
                                upperN, lowerN, step, sigma, alpha) {
   mods_extra_par <- list(placEff = placEff, maxEff = maxEff, doses = doses)
@@ -177,8 +183,8 @@ is usually several-fold higher than the sample size needed to have
 adequate power for the MCP-part. This should not come as a surprise as
 dose-estimation is primarily a comparison among the investigational
 doses, while the MCP-part establishes an effect versus placebo. Chapter
-12 in O’Quigley, Iasonos, and Bornkamp (2017a) illustrates this with
-simulations, based on the `planMod` function (see
+12 in O’Quigley et al. (2017a) illustrates this with simulations, based
+on the `planMod` function (see
 [`?planMod`](https://openpharma.github.io/DoseFinding/reference/planMod.md)
 for example usage).
 
@@ -194,6 +200,7 @@ estimation would be. To answer it, we can run a simulation using the
 calculation above, we find:
 
 ``` r
+
 set.seed(42)
 ## Note: Warnings related to vcov.DRMod can be ignored if small relative to the total number of simulations
 pm <- planMod("sigEmax", Mods(sigEmax=c(30.5, 3.5), placEff=1.25, maxEff=0.15, doses=doses),
@@ -204,6 +211,7 @@ pm <- planMod("sigEmax", Mods(sigEmax=c(30.5, 3.5), placEff=1.25, maxEff=0.15, d
     Running simulations
 
 ``` r
+
 summary(pm,  Delta=0.12)
 ```
 
@@ -226,6 +234,7 @@ values of `n`, one quickly realizes that we would need for example 1650
 patients to get the length of this interval down to 20 mg.
 
 ``` r
+
 pm <- planMod("sigEmax", Mods(sigEmax=c(30.5, 3.5), placEff=1.25, maxEff=0.15, doses=doses),
               n=1650, sigma = 0.34, doses=doses, simulation=TRUE, nSim=5000, showSimProgress = FALSE,
               bnds = defBnds(max(doses)))
@@ -234,6 +243,7 @@ pm <- planMod("sigEmax", Mods(sigEmax=c(30.5, 3.5), placEff=1.25, maxEff=0.15, d
     Running simulations
 
 ``` r
+
 summary(pm, Delta=0.12)
 ```
 
@@ -243,7 +253,7 @@ summary(pm, Delta=0.12)
 
 Note that the variability in TD estimation depends quite strongly on the
 assumed true dose-response model, see the simulation results in Chapter
-12 in O’Quigley, Iasonos, and Bornkamp (2017b).
+12 in O’Quigley et al. (2017b).
 
 In practice, to keep the size of the study feasible, one needs to find a
 compromise between dose-response signal detection and estimation
@@ -263,6 +273,6 @@ O’Quigley, John, Alexia Iasonos, and Björn Bornkamp. 2017a. *Handbook of
 Methods for Designing, Monitoring, and Analyzing Dose-Finding Trials*.
 CRC Press. <https://doi.org/10.1201/9781315151984>.
 
-———. 2017b. “Part III: Phase II Dose-Finding Trials.” In *Handbook of
-Methods for Designing, Monitoring, and Analyzing Dose-Finding Trials*.
-CRC press.
+O’Quigley, John, Alexia Iasonos, and Björn Bornkamp. 2017b. “Part III:
+Phase II Dose-Finding Trials.” In *Handbook of Methods for Designing,
+Monitoring, and Analyzing Dose-Finding Trials*. CRC press.

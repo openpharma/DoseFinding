@@ -36,6 +36,7 @@ mean (standard error) of the primary endpoint for each group, while `n`
 denotes the number of participants.
 
 ``` r
+
 library(DoseFinding)
 data(glycobrom)
 print(glycobrom)
@@ -60,6 +61,7 @@ Note that here we use
 *sample* mean and sd.
 
 ``` r
+
 set.seed(1, kind = "Mersenne-Twister", sample.kind = "Rejection", normal.kind = "Inversion")
 rand <- rep(MASS::mvrnorm(60, 0, 60 * 0.015^2, empirical = TRUE), 5)
 NVA <- data.frame(dose = rep(glycobrom$dose, each = 60),
@@ -108,6 +110,7 @@ Note the syntax of the arguments to the `Mods` function:
 `sigEmax = c(30.5, 3.5)` only specifies *one* Sigmoid Emax model.
 
 ``` r
+
 doses <- c(0, 12.5, 25, 50, 100)
 mods <- Mods(emax = c(2.6, 12.5), sigEmax = c(30.5, 3.5), quadratic = -0.00776,
              placEff = 1.25, maxEff = 0.15, doses = doses)
@@ -117,6 +120,7 @@ It’s always a good idea to perform a visual sanity check of the
 functional relationships implied by the guesstimates.
 
 ``` r
+
 plotMods(mods, ylab = "FEV1")
 ```
 
@@ -130,6 +134,7 @@ hypothetical world where the particular guesstimate is actually the true
 value.
 
 ``` r
+
 optC <- optContr(mods, w=1)
 print(optC)
 ```
@@ -143,6 +148,7 @@ print(optC)
     100   0.294  0.452   0.597     0.236
 
 ``` r
+
 plot(optC)
 ```
 
@@ -177,6 +183,7 @@ are taken from a multivariate t distribution. Further note that when
 evaluated*, but symbolically refer to the columns in `data=NVA`.
 
 ``` r
+
 test_normal <- MCTtest(dose = dose, resp = FEV1, models = mods, data = NVA)
 print(test_normal)
 ```
@@ -215,6 +222,7 @@ coefficients and their covariance matrix. We also need the model degrees
 of freedom.
 
 ``` r
+
 fitlm <- lm(FEV1 ~ factor(dose) - 1, data = NVA)
 mu_hat <- coef(fitlm)
 S_hat <- vcov(fitlm)
@@ -227,6 +235,7 @@ supply the `doses` and the estimates `mu_hat` and `S_hat` directly and
 not within a `data.frame`.
 
 ``` r
+
 test_general <- MCTtest(dose = doses, resp = mu_hat, S = S_hat, df = anova_df,
                         models = mods, type = "general")
 print(test_general)
@@ -261,6 +270,7 @@ generalized MCP-Mod approaches actually coincide. The p-values differ
 due to the numerical methods used for obtaining them.
 
 ``` r
+
 cbind(normal = test_normal$tStat, generalized = test_general$tStat)
 ```
 
@@ -271,6 +281,7 @@ cbind(normal = test_normal$tStat, generalized = test_general$tStat)
     quadratic 7.016303    7.016303
 
 ``` r
+
 cbind(normal = attr(test_normal$tStat, "pVal"), generalized = attr(test_general$tStat, "pVal"))
 ```
 
@@ -287,6 +298,7 @@ type, for example the one with the largest t-statistic (or alternatively
 smallest AIC or BIC):
 
 ``` r
+
 fit_single <- fitMod(dose, FEV1, NVA, model = "emax")
 plot(fit_single)
 ```
@@ -323,6 +335,7 @@ fit an ANOVA model without intercept and extract estimates for the model
 coefficients and their covariance matrix.
 
 ``` r
+
 fitlm <- lm(FEV1 ~ factor(dose) - 1, data = NVA)
 dose <- unique(NVA$dose)
 mu_hat <- coef(fitlm)
@@ -338,6 +351,7 @@ and
 for details).
 
 ``` r
+
 fit_mod_av <- maFitMod(dose, mu_hat, S = S_hat,
                        models = c("emax", "sigEmax", "quadratic"))
 ```
@@ -348,6 +362,7 @@ model fits (some limited customization is possible see
 [`?plot.maFit`](https://openpharma.github.io/DoseFinding/reference/maFitMod.md)).
 
 ``` r
+
 # point estimates (median) and bootstrap quantile intervals can be extracted via
 ma_pred <- predict(fit_mod_av, doseSeq = c(0, 12.5, 25, 50, 100))
 # individual bootstrap estimates via

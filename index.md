@@ -16,6 +16,7 @@ You can install the development version of DoseFinding from
 [GitHub](https://github.com/) with:
 
 ``` r
+
 # install.packages("devtools")
 devtools::install_github("openpharma/DoseFinding")
 ```
@@ -25,6 +26,7 @@ devtools::install_github("openpharma/DoseFinding")
 ### Performing multiple contrast tests
 
 ``` r
+
 library(DoseFinding)
 data(IBScovars)
 
@@ -42,6 +44,7 @@ plot(models)
 ![](reference/figures/README-example1-1.png)
 
 ``` r
+
 ## perform multiple contrast test
 MCTtest(dose, resp, IBScovars, models=models,
                 addCovars = ~ gender)
@@ -71,6 +74,7 @@ MCTtest(dose, resp, IBScovars, models=models,
 ### Fitting non-linear dose-response model
 
 ``` r
+
 ## fit non-linear emax dose-response model
 fitemax <- fitMod(dose, resp, data=IBScovars, model="emax",
                   bnds = c(0.01,5))
@@ -83,6 +87,7 @@ plot(fitemax, CI=TRUE, plotData="meansCI")
 ### Optimal designs for dose estimation
 
 ``` r
+
 ## Calculate optimal designs for target dose (TD) estimation
 doses <- c(0, 10, 25, 50, 100, 150)
 fmodels <- Mods(linear = NULL, emax = 25, exponential = 85,
@@ -94,6 +99,7 @@ plot(fmodels, plotTD = TRUE, Delta = 0.2)
 ![](reference/figures/README-example3-1.png)
 
 ``` r
+
 weights <- rep(1/4, 4)
 optDesign(fmodels, weights, Delta=0.2, designCrit="TD")
 #> Calculated TD - optimal design:

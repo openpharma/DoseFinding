@@ -47,6 +47,7 @@ dose.
 ## Examples
 
 ``` r
+
  ## simulate a full data set with given means and sdv (here we ignore
   ## the original study was a cross-over design, and simulate a parallel
   ## group design)

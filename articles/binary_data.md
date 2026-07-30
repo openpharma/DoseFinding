@@ -25,6 +25,7 @@ effect of 25 percentage points above placebo becomes
 `logit(0.35) - logit(0.1)`, approximately 1.6.
 
 ``` r
+
 library(DoseFinding)
 library(ggplot2)
 
@@ -52,6 +53,7 @@ We will use the following candidate set of models for the mean response
 on the logit scale:
 
 ``` r
+
 mods <- Mods(emax = c(0.25, 1), sigEmax = rbind(c(1, 3), c(2.5, 4)), betaMod = c(1.1, 1.1),
              placEff = logit(0.1), maxEff = logit(0.35)-logit(0.1),
              doses = doses)
@@ -61,6 +63,7 @@ plotMods(mods)
 ![](binary_data_files/figure-html/setup-1.png)
 
 ``` r
+
 ## plot candidate models on probability scale
 plotMods(mods, trafo = inv_logit)
 ```
@@ -83,6 +86,7 @@ matrix \\\hat S\\. We can extract both from the object returned by the
 [`glm()`](https://rdrr.io/r/stats/glm.html) call.
 
 ``` r
+
 fit_nocov <- glm(y~factor(dose) + 0, data = dat, family = binomial)
 mu_hat <- coef(fit_nocov)
 S_hat <- vcov(fit_nocov)
@@ -123,6 +127,7 @@ Fitting is done on the logit scale, for plotting transfer the fit back
 to the probability scale.
 
 ``` r
+
 fit_mod_av <- maFitMod(doses, mu_hat, S = S_hat,
                        models = c("emax", "sigEmax", "betaMod"))
 plot(fit_mod_av, plotData = "meansCI",
@@ -169,6 +174,7 @@ Then we use \\\mu^\*\\ and \\S^\*\\ in
 [`MCTtest()`](https://openpharma.github.io/DoseFinding/reference/MCTtest.md).
 
 ``` r
+
 fit_cov <- glm(y~factor(dose) + 0 + x1 + x2, data = dat, family = binomial)
 
 covariate_adjusted_estimates <- function(mu_hat, S_hat, formula_rhs, doses, other_covariates, n_sim) {
@@ -220,6 +226,7 @@ In the case at hand the results here are not dramatically different.
 Adjusting for covariates gives slightly lower variance estimates.
 
 ``` r
+
 ggplot(data.frame(dose = rep(doses, 4),
                   est = c(inv_logit(mu_hat), diag(S_hat), inv_logit(ca$mu_star), diag(ca$S_star)),
                   name = rep(rep(c("mean", "var"), each = length(doses)), times = 2),
@@ -235,6 +242,7 @@ Dose-response modelling proceeds in the same way as before, but now on
 the adjusted estimates.
 
 ``` r
+
 fit_cov_adj <- maFitMod(doses, ca$mu_star, S = ca$S_star,
                         models = c("emax", "sigEmax", "betaMod"))
 # plotting on probability scale, need to transform predictions on logit scale
@@ -295,6 +303,7 @@ function. In our case (with 100 patients per group) we obtain a result
 that is only slightly different.
 
 ``` r
+
 ## here we have balanced sample sizes across groups, so we select w = 1
 ## otherwise would select w proportional to group sample sizes
 optCont <- optContr(mods, doses, w = 1)
@@ -344,6 +353,7 @@ See also the [vignette on sample size
 calculation](https://openpharma.github.io/DoseFinding/articles/sample_size.md).
 
 ``` r
+
 ## for simplicity: contrasts as discussed in the previous section
 contMat <- optContr(mods, w=1)
 

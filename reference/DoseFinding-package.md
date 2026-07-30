@@ -92,6 +92,7 @@ Other contributors:
 ## Examples
 
 ``` r
+
 data(IBScovars)
 
 ## perform (model based) multiple contrast test

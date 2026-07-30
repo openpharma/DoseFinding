@@ -142,6 +142,7 @@ Bjoern Bornkamp
 ## Examples
 
 ``` r
+
 doses <- c(0,10,25,50,100,150)
 models <- Mods(linear = NULL, emax = 25,
                logistic = c(50, 10.88111), exponential= 85,

@@ -30,6 +30,7 @@ Below a short overview of the main functions.
 ## Perform multiple contrast test
 
 ``` r
+
 library(DoseFinding)
 data(IBScovars)
 head(IBScovars)
@@ -44,6 +45,7 @@ head(IBScovars)
     6      1 0.1571429    1
 
 ``` r
+
 ## perform (model based) multiple contrast test
 ## define candidate dose-response shapes
 models <- Mods(linear = NULL, emax = 0.2, quadratic = -0.17,
@@ -55,6 +57,7 @@ plotMods(models)
 ![](overview_files/figure-html/overview-1.png)
 
 ``` r
+
 ## perform multiple contrast test
 ## functions powMCT and sampSizeMCT provide tools for sample size
 ## calculation for multiple contrast tests
@@ -88,6 +91,7 @@ test
 ## Fit non-linear dose-response models here illustrated with Emax model
 
 ``` r
+
 fitemax <- fitMod(dose, resp, data=IBScovars, model="emax",
                   bnds = c(0.01,5))
 ## display fitted dose-effect curve
@@ -99,6 +103,7 @@ plot(fitemax, CI=TRUE, plotData="meansCI")
 ## Calculate optimal designs, here illustrated for target dose (TD) estimation
 
 ``` r
+
 ## optimal design for estimation of the smallest dose that gives an
 ## improvement of 0.2 over placebo, a model-averaged design criterion
 ## is used (over the models defined in Mods)
@@ -112,6 +117,7 @@ plot(fmodels, plotTD = TRUE, Delta = 0.2)
 ![](overview_files/figure-html/overview%203-1.png)
 
 ``` r
+
 weights <- rep(1/4, 4)
 desTD <- optDesign(fmodels, weights, Delta=0.2, designCrit="TD")
 desTD
@@ -122,6 +128,7 @@ desTD
     0.34960 0.09252 0.00366 0.26760 0.13342 0.15319 
 
 ``` r
+
 plot(desTD, fmodels)
 ```
 

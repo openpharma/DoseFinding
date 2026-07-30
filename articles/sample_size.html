@@ -13,8 +13,8 @@
     }
   };
 </script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Sample size calculations for MCP-Mod">
 </head>
@@ -234,9 +234,9 @@ improvement over placebo) is usually several-fold higher than the sample
 size needed to have adequate power for the MCP-part. This should not
 come as a surprise as dose-estimation is primarily a comparison among
 the investigational doses, while the MCP-part establishes an effect
-versus placebo. Chapter 12 in <span class="citation">O’Quigley, Iasonos,
-and Bornkamp (2017a)</span> illustrates this with simulations, based on
-the <code>planMod</code> function (see <code><a href="../reference/planMod.html">?planMod</a></code> for example
+versus placebo. Chapter 12 in <span class="citation">O’Quigley et al.
+(2017a)</span> illustrates this with simulations, based on the
+<code>planMod</code> function (see <code><a href="../reference/planMod.html">?planMod</a></code> for example
 usage).</p>
 <p>Here we only consider a brief example: Consider the
 <code>sigEmax(30.5, 3.5)</code> model from the first section and assume
@@ -285,7 +285,7 @@ mg.</p>
 sigEmax          1.4 0.0102       20.2   0.0034         NA</code></pre>
 <p>Note that the variability in TD estimation depends quite strongly on
 the assumed true dose-response model, see the simulation results in
-Chapter 12 in <span class="citation">O’Quigley, Iasonos, and Bornkamp
+Chapter 12 in <span class="citation">O’Quigley et al.
 (2017b)</span>.</p>
 <p>In practice, to keep the size of the study feasible, one needs to
 find a compromise between dose-response signal detection and estimation
@@ -301,16 +301,17 @@ tolerability or safety markers, will contribute to that decision.</p>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-oquigley2017b" class="csl-entry">
 O’Quigley, John, Alexia Iasonos, and Björn Bornkamp. 2017a. <em>Handbook
 of Methods for Designing, Monitoring, and Analyzing Dose-Finding
 Trials</em>. CRC Press. <a href="https://doi.org/10.1201/9781315151984" class="external-link">https://doi.org/10.1201/9781315151984</a>.
 </div>
 <div id="ref-oquigley2017" class="csl-entry">
-———. 2017b. <span>“Part III: Phase II Dose-Finding Trials.”</span> In
-<em>Handbook of Methods for Designing, Monitoring, and Analyzing
-Dose-Finding Trials</em>. CRC press.
+O’Quigley, John, Alexia Iasonos, and Björn Bornkamp. 2017b. <span>“Part
+III: Phase II Dose-Finding Trials.”</span> In <em>Handbook of Methods
+for Designing, Monitoring, and Analyzing Dose-Finding Trials</em>. CRC
+press.
 </div>
 </div>
 </div>
@@ -325,7 +326,7 @@ Dose-Finding Trials</em>. CRC press.
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

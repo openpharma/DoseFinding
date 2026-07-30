@@ -58,6 +58,7 @@ Bjoern Bornkamp
 ## Examples
 
 ``` r
+
 R <- matrix(c(1,0.5,0.5,1), nrow=2)
 critVal(R, alpha = 0.05, df = 1)
 #> [1] 9.509978

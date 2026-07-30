@@ -200,6 +200,7 @@ Bjoern Bornkamp
 ## Examples
 
 ``` r
+
 ## Example on how to specify candidate models
 
 ## Suppose one would like to use the following models with the specified

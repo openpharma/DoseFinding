@@ -227,6 +227,7 @@ studies—modeling approaches.” In *Dose Finding in Drug Development*,
 ## Examples
 
 ``` r
+
 ## some quadratic example shapes
 quadModList <- Mods(quadratic = c(-0.5, -0.75, -0.85, -1), doses = c(0,1))
 plotMods(quadModList)

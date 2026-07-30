@@ -158,6 +158,7 @@ Bjoern Bornkamp
 ## Examples
 
 ``` r
+
 ## example without covariates
 data(biom)
 ## define shapes for which to calculate optimal contrasts

@@ -1,4 +1,29 @@
 
+## internal metadata and helpers shared across the package
+
+## built-in dose-response model names, ordered so that the first four
+## entries are the linear models. This ordering is relied upon in fitMod,
+## maFitMod and MCPMod, where models 1-4 are treated as linear models.
+## Note: bFitMod uses a *different* ordering that is coupled to the C code.
+builtInMods <- c("linlog", "linear", "quadratic", "linInt", "emax",
+                 "exponential", "logistic", "betaMod", "sigEmax")
+
+## number of parameters for each built-in model (linInt depends on the
+## data and is handled separately)
+nParMod <- c(linlog = 2, linear = 2, quadratic = 3, emax = 3,
+             exponential = 3, logistic = 4, betaMod = 4, sigEmax = 4)
+
+## log(x) with the convention log(0) := 0 (vectorised)
+lg2 <- function(x){
+  l <- x
+  l[x == 0] <- 0
+  l[x != 0] <- log(x[x != 0])
+  l
+}
+
+## x*log(x) with the convention 0*log(0) := 0 (scalar x only)
+xlogx <- function(x) if(x == 0) 0 else x * log(x)
+
 ## model functions
 #' @rdname drmodels
 #' @param dose Dose variable
@@ -36,7 +61,6 @@ sigEmax <- function(dose, e0, eMax, ed50, h){
 #' @usage NULL
 #' @export 
 sigEmaxGrad <- function(dose, eMax, ed50, h, ...){
-  lg2 <- function(x) {l<-x; l[x==0] <- 0; l[x!=0] <- log(x[x!=0]); l}
   a <-  1 / (1 + (dose/ed50)^h)
   g1 <- 1 / (1 + (ed50/dose)^h)
   g2 <- -(h * eMax / ed50) * g1 * a
@@ -86,7 +110,6 @@ quadraticGrad <- function(dose, ...){
 #' @usage NULL
 #' @export 
 betaMod <- function(dose, e0, eMax, delta1, delta2, scal){
-  xlogx <- function(x) if(x == 0) 0 else x * log(x) # will not be called with vector x
   logMaxDens <- xlogx(delta1) + xlogx(delta2) - xlogx(delta1 + delta2)
   dose <- dose/scal
   e0 + eMax/exp(logMaxDens) * (dose^delta1) * (1 - dose)^delta2
@@ -96,8 +119,6 @@ betaMod <- function(dose, e0, eMax, delta1, delta2, scal){
 #' @usage NULL
 #' @export 
 betaModGrad <- function(dose, eMax, delta1, delta2, scal, ...){
-  lg2 <- function(x) {l<-x; l[x==0] <- 0; l[x!=0] <- log(x[x!=0]); l}
-  xlogx <- function(x) if(x == 0) 0 else x * log(x) # will not be called with vector x
   dose <- dose/scal
   if(any(dose > 1)) {
     stop("doses cannot be larger than scal in betaModel")

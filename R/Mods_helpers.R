@@ -49,9 +49,7 @@ getAddArgs <- function(addArgs, doses = NULL){
 }
 
 checkEntries <- function(modL, doses, fullMod){
-  biModels <- c("emax", "linlog", "linear", "quadratic",
-                "exponential", "logistic", "betaMod", "sigEmax",
-                "linInt")
+  biModels <- builtInMods
   checkNam <- function(nam){
     if(is.na(match(nam, biModels)))
       stop("Invalid model specified: ", nam)
@@ -131,13 +129,13 @@ fullMod <-  function(models, doses, placEff, maxEff, scal, off){
       nmod <- length(pars)
       if(nmod > 1){
         Pars <- matrix(ncol=3, nrow=nmod)
-        for(j in 1:length(pars)){
+        for(j in seq_along(pars)){
           tmp <- getLinPars(nm, doses, as.vector(pars[j]), placEff[z], maxEff[z])
           Pars[j,] <- tmp
           z <- z+1
         }
         colnames(Pars) <- names(tmp)
-        rownames(Pars) <- 1:length(pars)
+        rownames(Pars) <- seq_along(pars)
         i <- i+1
       } else {
         Pars <-  getLinPars(nm, doses, as.vector(pars), placEff[z], maxEff[z])
@@ -147,13 +145,13 @@ fullMod <-  function(models, doses, placEff, maxEff, scal, off){
     if(is.element(nm,c("logistic", "betaMod", "sigEmax"))){
       if(is.matrix(pars)){
         Pars <- matrix(ncol=4, nrow=nrow(pars))
-        for(j in 1:nrow(pars)){
+        for(j in seq_len(nrow(pars))){
           tmp <- getLinPars(nm, doses, as.vector(pars[j,]), placEff[z], maxEff[z])
           Pars[j,] <- tmp
           z <- z+1
         }
         colnames(Pars) <- names(tmp)
-        rownames(Pars) <- 1:nrow(pars)
+        rownames(Pars) <- seq_len(nrow(pars))
         i <- i+1
       } else {
         Pars <-  getLinPars(nm, doses, as.vector(pars), placEff[z], maxEff[z]); i <- i+1; z <- z+1
@@ -162,12 +160,12 @@ fullMod <-  function(models, doses, placEff, maxEff, scal, off){
     if(nm == "linInt"){
       if(is.matrix(pars)){
         Pars <- matrix(ncol=length(nodes), nrow=nrow(pars))
-        for(j in 1:nrow(pars)){
+        for(j in seq_len(nrow(pars))){
           Pars[j,] <-  getLinPars(nm, doses, as.vector(pars[j,]), placEff[z], maxEff[z])
           z <- z+1
         }
         colnames(Pars) <- paste("d", doses, sep="")
-        rownames(Pars) <- 1:nrow(pars)
+        rownames(Pars) <- seq_len(nrow(pars))
         i <- i+1
       } else {
         Pars <- getLinPars(nm, doses, as.vector(pars), placEff[z], maxEff[z]); i <- i+1; z <- z+1
@@ -250,7 +248,7 @@ plotModels <- function(models, nPoints = 200, superpose = FALSE,
                                 lattice::panel.superpose(x[ind], y[ind], subscripts[ind], 
                                                          groups, ...)
                                 if(plotTD){
-                                  for(z in 1:length(pdos)){
+                                  for(z in seq_along(pdos)){
                                     lattice::panel.lines(c(0, pdos[z]), c(yax[z], yax[z]),lty=2, col=2)
                                     lattice::panel.lines(c(pdos[z], pdos[z]), c(0, yax[z]),lty=2, col=2)
                                   }
@@ -384,7 +382,7 @@ calcTD <- function(model, pars, Delta, TDtype = c("continuous", "discrete"),
       inds <- cf < cf[1] + Delta
       if(all(inds))
         return(NA)
-      ind <- min((1:length(cf))[!inds])-1
+      ind <- min(seq_along(cf)[!inds])-1
       tmp <- (cf[1]+Delta-cf[ind])/(cf[ind+1]-cf[ind])
       td <- nodes[ind] + tmp*(nodes[ind+1]-nodes[ind])
       if(td > 0)
@@ -669,9 +667,9 @@ calcResp <- function(models, doses, off, scal, nodes){
         pars <- cbind(pars, off)
       if(nm == "betaMod")
         pars <- cbind(pars, scal)
-      ind <- 1:nmod
+      ind <- seq_len(nmod)
       nams <- c(nams, paste(nm, ind, sep = ""))
-      for(j in 1:nmod) {
+      for(j in seq_len(nmod)) {
         if(nm != "linInt"){
           val[[k]] <- do.call(nm, c(list(doses), as.list(pars[j,])))
         } else {

@@ -210,8 +210,7 @@ fitMod <- function(dose, resp, data = NULL, model = NULL, S = NULL,
       df <- Inf
   }
   ## check whether model has been specified correctly
-  builtIn <- c("linlog", "linear", "quadratic", "linInt", "emax",
-               "exponential", "logistic", "betaMod", "sigEmax")
+  builtIn <- builtInMods
   if(missing(model))
     stop("Need to specify the model that should be fitted")
   modelNum <- match(model, builtIn)
@@ -617,7 +616,7 @@ predict.DRMod <- function(object, predType = c("full-model", "ls-means", "effect
     } else { ## calculate st. error (no need to calculate full covMat here)
       covMat <- vcov(object)
       if(addCovars != ~1) ## remove columns corresponding to covariates
-        covMat <- covMat[1:length(DRpars), 1:length(DRpars)]
+        covMat <- covMat[seq_along(DRpars), seq_along(DRpars)]
       if(!attr(object, "placAdj")){ ## remove intercept from cov-matrix
         if(model != "linInt"){
           covMat <- covMat[-1,-1]

@@ -147,8 +147,7 @@ MCPMod <- function(dose, resp, data = NULL, models = NULL, S=NULL,
   ## fit models and calculate model selection criteria
   addArgs <- list(off=attr(models, "off"), scal=attr(models, "scal"))
   selModel <- match.arg(selModel)
-  builtIn <- c("linlog", "linear", "quadratic", "linInt", "emax",
-               "exponential", "logistic", "betaMod", "sigEmax")
+  builtIn <- builtInMods
   nams <- gsub("[0-9]", "", names(tstat)) ## remove numbers from model-names
   namsU <- unique(nams)
   
@@ -175,7 +174,7 @@ MCPMod <- function(dose, resp, data = NULL, models = NULL, S=NULL,
     modcrit <- function(x)
       max(tstat[attr(x, "model") == nams])
   }
-  for(i in 1:length(namsU)){
+  for(i in seq_along(namsU)){
     if(!is.null(data)){
       callMod <- list(deparse(substitute(dose)), deparse(substitute(resp)), data,
                       namsU[i], S, type, addCovars, placAdj, bnds[[namsU[i]]],
@@ -286,7 +285,7 @@ print.MCPMod <- function(x, digits=3, eps=1e-03, ...){
   cat("\n")
 
   cat("Estimated Dose Response Models:")
-  for(i in 1:length(x$mods)){
+  for(i in seq_along(x$mods)){
     cat("\n")
     cat(names(x$mods)[i], "model\n")
     cofList <- coef(x$mods[[i]], sep = TRUE)
@@ -336,7 +335,7 @@ print.summary.MCPMod <- function(x, ...){
   cat(rep("*", 39), "\n", sep="")
   cat("Mod part \n")
   cat(rep("*", 39), "\n", sep="")
-  for(i in 1:length(x$mods)){
+  for(i in seq_along(x$mods)){
     if(i > 1)
       cat("\n")
     if(length(x$mods) > 1)

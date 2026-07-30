@@ -455,7 +455,7 @@ calcCrit <- function(design, models, probs, doses,
   intdesignCrit <- match(designCrit, c("TD", "Dopt", "Dopt&TD"))
   res <- numeric(nrow(design))
   ## check for sufficient number of design points
-  iter <- 1:nrow(design)
+  iter <- seq_len(nrow(design))
   design0 <- sweep(design, 2, nold, "+")
   count <- apply(design0, 1, function(x) sum(x > 0.0001))
   ind <- count < max(p[probs > 0])
@@ -557,7 +557,7 @@ plot.DRdesign <- function(x, models, lwdDes = 10, colDes = rgb(0,0,0,0.3), ...){
       miny <- min(args$y)
       maxy <- max(args$y)
       dy <- maxy-miny
-      for(k in 1:length(x$doses)){
+      for(k in seq_along(x$doses)){
         yy <- c(0,(x$design*dy)[k])+miny
         xx <- rep(x$doses[k],2)
         lattice::panel.xyplot(xx, yy, type="l", col = colDes, lwd = lwdDes)

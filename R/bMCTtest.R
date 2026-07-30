@@ -242,14 +242,14 @@ print.bMCTtest <- function(x, digits = 3, eps = 1e-3, ...){
   print(round(x$contMat, digits))
   cat("\n","Posterior Mixture Weights:","\n",sep="")
   w <- round(unlist(x$posterior[[1]]), digits = digits)
-  names(w) <- paste("Comp.", 1:length(w))
+  names(w) <- paste("Comp.", seq_along(w))
   print(w)
   ord <- rev(order(attr(x$tStat, "pVal")))
   pval <- format.pval(attr(x$tStat, "pVal"),
                       digits = digits, eps = eps)
   dfrm <- data.frame(round(x$tStat, digits)[ord, , drop = FALSE],
                      pval[ord])
-  names(dfrm) <- c(paste0("Comp. ", 1:ncol(x$tStat)), "posterior probability")
+  names(dfrm) <- c(paste0("Comp. ", seq_len(ncol(x$tStat))), "posterior probability")
   cat("\n","Bayesian t-statistics:","\n",sep="")
   print(dfrm)
   if(!is.null(x$critVal)){
@@ -304,7 +304,7 @@ mvpostmix <- function(priormix, mu_hat, S_hat)
   ## prior predictive distributions are MVN distribution with mean vectors equal to the prior components' mean vectors 
   ## and covariance matrices which are the sum of the prior components' covariance matrices and the "known" covariance 
   ## matrix of the data (for which S_hat is plugged in here)
-  for(i in 1:length(lw)){
+  for(i in seq_along(lw)){
     lw[i] <- log(priormix[[1]][[i]]) + mvtnorm::dmvnorm(mu_hat, priormix[[2]][[i]], SigmaPred[[i]], log = TRUE)
     postmix[[2]][[i]] <- solve(priorPrec[[i]] + dataPrec) %*% (priorPrec[[i]] %*% priormix[[2]][[i]] + dataPrec %*% mu_hat)
     postmix[[3]][[i]] <- solve(priorPrec[[i]] + dataPrec)
@@ -312,7 +312,7 @@ mvpostmix <- function(priormix, mu_hat, S_hat)
   postmix[[1]] <- as.list(exp(lw - logSumExp(lw)))
   
   for(i in 1:3)
-    names(postmix[[i]]) <- paste0("Comp", 1:length(lw))
+    names(postmix[[i]]) <- paste0("Comp", seq_along(lw))
 
    postmix
 }

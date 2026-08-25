@@ -50,13 +50,11 @@
 #'
 #' @author Jose Pinheiro, Bjoern Bornkamp
 #' @seealso [powMCT()]
-#' @references Pinheiro, J. C., Bornkamp, B., and Bretz, F. (2006). Design and analysis of dose finding studies
-#'   combining multiple comparisons and modeling procedures, *Journal of Biopharmaceutical Statistics*, **16**,
-#'   639--656
-#'
-#'   Pinheiro, J.C., Bornkamp, B. (2017) Designing Phase II Dose-Finding Studies: Sample Size, Doses and Dose Allocation
-#'   Weights, in O'Quigley, J., Iasonos, A. and Bornkamp, B. (eds) Handbook of methods for designing, monitoring, and
-#'   analyzing dose-finding trials, CRC press
+#' @references 
+#' \insertRef{pinheiro2006b}{DoseFinding}
+#' 
+#' \insertRef{pinheiro2017}{DoseFinding}
+#' 
 #' @examples
 #'
 #' ## sampSize examples
@@ -310,7 +308,7 @@ targN <- function(upperN, lowerN, step, targFunc,
     colnames(out) <- ""
   }
   out2 <- out
-  for(i in 1:length(sumFct)){
+  for(i in seq_along(sumFct)){
     out2 <- cbind(out2, apply(out, 1, sumFct[i]))
   }
   dimnames(out2) <- list(nseq, c(colnames(out), sumFct))

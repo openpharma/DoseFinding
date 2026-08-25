@@ -93,8 +93,7 @@ powMCTInterim(
 )
 }
 \references{
-Bornkamp, B., Zhou, J., Xi, D. and Cao W. (2025). Futility analyses for the MCP-Mod methodology based
-on longitudinal models, \emph{arXiv:2406.19965}
+\insertRef{bornkamp2024}{DoseFinding}
 }
 \seealso{
 \code{\link[=powMCT]{powMCT()}} \code{\link[=MCTtest]{MCTtest()}}, \code{\link[=optContr]{optContr()}}

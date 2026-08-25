@@ -5,7 +5,7 @@
 #'
 #' Tests for a dose-response effect using a model-based multiple contrast test (see [MCTtest()]), selects one
 #' (or several) model(s) from the significant shapes, fits them using [fitMod()].  For details on the method
-#' see Bretz et al. (2005).
+#' see \insertCite{bretz2005;textual}{DoseFinding}.
 #'
 #'
 #' @aliases MCPMod predict.MCPMod plot.MCPMod
@@ -17,7 +17,7 @@
 #'   \item `aveAIC`: Uses a weighted average of the models corresponding to
 #'   the significant contrasts.  The model weights are chosen by the formula:
 #'   \eqn{w_i = \exp(-0.5AIC_i)/\sum_i(\exp(-0.5AIC_i))}{w_i =
-#'   exp(-0.5AIC_i)/sum(exp(-0.5AIC_i))} See Buckland et al. (1997) for details.
+#'   exp(-0.5AIC_i)/sum(exp(-0.5AIC_i))} See \insertCite{buckland1997;textual}{DoseFinding} for details.
 #'   } For \samp{type = "general"} the "gAIC" is used.
 #' @param df Specify the degrees of freedom to use in case \samp{type = "general"}, for the call to
 #'   [MCTtest()] and [fitMod()]. Infinite degrees of (\samp{df=Inf}) correspond to the multivariate
@@ -44,30 +44,24 @@
 #'   objects and additional information (model selection criteria, dose estimates, selected models).
 #' @author Bjoern Bornkamp
 #' @seealso [MCTtest()], [fitMod()], [drmodels()]
-#' @references Bretz, F., Pinheiro, J. C., and Branson, M. (2005), Combining multiple comparisons and modeling
-#'   techniques in dose-response studies, *Biometrics*, **61**, 738--748
-#'
-#'   Pinheiro, J. C., Bornkamp, B., and Bretz, F. (2006). Design and analysis of dose finding studies combining multiple
-#'   comparisons and modeling procedures, *Journal of Biopharmaceutical Statistics*, **16**, 639--656
-#'
-#'   Pinheiro, J. C., Bretz, F., and Branson, M. (2006). Analysis of dose-response studies - modeling approaches,
-#'   *in* N. Ting (ed.). *Dose Finding in Drug Development*, Springer, New York, pp. 146--171
-#'
-#'   Pinheiro, J. C., Bornkamp, B., Glimm, E. and Bretz, F. (2014) Model-based dose finding under model uncertainty
-#'   using general parametric models, *Statistics in Medicine*, **33**, 1646--1661
-#'
-#'   Schorning, K., Bornkamp, B., Bretz, F., & Dette, H. (2016). Model selection
-#' versus model averaging in dose finding studies. *Statistics in
-#' Medicine*, **35**, 4021--4040
-#'
-#'   Xun, X. and Bretz, F. (2017) The MCP-Mod methodology: Practical Considerations and The DoseFinding R package, in
-#'   O'Quigley, J., Iasonos, A. and Bornkamp, B. (eds) Handbook of methods for designing, monitoring, and analyzing
-#'   dose-finding trials, CRC press
-#'
-#'   Buckland, S. T., Burnham, K. P. and Augustin, N. H. (1997). Model selection an integral part of inference,
-#'   *Biometrics*, **53**, 603--618
-#'
-#'   Seber, G.A.F. and Wild, C.J. (2003). Nonlinear Regression, Wiley.
+#' @references 
+#' 
+#' \insertRef{buckland1997}{DoseFinding}
+#' 
+#' \insertRef{bretz2005}{DoseFinding}
+#' 
+#' \insertRef{pinheiro2006b}{DoseFinding}
+#' 
+#' \insertRef{pinheiro2006}{DoseFinding}
+#' 
+#' \insertRef{pinheiro2014}{DoseFinding}
+#' 
+#' \insertRef{schorning2016}{DoseFinding}
+#' 
+#' \insertRef{seber2003}{DoseFinding}
+#' 
+#' \insertRef{xun2017}{DoseFinding}
+#' 
 #' @examples
 #'
 #' data(biom)
@@ -153,8 +147,7 @@ MCPMod <- function(dose, resp, data = NULL, models = NULL, S=NULL,
   ## fit models and calculate model selection criteria
   addArgs <- list(off=attr(models, "off"), scal=attr(models, "scal"))
   selModel <- match.arg(selModel)
-  builtIn <- c("linlog", "linear", "quadratic", "linInt", "emax",
-               "exponential", "logistic", "betaMod", "sigEmax")
+  builtIn <- builtInMods
   nams <- gsub("[0-9]", "", names(tstat)) ## remove numbers from model-names
   namsU <- unique(nams)
   
@@ -181,7 +174,7 @@ MCPMod <- function(dose, resp, data = NULL, models = NULL, S=NULL,
     modcrit <- function(x)
       max(tstat[attr(x, "model") == nams])
   }
-  for(i in 1:length(namsU)){
+  for(i in seq_along(namsU)){
     if(!is.null(data)){
       callMod <- list(deparse(substitute(dose)), deparse(substitute(resp)), data,
                       namsU[i], S, type, addCovars, placAdj, bnds[[namsU[i]]],
@@ -292,7 +285,7 @@ print.MCPMod <- function(x, digits=3, eps=1e-03, ...){
   cat("\n")
 
   cat("Estimated Dose Response Models:")
-  for(i in 1:length(x$mods)){
+  for(i in seq_along(x$mods)){
     cat("\n")
     cat(names(x$mods)[i], "model\n")
     cofList <- coef(x$mods[[i]], sep = TRUE)
@@ -342,7 +335,7 @@ print.summary.MCPMod <- function(x, ...){
   cat(rep("*", 39), "\n", sep="")
   cat("Mod part \n")
   cat(rep("*", 39), "\n", sep="")
-  for(i in 1:length(x$mods)){
+  for(i in seq_along(x$mods)){
     if(i > 1)
       cat("\n")
     if(length(x$mods) > 1)

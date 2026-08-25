@@ -15,7 +15,10 @@ of dose-finding experiments (for example pharmaceutical Phase II
 clinical trials). It provides functions for: multiple contrast tests,
 fitting non-linear dose-response models, a combination of testing and
 dose-response modelling and calculating optimal designs, both for normal
-and general response variable.
+and general response variable. In addition the package can be used to
+implement the MCP-Mod procedure, a combination of testing and
+dose-response modelling (Bretz et al. ([2005](#ref-bretz2005)), Pinheiro
+et al. ([2014](#ref-pinheiro2014))).
 
 ## Installation
 
@@ -24,7 +27,7 @@ You can install the development version of DoseFinding from
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("bbnkmp/DoseFinding")
+devtools::install_github("openpharma/DoseFinding")
 ```
 
 ## Examples
@@ -107,3 +110,27 @@ optDesign(fmodels, weights, Delta=0.2, designCrit="TD")
 #>       0      10      25      50     100     150 
 #> 0.34960 0.09252 0.00366 0.26760 0.13342 0.15319
 ```
+
+## References
+
+<div id="refs" class="references csl-bib-body hanging-indent">
+
+<div id="ref-bretz2005" class="csl-entry">
+
+Bretz, F., Pinheiro, J. C., and Branson, M. (2005), “Combining multiple
+comparisons and modeling techniques in dose-response studies,”
+*Biometrics*, Wiley Online Library, 61, 738–748.
+<https://doi.org/10.1111/j.1541-0420.2005.00344.x>.
+
+</div>
+
+<div id="ref-pinheiro2014" class="csl-entry">
+
+Pinheiro, J., Bornkamp, B., Glimm, E., and Bretz, F. (2014),
+“Model-based dose finding under model uncertainty using general
+parametric models,” *Statistics in Medicine*, 33, 1646–1661.
+<https://doi.org/10.1002/sim.6052>.
+
+</div>
+
+</div>

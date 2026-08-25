@@ -19,7 +19,7 @@ powCalc <- function(alternative, critV, df, corMat, deltaMat, control){
   ctrl$interval <- NULL      # not used with pmvt
   nScen <- ncol(deltaMat)
   res <- numeric(nScen)
-  for(i in 1:nScen){
+  for(i in seq_len(nScen)){
     pmvtCall <- c(list(lower, upper, df = df, corr = corMat, delta = deltaMat[,i],
                        algorithm = ctrl))
     res[i] <- as.vector(1 - do.call(mvtnorm::pmvt, pmvtCall))
@@ -124,7 +124,7 @@ powMCTBinCount <- function(n, doses, candModList = NULL, respModList,
   resp <- getResp(resp_mods)
   nMod <- ncol(resp)
   pow <- numeric(nMod)
-  for(i in 1:nMod){
+  for(i in seq_len(nMod)){
     mu_vec <- resp[,i, drop=FALSE] # column i contains true response vector
     ## calculate covariance matrix
     v <- getVarBinCount(mu_vec, type, theta)

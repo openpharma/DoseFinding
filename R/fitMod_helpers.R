@@ -20,7 +20,7 @@ fit.control <- function(control){
       if(ind){
         stop("gridSize list needs to have names dim1 and dim2")
       } else {
-        if(!is.numeric(control$gridSize$dim1) | !is.numeric(control$gridSize$dim1))
+        if(!is.numeric(control$gridSize$dim1) | !is.numeric(control$gridSize$dim2))
           stop("gridSize$dim1 and gridSize$dim2 need to be numeric")
       }
     }
@@ -64,8 +64,7 @@ fitMod.raw <- function(dose, resp, data, model, S, type,
   ## differences to fitMod:
   ## - dose, resp need to be vectors containing the data
   ## - additional args: doseNam, respNam, off, scal
-  builtIn <- c("linlog", "linear", "quadratic", "linInt", "emax",
-               "exponential", "logistic", "betaMod", "sigEmax")
+  builtIn <- builtInMods
   modelNum <- match(model, builtIn)
 
   weights <- NULL;clinS <- NULL
@@ -509,7 +508,7 @@ plotFunc <- function(x, CI = FALSE, level = 0.95,
   if(inherits(x, "MCPMod")){
     nmods <- length(x$mods)
     lst <- vector(mode = "list", nmods)
-    for(i in 1:nmods){
+    for(i in seq_len(nmods)){
       pred <- predict(x$mods[[i]], predType = predtype, doseSeq = doseSeq, se.fit = CI)
       lbnd <- ubnd <- rep(NA, length(doseSeq))
       if(CI){
@@ -562,7 +561,7 @@ plotFunc <- function(x, CI = FALSE, level = 0.95,
                  lattice::lpoints(pList$dos, pList$mns, pch=19, col = colMn)
                  if(plotData == "meansCI"){
                    quant <- qnorm(1 - (1 - level)/2)
-                   for(i in 1:length(pList$dos)){
+                   for(i in seq_along(pList$dos)){
                      lattice::llines(rep(pList$dos[i], 2),
                             c(pList$lbndm[i], pList$ubndm[i]),
                             lty=2, col = colMn, ...)

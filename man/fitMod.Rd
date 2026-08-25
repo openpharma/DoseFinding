@@ -75,7 +75,7 @@ the first stage fit.}
 
 \item{type}{Determines whether inference is based on an ANCOVA model under a homoscedastic normality assumption (when
 \samp{type = "normal"}), or estimates at the doses and their covariance matrix and degrees of freedom are specified
-directly in \samp{resp}, \samp{S} and \samp{df}. See also the Description above and Pinheiro et al. (2014).}
+directly in \samp{resp}, \samp{S} and \samp{df}. See also the Description above and \insertCite{pinheiro2014;textual}{DoseFinding}.}
 
 \item{addCovars}{Formula specifying additional additive linear covariates (only for \samp{type = "normal"})}
 
@@ -159,8 +159,8 @@ and an inverse weighting matrix is specified in \samp{S}, \samp{type =
 estimates obtained in a first stage fit, then \samp{resp} contains the estimates and \samp{S} is the estimated
 covariance matrix for the estimates in \samp{resp}. Statistical inference (e.g. confidence intervals) rely on
 asymptotic normality of the first stage estimates, which makes this method of interest only for sufficiently large
-sample size for the first stage fit. A modified model-selection criterion can be applied to these model fits (see
-also Pinheiro et al. 2014 for details).
+sample size for the first stage fit. A modified model-selection criterion can be applied to these model fits
+\insertCite{@see also @pinheiro2014 for details}{DoseFinding}.
 
 For details on the implemented numerical optimizer see the Details section below.
 
@@ -172,9 +172,8 @@ for 2 nonlinear parameters the \code{\link[=nlminb]{nlminb()}} function is used.
 grid-search (with the grid size specified via \samp{control$gridSize}), or can directly be handed over via
 \samp{start}.
 
-For details on the asymptotic approximation used for \samp{type = "normal"}, see Seber and Wild (2003, chapter 5).
-For details on the asymptotic approximation used for \samp{type = "general"}, and the gAIC, see Pinheiro et al.
-(2014).
+For details on the asymptotic approximation used for \samp{type = "normal"}, see \insertCite{seber2003;textual}{DoseFinding}, Chapter 5.
+For details on the asymptotic approximation used for \samp{type = "general"}, and the gAIC, see \insertCite{pinheiro2014;textual}{DoseFinding}.
 }
 \examples{
 
@@ -251,10 +250,7 @@ gAIC(gfit2)
 
 }
 \references{
-Pinheiro, J. C., Bornkamp, B., Glimm, E. and Bretz, F. (2014) Model-based dose finding under model
-uncertainty using general parametric models, \emph{Statistics in Medicine}, \strong{33}, 1646--1661
-
-Seber, G.A.F. and Wild, C.J. (2003). Nonlinear Regression, Wiley.
+\insertAllCited{}
 }
 \seealso{
 \code{\link[=defBnds]{defBnds()}}, \code{\link[=drmodels]{drmodels()}}

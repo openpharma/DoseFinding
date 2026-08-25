@@ -9,7 +9,7 @@ calcGrads <- function(fmodels, doses, weights,
   for(nam in names(fmodels)){
     pars <- fmodels[[nam]]
     if(is.matrix(pars)){
-      for(i in 1:nrow(pars)){
+      for(i in seq_len(nrow(pars))){
         modgrad[[z]] <- t(gradCalc(nam, pars[i,], doses, off=off, scal=scal)*sqrt(weights))
         if(designCrit != "Dopt")
           TDgrad[[z]] <- calcTDgrad(nam, pars[i,], Delta, direction, off, scal)
@@ -34,14 +34,12 @@ calcGrads <- function(fmodels, doses, weights,
 
 ## returns the number of parameters (needed for C call)
 nPars <- function(mods){
-  builtIn <- c("linlog", "linear", "quadratic", 
-               "emax", "exponential", "logistic", 
-               "betaMod", "sigEmax")
-  ind <- match(mods, builtIn)
+  ## linInt is deliberately excluded (not allowed in optDesign)
+  ind <- match(mods, names(nParMod))
   if(any(is.na(ind))){
     stop(mods[which(is.na(ind))], " model not allowed in optDesign")
   }
-  c(2,2,3,3,3,4,4,4)[ind]
+  unname(nParMod[ind])
 }
 
 ## function which calls different optimizers

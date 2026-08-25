@@ -13,8 +13,7 @@ A data frame with 369 observations on the following 2 variables.
 }
 }
 \source{
-Biesheuvel, E. and Hothorn, L. A. (2002). Many-to-one comparisons in
-stratified designs, \emph{Biometrical Journal}, \strong{44}, 101--116
+\insertRef{biesheuvel2002}{DoseFinding}
 }
 \usage{
 data(IBScovars)

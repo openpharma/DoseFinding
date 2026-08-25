@@ -1,5 +1,8 @@
 ---
 output: github_document
+bibliography: '`r system.file("REFERENCES.bib", package = "DoseFinding")`'
+link-citations: yes
+csl: '`r system.file("american-statistical-association.csl", package = "DoseFinding")`'
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -21,8 +24,7 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/openpharma/DoseFinding/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/openpharma/DoseFinding/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-The DoseFinding package provides functions for the design and analysis of dose-finding experiments (for example pharmaceutical Phase II clinical trials). It provides functions for: multiple contrast tests, fitting non-linear dose-response models, a combination of testing and dose-response modelling and calculating optimal designs,
-both for normal and general response variable.
+The DoseFinding package provides functions for the design and analysis of dose-finding experiments (for example pharmaceutical Phase II clinical trials). It provides functions for: multiple contrast tests, fitting non-linear dose-response models, a combination of testing and dose-response modelling and calculating optimal designs, both for normal and general response variable. In addition the package can be used to implement the MCP-Mod procedure, a combination of testing and dose-response modelling (@bretz2005, @pinheiro2014).
 
 ## Installation
 
@@ -30,7 +32,7 @@ You can install the development version of DoseFinding from [GitHub](https://git
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("bbnkmp/DoseFinding")
+devtools::install_github("openpharma/DoseFinding")
 ```
 
 ## Examples
@@ -76,3 +78,5 @@ plot(fmodels, plotTD = TRUE, Delta = 0.2)
 weights <- rep(1/4, 4)
 optDesign(fmodels, weights, Delta=0.2, designCrit="TD")
 ```
+
+## References

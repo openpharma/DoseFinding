@@ -114,10 +114,7 @@ powMCT(linMat, altModels = fmodels, placAdj=TRUE,
 }
 }
 \references{
-Pinheiro, J. C., Bornkamp, B., and Bretz, F. (2006). Design and
-analysis of dose finding studies combining multiple comparisons and modeling
-procedures, \emph{Journal of Biopharmaceutical Statistics}, \strong{16},
-639--656
+\insertRef{pinheiro2006b}{DoseFinding}
 }
 \seealso{
 \code{\link[=powN]{powN()}}, \code{\link[=sampSizeMCT]{sampSizeMCT()}},

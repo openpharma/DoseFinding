@@ -1,14 +1,14 @@
 #' Performs Bayesian multiple contrast test
 #'
 #' This function performs a Bayesian multiple contrast test using normal mixture priors for the response on each dose,
-#' as proposed in Fleischer et al. (2022). For a general description of the multiple contrast test see
+#' as proposed in \insertCite{fleischer2022;textual}{DoseFinding}. For a general description of the multiple contrast test see
 #' [MCTtest()].
 #'
 #' If \samp{type = "normal"}, an ANCOVA model based on a homoscedastic normality assumption is fitted and posteriors for
 #' dose-response and contrast vectors are obtained assuming a known variance.
 #'
 #' For \samp{type = "general"} it is assumed multivariate normally distributed estimates are specified in \samp{resp}
-#' with covariance given by \samp{S}, which define the likelihood.  Posteriors for dose-response and contrast vectors
+#' with covariance given by \samp{S}, which define the likelihood. Posteriors for dose-response and contrast vectors
 #' are then obtained assuming a known covariance matrix S
 #'
 #' The multiple contrast test decision is based on the maximum posterior probability of a contrast being greater than
@@ -17,7 +17,7 @@
 #' contrast test if uninformative priors are used.
 #'
 #' For the default calculation of optimal contrasts the prior information is ignored (i.e. contrasts are calculated in
-#' the same way as in [MCTtest()]).  Fleischer et al. (2022) discuss using contrasts that take the prior
+#' the same way as in [MCTtest()]). \insertCite{fleischer2022;textual}{DoseFinding} discuss using contrasts that take the prior
 #' effective sample sizes into account, which can be slightly more favourable for the Bayesian MCT test. Such
 #' alternative contrasts can be directly handed over via the \samp{contMat} argument.
 #'
@@ -45,8 +45,7 @@
 #' @author Marius Thomas
 #' @export
 #' @seealso [MCTtest()], [optContr()]
-#' @references Fleischer, F., Bossert, S., Deng, Q., Loley, C. and Gierse, J. (2022).  Bayesian MCP-Mod,
-#'   *Pharmaceutical Statistics*, **21**, 654--670
+#' @references \insertAllCited{}
 #' @examples
 #'
 #'
@@ -243,14 +242,14 @@ print.bMCTtest <- function(x, digits = 3, eps = 1e-3, ...){
   print(round(x$contMat, digits))
   cat("\n","Posterior Mixture Weights:","\n",sep="")
   w <- round(unlist(x$posterior[[1]]), digits = digits)
-  names(w) <- paste("Comp.", 1:length(w))
+  names(w) <- paste("Comp.", seq_along(w))
   print(w)
   ord <- rev(order(attr(x$tStat, "pVal")))
   pval <- format.pval(attr(x$tStat, "pVal"),
                       digits = digits, eps = eps)
   dfrm <- data.frame(round(x$tStat, digits)[ord, , drop = FALSE],
                      pval[ord])
-  names(dfrm) <- c(paste0("Comp. ", 1:ncol(x$tStat)), "posterior probability")
+  names(dfrm) <- c(paste0("Comp. ", seq_len(ncol(x$tStat))), "posterior probability")
   cat("\n","Bayesian t-statistics:","\n",sep="")
   print(dfrm)
   if(!is.null(x$critVal)){
@@ -277,7 +276,7 @@ print.bMCTtest <- function(x, digits = 3, eps = 1e-3, ...){
 #' @return Returns a posterior multivariate normal mixture as a list of length 3, containing mixture weights, mean
 #'   vectors and covariance matrices.
 #' @author Marius Thomas
-#' @references Bernardo, J. M., and Smith, A. F. (1994). Bayesian theory. John Wiley & Sons.
+#' @references \insertRef{bernardo1994}{DoseFinding}
 #' @export
 mvpostmix <- function(priormix, mu_hat, S_hat)
 {
@@ -305,7 +304,7 @@ mvpostmix <- function(priormix, mu_hat, S_hat)
   ## prior predictive distributions are MVN distribution with mean vectors equal to the prior components' mean vectors 
   ## and covariance matrices which are the sum of the prior components' covariance matrices and the "known" covariance 
   ## matrix of the data (for which S_hat is plugged in here)
-  for(i in 1:length(lw)){
+  for(i in seq_along(lw)){
     lw[i] <- log(priormix[[1]][[i]]) + mvtnorm::dmvnorm(mu_hat, priormix[[2]][[i]], SigmaPred[[i]], log = TRUE)
     postmix[[2]][[i]] <- solve(priorPrec[[i]] + dataPrec) %*% (priorPrec[[i]] %*% priormix[[2]][[i]] + dataPrec %*% mu_hat)
     postmix[[3]][[i]] <- solve(priorPrec[[i]] + dataPrec)
@@ -313,7 +312,7 @@ mvpostmix <- function(priormix, mu_hat, S_hat)
   postmix[[1]] <- as.list(exp(lw - logSumExp(lw)))
   
   for(i in 1:3)
-    names(postmix[[i]]) <- paste0("Comp", 1:length(lw))
+    names(postmix[[i]]) <- paste0("Comp", seq_along(lw))
 
    postmix
 }

@@ -2,9 +2,9 @@
 title: "Overview DoseFinding package"
 output:
   rmarkdown::html_vignette:
-bibliography: refs.bib
+bibliography: '`r system.file("REFERENCES.bib", package = "DoseFinding")`'
 link-citations: yes
-csl: american-statistical-association.csl
+csl: '`r system.file("american-statistical-association.csl", package = "DoseFinding")`'
 vignette: >
   %\VignetteIndexEntry{Overview DoseFinding package}
   %\VignetteEngine{knitr::rmarkdown}

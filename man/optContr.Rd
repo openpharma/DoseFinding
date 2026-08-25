@@ -79,7 +79,7 @@ mean vector under the alternative and \eqn{S}{S} the covariance matrix
 associated with the estimate of \eqn{\mu}{mu}.  The optimal contrast is
 given by \deqn{c^{opt} \propto S^{-1}\left(\mu - \frac{\mu^{\prime}S^{-1}1}
 {1^\prime S^{-1} 1}\right),}{c propto S^(-1) (mu - mu'S^(-1)1)/(1'S^(-1)1),}
-see Pinheiro et al. (2014).
+see \insertCite{pinheiro2014;textual}{DoseFinding}.
 }
 \details{
 Note that the directionality (i.e. whether in "increase" in the response
@@ -123,13 +123,9 @@ optContr(models, doses=dosPlac, S = S, placAdj = TRUE,
 }
 }
 \references{
-Bretz, F., Pinheiro, J. C., and Branson, M. (2005), Combining
-multiple comparisons and modeling techniques in dose-response studies,
-\emph{Biometrics}, \strong{61}, 738--748
+\insertRef{bretz2005}{DoseFinding}
 
-Pinheiro, J. C., Bornkamp, B., Glimm, E. and Bretz, F. (2014) Model-based
-dose finding under model uncertainty using general parametric models,
-\emph{Statistics in Medicine}, \strong{33}, 1646--1661
+\insertRef{pinheiro2014}{DoseFinding}
 }
 \seealso{
 \code{\link[=MCTtest]{MCTtest()}}

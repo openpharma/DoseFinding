@@ -21,8 +21,7 @@
 #' \samp{mvtnorm.control} for details.
 #' @return Numeric containing the calculated power values
 #' @seealso [powMCT()] [MCTtest()], [optContr()]
-#' @references Bornkamp, B., Zhou, J., Xi, D. and Cao W. (2025). Futility analyses for the MCP-Mod methodology based
-#' on longitudinal models, *arXiv:2406.19965*
+#' @references \insertRef{bornkamp2024}{DoseFinding}
 #' @examples
 #'
 #' # Setup the scenario.

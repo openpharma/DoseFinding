@@ -10,7 +10,7 @@
 #' associated with the estimate of \eqn{\mu}{mu}.  The optimal contrast is
 #' given by \deqn{c^{opt} \propto S^{-1}\left(\mu - \frac{\mu^{\prime}S^{-1}1}
 #' {1^\prime S^{-1} 1}\right),}{c propto S^(-1) (mu - mu'S^(-1)1)/(1'S^(-1)1),} 
-#' see Pinheiro et al. (2014).
+#' see \insertCite{pinheiro2014;textual}{DoseFinding}.
 #' 
 #' Note that the directionality (i.e. whether in "increase" in the response
 #' variable is beneficial or a "decrease", is inferred from the specified
@@ -52,13 +52,10 @@
 #' and muMat (i.e. contrast, mean and correlation matrix).
 #' @author Bjoern Bornkamp
 #' @seealso [MCTtest()]
-#' @references Bretz, F., Pinheiro, J. C., and Branson, M. (2005), Combining
-#' multiple comparisons and modeling techniques in dose-response studies,
-#' *Biometrics*, **61**, 738--748
+#' @references 
+#' \insertRef{bretz2005}{DoseFinding}
 #' 
-#' Pinheiro, J. C., Bornkamp, B., Glimm, E. and Bretz, F. (2014) Model-based
-#' dose finding under model uncertainty using general parametric models,
-#' *Statistics in Medicine*, **33**, 1646--1661
+#' \insertRef{pinheiro2014}{DoseFinding}
 #' @examples
 #' 
 #' doses <- c(0,10,25,50,100,150)

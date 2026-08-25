@@ -96,8 +96,8 @@ was selected in each bootstrap and basic input parameters.
 }
 \description{
 This function fits dose-response models in a bootstrap model
-averaging approach motivated by the bagging procedure (Breiman
-1996). Given summary estimates for the outcome at each dose, the
+averaging approach motivated by the bagging procedure \insertCite{breiman1996}{DoseFinding}.
+Given summary estimates for the outcome at each dose, the
 function samples summary data from the multivariate normal
 distribution. For each sample dose-response models are fit to these
 summary estimates and the best model
@@ -117,7 +117,7 @@ plot(mFit, plotData = "meansCI")
 ED(mFit, direction = "increasing", p = 0.9)
 }
 \references{
-Breiman, L. (1996). Bagging predictors. Machine learning, 24, 123-140.
+\insertAllCited{}
 }
 \seealso{
 \code{\link[=fitMod]{fitMod()}}, \code{\link[=bFitMod]{bFitMod()}}, \code{\link[=drmodels]{drmodels()}}

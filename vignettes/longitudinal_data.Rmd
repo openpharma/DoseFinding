@@ -1,9 +1,9 @@
 ---
 title: "Longitudinal Data MCP-Mod"
 output: rmarkdown::html_vignette
-bibliography: refs.bib
+bibliography: '`r system.file("REFERENCES.bib", package = "DoseFinding")`'
 link-citations: yes
-csl: american-statistical-association.csl
+csl: '`r system.file("american-statistical-association.csl", package = "DoseFinding")`'
 vignette: >
   %\VignetteIndexEntry{Design and analysis template MCP-Mod for longitudinal data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -340,7 +340,7 @@ S01 <- diag(resultRepeated$sigma^2 / n_final)
 
 # Predictive power:
 predPower <- powMCTInterim(
-  contMat = contMat,,
+  contMat = contMat,
   mu_0t = resultRepeated$mu0t,
   S_0t = resultRepeated$S0t,
   S_01 = S01,

@@ -45,7 +45,7 @@ test_that("bFitMod handles placebo adjustment appropriately", {
   prior <- list(norm = c(0, 10), norm = c(0, 100))
   expect_error(bFitMod(dose = doses, resp = drFit, model = "linlog", S = S, 
                        placAdj = TRUE, type = "Bayes", nSim = 100, prior = prior),
-               "logistic and linlog models can only be fitted with placAdj")
+               "logistic and linlog models cannot be fitted to placebo adjusted data")
 })
 
 test_that("bFitMod correctly handles 'linInt' model", {

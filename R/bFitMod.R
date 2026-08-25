@@ -11,7 +11,8 @@
 #' assumed, and a large number of samples is drawn from this distribution. For each draw the fitMod function with
 #' \samp{type = "general"} is used to fit the draws from the multivariate normal distribution.
 #'
-#' Componentwise univariate slice samplers are implemented (see Neal, 2003) to sample from the posterior distribution.
+#' Componentwise univariate slice samplers are implemented \insertCite{@see @neal2003}{DoseFinding}
+#' to sample from the posterior distribution.
 #'
 #' @aliases bFitMod coef.bFitMod predict.bFitMod plot.bFitMod
 #' @param dose Numeric specifying the dose variable.
@@ -54,7 +55,7 @@
 #'   additional information on the fitted model.
 #' @author Bjoern Bornkamp
 #' @seealso [fitMod()]
-#' @references Neal, R. M. (2003), Slice sampling, Annals of Statistics, 31, 705-767
+#' @references \insertAllCited{}
 #' @examples
 #' data(biom)
 #  ## produce first stage fit (using dose as factor)
@@ -121,7 +122,7 @@ bFitMod <- function(dose, resp, model, S, placAdj = FALSE,
                     MCMCcontrol = list(), control = NULL, bnds, 
                     addArgs = NULL){
   if(placAdj & model %in% c("linlog", "logistic"))
-    stop("logistic and linlog models can only be fitted with placAdj")
+    stop("logistic and linlog models cannot be fitted to placebo adjusted data")
   nD <- length(dose)
   if (length(resp) != nD) 
     stop("dose and resp need to be of the same size")
@@ -151,6 +152,8 @@ bFitMod <- function(dose, resp, model, S, placAdj = FALSE,
     nodes <- dose
   
   ## model number
+  ## NB: this ordering is coupled to the C code (modNr is passed to
+  ## bFitMod.Bayes) and therefore differs from builtInMods on purpose.
   builtIn <- c("linear", "linlog", "quadratic", "linInt", "emax",
                "logistic", "exponential", "sigEmax", "betaMod")
   modNr <- match(model, builtIn)
@@ -328,7 +331,7 @@ plot.bFitMod <- function (x, plotType = c("dr-curve", "effect-curve"),
         sdev <- sqrt(diag(attr(x, "data")$S))
         q <- qnorm(1 - (1 - level)/2)
         LBm <- UBm <- numeric(length(dose))
-        for (i in 1:length(dose)) {
+        for (i in seq_along(dose)) {
           LBm[i] <- resp[i] - q * sdev[i]
           UBm[i] <- resp[i] + q * sdev[i]
         }
@@ -349,7 +352,7 @@ plot.bFitMod <- function (x, plotType = c("dr-curve", "effect-curve"),
       sdev <- sqrt(diag(attr(x, "data")$S))
       q <- qnorm(1 - (1 - level)/2)
       LBm <- UBm <- numeric(length(dose))
-      for (i in 1:length(dose)) {
+      for (i in seq_along(dose)) {
         LBm[i] <- resp[i] - q * sdev[i]
         UBm[i] <- resp[i] + q * sdev[i]
       }
@@ -372,7 +375,7 @@ plot.bFitMod <- function (x, plotType = c("dr-curve", "effect-curve"),
       points(dose, resp, pch = 19, cex = 0.75)
     if (plotData == "meansCI") {
       points(dose, resp, pch = 19, cex = 0.75)
-      for (i in 1:length(dose)) {
+      for (i in seq_along(dose)) {
         lines(c(dose[i], dose[i]), c(LBm[i], UBm[i]), 
               lty = 2)
       }

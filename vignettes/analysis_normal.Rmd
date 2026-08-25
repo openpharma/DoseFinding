@@ -1,8 +1,8 @@
 ---
 title: "Continuous data MCP-Mod"
 output: rmarkdown::html_vignette
-bibliography: refs.bib
-csl: american-statistical-association.csl
+bibliography: '`r system.file("REFERENCES.bib", package = "DoseFinding")`'
+csl: '`r system.file("american-statistical-association.csl", package = "DoseFinding")`'
 link-citations: yes
 vignette: >
   %\VignetteIndexEntry{Analysis template MCP-Mod for continuous data}

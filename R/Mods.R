@@ -50,9 +50,7 @@
 #'   derived linear parameters (based on \samp{"placEff"} and \samp{"maxEff"}) in a list.
 #' @author Bjoern Bornkamp
 #' @seealso [Mods()], [drmodels()], [optDesign()], [powMCT()]
-#' @references Pinheiro, J. C., Bornkamp, B., and Bretz, F. (2006). Design and analysis of dose finding studies
-#'   combining multiple comparisons and modeling procedures, *Journal of Biopharmaceutical Statistics*, **16**,
-#'   639--656
+#' @references \insertRef{pinheiro2006b}{DoseFinding}
 #' @examples
 #'
 #' ## Example on how to specify candidate models
@@ -394,7 +392,7 @@ TD <- function(object, Delta, TDtype = c("continuous", "discrete"),
     for(nam in names(object)){
       par <- object[[nam]]
       if(is.matrix(par)){
-        for(i in 1:nrow(par)){
+        for(i in seq_len(nrow(par))){
           td <- calcTD(nam, par[i,], Delta, TDtype, direction, doses, off, scal, nodes)
           modNams <- c(modNams, paste(nam, i, sep=""))
           tds <- c(tds, td)
@@ -503,7 +501,7 @@ ED <- function(object, p, EDtype = c("continuous", "discrete"),
     for(nam in names(object)){
       par <- object[[nam]]
       if(is.matrix(par)){
-        for(i in 1:nrow(par)){
+        for(i in seq_len(nrow(par))){
           ed <- calcED(nam, par[i,], p, maxD, EDtype, doses, off, scal, nodes)
           modNams <- c(modNams, paste(nam, i, sep=""))
           eds <- c(eds, ed)

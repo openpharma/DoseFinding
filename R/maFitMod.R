@@ -2,8 +2,8 @@
 #'   averaging (bagging)
 #'
 #' This function fits dose-response models in a bootstrap model
-#' averaging approach motivated by the bagging procedure (Breiman
-#' 1996). Given summary estimates for the outcome at each dose, the
+#' averaging approach motivated by the bagging procedure \insertCite{breiman1996}{DoseFinding}. 
+#' Given summary estimates for the outcome at each dose, the
 #' function samples summary data from the multivariate normal
 #' distribution. For each sample dose-response models are fit to these
 #' summary estimates and the best model
@@ -33,7 +33,7 @@
 #'   was selected in each bootstrap and basic input parameters.
 #' @author Bjoern Bornkamp
 #' @seealso [fitMod()], [bFitMod()], [drmodels()]
-#' @references Breiman, L. (1996). Bagging predictors. Machine learning, 24, 123-140.
+#' @references \insertAllCited{}
 #' @examples
 #' data(biom)
 #' ## produce first stage fit (using dose as factor)
@@ -51,8 +51,7 @@ maFitMod <- function(dose, resp, S, models,
                      nSim = 1000,
                      control, bnds, addArgs = NULL){
 
-  builtIn <- c("linlog", "linear", "quadratic", "linInt", "emax",
-               "exponential", "logistic", "betaMod", "sigEmax")
+  builtIn <- builtInMods
   if(missing(models))
     stop("Need to specify the models that should be fitted")
   modelNum <- match(models, builtIn)
@@ -83,7 +82,7 @@ maFitMod <- function(dose, resp, S, models,
   sims <- mvtnorm::rmvnorm(nSim, resp, S)
   fits <- vector("list", nSim)
   selModel <- character(nSim)
-  for(i in 1:nSim){
+  for(i in seq_len(nSim)){
     mod_fits <- lapply(models, function(mod){
       fitMod(dose, sims[i,], model = mod, S = S,
              type = "general", bnds = bnds[[mod]],
@@ -121,8 +120,8 @@ predict.maFit <- function(object,
   nSim <- length(object$selModel)
   pred <- matrix(nrow = nSim, ncol = length(doseSeq))
   colnames(pred) <- doseSeq
-  rownames(pred) <- 1:nSim
-  for(i in 1:nSim){
+  rownames(pred) <- seq_len(nSim)
+  for(i in seq_len(nSim)){
     pred[i,] <- predict(object$fits[[i]], doseSeq = doseSeq, predType = "ls-means")
   }
   if(!is.null(summaryFct)){
@@ -199,7 +198,7 @@ plot.maFit <- function(x,
     sdev <- sqrt(diag(x$args$S))
     crit <- qnorm(1 - tail_prob)
     LBm <- UBm <- numeric(length(x$args$dose))
-    for (i in 1:length(x$args$dose)) {
+    for (i in seq_along(x$args$dose)) {
       LBm[i] <- trafo(x$args$resp[i] - crit * sdev[i])
       UBm[i] <- trafo(x$args$resp[i] + crit * sdev[i])
     }

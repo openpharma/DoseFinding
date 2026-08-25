@@ -103,6 +103,6 @@ as listed in the `DESCRIPTION` file.
 - Ludger Sandig — Vignettes
 - Marius Thomas — Bayesian MCP-mod, various updates to code, docs, and tests
 - Daniel Sabanes Bove — powMCTInterim implementation, longitudinal data vignette
-
+- Carina Miller - Time-to-event vignette
 
 ## References

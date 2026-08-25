@@ -1,11 +1,11 @@
 ---
 title: "Time-to-Event Data MCP-Mod"
 output: rmarkdown::html_vignette
-bibliography: refs.bib
+bibliography: '`r system.file("REFERENCES.bib", package = "DoseFinding")`'
+csl: '`r system.file("american-statistical-association.csl", package = "DoseFinding")`'
 link-citations: yes
-csl: american-statistical-association.csl
 vignette: >
-  %\VignetteIndexEntry{Design and analysis template MCP-Mod for time-to-event data}
+  %\VignetteIndexEntry{Analysis template MCP-Mod for continuous data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

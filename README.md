@@ -49,7 +49,7 @@ models <- Mods(linear = NULL, emax = 0.2, quadratic = -0.17,
 plot(models)
 ```
 
-<img src="man/figures/README-example1-1.png" width="100%" />
+<img src="man/figures/README-example1-1.png" alt="" width="100%" />
 
 ``` r
 ## perform multiple contrast test
@@ -88,7 +88,7 @@ fitemax <- fitMod(dose, resp, data=IBScovars, model="emax",
 plot(fitemax, CI=TRUE, plotData="meansCI")
 ```
 
-<img src="man/figures/README-example2-1.png" width="100%" />
+<img src="man/figures/README-example2-1.png" alt="" width="100%" />
 
 ### Optimal designs for dose estimation
 
@@ -101,7 +101,7 @@ fmodels <- Mods(linear = NULL, emax = 25, exponential = 85,
 plot(fmodels, plotTD = TRUE, Delta = 0.2)
 ```
 
-<img src="man/figures/README-example3-1.png" width="100%" />
+<img src="man/figures/README-example3-1.png" alt="" width="100%" />
 
 ``` r
 weights <- rep(1/4, 4)
@@ -111,9 +111,38 @@ optDesign(fmodels, weights, Delta=0.2, designCrit="TD")
 #> 0.34960 0.09252 0.00366 0.26760 0.13342 0.15319
 ```
 
+## Contributors
+
+This package was originally developed in 2010 and over the years has had
+many different contributors. Some of the work on this package predates
+its Github repository and we want to list here all contributors to the
+package and highlight their contributions in addition to the “official””
+package authors and maintainers as listed in the `DESCRIPTION` file.
+
+### Maintainers
+
+- Marius Thomas — current maintainer
+- Björn Bornkamp — former maintainer (until 2024)
+
+### Original core package authors
+
+- Björn Bornkamp
+- Jose Pinheiro
+- Frank Bretz
+
+### Other authors and substantial contributors
+
+- Ludger Sandig — Vignettes
+- Marius Thomas — Bayesian MCP-mod, various updates to code, docs, and
+  tests
+- Daniel Sabanes Bove — powMCTInterim implementation, longitudinal data
+  vignette
+- Carina Miller - Time-to-event vignette
+
 ## References
 
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
 
 <div id="ref-bretz2005" class="csl-entry">
 

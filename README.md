@@ -137,6 +137,7 @@ package authors and maintainers as listed in the `DESCRIPTION` file.
   tests
 - Daniel Sabanes Bove — powMCTInterim implementation, longitudinal data
   vignette
+- Carina Miller - Time-to-event vignette
 
 ## References
 

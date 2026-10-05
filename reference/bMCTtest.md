@@ -266,7 +266,7 @@ cmat <- optContr(modlist, w = weights)
 bMCTtest(dose, resp, biom, models=modlist, prior = prior, contMat = cmat)
 }
 #> Loading required package: RBesT
-#> This is RBesT version 1.10.0 (released 2026-07-01, git-sha 6d43b8e)
+#> This is RBesT version 1.12.0 (released 2026-09-18, git-sha )
 #> Using default prior reference scale 0.7
 #> Using default prior reference scale 0.7
 #> Using default prior reference scale 0.7

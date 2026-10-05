@@ -107,6 +107,34 @@ optDesign(fmodels, weights, Delta=0.2, designCrit="TD")
 #> 0.34960 0.09252 0.00366 0.26760 0.13342 0.15319
 ```
 
+## Contributors
+
+This package was originally developed in 2010 and over the years has had
+many different contributors. Some of the work on this package predates
+its Github repository and we want to list here all contributors to the
+package and highlight their contributions in addition to the “official””
+package authors and maintainers as listed in the `DESCRIPTION` file.
+
+### Maintainers
+
+- Marius Thomas — current maintainer
+- Björn Bornkamp — former maintainer (until 2024)
+
+### Original core package authors
+
+- Björn Bornkamp
+- Jose Pinheiro
+- Frank Bretz
+
+### Other authors and substantial contributors
+
+- Ludger Sandig — Vignettes
+- Marius Thomas — Bayesian MCP-mod, various updates to code, docs, and
+  tests
+- Daniel Sabanes Bove — powMCTInterim implementation, longitudinal data
+  vignette
+- Carina Miller - Time-to-event vignette
+
 ## References
 
 Bretz, F., Pinheiro, J. C., and Branson, M. (2005), “Combining multiple

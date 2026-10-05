@@ -101,7 +101,7 @@
 <span>               doses <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">## plot models</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">models</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-example1-1.png" width="100%"></p>
+<p><img src="reference/figures/README-example1-1.png" alt="" width="100%"></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## perform multiple contrast test</span></span>
 <span><span class="fu"><a href="reference/MCTtest.html">MCTtest</a></span><span class="op">(</span><span class="va">dose</span>, <span class="va">resp</span>, <span class="va">IBScovars</span>, models<span class="op">=</span><span class="va">models</span>,</span>
@@ -137,7 +137,7 @@
 <span>                  bnds <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.01</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">## display fitted dose-effect curve</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fitemax</span>, CI<span class="op">=</span><span class="cn">TRUE</span>, plotData<span class="op">=</span><span class="st">"meansCI"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-example2-1.png" width="100%"></p>
+<p><img src="reference/figures/README-example2-1.png" alt="" width="100%"></p>
 </div>
 <div class="section level3">
 <h3 id="optimal-designs-for-dose-estimation">Optimal designs for dose estimation<a class="anchor" aria-label="anchor" href="#optimal-designs-for-dose-estimation"></a>
@@ -149,7 +149,7 @@
 <span>                logistic <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">10.8811</span><span class="op">)</span>,</span>
 <span>                doses <span class="op">=</span> <span class="va">doses</span>, placEff<span class="op">=</span><span class="fl">0</span>, maxEff<span class="op">=</span><span class="fl">0.4</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fmodels</span>, plotTD <span class="op">=</span> <span class="cn">TRUE</span>, Delta <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-example3-1.png" width="100%"></p>
+<p><img src="reference/figures/README-example3-1.png" alt="" width="100%"></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">weights</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">4</span>, <span class="fl">4</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/optDesign.html">optDesign</a></span><span class="op">(</span><span class="va">fmodels</span>, <span class="va">weights</span>, Delta<span class="op">=</span><span class="fl">0.2</span>, designCrit<span class="op">=</span><span class="st">"TD"</span><span class="op">)</span></span>
@@ -159,9 +159,41 @@
 </div>
 </div>
 <div class="section level2">
+<h2 id="contributors">Contributors<a class="anchor" aria-label="anchor" href="#contributors"></a>
+</h2>
+<p>This package was originally developed in 2010 and over the years has had many different contributors. Some of the work on this package predates its Github repository and we want to list here all contributors to the package and highlight their contributions in addition to the “official”” package authors and maintainers as listed in the <code>DESCRIPTION</code> file.</p>
+<div class="section level3">
+<h3 id="maintainers">Maintainers<a class="anchor" aria-label="anchor" href="#maintainers"></a>
+</h3>
+<ul>
+<li>Marius Thomas — current maintainer</li>
+<li>Björn Bornkamp — former maintainer (until 2024)</li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="original-core-package-authors">Original core package authors<a class="anchor" aria-label="anchor" href="#original-core-package-authors"></a>
+</h3>
+<ul>
+<li>Björn Bornkamp</li>
+<li>Jose Pinheiro</li>
+<li>Frank Bretz</li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="other-authors-and-substantial-contributors">Other authors and substantial contributors<a class="anchor" aria-label="anchor" href="#other-authors-and-substantial-contributors"></a>
+</h3>
+<ul>
+<li>Ludger Sandig — Vignettes</li>
+<li>Marius Thomas — Bayesian MCP-mod, various updates to code, docs, and tests</li>
+<li>Daniel Sabanes Bove — powMCTInterim implementation, longitudinal data vignette</li>
+<li>Carina Miller - Time-to-event vignette</li>
+</ul>
+</div>
+</div>
+<div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-bretz2005" class="csl-entry">
 Bretz, F., Pinheiro, J. C., and Branson, M. (2005), “Combining multiple comparisons and modeling techniques in dose-response studies,” <em>Biometrics</em>, Wiley Online Library, 61, 738–748. <a href="https://doi.org/10.1111/j.1541-0420.2005.00344.x" class="external-link uri">https://doi.org/10.1111/j.1541-0420.2005.00344.x</a>.
 </div>
@@ -205,6 +237,7 @@ Pinheiro, J., Bornkamp, B., Glimm, E., and Bretz, F. (2014), “Model-based dose
 <li>Marius Thomas <br><small class="roles"> Author, maintainer </small>   </li>
 <li>Daniel Sabanes Bove <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-0176-9239" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
 <li>Novartis Pharma AG <br><small class="roles"> Copyright holder, funder </small>   </li>
+<li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
 

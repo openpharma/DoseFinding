@@ -15,6 +15,8 @@
 - **Daniel Sabanes Bove**. Author.
   [](https://orcid.org/0000-0002-0176-9239)
 
+- **Carina Miller**. Contributor.
+
 - **Novartis Pharma AG**. Copyright holder, funder.
 
 ## Citation

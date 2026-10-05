@@ -5,7 +5,7 @@ bibliography: '`r system.file("REFERENCES.bib", package = "DoseFinding")`'
 csl: '`r system.file("american-statistical-association.csl", package = "DoseFinding")`'
 link-citations: yes
 vignette: >
-  %\VignetteIndexEntry{Analysis template MCP-Mod for continuous data}
+  %\VignetteIndexEntry{Time-to-Event Data MCP-Mod}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -29,7 +29,8 @@ vignette][v2], and for binary data the [binary data vignette][v3].
 library(DoseFinding)
 library(ggplot2)
 library(survival)
-set.seed(2026)
+## set seed and ensure reproducibility across R versions
+set.seed(2010, kind = "Mersenne-Twister", sample.kind = "Rejection", normal.kind = "Inversion")
 ```
 
 ## Example trial
@@ -37,14 +38,15 @@ set.seed(2026)
 We will first generate an appropriate dataset that we can use to illustrate
 the analysis of time-to-event data.
 
-Assume a dose-finding study is planned for a hypothetical investigational
-treatment. The endpoint of interest is the time to a certain event. The
-treatment is tested with doses 0 (placebo), 0.05, 0.2, 0.5 and 1, with an
-allocation ratio of 2:1:1:1:2. The larger allocation to placebo and highest
-dose is chosen to increase the power. It is assumed that the hazard rate for the
-placebo group is $\lambda_0 = 0.6$ and that the hazard ratio for the treatment
-effect at the highest dose is $\text{HR} = 0.5$. This results in a hazard
-rate of $\lambda_1 = 0.3$ for the highest dose in our study.
+Assume a dose-finding study is planned for a hypothetical
+investigational treatment. The endpoint of interest is the time to a
+certain event. The treatment is tested with doses 0 (placebo), 0.05,
+0.2, 0.5 and 1, with an allocation ratio of 2:1:1:1:2. The larger
+allocation to placebo and highest dose is chosen to increase the
+power. It is assumed that the hazard rate for the placebo group is
+$\lambda_0 = 0.6$ and that the hazard ratio for the maximum effect
+over the dose range is $\text{HR} = 0.5$. This results in a hazard
+rate of $\lambda_1 = 0.3$.
 
 We define the parameters for the example just described:
 
@@ -58,12 +60,11 @@ alRatio <- c(2, 1, 1, 1, 2) # allocation ratio across the dose groups
 
 We use the following candidate set of dose-response models for the mean
 response: an $\text{E}_{\text{max}}$, a sigmoidal $\text{E}_{\text{max}}$, a
-quadratic, an exponential and a linear model.
+quadratic and an exponential model.
 
-In the survival context a *decreasing*
-response (a lower hazard) typically 
-corresponds to a beneficial treatment effect, so we
-specify `direction = "decreasing"`.
+In the survival context a *decreasing* response (a lower hazard)
+typically corresponds to a beneficial treatment effect, so we specify
+`direction = "decreasing"`.
 
 The dose-response models are placed on the *log hazard* scale, because
 dose-response models in the `DoseFinding` package assume additive effects.
@@ -90,9 +91,10 @@ mods <- Mods(
 )
 plotMods(mods, superpose = TRUE, ylab = "log(hazard rate)")
 ```
-To illustrate the methodology we simulate a survival data set based on the trial
-assumptions and one of our assumed candidate models. The function
-below draws survival times from an exponential distribution under one of the candidate models. It supports
+To illustrate the methodology we simulate a survival data set based on
+the trial assumptions and one of our assumed candidate models. The
+function below draws survival times from an exponential distribution
+under one of the candidate models. It supports
 
 - *event-driven censoring*: the study is run until a total of `etotal` events have been
   observed, and
@@ -102,21 +104,21 @@ below draws survival times from an exponential distribution under one of the can
   expressed on the study-time scale.
 
 ```{r}
-##' @param mods `Mods` object defining the candidate models to simulate from
-##' @param model name or index of the model whose hazards are used to simulate
-##' @param alRatio allocation ratio across the dose groups
-##' @param n total sample size
-##' @param etotal number of events at which event-driven censoring is applied
-##' @param staggered logical, whether to use staggered study entry
-##' @return data.frame with columns group, time, status
+#' @param mods `Mods` object defining the candidate models to simulate from
+#' @param model name or index of the model whose hazards are used to simulate
+#'    (refers to column names or column indices of getResp(mods))
+#' @param alRatio allocation ratio across the dose groups
+#' @param n total sample size
+#' @param etotal number of events at which event-driven censoring is applied
+#' @param staggered logical, whether to use staggered study entry
+#' @return data.frame with columns group, time, status
 simulate_surv_data <- function(mods, model, alRatio, n, etotal,
-                               staggered = FALSE,
-                               shape = 2, scale = 3) {
+                               staggered = FALSE) {
   doses <- attr(mods, "doses")
   y <- getResp(mods)
   lambda0 <- exp(attr(mods, "placEff"))
   ## assign each patient to a dose group (log hazard rate) according to alRatio
-  mean_resp <- sample(y[, model], n, replace = TRUE, prob = alRatio)
+  log_rate_resp <- rep(y[, model], rndDesign(alRatio/sum(alRatio), n))
 
   ## entry (calendar) times
   entry <- if (staggered) {
@@ -126,7 +128,7 @@ simulate_surv_data <- function(mods, model, alRatio, n, etotal,
   }
 
   ## event times on the calendar-time scale
-  event <- entry + rexp(n, exp(mean_resp))
+  event <- entry + rexp(n, exp(log_rate_resp))
 
   ## event-driven censoring at the time of the etotal-th event
   t_cut <- sort(event)[etotal]
@@ -134,7 +136,7 @@ simulate_surv_data <- function(mods, model, alRatio, n, etotal,
   obs_time <- pmin(event, t_cut) - entry # follow-up on the study-time scale
 
   data.frame(
-    group = factor(names(mean_resp), levels = as.character(doses)),
+    group = factor(names(log_rate_resp), levels = as.character(doses)),
     time = obs_time,
     status = status
   )
@@ -190,8 +192,7 @@ S_cox <- vcov(coxfit) # covariance matrix of the estimates
 
 We now test for a dose-response signal with `MCTtest()`. Since the coxfit model
 returns placebo-adjusted estimates (there is no placebo coefficient), we use
-`placAdj = TRUE` and drop the placebo dose from `dose`. As the response is
-decreasing we test one-sided. 
+`placAdj = TRUE` and drop the placebo dose from `dose`, we test one-sided. 
 ```{r}
 mct <- MCTtest(
   dose = doses[-1], # placebo-adjusted, so drop placebo
@@ -205,20 +206,24 @@ mct <- MCTtest(
 mct
 ```
 
-The output reports, per candidate model, the optimal-contrast $t$-statistics
-together with multiplicity-adjusted $p$-values. Small adjusted $p$-values give
-evidence for a dose-response relationship. If we would have specified a significance level of 0.025 one-sided,
-then we can consider the null hypothesis of a flat dose-response rejected since several of the  adjusted p-values 
-smaller than 0.025.
+The output reports, per candidate model, the optimal-contrast
+$t$-statistics together with multiplicity-adjusted $p$-values. Small
+adjusted $p$-values give evidence for a dose-response relationship. If
+we would have specified a significance level of 0.025 one-sided, then
+we can consider the null hypothesis of no dose-response effect versus
+placebo is rejected since several of the adjusted p-values are smaller
+than 0.025.
 
 
 ### Dose-response estimation
 
-Dose-response modeling can then proceed with a combination of bootstrapping and model averaging.
-For detailed explanations refer to the [vignette for analysis of
-continuous data][v2]. Fitting is done on the log-hazard ratio scale so we are using placebo-adjusted
-models. Since `maFitMod` does not support placebo-adjusted dose-response estimation we need to 
-define a couple of helper functions to perform the model averaging.
+Dose-response modeling can then proceed with a combination of
+bootstrapping and model averaging.  For detailed explanations refer to
+the [vignette for analysis of continuous data][v2]. Fitting is done on
+the log-hazard ratio scale so we are using placebo-adjusted
+models. Since `maFitMod` does not support placebo-adjusted
+dose-response estimation we need to define a couple of helper
+functions to perform the model averaging.
 
 ```{r}
 one_bootstrap_prediction <- function(mu_hat, S_hat, doses, bounds, dose_seq) {
@@ -247,15 +252,15 @@ predict_and_plot <- function(mu_hat, S_hat, doses, dose_seq, n_rep) {
   bs_summary <- summarize_predictions(bs_rep, probs = c(0.025, 0.25, 0.75, 0.975))
   bs_summary <- as.data.frame(exp(bs_summary)) # back to hazard ratio scale
   ci_half_width <- qnorm(0.975) * sqrt(diag(S_hat))
-  glm_summary <- data.frame(dose = doses, mu_hat = exp(mu_hat),
+  cox_summary <- data.frame(dose = doses, mu_hat = exp(mu_hat),
                             low = exp(mu_hat - ci_half_width),
                             high = exp(mu_hat + ci_half_width))
   gg <- ggplot(cbind(bs_summary, dose_seq = dose_seq)) + geom_line(aes(dose_seq, median)) +
     geom_ribbon(aes(x = dose_seq, ymin = low_in, ymax = high_in), alpha = 0.2) +
     geom_ribbon(aes(x = dose_seq, ymin = low_out, ymax = high_out), alpha = 0.2) +
-    geom_point(aes(dose, mu_hat), glm_summary) +
+    geom_point(aes(dose, mu_hat), cox_summary) +
     scale_y_continuous(breaks = seq(0.5, 1.5, 0.25)) + 
-    geom_errorbar(aes(dose, ymin = low, ymax = high), glm_summary, width = 0, alpha = 0.5) +
+    geom_errorbar(aes(dose, ymin = low, ymax = high), cox_summary, width = 0, alpha = 0.5) +
     xlab("Dose") + ylab("Hazard ratio") +
     labs(title = "Bootstrap estimates for population hazard ratio",
          subtitle = "confidence levels 50% and 95%")
@@ -266,18 +271,17 @@ predict_and_plot <- function(mu_hat, S_hat, doses, dose_seq, n_rep) {
 We then use these functions to plot the estimated dose-response curve together with the Cox model
 estimates on the original hazard ratio scale.
 ```{r}
-dose_seq <- seq(0, 4, length.out = 51)
 predict_and_plot(coef_cox, S_cox, doses[-1], dose_seq = seq(0, 1, 0.01), 1000)
 ```
 
 
 ## Power and sample size calculations at design stage
 
-For power and sample size calculations in generalized MCP-Mod we need to make an
-assumption about the
-covariance matrix $S$ of the placebo-adjusted estimates under the alternative. 
-@deng2019 derive an approximation for the covariance matrix of the estimated 
-log hazard ratios for a Cox model which we will use in the following.
+For power and sample size calculations in generalized MCP-Mod we need
+to make an assumption about the covariance matrix $S$ of the
+placebo-adjusted estimates under the alternative.  @deng2019 derive an
+approximation for the covariance matrix of the estimated log hazard
+ratios for a Cox model which we will use in the following.
 
 Let $n_k$ be the number of patients in dose group $k$ ($k = 0$ for placebo),
 $D$ the total number of events, and $\beta_k$ the log hazard ratio of dose group
@@ -296,25 +300,24 @@ approximately
     p_0^{-1} & p_0^{-1} & \cdots & p_K^{-1} + p_0^{-1}
   \end{pmatrix}.
 \]
-Since this matrix depends on the total number of events rather than the total
-number of patients, this facilitates the use of event-driven dose-finding designs.
-Under the null hypothesis of a flat dose-response ($\beta_k = 0$ for all $k$) the covariance
-matrix simplifies to a matrix $S_0$ that depends only on the allocation ratios to each arm and the total number of
-events, and is used to obtain the critical value for the multiple contrast test. 
 
-The following function returns both $S$ (one per candidate model) and $S_0$, as well as some other useful information
-that we can then use for power calculations.
-Following @deng2019  we evaluate $S$ at half the assumed effect,
-`0.5 * beta`, an intermediate value between the null and the alternative.
+Since this matrix depends on the total number of events rather than
+the total number of patients, this facilitates the use of event-driven
+dose-finding designs.  Under the null hypothesis of no dose-response
+effect versus placebo ($\beta_k = 0$ for all $k$) the covariance
+matrix simplifies to a matrix $S_0$ that depends only on the
+allocation ratios to each arm and the total number of events, and is
+used to obtain the critical value for the multiple contrast test.
 
-Using $S$ and $S_0$ we can compute the power under each candidate model. The
-function below builds the optimal contrast for each model (using its own $S$),
-derives the critical value from $S_0$, and evaluates the power for a given number
-of events with the internal `powCalc()` machinery of the package. Following @deng2019  
-we evaluate $S$ at half the assumed effect, `0.5 * beta`, an intermediate value between the null and the alternative to
-improve the accuracy of the approximation.
-We also define a function that allows us to calculate
-the required number of events to achieve a target average power using binary search.
+The following function calculates both $S$ (one per candidate model)
+and $S_0$.  Following @deng2019 we evaluate $S$ at half the assumed
+effect, `0.5 * beta`, an intermediate value between the null and the
+alternative. Then using $S$ and $S_0$ we compute the power under each
+candidate model. The function below builds the optimal contrast for
+each model (using its own $S$), derives the critical value from $S_0$,
+and evaluates the power for a given number of events with `powMCT()`.  We also define a function that
+allows us to calculate the required number of events to achieve a
+target average power using binary search.
 
 ```{r}
 #' Power of the multiple contrast test for a time-to-event endpoint
@@ -418,20 +421,17 @@ powMCT_TTE <- function(mods, alpha, alRatio, etotal) {
   )
   model_power <- numeric(n_model)
   for (i in seq_len(n_model)) {
-    mu <- beta[-1, i, drop = FALSE]
-    covMat <- crossprod(contMat, S[, , i] %*% contMat)
-    standard_errors <- sqrt(diag(covMat))
-    deltaMat <- crossprod(contMat, mu)
-    deltaMat <- sweep(deltaMat, 1, standard_errors, FUN = "/")
-    corMat <- cov2cor(covMat)
-    model_power[i] <- DoseFinding:::powCalc(
+    model_power[i] <- powMCT(
+      contMat,
+      alpha = alpha,
+      altModels = mods,
+      S = S[, , i],
+      placAdj = TRUE,
       alternative = "one.sided",
+      df = Inf,
       critV = critV,
-      df = 0,
-      corMat = corMat,
-      deltaMat = deltaMat,
       control = integration_control
-    )
+    )[i]
   }
   average_power <- mean(model_power)
 
@@ -471,62 +471,27 @@ eventsMCT_TTE <- function(mods,
                           lowerE = 1,
                           upperE = 1000) {
 
-  lowerE <- as.integer(lowerE)
-  upperE <- as.integer(upperE)
-  lower_result <- powMCT_TTE(
+  # alRatio = 1 makes sampSize() iterate the total number of events directly;
+  # targFunc still uses the alRatio argument of eventsMCT_TTE (lexical scoping)
+  events <- sampSize(
+    upperN = upperE,
+    lowerN = lowerE,
+    targFunc = function(e) {
+      powMCT_TTE(mods = mods, alpha = alpha, alRatio = alRatio, etotal = e)$power_av
+    },
+    target = targPow,
+    alRatio = 1,
+    Ntype = "total"
+  )$samp.size
+
+  final_result <- powMCT_TTE(
     mods = mods,
     alpha = alpha,
     alRatio = alRatio,
-    etotal = lowerE
+    etotal = events
   )
-  if (lower_result$power_av >= targPow) {
-    return(list(
-      events = lowerE,
-      power = lower_result$power_av,
-      power_table = lower_result$power_table,
-      target_power = targPow
-    ))
-  }
-  upper_result <- powMCT_TTE(
-    mods = mods,
-    alpha = alpha,
-    alRatio = alRatio,
-    etotal = upperE
-  )
-  if (upper_result$power_av < targPow) {
-    stop(
-      sprintf(
-        paste0(
-          "The target power is not reached at `upperE = %d`. ",
-          "Average power at this bound is %.3f. Increase `upperE`."
-        ),
-        upperE,
-        upper_result$power_av
-      ),
-      call. = FALSE
-    )
-  }
-  lower <- lowerE
-  upper <- upperE
-
-  while (lower < upper) {
-    midpoint <- floor((lower + upper) / 2)
-    midpoint_power <- powMCT_TTE(
-      mods = mods,
-      alpha = alpha,
-      alRatio = alRatio,
-      etotal = midpoint
-    )
-    if (midpoint_power$power_av >= targPow) {
-      upper <- midpoint
-    } else {
-      lower <- midpoint + 1
-    }
-  }
-
-  final_result <- midpoint_power
   list(
-    events = lower,
+    events = events,
     power = final_result$power_av,
     power_table = final_result$power_table,
     target_power = targPow
@@ -549,13 +514,15 @@ eventsMCT_TTE(mods, alpha = 0.025, alRatio = alRatio, targPow = 0.8, lowerE = 10
 
 ### Calculating required sample size for a trial
 
-For trial planning purposes we may want to determine the required sample size for the trial rather than the number of
-events. To connect the number of events to a sample size, @deng2019 use the relationship
-between the sample size and the expected number of events under exponentially distributed survival times. 
-More specifically, assume that patients are
-recruited uniformly over $[0, T_r]$ (end of recruitment) with study end $T_s$,
-and that survival times in group $k$ are exponential with hazard $\lambda_k$. Then the probability that a patient in 
-group $k$ experiences an event by the end of the study is
+For trial planning purposes we may want to determine the required
+sample size for the trial rather than the number of events. To connect
+the number of events to a sample size, @deng2019 use the relationship
+between the sample size and the expected number of events under
+exponentially distributed survival times.  More specifically, assume
+that patients are recruited uniformly over $[0, T_r]$ (end of
+recruitment) with study end $T_s$, and that survival times in group
+$k$ are exponential with hazard $\lambda_k$. Then the probability that
+a patient in group $k$ experiences an event by the end of the study is
 
 $$q_k = 1 - \frac{\exp\{-\lambda_k(T_s-T_r)\}-\exp(-\lambda_kT_s)}{\lambda_kT_r}.$$
 If $w_k=r_k/\sum_i r_i$ is the allocation proportion, the expected total number of events for a sample size $N$ is
@@ -574,7 +541,7 @@ easily modified to use the minimum or maximum power instead of the mean across c
 #' @param mods Set of dose-response models; an object of class `Mods`.
 #' @param alpha One-sided significance level.
 #' @param alRatio Positive allocation ratios for all treatment groups,
-#'   including placebo. The first element must equal 1.
+#'   including placebo.
 #' @param targPow Target average power across candidate models.
 #' @param end_rec End of the recruitment period, in years.
 #' @param end_stu End of the study, in years.
@@ -664,45 +631,17 @@ sampSizeMCT_TTE <- function(mods,
     )
   }
 
-  lowerN <- as.integer(lowerN)
-  upperN <- as.integer(upperN)
-  lower_result <- evaluate_sample_size(lowerN)
-
-  if (lower_result$power_av >= targPow) {
-    required_n <- lowerN
-    final_result <- lower_result
-  } else {
-    upper_result <- evaluate_sample_size(upperN)
-
-    if (upper_result$power_av < targPow) {
-      stop(
-        sprintf(
-          paste0(
-            "The target average power is not attained at `upperN = %d`. ",
-            "Average power at this bound is %.3f. Increase `upperN`."
-          ),
-          upperN,
-          upper_result$power_av
-        ),
-        call. = FALSE
-      )
-    }
-
-    # Binary search for the smallest integer sample size attaining the target.
-    lower <- lowerN
-    upper <- upperN
-    while (lower < upper) {
-      midpoint <- floor((lower + upper) / 2)
-      midpoint_result <- evaluate_sample_size(midpoint)
-      if (midpoint_result$power_av >= targPow) {
-        upper <- midpoint
-      } else {
-        lower <- midpoint + 1
-      }
-    }
-    required_n <- lower
-    final_result <- evaluate_sample_size(required_n)
-  }
+  # alRatio = 1 makes sampSize() iterate the total sample size directly;
+  # evaluate_sample_size() still uses the alRatio argument of sampSizeMCT_TTE
+  required_n <- sampSize(
+    upperN = upperN,
+    lowerN = lowerN,
+    targFunc = function(n) evaluate_sample_size(n)$power_av,
+    target = targPow,
+    alRatio = 1,
+    Ntype = "total"
+  )$samp.size
+  final_result <- evaluate_sample_size(required_n)
 
   power_table <- data.frame(
     model = c(model_names, "average"),

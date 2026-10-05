@@ -29,6 +29,7 @@ Suggests:
     tibble,
     RBesT,
     nlme,
+    survival,
     dplyr,
     tidyr
 Maintainer: Marius Thomas <marius.thomas@novartis.com>

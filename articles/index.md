@@ -16,3 +16,5 @@
   package](https://openpharma.github.io/DoseFinding/articles/overview.md):
 - [Sample size calculations for
   MCP-Mod](https://openpharma.github.io/DoseFinding/articles/sample_size.md):
+- [Time-to-Event Data
+  MCP-Mod](https://openpharma.github.io/DoseFinding/articles/time_to_event_data.md):

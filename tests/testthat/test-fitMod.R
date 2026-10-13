@@ -286,3 +286,16 @@ test_that("fitMod complains if `resp` is a row-vector", {
                         type = "general", bnds = defBnds(max(doses))$emax),
                  "resp_row is not a numeric but a matrix, converting with as.numeric()")
 })
+
+test_that("plotting works when dose/resp are supplied as expressions", {
+  data(IBScovars)
+  anovaMod <- lm(resp~factor(dose)+gender, data=IBScovars)
+  drFit <- coef(anovaMod)[2:5]
+  vCov <- vcov(anovaMod)[2:5,2:5]
+  gfit <- fitMod(sort(unique(IBScovars$dose))[-1], drFit, S=vCov, model = "emax",
+                 type = "general", placAdj = TRUE, bnds = c(0.01, 2))
+  pdf(NULL)
+  on.exit(dev.off())
+  expect_no_error(plot(gfit, CI=TRUE, plotData = "meansCI"))
+  expect_no_error(plot(gfit, CI=TRUE, plotData = "means"))
+})

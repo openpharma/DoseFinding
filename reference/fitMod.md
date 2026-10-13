@@ -311,7 +311,7 @@ vcov(fitemax)
 #>                e0         eMax       ed50
 #> e0    0.008151233 -0.007833365 0.01169729
 #> eMax -0.007833365  0.022948049 0.07412872
-#> ed50  0.011697291  0.074128717 0.58972102
+#> ed50  0.011697291  0.074128715 0.58972101
 ## predicting
 newdat <- data.frame(dose = c(0,0.5,1), gender=factor(1))
 predict(fitemax, newdata=newdat, predType = "full-model", se.fit = TRUE)
@@ -409,10 +409,10 @@ coef(gfit2)
 vcov(gfit2)
 #>            eMax      ed50
 #> eMax 0.02314275 0.0747923
-#> ed50 0.07479230 0.5955192
+#> ed50 0.07479230 0.5955193
 predict(gfit2, se.fit = TRUE, doseSeq = c(1,2,3,4), predType = "effect-curve")
 #> $fit
-#> [1] 0.2766700 0.3191748 0.3364020 0.3457323
+#> [1] 0.2766699 0.3191748 0.3364020 0.3457323
 #> 
 #> $se.fit
 #> [1] 0.1213133 0.1016972 0.1050097 0.1110139

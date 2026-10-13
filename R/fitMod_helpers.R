@@ -453,7 +453,7 @@ plotFunc <- function(x, CI = FALSE, level = 0.95,
     if(plotData %in% c("means", "meansCI")){
       ## produce estimates for ANOVA type model
       data$doseFac <- as.factor(data[[doseNam]])
-      form <- as.formula(paste(respNam, "~ doseFac +", addCovars[2]))
+      form <- as.formula(paste0("`", respNam, "` ~ doseFac + ", deparse(addCovars[[2]])))
       fit <- lm(form, data=data)
       ## build design matrix for prediction
       dose <- sort(unique(data[[doseNam]]))
@@ -548,7 +548,7 @@ plotFunc <- function(x, CI = FALSE, level = 0.95,
   ylim <- c(rng[1] - 0.05 * dff, rng[2] + 0.05 * dff)
   
   ## produce plot
-  form <- as.formula(paste(respNam, "~", doseNam, "|model", sep=""))
+  form <- as.formula(paste0("`", respNam, "` ~ `", doseNam, "` | model"))
   print(
     lattice::xyplot(form, groups = plotdf$group, data = plotdf, pList=pList, ...,
            ylim = ylim, panel = function(x, y, ..., pList){

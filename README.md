@@ -132,7 +132,7 @@ package authors and maintainers as listed in the `DESCRIPTION` file.
 
 ### Other authors and substantial contributors
 
-- Ludger Sandig — Vignettes
+- Ludger Sandig — Vignettes, testthat framework
 - Marius Thomas — Bayesian MCP-mod, various updates to code, docs, and
   tests
 - Daniel Sabanes Bove — powMCTInterim implementation, longitudinal data

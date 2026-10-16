@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">DoseFinding</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4-1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4-2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,7 +71,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Time-to-Event Data MCP-Mod</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/openpharma/DoseFinding/blob/master/vignettes/time_to_event_data.Rmd" class="external-link"><code>vignettes/time_to_event_data.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/openpharma/DoseFinding/blob/v1.4-2/vignettes/time_to_event_data.Rmd" class="external-link"><code>vignettes/time_to_event_data.Rmd</code></a></small>
       <div class="d-none name"><code>time_to_event_data.Rmd</code></div>
     </div>
 
@@ -814,16 +814,16 @@ power instead of the mean across candidate models.</p>
 achieve an average power of 80%, assuming we would recruit for 2 years
 and we would end the study after 4 years.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">sampSizeMCT_TTE</span><span class="op">(</span><span class="va">mods</span>, alpha <span class="op">=</span> <span class="fl">0.025</span>, alRatio <span class="op">=</span> <span class="va">alRatio</span>, end_rec <span class="op">=</span> <span class="fl">2</span>, end_stu <span class="op">=</span> <span class="fl">4</span>, targPow <span class="op">=</span> <span class="fl">0.8</span>, lowerN <span class="op">=</span> <span class="fl">100</span>, upperN <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">sampSizeMCT_TTE</span><span class="op">(</span><span class="va">mods</span>, alpha <span class="op">=</span> <span class="fl">0.025</span>, alRatio <span class="op">=</span> <span class="va">alRatio</span>, end_rec <span class="op">=</span> <span class="fl">2</span>, end_stu <span class="op">=</span> <span class="fl">4</span>, targPow <span class="op">=</span> <span class="fl">0.8</span>, lowerN <span class="op">=</span> <span class="fl">100</span>, upperN <span class="op">=</span> <span class="fl">300</span><span class="op">)</span></span></code></pre></div>
 <pre><code>$sampSize
 [1] 177
 
 $power
-[1] 0.801062
+[1] 0.8018004
 
 $model_power
       emax1       emax2     sigEmax   quadratic exponential 
-  0.8539448   0.8463860   0.8662920   0.5898005   0.8488866 
+  0.8542140   0.8451475   0.8673481   0.5952346   0.8470578 
 
 $expected_events
       emax1       emax2     sigEmax   quadratic exponential 
@@ -867,12 +867,12 @@ $allocation
 
 $power_table
         model expected_events     power
-1       emax1        122.1105 0.8539448
-2       emax2        126.3789 0.8463860
-3     sigEmax        130.7627 0.8662920
-4   quadratic        131.6437 0.5898005
-5 exponential        133.4838 0.8488866
-6     average        128.8759 0.8010620
+1       emax1        122.1105 0.8542140
+2       emax2        126.3789 0.8451475
+3     sigEmax        130.7627 0.8673481
+4   quadratic        131.6437 0.5952346
+5 exponential        133.4838 0.8470578
+6     average        128.8759 0.8018004
 
 $target_power
 [1] 0.8</code></pre>

@@ -35,5 +35,5 @@ A data frame with 369 observations on the following 2 variables.
 
 Biesheuvel E, Hothorn LA (2002). “Many-to-one comparisons in stratified
 designs.” *Biometrical Journal*, **44**(1), 101–116.
-[doi:10.1002/1521-4036(200201)44:13.0.CO;2-H](https://doi.org/10.1002/1521-4036%28200201%2944%3A13.0.CO%3B2-H)
+[doi:10.1002/1521-4036(200201)44:1\<101::AID-BIMJ101\>3.0.CO;2-H](https://doi.org/10.1002/1521-4036%28200201%2944%3A1%3C101%3A%3AAID-BIMJ101%3E3.0.CO%3B2-H)
 .

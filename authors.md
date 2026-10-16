@@ -22,17 +22,16 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/openpharma/DoseFinding/blob/master/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/openpharma/DoseFinding/blob/v1.4-2/DESCRIPTION)
 
 Bornkamp B, Pinheiro J, Bretz F, Sandig L, Thomas M, Sabanes Bove D
 (2026). *DoseFinding: Planning and Analyzing Dose Finding Experiments*.
-R package version 1.4-1.9000,
-<https://github.com/openpharma/DoseFinding>.
+R package version 1.4-2, <https://github.com/openpharma/DoseFinding>.
 
     @Manual{,
       title = {DoseFinding: Planning and Analyzing Dose Finding Experiments},
       author = {Bjoern Bornkamp and Jose Pinheiro and Frank Bretz and Ludger Sandig and Marius Thomas and Daniel {Sabanes Bove}},
       year = {2026},
-      note = {R package version 1.4-1.9000},
+      note = {R package version 1.4-2},
       url = {https://github.com/openpharma/DoseFinding},
     }

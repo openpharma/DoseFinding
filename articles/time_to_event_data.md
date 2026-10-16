@@ -791,18 +791,18 @@ and we would end the study after 4 years.
 
 ``` r
 
-sampSizeMCT_TTE(mods, alpha = 0.025, alRatio = alRatio, end_rec = 2, end_stu = 4, targPow = 0.8, lowerN = 100, upperN = 500)
+sampSizeMCT_TTE(mods, alpha = 0.025, alRatio = alRatio, end_rec = 2, end_stu = 4, targPow = 0.8, lowerN = 100, upperN = 300)
 ```
 
     $sampSize
     [1] 177
 
     $power
-    [1] 0.801062
+    [1] 0.8018004
 
     $model_power
           emax1       emax2     sigEmax   quadratic exponential 
-      0.8539448   0.8463860   0.8662920   0.5898005   0.8488866 
+      0.8542140   0.8451475   0.8673481   0.5952346   0.8470578 
 
     $expected_events
           emax1       emax2     sigEmax   quadratic exponential 
@@ -846,12 +846,12 @@ sampSizeMCT_TTE(mods, alpha = 0.025, alRatio = alRatio, end_rec = 2, end_stu = 4
 
     $power_table
             model expected_events     power
-    1       emax1        122.1105 0.8539448
-    2       emax2        126.3789 0.8463860
-    3     sigEmax        130.7627 0.8662920
-    4   quadratic        131.6437 0.5898005
-    5 exponential        133.4838 0.8488866
-    6     average        128.8759 0.8010620
+    1       emax1        122.1105 0.8542140
+    2       emax2        126.3789 0.8451475
+    3     sigEmax        130.7627 0.8673481
+    4   quadratic        131.6437 0.5952346
+    5 exponential        133.4838 0.8470578
+    6     average        128.8759 0.8018004
 
     $target_power
     [1] 0.8

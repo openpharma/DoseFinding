@@ -10,9 +10,8 @@ calculation](https://openpharma.github.io/DoseFinding/articles/sample_size.md).
 We will use data from Verkindre et al. ([2010](#ref-verkindre2010)), who
 actually use a cross-over design and utilize MCP-Mod in a supportive
 analysis. More information can be found at the corresponding
-[clinicaltrials.gov
-page](https://www.clinicaltrials.gov/study/NCT00501852) and on the R
-help page
+[clinicaltrials.gov page](https://clinicaltrials.gov/study/NCT00501852)
+and on the R help page
 [`?glycobrom`](https://openpharma.github.io/DoseFinding/reference/glycobrom.md).
 
 The main purpose Verkindre et al. ([2010](#ref-verkindre2010)) was to

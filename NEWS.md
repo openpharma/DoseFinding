@@ -1,3 +1,5 @@
+# DoseFinding (development version)
+
 # DoseFinding 1.4-2
 * Added vignette illustrating analysis of time-to-event data (#9. thanks to Carina Miller for her work on this)
 * added contributors section to readme (#40)

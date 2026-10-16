@@ -672,7 +672,7 @@ sampSizeMCT_TTE <- function(mods,
 Now we can calculate how many patients we would need to recruit to achieve an average power of 80%, assuming we would
 recruit for 2 years and we would end the study after 4 years.
 ```{r}
-sampSizeMCT_TTE(mods, alpha = 0.025, alRatio = alRatio, end_rec = 2, end_stu = 4, targPow = 0.8, lowerN = 100, upperN = 500)
+sampSizeMCT_TTE(mods, alpha = 0.025, alRatio = alRatio, end_rec = 2, end_stu = 4, targPow = 0.8, lowerN = 100, upperN = 300)
 ```
 
 

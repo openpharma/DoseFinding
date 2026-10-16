@@ -1,8 +1,7 @@
 ## Resubmission
-This is a resubmission. In this version I have made the following updates to reduce check time
-
-* added skips for long running tests
-* skipped evaluation for long-running vignette code
+This is a resubmission. In this version I have made the following updates
+ * fixed broken links
+ * made changes to one vignette to speed up checks
 
 ## R CMD check results
 

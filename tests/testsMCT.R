@@ -260,7 +260,7 @@ exm2<-c(0.05,5)
 expo<-0.2
 quad<--0.6
 beta<-c(0.05,4)
-data.sim <- structure(list(X = structure(1:4, .Label = c("0", "10", "20", "40"), class = "factor"),
+data.sim <- structure(list(X = structure(1:4, levels = c("0", "10", "20", "40"), class = "factor"),
                            dose = c(0L, 10L, 20L, 40L),
                            Estimate = c(0.266942236, 3.792703657, 14.69084734, 17.71179102),
                            Cov1 = c(3.685607913, 0.595285049, 0.651289991, 0.742901538),

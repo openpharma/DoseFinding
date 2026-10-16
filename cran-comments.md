@@ -1,3 +1,8 @@
+## Resubmission
+This is a resubmission. In this version I have made the following updates
+ * fixed broken links
+ * made changes to one vignette to speed up checks
+
 ## R CMD check results
 
 0 errors | 0 warnings | 0 notes

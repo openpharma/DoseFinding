@@ -1,5 +1,7 @@
 # Changelog
 
+## DoseFinding (development version)
+
 ## DoseFinding 1.4-2
 
 CRAN release: 2026-10-16

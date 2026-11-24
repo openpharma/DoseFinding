@@ -1,14 +1,10 @@
 #include <stdlib.h> // for NULL
 #include <R_ext/Rdynload.h>
 
-/* FIXME: 
-   Check these declarations against the C/Fortran source code.
-*/
-
 /* .C calls */
-extern void critfunc(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
-extern void getcomp(void *, void *, void *, void *, void *);
-extern void sample(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void critfunc(double *, int *, int *, double *, int *, double *, double *, double *, double *, double *, double *, int *, int *, double *);
+extern void getcomp(int *, int *, int *, int *, int *);
+extern void sample(int *, int *, double *, double *, int *, const double *, double *, int *, int *, double *, double *, double *, int *, double *, int *, double *, double *);
 
 static const R_CMethodDef CEntries[] = {
     {"critfunc", (DL_FUNC) &critfunc, 14},

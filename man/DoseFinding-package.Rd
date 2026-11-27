@@ -80,6 +80,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Marius Thomas \email{marius.thomas@novartis.com}
   \item Bjoern Bornkamp \email{bjoern.bornkamp@novartis.com} (\href{https://orcid.org/0000-0002-6294-8185}{ORCID})
   \item Jose Pinheiro
   \item Frank Bretz
@@ -89,6 +90,7 @@ Authors:
 
 Other contributors:
 \itemize{
+  \item Carina Miller [contributor]
   \item Novartis Pharma AG [copyright holder, funder]
 }
 

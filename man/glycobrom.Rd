@@ -6,7 +6,6 @@
 \title{Glycopyrronium Bromide dose-response data}
 \format{
 A data frame with 5 summary estimates (one per dose). Variables:
-A data frame with 5 summary estimates (one per dose). Variables:
 \describe{
 \item{\code{dose}}{a numeric vector containing the dose values}
 \item{\code{fev1}}{a numeric vector containing the least square
@@ -17,7 +16,7 @@ of the least square means per dose}
 }
 }
 \source{
-http://clinicaltrials.gov/ct2/show/results/NCT00501852
+\url{https://clinicaltrials.gov/study/NCT00501852}
 }
 \usage{
 data(glycobrom)

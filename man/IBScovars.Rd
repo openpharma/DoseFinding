@@ -5,7 +5,7 @@
 \alias{IBScovars}
 \title{Irritable Bowel Syndrome Dose Response data with covariates}
 \format{
-A data frame with 369 observations on the following 2 variables.
+A data frame with 369 observations on the following 3 variables.
 \describe{
 \item{\code{gender}}{a factor specifying the gender}
 \item{\code{dose}}{a numeric vector}

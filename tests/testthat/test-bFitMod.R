@@ -107,3 +107,28 @@ test_that("appropriate methods for bFitMod are defined", {
   expect_true("plot.bFitMod" %in% methods("plot"))
   expect_true("coef.bFitMod" %in% methods("coef"))
 })
+
+test_that("bFitMod keeps covariance aligned when sorting doses", {
+  dose <- c(0, 1, 3)
+  resp <- c(.1, .5, .8)
+  S <- diag(c(.02, .05, .09)) + .01
+  perm <- c(3, 1, 2)
+  set.seed(19)
+  a <- bFitMod(dose, resp, "linear", S, type = "bootstrap", nSim = 8)
+  set.seed(19)
+  b <- bFitMod(dose[perm], resp[perm], "linear", S[perm, perm],
+               type = "bootstrap", nSim = 8)
+  expect_equal(attr(b, "data")$S, S)
+  expect_equal(coef(a), coef(b))
+})
+
+test_that("legacy effect predictions subtract each draw's placebo response", {
+  object <- list(samples = rbind(c(1, 2, 15), c(-1, 3, 15)))
+  class(object) <- "bFitMod"
+  attr(object, "model") <- "emax"
+  attr(object, "placAdj") <- FALSE
+  pred <- predict(object, doseSeq = c(15, 60), predType = "effect-curve",
+                  summaryFct = NULL)
+  expect_equal(unname(pred), rbind(c(1, 1.6), c(1.5, 2.4)))
+  expect_equal(dim(predict(object, doseSeq = 15, summaryFct = NULL)), c(2L, 1L))
+})

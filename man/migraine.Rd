@@ -5,7 +5,7 @@
 \alias{migraine}
 \title{Migraine Dose Response data}
 \format{
-A data frame with 517 columns corresponding to the patients that
+A data frame with 8 rows (one per dose group) summarizing 517 patients that
 completed the trial
 \describe{
 \item{\code{dose}}{a numeric vector containing the dose values}

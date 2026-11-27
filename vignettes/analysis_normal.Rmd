@@ -203,7 +203,7 @@ But actually we want to use a more robust approach that combines bootstrapping w
 
 First we draw bootstrap samples from the multivariate normal distribution of the estimates originating from the first-stage model.
 Next, for each bootstrapped data set we fit our candidate models,
-select the one with lowest AIC
+select the one with lowest gAIC
 and save the corresponding estimated quantities of interest.
 This selection step implies that the bootstrap samples potentially come from different models.
 Finally we use these bootstrapped estimates for inference.
@@ -225,13 +225,13 @@ and extract estimates for the model coefficients and their covariance matrix.
 
 ```{r, fit_lm_2}
 fitlm <- lm(FEV1 ~ factor(dose) - 1, data = NVA)
-dose <- unique(NVA$dose)
+dose <- sort(unique(NVA$dose))
 mu_hat <- coef(fitlm)
 S_hat <- vcov(fitlm)
 ```
 
 The bootstrap procedure described above is implemented in the `maFitMod` function.
-Note that for technical reasons we have to supply boundaries to the fitting algorithm via the `bnds` argument to `maFitMod`
+Nonlinear models are fitted within bounds for their nonlinear parameters; without a `bnds` argument, `maFitMod` uses the defaults from `defBnds()`
 (see `?fitMod` and `?defBnds` for details).
 
 ```{r, bootstrap_draw}

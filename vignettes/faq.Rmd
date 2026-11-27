@@ -278,7 +278,7 @@ terms of requiring that the shape-space underlying the corresponding
 model is covered almost exhaustively (see the `defBnds` function, for
 the proposed default bounds).
 
-When utilizing bounds for model fitting, it bootstrapping/bagging can
+When utilizing bounds for model fitting, bootstrapping/bagging can
 be used for estimation of the dose-response functions and for the
 confidence intervals, see @pinheiro2014. Standard asymptotic
 confidence intervals are not reliable.

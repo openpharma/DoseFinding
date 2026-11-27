@@ -535,10 +535,13 @@ calcED <- function(model, pars, p, maxD, EDtype = c("continuous", "discrete"),
       return(out^(1/cf[4]))
     }
     if(model == "quadratic"){
+      ## the full effect is the larger absolute effect at the vertex (if in
+      ## the dose range) or at maxD, as for linear interpolation below
       mode <- -pars[2]/(2*pars[3])
-      if(mode > maxD | mode < 0) ## maximum outside dose range
+      effect <- function(d) pars[2]*d+pars[3]*d^2
+      if(mode > maxD | mode < 0 | abs(effect(mode)) < abs(effect(maxD)))
         mode <- maxD
-      const <- pars[2]*mode+pars[3]*mode^2
+      const <- effect(mode)
       d1 <- -(sqrt(4*pars[3]*const*p+pars[2]^2)+pars[2])/pars[3]/2.0
       d2 <- (sqrt(4*pars[3]*const*p+pars[2]^2)-pars[2])/pars[3]/2.0
       ind <- c(d1, d2) > 0
@@ -550,7 +553,8 @@ calcED <- function(model, pars, p, maxD, EDtype = c("continuous", "discrete"),
       func <- function(x, Emax, delta1, delta2, scal, p, mode){
         p - betaMod(x, 0, 1, delta1, delta2, scal)/betaMod(mode, 0, 1, delta1, delta2, scal)
       }
-      mode <- cf[3]/(cf[3]+cf[4])*scal
+      ## the full effect is at the peak, or at maxD if the peak lies beyond it
+      mode <- min(cf[3]/(cf[3]+cf[4])*scal, maxD)
       out <- uniroot(func, lower=0, upper=mode, delta1=cf[3],
                      delta2=cf[4], Emax=cf[2], scal=scal,
                      p=p, mode = mode)$root

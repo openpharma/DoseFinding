@@ -1,5 +1,23 @@
 # DoseFinding (development version)
 
+* `bFitMod()` now reorders `S` together with unsorted doses and responses.
+* `predict.bFitMod(predType = "effect-curve")` subtracts the placebo response
+  also when `doseSeq` does not start at zero.
+* `predict.bFitMod()` works for a single dose in `doseSeq` (it failed with
+  "length of 'dimnames' [2] not equal to array extent").
+* `ED()` follows its definition relative to the full effect within the
+  observed dose range: for betaMod, a peak beyond the top dose no longer serves
+  as the reference, and for quadratic curves the reference is the larger
+  absolute effect at the vertex (if in range) or at the top dose, as already
+  for linear interpolation. Previously a convex quadratic used its minimum.
+* Vignettes: the normal-data analysis sorts the doses to match the ANOVA
+  estimates and describes the gAIC selection and default bounds correctly;
+  a typo in the FAQ and the Thomas et al. (2014) reference are corrected.
+* Help pages regenerated from their sources: `glycobrom` no longer repeats its
+  format line and links to the current clinicaltrials.gov page, and the
+  `IBScovars` (3 variables), `migraine` (8 dose groups) and package author
+  entries match the sources.
+
 # DoseFinding 1.4-2
 * Added vignette illustrating analysis of time-to-event data (#9. thanks to Carina Miller for her work on this)
 * added contributors section to readme (#40)

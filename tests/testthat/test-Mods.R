@@ -195,3 +195,21 @@ test_that("ED gives consistent results for discrete and continuous type", {
   expect_equal(ed1b, ed2, tolerance = 0.01)
   
 })
+test_that("ED for quadratic curves uses the largest absolute effect in the dose range", {
+  # convex curve with a shallow dip: the full effect is at the top dose
+  expect_equal(calcED("quadratic", c(0, -1, 2), .1, 1), (1 + sqrt(1.8)) / 4)
+  # convex curve whose vertex holds the largest effect (a beneficial decrease)
+  expect_equal(calcED("quadratic", c(0, -4, 1), .5, 3), 2 - sqrt(2))
+  # concave curve with the vertex inside the range
+  expect_equal(calcED("quadratic", c(0, 2, -1), .5, 1.5), 1 - sqrt(.5))
+})
+
+test_that("ED for betaMod is relative to the top dose when the peak lies beyond it", {
+  scal <- 1.2
+  pars <- c(0, 1, 4, .5)
+  expect_gt(pars[3] / sum(pars[3:4]) * scal, 1)
+  expected <- uniroot(function(d) betaMod(d, 0, 1, 4, .5, scal) - .5 * betaMod(1, 0, 1, 4, .5, scal),
+                      c(0, 1), tol = 1e-10)$root
+  expect_equal(calcED("betaMod", pars, .5, 1, scal = scal), expected, tolerance = 1e-4)
+  expect_lte(calcED("betaMod", pars, .99, 1, scal = scal), 1)
+})

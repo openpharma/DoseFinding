@@ -260,5 +260,7 @@ predSamples <- function(samples, placAdjfullPars = FALSE, doseSeq, placAdj, mode
         do.call(model, c(list(doseSeq), as.list(list(x, nodes))))
     }
   }
-  out <- t(apply(samples, 1, func))
+  out <- vapply(seq_len(nrow(samples)), function(i) func(samples[i,]),
+                numeric(length(doseSeq)))
+  t(matrix(out, nrow = length(doseSeq), ncol = nrow(samples)))
 }

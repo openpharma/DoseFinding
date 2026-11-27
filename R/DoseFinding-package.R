@@ -292,7 +292,7 @@ NULL
 #'      of the least square means per dose}
 #'    \item{`n`}{Number of participants analyzed per treatment group}
 #'  }
-#' @source http://clinicaltrials.gov/ct2/show/results/NCT00501852
+#' @source <https://clinicaltrials.gov/study/NCT00501852>
 #' @keywords datasets
 #' @examples
 #' 

@@ -138,6 +138,7 @@ bFitMod <- function(dose, resp, model, S, placAdj = FALSE,
   resp <- resp[ord]
   if (nrow(S) != nD | ncol(S) != nD) 
     stop("S and dose have non-conforming size")
+  S <- S[ord, ord, drop = FALSE]
   if (missing(model)) 
     stop("need to specify the model that should be fitted")
   scal <- off <- nodes <- NULL
@@ -275,7 +276,10 @@ predict.bFitMod <- function(object, predType = c("full-model", "effect-curve"),
                      off = off, nodes = nodes)
 
   if(predType == "effect-curve"){
-    out <- out - out[,1]
+    baseline <- predSamples(samples = object$samples, doseSeq = 0,
+                            placAdj = placAdj, model = model, scal = scal,
+                            off = off, nodes = nodes)
+    out <- out - baseline[,1]
   }
   if(!is.null(summaryFct)){
     out0 <- apply(out, 2, summaryFct)
